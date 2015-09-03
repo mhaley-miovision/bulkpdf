@@ -7,9 +7,10 @@ import java.awt.*;
  */
 public class RenderInfoCircles extends RenderInfo
 {
-    protected Point[] circleCenters;
+    private Point[] circleCenters;
 
-    public RenderInfoCircles(int numCircles, double minDistanceBetweenCircles, double circleDiameter, boolean useMiddle) {
+    public RenderInfoCircles(int numCircles, double minDistanceBetweenCircles,
+                             double circleDiameter, boolean useMiddle) {
         calculateCircleLocations(numCircles, minDistanceBetweenCircles, circleDiameter, useMiddle);
     }
 
@@ -18,8 +19,8 @@ public class RenderInfoCircles extends RenderInfo
     }
 
     // Draws equally sized and spaced circles
-    private void calculateCircleLocations(int numCircles, double minDistanceBetweenCircles, double circleDiameter,
-                                          boolean useMiddle) {
+    private void calculateCircleLocations(int numCircles, double minDistanceBetweenCircles,
+                                          double circleDiameter, boolean useMiddle) {
         double dm = minDistanceBetweenCircles;
         double rc = circleDiameter / 2;
         int n = 0;

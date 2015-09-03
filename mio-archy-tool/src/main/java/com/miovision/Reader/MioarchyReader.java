@@ -16,7 +16,7 @@ import com.miovision.Model.*;
 public class MioarchyReader
 {
     public Mioarchy readMioarchy()
-            throws AuthenticationException, MalformedURLException, IOException, ServiceException {
+            throws IOException, ServiceException {
 
         System.out.println("Reading Mioarchy...");
 
@@ -93,20 +93,19 @@ public class MioarchyReader
         //    collect child lists
         // 2) link parents in concrete instances
         //    link children in concrete instances
-        for (ListEntry row : list) {
+        list.forEach(row -> {
             int id = Integer.parseInt(row.getTitle().getPlainText());
             String name = row.getCustomElements().getValue("organization");
             String parent = row.getCustomElements().getValue("parent");
             Organization org = new Organization(id, name, null);
             orgs.put(name, org);
-
-        }
-        for (ListEntry row : list) {
+        });
+        list.forEach(row -> {
             String name = row.getCustomElements().getValue("organization");
             String parent = row.getCustomElements().getValue("parent");
             Organization parentOrg = orgs.get(parent);
             orgs.get(name).attachToParent(parentOrg);
-        }
+        });
         return orgs;
     }
 
@@ -117,14 +116,14 @@ public class MioarchyReader
         List<ListEntry> list = listFeed.getEntries();
         HashMap<String, Application> apps = new HashMap<>();
 
-        for (ListEntry row : list) {
+        list.forEach(row -> {
             int id = Integer.parseInt(row.getTitle().getPlainText());
             String name = row.getCustomElements().getValue("application");
             String organization = row.getCustomElements().getValue("organization");
             Organization org = orgs.get(organization);
             Application app = new Application(id, name, org);
             apps.put(name, app);
-        }
+        });
         return apps;
     }
 
@@ -136,12 +135,12 @@ public class MioarchyReader
         List<ListEntry> list = listFeed.getEntries();
         HashMap<String, Role> roles = new HashMap<>();
 
-        for (ListEntry row : list) {
+        list.forEach(row -> {
             int id = Integer.parseInt(row.getTitle().getPlainText());
             String name = row.getCustomElements().getValue("role");
             Role role = new Role(id, name);
             roles.put(name, role);
-        }
+        });
         return roles;
     }
 
@@ -152,14 +151,14 @@ public class MioarchyReader
         List<ListEntry> list = listFeed.getEntries();
         HashMap<String, Contributor> employees = new HashMap<>();
 
-        for (ListEntry row : list) {
+        list.forEach(row -> {
             int id = Integer.parseInt(row.getTitle().getPlainText());
             String firstName = row.getCustomElements().getValue("firstName");
             String lastName = row.getCustomElements().getValue("lastName");
             String name = row.getCustomElements().getValue("name");
             Contributor contributor = new Contributor(id, firstName, lastName, name);
             employees.put(name, contributor);
-        }
+        });
         return employees;
     }
 
@@ -176,7 +175,7 @@ public class MioarchyReader
         List<ListEntry> list = listFeed.getEntries();
         List<Job> jobs = new ArrayList<>();
 
-        for (ListEntry row : list) {
+        list.forEach(row -> {
             int id = Integer.parseInt(row.getTitle().getPlainText());
             String accountabilityLabel = row.getCustomElements().getValue("accountabilitylabel");
             String accountabilityLevel = row.getCustomElements().getValue("accountabilitylevel");
@@ -194,7 +193,7 @@ public class MioarchyReader
                     accountabilityLevel
             );
             jobs.add(job);
-        }
+        });
         return jobs;
     }
 }

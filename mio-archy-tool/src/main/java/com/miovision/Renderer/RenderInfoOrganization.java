@@ -49,15 +49,16 @@ public class RenderInfoOrganization extends RenderInfo {
                     jobsAtThisLevel.size(), MIN_DISTANCE_BETWEEN_CIRCLES, CIRCLE_DIAMETER, true);
 
             // circle
-            this.width = calculateBoundingCircleDiameter(this.currentOrgContributorCircles.width(), this.currentOrgContributorCircles.height());
+            this.width = calculateBoundingCircleDiameter(
+                    this.currentOrgContributorCircles.width(),
+                    this.currentOrgContributorCircles.height());
             this.height = width;
 
             maxOrgCircleDiameter = this.width; // not really used, just being diligent
         } else {
             // yes, and populate child org infos
-            for (Organization o : childOrgs) {
-                this.children.add(new RenderInfoOrganization(o, mioarchy));
-            }
+            childOrgs.forEach(o -> this.children.add(new RenderInfoOrganization(o, mioarchy)));
+
             // next, take the remaining nodes and treat them as a circle (without having explicitly an org)
             this.currentOrgContributorCircles = new RenderInfoCircles(
                     jobsAtThisLevel.size(), MIN_DISTANCE_BETWEEN_CIRCLES, CIRCLE_DIAMETER, true);
@@ -66,10 +67,10 @@ public class RenderInfoOrganization extends RenderInfo {
             //draw a circle around each sub org with radius = width / 2
 
             // determine the radius of the new circle based on width and height of the biggest sub org
-            for (RenderInfoOrganization ri : this.children) {
+            this.children.forEach(ri -> {
                 maxOrgCircleDiameter = Math.max(maxOrgCircleDiameter, ri.width());
                 maxOrgCircleDiameter = Math.max(maxOrgCircleDiameter, ri.height());
-            }
+            });
             // also include the fake circle
             maxOrgCircleDiameter = Math.max(maxOrgCircleDiameter, this.currentOrgContributorCircles.width());
             maxOrgCircleDiameter = Math.max(maxOrgCircleDiameter, this.currentOrgContributorCircles.height());
@@ -101,7 +102,7 @@ public class RenderInfoOrganization extends RenderInfo {
 
         if (isLeaf) {
             // translate to 0,0
-            Point d = getXYOffsetFromPoints(currentOrgContributorCircles.circleCenters);
+            Point d = getXYOffsetFromPoints(currentOrgContributorCircles.circleCenters());
             // account for differences in circle sizes
             double w = (this.width - currentOrgContributorCircles.width()) / 2;
             double h = (this.height - currentOrgContributorCircles.height()) / 2;
@@ -110,7 +111,7 @@ public class RenderInfoOrganization extends RenderInfo {
             double dy = y - d.y + h;
 
             // now move all the circle locations as needed
-            circleLocations = translatePoints(currentOrgContributorCircles.circleCenters, dx, dy);
+            circleLocations = translatePoints(currentOrgContributorCircles.circleCenters(), dx, dy);
 
             // render jobs (circles)
             for (int i = 0; i < jobsAtThisLevel.size(); i++) {
@@ -156,12 +157,12 @@ public class RenderInfoOrganization extends RenderInfo {
             boolean isParentOrgWithJobs = jobsAtThisLevel.size() > 0;
 
             // translate to 0,0
-            Point d = getXYOffsetFromPoints(currentOrgContributorCircles.circleCenters);
+            Point d = getXYOffsetFromPoints(currentOrgContributorCircles.circleCenters());
             // now account for containing circle center, using the org sub circles as reference
             //TODO: this might be causing the offset problem for DES which has a smaller circle
             double dx = x - d.x + (this.width - this.subOrgCircles.width()) / 2;
             double dy = y - d.y + (this.height - this.subOrgCircles.height()) / 2;
-            circleLocations = translatePoints(subOrgCircles.circleCenters, dx, dy);
+            circleLocations = translatePoints(subOrgCircles.circleCenters(), dx, dy);
 
             // render organizations (circles)
             for (int i = 0; i < this.children.size(); i++) {
@@ -175,7 +176,7 @@ public class RenderInfoOrganization extends RenderInfo {
                     graph.insertVertex(parent, null, orgLabel, circleLocations[i].x, circleLocations[i].y,
                             orgRenderInfo.width, orgRenderInfo.height,
                             "shape=ellipse;fillColor=none;whiteSpace=wrap;fillColor=none;" +
-                                    "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+                            "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
                 } finally {
                     graph.getModel().endUpdate();
                 }
