@@ -84,6 +84,10 @@ Sidebar.prototype.init = function()
 {
 	var dir = STENCIL_PATH;
 	
+
+	this.addMioPalette(true);
+
+	/* these not needed
 	this.addSearchPalette(true);
 	this.addGeneralPalette(true);
 	this.addAdvancedPalette(false);
@@ -103,6 +107,8 @@ Sidebar.prototype.init = function()
 		 'Worker1', 'Soldier1', 'Doctor1', 'Tech1', 'Security1', 'Telesales1'], null,
 		 {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
 		  'Router_Icon': 'router switch'});
+
+	*/
 };
 
 /**
@@ -829,6 +835,18 @@ Sidebar.prototype.addSearchPalette = function(expand)
     // Keeps references to the DOM nodes
 	this.palettes['search'] = [elt, outer];
 };
+
+Sidebar.prototype.addMioPalette = function(expand) {
+	var fns = [
+	 	
+	 	this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;gradientColor=purple;html=1', 40, 40, '', 'Contributor', null, null, ''),
+	 	this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;gradientColor=lightgreen;html=1', 40, 40, '', 'Product Owner', null, null, ''),
+	 	this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;gradientColor=green;html=1', 40, 40, '', 'Product Manager', null, null, ''),
+	 	this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;gradientColor=yellow;html=1', 40, 40, '', 'OD Manager', null, null, ''),
+	 	
+ 	];
+ 	this.addPaletteFunctions('general', mxResources.get('general'), (expand != null) ? expand : true, fns);
+}
 
 /**
  * Adds the general palette to the sidebar.
