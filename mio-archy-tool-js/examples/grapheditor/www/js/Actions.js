@@ -21,6 +21,14 @@ Actions.prototype.init = function()
 	var graph = editor.graph;
 	var isGraphEnabled = mxUtils.bind(graph, graph.isEnabled);
 
+	this.addAction('Read from Google doc DB', function()
+	{
+		window.openNew = true;
+		window.openKey = 'open';
+		
+		ui.openFile();
+	});
+
 	// File actions
 	this.addAction('new', function() { window.open(ui.getUrl()); });
 	this.addAction('open...', function()
