@@ -2,6 +2,7 @@
 
 var GoogleSpreadsheet = require("google-spreadsheet");
 var _ = require("underscore");
+var Models = require("./models.js");
 
 exports.applications = [];
 exports.contributors = [];
@@ -44,49 +45,79 @@ function processApplications(appsSrc)
 {
     appsSrc.getRows( 0, function( err, rows) {
         for (var r = 0; r < rows.length; r++) {
-            exports.applications[rows[r]['application']] = rows[r];
+            var row = rows[r];
+            var id = row['id'];
+            var name = row['application'];
+            var parentOrg = row['organization']; 
+
+            exports.applications[name] = new Models.Application(id, name, parentOrg);
         }
         console.log("read " + rows.length + " applications.");
-        console.log(_.keys(exports.applications));
+        //console.log(_.keys(exports.applications));
     });
 }
 function processContributors(contribsSrc)
 {
     contribsSrc.getRows( 0, function( err, rows) {
         for (var r = 0; r < rows.length; r++) {
-            exports.contributors[rows[r]['name']] = rows[r];
+            var row = rows[r];
+            var id = row['id'];
+            var name = row['name'];
+            var firstName = row['firstname']; 
+            var lastName = row['lastname']; 
+
+            exports.contributors[name] = new Models.Contributor(id, name, firstName, lastName);
         }
         console.log("read " + rows.length + " contributors.");
-        console.log(_.keys(exports.contributors));
+        //console.log(_.keys(exports.contributors));
     });
 }
 function processRoles(rolesSrc)
 {
     rolesSrc.getRows( 0, function( err, rows) {
         for (var r = 0; r < rows.length; r++) {
-            exports.roles[rows[r]['role']] = rows[r];
+            var row = rows[r];
+            var id = row['id'];
+            var name = row['name'];
+
+            exports.roles[name] = new Models.Role(id, name);
         }
         console.log("read " + rows.length + " roles.");
-        console.log(_.keys(exports.roles));
+        //console.log(_.keys(exports.roles));
     });
 }
 function processOrganizations(orgsSrc)
 {
     orgsSrc.getRows( 0, function( err, rows) {
         for (var r = 0; r < rows.length; r++) {
-            exports.organizations[rows[r]['organization']] = rows[r];
+            var row = rows[r];
+            var id = row['id'];
+            var name = row['organization'];
+            var parent = row['parent'];
+
+            exports.organizations[name] = new Models.Organization(id, name, parent);
         }
         console.log("read " + rows.length + " organizations.");
-        console.log(_.keys(exports.organizations));
+        //console.log(_.keys(exports.organizations));
     });
 }
 function processJobs(jobsSrc)
 {
     jobsSrc.getRows( 0, function( err, rows) {
         for (var r = 0; r < rows.length; r++) {
-            exports.jobs[rows[r]['accountability label']] = rows[r];
+            var row = rows[r];
+            var id = row['id'];
+            var organization = row['organization'];
+            var application = row['application'];
+            var role = row['role'];
+            var accountabilityLabel = row['accountabilitylabel'];
+            var accountabilityLevel = row['accountabilitylevel'];
+            var contributor = row['contributor'];
+            var primaryAccountability = row['primaryaccountability'];
+
+            exports.jobs[id] = new Models.Contributor(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability); 
         }
         console.log("read " + rows.length + " jobs.");
-        console.log(_.keys(exports.jobs));
+        console.log(exports.jobs);
     });
 }

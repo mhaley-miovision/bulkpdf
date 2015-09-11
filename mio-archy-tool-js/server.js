@@ -1,15 +1,17 @@
 'use strict';
 
+var models = require("./lib/models.js");
+
 var http = require("http"),
     url = require("url"),
     path = require("path"),
     fs = require("fs"),
     port = process.argv[2] || 8081,
-    _ = require("underscore"),
-    mio = require("./mio-archy.js");
+    mio = require("./lib/mioarchy.js");
 
 mio.readDatabase('1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ');
 
+/*
 http.createServer(function(request, response) {
 
   var uri = url.parse(request.url).pathname
@@ -40,4 +42,4 @@ http.createServer(function(request, response) {
   });
 }).listen(parseInt(port, 10));
 
-console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");
+console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");*/
