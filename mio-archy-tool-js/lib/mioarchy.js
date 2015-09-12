@@ -2,16 +2,26 @@
 
 var GoogleSpreadsheet = require("google-spreadsheet");
 var _ = require("underscore");
+var async = require("async");
 var Models = require("./models.js");
 
-exports.applications = [];
-exports.contributors = [];
-exports.organizations = [];
-exports.roles = [];
-exports.jobs = [];
+exports.applications = {};
+exports.contributors = {};
+exports.organizations = {};
+exports.roles = {};
+exports.jobs = {};
 
-exports.readDatabase = function (sourceSheet) {
+// retrieval completion flags
+var APPS_DONE = 1;
+var CONT_DONE = 2;
+var ORGS_DONE = 4;
+var ROLE_DONE = 8;
+var JOBS_DONE = 16;
+var _doneFlags = 0;
+var _allDone = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE;
+var _doneCallback;
 
+exports.readDatabase = function (sourceSheet, onCompleteCallback) {
     // spreadsheet key is the long id in the sheets URL 
     var db = new GoogleSpreadsheet(sourceSheet);
      
@@ -21,20 +31,28 @@ exports.readDatabase = function (sourceSheet) {
     console.log("Reading Google Doc DB...");
     console.time("read_db");
 
+    // clear done flags
+    _doneFlags = 0;
+    _doneCallback = onCompleteCallback;
+
     db.getInfo( function (err, sheetInfo) {
-        console.log(err);
         console.log( sheetInfo.title + ' is loaded' );
-        // use worksheet object if you want to stop using the # in your calls 
 
         for (var i = 0; i < sheetInfo.worksheets.length; i++) {
             var s = sheetInfo.worksheets[i];
-
             if (knownTables.indexOf(s.title) >= 0) {
                 eval("process" + s.title + "(s);");
             }
         }
     });
 };
+
+function notifyDone() {
+    if (_doneFlags == _allDone) {
+        console.log("All data read from DB.");
+        _doneCallback();
+    }
+}
 
 var knownTables = [ "Applications", "Contributors", "Roles", "Organizations", "Jobs" ];
 
@@ -43,7 +61,7 @@ var knownTables = [ "Applications", "Contributors", "Roles", "Organizations", "J
 
 function processApplications(appsSrc)
 {
-    appsSrc.getRows( 0, function( err, rows) {
+    appsSrc.getRows(0, function( err, rows) {
         for (var r = 0; r < rows.length; r++) {
             var row = rows[r];
             var id = row['id'];
@@ -54,6 +72,8 @@ function processApplications(appsSrc)
         }
         console.log("read " + rows.length + " applications.");
         //console.log(_.keys(exports.applications));
+        _doneFlags |= APPS_DONE;
+        notifyDone();
     });
 }
 function processContributors(contribsSrc)
@@ -70,6 +90,8 @@ function processContributors(contribsSrc)
         }
         console.log("read " + rows.length + " contributors.");
         //console.log(_.keys(exports.contributors));
+        _doneFlags |= CONT_DONE;
+        notifyDone();
     });
 }
 function processRoles(rolesSrc)
@@ -84,6 +106,8 @@ function processRoles(rolesSrc)
         }
         console.log("read " + rows.length + " roles.");
         //console.log(_.keys(exports.roles));
+        _doneFlags |= ROLE_DONE;
+        notifyDone();
     });
 }
 function processOrganizations(orgsSrc)
@@ -99,6 +123,8 @@ function processOrganizations(orgsSrc)
         }
         console.log("read " + rows.length + " organizations.");
         //console.log(_.keys(exports.organizations));
+        _doneFlags |= ORGS_DONE;
+        notifyDone();
     });
 }
 function processJobs(jobsSrc)
@@ -119,5 +145,7 @@ function processJobs(jobsSrc)
         }
         console.log("read " + rows.length + " jobs.");
         console.log(exports.jobs);
+        _doneFlags |= JOBS_DONE;
+        notifyDone();
     });
 }

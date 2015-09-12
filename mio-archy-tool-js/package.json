@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^1.4.2",
+    "express": "^4.13.3",
     "google-spreadsheet": "^1.0.1",
     "underscore": "^1.8.3"
   },
