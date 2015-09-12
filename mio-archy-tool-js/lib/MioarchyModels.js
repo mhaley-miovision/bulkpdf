@@ -1,28 +1,27 @@
 'use strict';
 
-function Mioarchy(jobs, rganizationsByName, jobsByName, contributorsByName, applicationsByName, rolesByName) {
+function Mioarchy(jobs, orgs, contribs, apps, roles) {
     this.jobs = jobs;
-    this.applicationsByName = applicationsByName;
-    this.contributorsByName = contributorsByName;
-    this.rolesByName = rolesByName;
-    this.jobsByName = jobsByName;
-    this.organizationsByName = organizationsByName;
+    this.applications = apps;
+    this.contributors = contribs;
+    this.roles = roles;
+    this.jobs = jobs;
+    this.organizations = orgs;
 };
 
-Mioarchy.prototype = {
-    
+Mioarchy.prototype = 
+{    
     getOrganizationChildren: function(organization) {
-        var children;
-        for (o in organizationsByName) {
+        var children = [];
+        for (o in organizations) {
            if (o.parent != null) {
                 if (o.parent.name.toLowerCase() === organization.toLowerCase()) {
-                    children.add(o);
+                    children.push(o);
                 }
             }
         }
         return children;
     },
-
     getOrganizationJobs: function(organization, recurse) {
         var list = [];
         // jobs at sub levels
@@ -41,7 +40,6 @@ Mioarchy.prototype = {
         }
         return list;
     },
-
     isDescendantOfOrganization: function(testSubject, desiredParent) {
         if (testSubject.parent == null || testSubject.parent.name == null || desiredParent == null || desiredParent.name == null)
             return false;
@@ -75,23 +73,26 @@ function Contributor(id, name, firstName, lastName) {
     this.lastName = lastName;
 }
 
-function Job(id, organization, application, role, accountabilityLevel, accountabilityLabel, employee, primaryAccountability) {
+function Job(id, organization, application, role, accountabilityLevel, accountabilityLabel, contributor, primaryAccountability) {
     this.id = id;
     this.organization = organization;
     this.application = application;
     this.role = role;
     this.accountabilityLabel = accountabilityLabel;
     this.accountabilityLevel = accountabilityLevel;
-    this.employee = employee;
+    this.contributor = contributor;
     this.primaryAccountability;
 }
 
-module.exports = {
-    Mioarchy: Mioarchy, 
-    Application: Application, 
-    Role: Role, 
-    Organization: Organization, 
-    Contributor: Contributor, 
-    Job: Job
-};
+// module is only define in nodejs context, if this is client side, ignore since the context is 'window'
+if (typeof(module) != "undefined") {
+    module.exports = {
+        Mioarchy: Mioarchy, 
+        Application: Application, 
+        Role: Role, 
+        Organization: Organization, 
+        Contributor: Contributor, 
+        Job: Job
+    };
+}
 

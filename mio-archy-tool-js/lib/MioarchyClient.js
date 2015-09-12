@@ -10,6 +10,7 @@ function MioarchyClient(readyStateCallback) {
 	this.isReady = false;
 	this.isError = false;
 	this.doneFlags = 0;
+	this.mioarchy = {};
 	this.applications = {};
 	this.organizations = {};
 	this.contributors = {};
@@ -18,10 +19,13 @@ function MioarchyClient(readyStateCallback) {
 	this.readyStateCallback = readyStateCallback;
 }
 
-MioarchyClient.prototype = {
+MioarchyClient.prototype = 
+{
 	notifySuccess: function(flag) {
 		this.doneFlags |= flag;	
 		if (this.doneFlags == ALL_DONE) {
+			// create the mioarchy object
+			this.mioarchy = new Mioarchy( this.jobs, this.organizations, this.contributors, this.apps, this.roles );
 			this.notifyComplete();
 		}
 	},
@@ -54,11 +58,11 @@ MioarchyClient.prototype = {
 		this.notifySuccess(JOBS_DONE);
 	},
 	readDB: function() {
-		this.getJSON("/applications", MioarchyClient.prototype.notifySuccessApps, MioarchyClient.prototype.notifyError);
-		this.getJSON("/organizations", MioarchyClient.prototype.notifySuccessOrgs, MioarchyClient.prototype.notifyError);
-		this.getJSON("/contributors", MioarchyClient.prototype.notifySuccessContribs, MioarchyClient.prototype.notifyError);
-		this.getJSON("/roles", MioarchyClient.prototype.notifySuccessRoles, MioarchyClient.prototype.notifyError);
-		this.getJSON("/jobs", MioarchyClient.prototype.notifySuccessJobs, MioarchyClient.prototype.notifyError);
+		this.getJSON("/applications", this.notifySuccessApps, this.notifyError);
+		this.getJSON("/organizations", this.notifySuccessOrgs, this.notifyError);
+		this.getJSON("/contributors", this.notifySuccessContribs, this.notifyError);
+		this.getJSON("/roles", this.notifySuccessRoles, this.notifyError);
+		this.getJSON("/jobs", this.notifySuccessJobs, this.notifyError);
 	},
 	getJSON: function(url, successHandler, errorHandler) {
 	  var xhr = typeof XMLHttpRequest != 'undefined'
@@ -86,4 +90,3 @@ MioarchyClient.prototype = {
 	  xhr.send();
 	}
 }
-

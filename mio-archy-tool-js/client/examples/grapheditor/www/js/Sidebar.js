@@ -837,13 +837,9 @@ Sidebar.prototype.addSearchPalette = function(expand)
 };
 
 Sidebar.prototype.addMioPalette = function(expand) {
-	console.log(this.editorUi.mioarchy);
-
 	//var jobs = this.editorUi.mioarchy.jobs; 
-
 	var fns = [];
 
-/*
 	for (c in this.editorUi.mioarchy.jobs) {
 		var color = "red";
 		var job = this.editorUi.mioarchy.jobs[c];
@@ -851,15 +847,17 @@ Sidebar.prototype.addMioPalette = function(expand) {
 
 		fns.push(
 			this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;gradientColor=' + color + ';html=1', 40, 40, '', name, null, null, ''));
-	}*/
-	
+	}
+
+	console.log(this.editorUi.mioarchy);
+
+	/*
 	var fns = [
 	 	this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;gradientColor=purple;html=1', 40, 40, '', 'Contributor', null, null, ''),
 	 	this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;gradientColor=lightgreen;html=1', 40, 40, '', 'Product Owner', null, null, ''),
 	 	this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;gradientColor=green;html=1', 40, 40, '', 'Product Manager', null, null, ''),
-	 	this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;gradientColor=yellow;html=1', 40, 40, '', 'OD Manager', null, null, ''),
-	 	
- 	];
+	 	this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;gradientColor=yellow;html=1', 40, 40, '', 'OD Manager', null, null, ''),	
+ 	];*/
  	this.addPaletteFunctions('general', mxResources.get('general'), (expand != null) ? expand : true, fns);
 }
 

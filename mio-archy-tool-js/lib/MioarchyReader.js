@@ -2,13 +2,16 @@
 
 var GoogleSpreadsheet = require("google-spreadsheet");
 var _ = require("underscore");
-var Models = require("./Models.js");
+var Models = require("./MioarchyModels.js");
 
-exports.applications = {};
-exports.contributors = {};
-exports.organizations = {};
-exports.roles = {};
-exports.jobs = {};
+var applications = {};
+var contributors = {};
+var organizations = {};
+var roles = {};
+var jobs = {};
+
+// this will be the resulting object
+exports.mioarchy = {};
 
 // retrieval completion flags
 var APPS_DONE = 1;
@@ -48,6 +51,9 @@ exports.readDatabase = function (sourceSheet, onCompleteCallback) {
 
 function notifyDone() {
     if (_doneFlags == _allDone) {
+
+        exports.mioarchy = new Models.Mioarchy( jobs, organizations, contributors, applications, roles );
+
         console.log("All data read from DB.");
         console.timeEnd("read_db");
 
@@ -62,14 +68,16 @@ var knownTables = [ "Applications", "Contributors", "Roles", "Organizations", "J
 
 function processApplications(appsSrc)
 {
-    appsSrc.getRows(0, function( err, rows) {
-        for (var r = 0; r < rows.length; r++) {
+    appsSrc.getRows(0, function( err, rows) 
+    {
+        for (var r = 0; r < rows.length; r++) 
+        {
             var row = rows[r];
             var id = row['id'];
             var name = row['application'];
             var parentOrg = row['organization']; 
 
-            exports.applications[name] = new Models.Application(id, name, parentOrg);
+            applications[name] = new Models.Application( id, name, parentOrg );
         }
         console.log("read " + rows.length + " applications.");
         //console.log(_.keys(exports.applications));
@@ -87,7 +95,7 @@ function processContributors(contribsSrc)
             var firstName = row['firstname']; 
             var lastName = row['lastname']; 
 
-            exports.contributors[name] = new Models.Contributor(id, name, firstName, lastName);
+            contributors[name] = new Models.Contributor(id, name, firstName, lastName);
         }
         console.log("read " + rows.length + " contributors.");
         //console.log(_.keys(exports.contributors));
@@ -103,10 +111,10 @@ function processRoles(rolesSrc)
             var id = row['id'];
             var name = row['role'];
 
-            exports.roles[name] = new Models.Role(id, name);
+            roles[name] = new Models.Role(id, name);
         }
         console.log("read " + rows.length + " roles.");
-        console.log(_.keys(exports.roles));
+        //console.log(_.keys(roles));
         _doneFlags |= ROLE_DONE;
         notifyDone();
     });
@@ -120,7 +128,7 @@ function processOrganizations(orgsSrc)
             var name = row['organization'];
             var parent = row['parent'];
 
-            exports.organizations[name] = new Models.Organization(id, name, parent);
+            organizations[name] = new Models.Organization(id, name, parent);
         }
         console.log("read " + rows.length + " organizations.");
         //console.log(_.keys(exports.organizations));
@@ -142,7 +150,7 @@ function processJobs(jobsSrc)
             var contributor = row['contributor'];
             var primaryAccountability = row['primaryaccountability'];
 
-            exports.jobs[id] = new Models.Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability); 
+            jobs[id] = new Models.Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability); 
         }
         console.log("read " + rows.length + " jobs.");
         //console.log(exports.jobs);

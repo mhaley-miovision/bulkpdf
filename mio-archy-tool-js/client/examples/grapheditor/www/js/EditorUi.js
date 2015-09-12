@@ -4,7 +4,7 @@
 /**
  * Constructs a new graph editor
  */
-EditorUi = function(mioarchy, editor, container)
+EditorUi = function(mioarchy, initCallback, editor, container)
 {
 	mxEventSource.call(this);
 
@@ -19,8 +19,7 @@ EditorUi = function(mioarchy, editor, container)
 	{
 		mxPopupMenu.prototype.submenuImage = 'data:image/gif;base64,R0lGODlhCQAJAIAAAP///zMzMyH5BAEAAAAALAAAAAAJAAkAAAIPhI8WebHsHopSOVgb26AAADs=';
 	}
-	else
-	{
+	else {
 		new Image().src = mxPopupMenu.prototype.submenuImage;
 	}
 
@@ -717,6 +716,9 @@ EditorUi = function(mioarchy, editor, container)
    	this.editor.resetGraph();
    	this.init();
    	this.open();
+
+   	// call the finished init callback, so that miovision things can be rendered
+   	initCallback( graph );
 };
 
 // Extends mxEventSource
