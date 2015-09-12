@@ -4,9 +4,11 @@
 /**
  * Constructs a new graph editor
  */
-EditorUi = function(editor, container)
+EditorUi = function(mioarchy, editor, container)
 {
 	mxEventSource.call(this);
+
+	this.mioarchy = mioarchy;
 	
 	this.editor = editor || new Editor();
 	this.container = container || document.body;
@@ -891,7 +893,7 @@ EditorUi.prototype.initClipboard = function()
 		}
 		
 		updatePaste();
-		
+	
 		return result;
 	};
 

@@ -2,8 +2,7 @@
 
 var GoogleSpreadsheet = require("google-spreadsheet");
 var _ = require("underscore");
-var async = require("async");
-var Models = require("./models.js");
+var Models = require("./Models.js");
 
 exports.applications = {};
 exports.contributors = {};
@@ -50,6 +49,8 @@ exports.readDatabase = function (sourceSheet, onCompleteCallback) {
 function notifyDone() {
     if (_doneFlags == _allDone) {
         console.log("All data read from DB.");
+        console.timeEnd("read_db");
+
         _doneCallback();
     }
 }
@@ -141,7 +142,7 @@ function processJobs(jobsSrc)
             var contributor = row['contributor'];
             var primaryAccountability = row['primaryaccountability'];
 
-            exports.jobs[id] = new Models.Contributor(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability); 
+            exports.jobs[id] = new Models.Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability); 
         }
         console.log("read " + rows.length + " jobs.");
         //console.log(exports.jobs);

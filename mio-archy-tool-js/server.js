@@ -1,13 +1,13 @@
 'use strict';
 
-var models = require("./lib/models.js");
+var models = require("./lib/Models.js");
 
 var http = require("http"),
     url = require("url"),
     path = require("path"),
     fs = require("fs"),
     port = process.argv[2] || 8082,
-    mio = require("./lib/mioarchy.js");
+    mio = require("./lib/Mioarchy.js");
 
 var dbReady = false;
 

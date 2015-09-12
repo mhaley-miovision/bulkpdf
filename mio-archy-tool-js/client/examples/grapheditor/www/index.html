@@ -70,7 +70,7 @@
 	<script type="text/javascript" src="jscolor/jscolor.js"></script>
 	<script type="text/javascript" src="sanitizer/sanitizer.min.js"></script>
 	<script type="text/javascript" src="../../../src/js/mxClient.js"></script>
-	<script type="text/javascript" src="../../../mio-src/mioReader.js"></script>
+	<script type="text/javascript" src="../../../../lib/MioarchyClient.js"></script>
 	<script type="text/javascript" src="js/EditorUi.js"></script>
 	<script type="text/javascript" src="js/Editor.js"></script>
 	<script type="text/javascript" src="js/Sidebar.js"></script>
@@ -84,33 +84,42 @@
 </head>
 <body class="geEditor">
 	<script type="text/javascript">
-		// Extends EditorUi to update I/O action states
-		(function()
-		{
-			var editorUiInit = EditorUi.prototype.init;
-			
-			EditorUi.prototype.init = function()
-			{
-				editorUiInit.apply(this, arguments);
-				this.actions.get('export').setEnabled(false);
 
-				// Updates action states which require a backend
-				if (!useLocalStorage)
+
+		// read from the backend
+		var mioarchyClient = new MioarchyClient(initEditor);
+		mioarchyClient.readDB();
+
+		// initialize the editor once the DB is ready
+		function initEditor() {
+			// Extends EditorUi to update I/O action states
+			(function()
+			{
+				var editorUiInit = EditorUi.prototype.init;
+				
+				EditorUi.prototype.init = function()
 				{
-					mxUtils.post(OPEN_URL, '', mxUtils.bind(this, function(req)
+					editorUiInit.apply(this, arguments);
+					this.actions.get('export').setEnabled(false);
+
+					// Updates action states which require a backend
+					if (!useLocalStorage)
 					{
-						var enabled = req.getStatus() != 404;
-						this.actions.get('open').setEnabled(enabled || fileSupport);
-						this.actions.get('import').setEnabled(enabled || fileSupport);
-						this.actions.get('save').setEnabled(enabled);
-						this.actions.get('saveAs').setEnabled(enabled);
-						this.actions.get('export').setEnabled(enabled);
-					}));
-				}
-			};
-		})();
-	
-		new EditorUi(new Editor(urlParams['chrome'] == '0'));
+						mxUtils.post(OPEN_URL, '', mxUtils.bind(this, function(req)
+						{
+							var enabled = req.getStatus() != 404;
+							this.actions.get('open').setEnabled(enabled || fileSupport);
+							this.actions.get('import').setEnabled(enabled || fileSupport);
+							this.actions.get('save').setEnabled(enabled);
+							this.actions.get('saveAs').setEnabled(enabled);
+							this.actions.get('export').setEnabled(enabled);
+						}));
+					}
+				};
+			})();
+
+			new EditorUi(mioarchyClient, new Editor(urlParams['chrome'] == '0'));
+		}
 	</script>
 </body>
 </html>

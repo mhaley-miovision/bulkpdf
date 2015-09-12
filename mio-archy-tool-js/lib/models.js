@@ -10,6 +10,7 @@ function Mioarchy(jobs, rganizationsByName, jobsByName, contributorsByName, appl
 };
 
 Mioarchy.prototype = {
+    
     getOrganizationChildren: function(organization) {
         var children;
         for (o in organizationsByName) {
@@ -67,7 +68,14 @@ function Organization(id, name, parent) {
     this.parent = parent;
 }
 
-function Contributor(id, organization, application, role, accountabilityLevel, accountabilityLabel, employee, primaryAccountability) {
+function Contributor(id, name, firstName, lastName) {
+    this.id = id;
+    this.name = name;
+    this.firstName = firstName;
+    this.lastName = lastName;
+}
+
+function Job(id, organization, application, role, accountabilityLevel, accountabilityLabel, employee, primaryAccountability) {
     this.id = id;
     this.organization = organization;
     this.application = application;
@@ -83,6 +91,7 @@ module.exports = {
     Application: Application, 
     Role: Role, 
     Organization: Organization, 
-    Contributor: Contributor
+    Contributor: Contributor, 
+    Job: Job
 };
 
