@@ -100,12 +100,12 @@ function processRoles(rolesSrc)
         for (var r = 0; r < rows.length; r++) {
             var row = rows[r];
             var id = row['id'];
-            var name = row['name'];
+            var name = row['role'];
 
             exports.roles[name] = new Models.Role(id, name);
         }
         console.log("read " + rows.length + " roles.");
-        //console.log(_.keys(exports.roles));
+        console.log(_.keys(exports.roles));
         _doneFlags |= ROLE_DONE;
         notifyDone();
     });
@@ -144,7 +144,7 @@ function processJobs(jobsSrc)
             exports.jobs[id] = new Models.Contributor(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability); 
         }
         console.log("read " + rows.length + " jobs.");
-        console.log(exports.jobs);
+        //console.log(exports.jobs);
         _doneFlags |= JOBS_DONE;
         notifyDone();
     });
