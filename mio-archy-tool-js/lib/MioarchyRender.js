@@ -19,27 +19,27 @@ RenderInfoCircles.prototype = {
         var R = 0;
         var alpha_min;
         var alpha;
-        var minx = Double.MAX_VALUE;
-        var miny = Double.MAX_VALUE;
-        var maxx = Double.MIN_VALUE;
-        var maxy = Double.MIN_VALUE;
+        var minx = Number.MAX_VALUE;
+        var miny = Number.MAX_VALUE;
+        var maxx = Number.MIN_VALUE;
+        var maxy = Number.MIN_VALUE;
 
         // base cases
         if (numCircles <= 0) {
             this.width = 0;
             this.height = 0;
-            this.circleCenters = new Point[] { };
+            this.circleCenters = [ { } ];
         }
         else if (numCircles == 1) {
             this.width = circleDiameter;
             this.height = circleDiameter;
-            this.circleCenters = new Point[]{new Point(0, 0)};
+            this.circleCenters = [ { x:0, y:0 } ];
         } else {
-            this.circleCenters = new Point[numCircles];
+            this.circleCenters = [];
 
             if (useMiddle) {
                 // first circle is in the middle
-                this.circleCenters[0] = new Point(0, 0);
+                this.circleCenters[0] = { x:0, y:0 };
                 Nc_remaining--;
                 n = 1;
             }
@@ -55,20 +55,19 @@ RenderInfoCircles.prototype = {
                 alpha = 2 * Math.PI / Nc_remaining;
                 if (alpha < alpha_min) {
                     // we have too many circles - so just use alpha min to determine the number of circles
-                    Nc_current = 1 + (int) Math.floor(2 * Math.PI / alpha_min);
+                    Nc_current = 1 + Math.floor( 2 * Math.PI / alpha_min );
                     alpha = 2 * Math.PI / Nc_current; // override alpha in case of error due to approximation used
                 } else {
                     Nc_current = Nc_remaining;
                 }
 
                 // now draw the # of circles, given alpha
-                for (int i = 0; i < Nc_current; i++) {
-                    double angle = alpha * i;
-                    double newX = x + R * Math.cos(angle);
-                    double newY = y + R * Math.sin(angle);
-                    Point p = new Point();
-                    p.setLocation(newX, newY);
-                    circleCenters[n++] = p;
+                for (var i = 0; i < Nc_current; i++) {
+                    var angle = alpha * i;
+                    var newX = x + R * Math.cos(angle);
+                    var newY = y + R * Math.sin(angle);
+                    var p = { x: newX, y: newY };
+                    this.circleCenters[n++] = p;
 
                     // update boundaries, accounting for circle radius
                     maxx = Math.max(maxx, newX + rc);
@@ -114,30 +113,32 @@ function RenderInfoOrganization(org, mioarchy)
             jobsAtThisLevel.length, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, true);
 
         // circle
-        this.width = calculateBoundingCircleDiameter(
-            this.currentOrgContributorCircles.width, this.currentOrgContributorCircles.height;
+        this.width = calculateBoundingCircleDiameter( this.currentOrgContributorCircles.width, this.currentOrgContributorCircles.height );
         this.height = width;
 
         maxOrgCircleDiameter = this.width; // not really used, just being diligent
     } else {
         // yes, and populate child org infos
-        childOrgs.forEach(o -> this.children.add( new RenderInfoOrganization(o, mioarchy) ));
+        for (o in this.childOrgs) {
+            this.children.add( new RenderInfoOrganization( o, mioarchy ) )
+        }
 
         // next, take the remaining nodes and treat them as a circle (without having explicitly an org)
         this.currentOrgContributorCircles = new RenderInfoCircles(
-                jobsAtThisLevel.length, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, true);
+                this.jobsAtThisLevel.length, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, true);
 
         //next, treat each sub org as a circle, and determine position based on the LARGEST circle (equidistant)
         //draw a circle around each sub org with radius = width / 2
 
         // determine the radius of the new circle based on width and height of the biggest sub org
-        this.children.forEach(ri -> {
-            maxOrgCircleDiameter = Math.max( maxOrgCircleDiameter, ri.width ;
-            maxOrgCircleDiameter = Math.max( maxOrgCircleDiameter, ri.height ;
-        });
+        for (ri in this.children) {
+            this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, ri.width );
+            this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, ri.height );
+        }
+
         // also include the fake circle
-        maxOrgCircleDiameter = Math.max( maxOrgCircleDiameter, this.currentOrgContributorCircles.width ;
-        maxOrgCircleDiameter = Math.max( maxOrgCircleDiameter, this.currentOrgContributorCircles.height ;
+        this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, this.currentOrgContributorCircles.width );
+        this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, this.currentOrgContributorCircles.height );
 
         // include the org without a circle as a fake org
         numSubOrgCircles = childOrgs.length;
@@ -145,7 +146,7 @@ function RenderInfoOrganization(org, mioarchy)
 
         // calculate circle rendering info as though the sub orgs were just circles
         this.subOrgCircles = new RenderInfoCircles(
-                numSubOrgCircles, this.MIN_DISTANCE_BETWEEN_CIRCLES, maxOrgCircleDiameter, false);
+                numSubOrgCircles, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.maxOrgCircleDiameter, false );
 
         // max dimensions determine by the sub org circle max dimensions
         this.width = this.subOrgCircles.width;
@@ -169,18 +170,18 @@ RenderInfoOrganization.prototype =
 
         if (this.isLeaf) {
             // translate to 0,0
-            var d = getXYOffsetFromPoints( currentOrgContributorCircles.circleCenters );
+            var d = getXYOffsetFromPoints( this.currentOrgContributorCircles.circleCenters );
 
             // account for differences in circle sizes
-            var w = (this.width - currentOrgContributorCircles.width / 2;
-            var h = (this.height - currentOrgContributorCircles.height / 2;
+            var w = this.width - currentOrgContributorCircles.width / 2;
+            var h = this.height - currentOrgContributorCircles.height / 2;
 
             // now account for containing circle center
             var dx = x - d.x + w;
             var dy = y - d.y + h;
 
             // now move all the circle locations as needed
-            circleLocations = translatePoints( currentOrgContributorCircles.circleCenters, dx, dy );
+            circleLocations = translatePoints( this.currentOrgContributorCircles.circleCenters, dx, dy );
 
             // render jobs (circles)
             for (j in jobsAtThisLevel) {
@@ -192,7 +193,7 @@ RenderInfoOrganization.prototype =
                 var cx = circleLocations[i].x;
                 var cy = circleLocations[i].y;
 
-                String label;
+                var label;
                 if ( j.contributor != null) {
                     label = j.contributor.name; //hortName.toLowerCase();
                 } else {
@@ -223,25 +224,25 @@ RenderInfoOrganization.prototype =
 
         } else {
             // note that this is an organization that has other organizations but also child jobs at this level
-            boolean isParentOrgWithJobs = jobsAtThisLevel.length > 0;
+            var isParentOrgWithJobs = this.jobsAtThisLevel.length > 0;
 
             // translate to 0,0
-            var d = getXYOffsetFromPoints( currentOrgContributorCircles.circleCenters );
+            var d = this.getXYOffsetFromPoints( this.currentOrgContributorCircles.circleCenters );
             // now account for containing circle center, using the org sub circles as reference
             //TODO: this might be causing the offset problem for DES which has a smaller circle
-            var dx = x - d.x + (this.width - this.subOrgCircles.width()) / 2;
-            var dy = y - d.y + (this.height - this.subOrgCircles.height()) / 2;
-            circleLocations = translatePoints(subOrgCircles.circleCenters, dx, dy);
+            var dx = x - d.x + (this.width - this.subOrgCircles.width / 2);
+            var dy = y - d.y + (this.height - this.subOrgCircles.height / 2);
+            circleLocations = this.translatePoints( this.subOrgCircles.circleCenters, dx, dy );
 
             // render organizations (circles)
-            for (int i = 0; i < this.children.length; i++ ) {
+            for (var i = 0; i < this.children.length; i++ ) {
                 // current org rendering info
                 var orgRenderInfo = this.children.get(i);
                 var orgLabel = orgRenderInfo.org.name;
 
                 graph.getModel().beginUpdate();
                 try {
-                    Object parent = graph.getDefaultParent();
+                    var parent = graph.getDefaultParent();
                     graph.insertVertex(
                             parent, null, orgLabel, 
                             circleLocations[i].x, circleLocations[i].y, orgRenderInfo.width, orgRenderInfo.height,
@@ -259,10 +260,10 @@ RenderInfoOrganization.prototype =
             // now render the jobs at this level
 
             // translate to 0,0
-            Point d = getXYOffsetFromPoints(currentOrgContributorCircles.circleCenters);
+            Point d = getXYOffsetFromPoints(this.currentOrgContributorCircles.circleCenters);
 
-            double w = (this.width - currentOrgContributorCircles.width()) / 2;
-            double h = (this.height - currentOrgContributorCircles.height()) / 2;
+            double w = (this.width - this.currentOrgContributorCircles.width()) / 2;
+            double h = (this.height - this.currentOrgContributorCircles.height()) / 2;
             if (isParentOrgWithJobs) {
                 w = 0;
                 h = 0;
@@ -280,7 +281,7 @@ RenderInfoOrganization.prototype =
             dy += fakeCircleCenter.getY();
 
             // now move all the circle locations as needed
-            Point[] circleLocations = translatePoints(currentOrgContributorCircles.circleCenters, dx, dy);
+            Point[] circleLocations = translatePoints(this.currentOrgContributorCircles.circleCenters, dx, dy);
 
             // render jobs (circles)
             for (int i = 0; i < jobsAtThisLevel.size(); i++) {
@@ -312,7 +313,7 @@ RenderInfoOrganization.prototype =
         }
     },
 
-    determineContributorColor: function(Job c, Mioarchy mioarchy)
+    determineContributorColor: function(c, mioarchy)
     {
         var colorString = "";
 
@@ -359,9 +360,9 @@ RenderInfoOrganization.prototype =
 
     // Moves a list of points by dx,dy
     translatePoints: function(points, dx, dy) {
-        var pointsTranslated = {};
-        for (p in points)
-            pointsTranslated.push({ x: p.x + dx, y: p.y + dy });
+        var pointsTranslated = [];
+        for (p in points) {
+            pointsTranslated.push( { x: p.x + dx, y: p.y + dy } );
         }
         return pointsTranslated;
     },
@@ -372,9 +373,9 @@ RenderInfoOrganization.prototype =
 
     // TODO: this ignores circle radius -- this could be causing positioning errors i've been seeing
     getXYOffsetFromPoints: function(points) {
-        var x = Double.MAX_VALUE;
-        var y = Double.MAX_VALUE;
-        for (p in points)
+        var x = Number.MAX_VALUE;
+        var y = Number.MAX_VALUE;
+        for (p in points) {
             x = Math.min(x, p.x);
             y = Math.min(y, p.y);
         }

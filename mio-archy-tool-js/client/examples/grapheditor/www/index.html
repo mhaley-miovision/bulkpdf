@@ -72,6 +72,7 @@
 	<script type="text/javascript" src="../../../src/js/mxClient.js"></script>
 	<script type="text/javascript" src="../../../../lib/MioarchyModels.js"></script>
 	<script type="text/javascript" src="../../../../lib/MioarchyClient.js"></script>
+	<script type="text/javascript" src="../../../../lib/MioarchyRender.js"></script>
 	<script type="text/javascript" src="js/EditorUi.js"></script>
 	<script type="text/javascript" src="js/Editor.js"></script>
 	<script type="text/javascript" src="js/Sidebar.js"></script>
@@ -121,9 +122,14 @@
 		}
 
 		function onEditorUIInitCompleted( graph ) {
-			console.log (" onEditorUIInitCompleted  - graph: ");
-			console.log(graph);
-			console.log(mioarchyClient.mioarchy);
+			console.log("START of rendering.");
+
+			var mioarchy = mioarchyClient.mioarchy;
+
+			var ri = new RenderInfoOrganization( mioarchy.organizations["Data Extraction System"], mioarchy );
+			ri.render( graph );
+
+			console.log("END of rendering.");
 		}
 
 	</script>

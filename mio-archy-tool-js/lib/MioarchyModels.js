@@ -11,12 +11,24 @@ function Mioarchy(jobs, orgs, contribs, apps, roles) {
 
 Mioarchy.prototype = 
 {    
-    getOrganizationChildren: function(organization) {
+    // returns the # of immediate childen of the given organization (does not recurse)
+    getOrganizationChildren: function(organization) 
+    {
+        // loop through all orgs
+        // if the org identifies having a parent with the same name as the specified org, we add it to the list of children of that org
+
         var children = [];
-        for (o in organizations) {
-           if (o.parent != null) {
-                if (o.parent.name.toLowerCase() === organization.toLowerCase()) {
-                    children.push(o);
+        var orgNames = Object.keys( this.organizations );
+
+        for (var i = 0; i < orgNames.length; i++) 
+        {
+            // the current org to check for being a parent
+            var o = this.organizations[ orgNames[i] ];
+
+            if (o.parent) 
+            {
+                if (o.parent.toLowerCase() === organization.name.toLowerCase()) {
+                    children.push( o );
                 }
             }
         }
@@ -24,14 +36,16 @@ Mioarchy.prototype =
     },
     getOrganizationJobs: function(organization, recurse) {
         var list = [];
+
         // jobs at sub levels
         if (recurse) {
-            for (o in this.getOrganizationChildren(organization)) {
+            for (o in this.getOrganizationChildren( organization )) {
                 list.push(o);
             }
         }
+
         // jobs at this level
-        for (c in jobs) {
+        for (c in this.jobs) {
             if (c.organization != null) {
                 if (c.organization.name.toLowerCase() === organization.name.toLowerCase()) {
                     list.push(c);
@@ -45,7 +59,7 @@ Mioarchy.prototype =
             return false;
         if (testSubject.parent.name.toLowerCase() === desiredParent.name.toLowerCase())
             return true;
-        return isDescendantOfOrganization(testSubject.parent, desiredParent);
+        return isDescendantOfOrganization( testSubject.parent, desiredParent );
     }
 };
 
@@ -85,7 +99,7 @@ function Job(id, organization, application, role, accountabilityLevel, accountab
 }
 
 // module is only define in nodejs context, if this is client side, ignore since the context is 'window'
-if (typeof(module) != "undefined") {
+if ( typeof(module) != "undefined" ) {
     module.exports = {
         Mioarchy: Mioarchy, 
         Application: Application, 
