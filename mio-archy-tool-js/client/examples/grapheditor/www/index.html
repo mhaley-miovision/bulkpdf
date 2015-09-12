@@ -127,7 +127,8 @@
 			var mioarchy = mioarchyClient.mioarchy;
 
 			var ri = new RenderInfoOrganization( mioarchy.organizations["Data Extraction System"], mioarchy );
-			ri.render( graph );
+
+			ri.render( 0, 0, graph );
 
 			console.log("END of rendering.");
 		}

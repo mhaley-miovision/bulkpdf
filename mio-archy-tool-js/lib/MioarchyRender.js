@@ -97,30 +97,30 @@ function RenderInfoOrganization(org, mioarchy)
     this.mioarchy = mioarchy;
 
     // retrieve child orgs
-    var childOrgs = mioarchy.getOrganizationChildren(org);
+    this.childOrgs = mioarchy.getOrganizationChildren( org );
 
     // a leaf org is rendered differently than a parent org
-    this.isLeaf = childOrgs.length == 0;
+    this.isLeaf = this.childOrgs.length == 0;
 
     // get list of jobs
-    this.jobsAtThisLevel = mioarchy.getOrganizationJobs(org, false);
+    this.jobsAtThisLevel = mioarchy.getOrganizationJobs( org, false );
 
     // does org have children?
     if (this.isLeaf) {
         // no, treat this as a group of contributors - assume circle rendering
         // generate circle info for this org (it is a LEAF!)
         this.currentOrgContributorCircles = new RenderInfoCircles(
-            jobsAtThisLevel.length, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, true);
+            this.jobsAtThisLevel.length, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, true);
 
         // circle
-        this.width = calculateBoundingCircleDiameter( this.currentOrgContributorCircles.width, this.currentOrgContributorCircles.height );
-        this.height = width;
+        this.width = this.calculateBoundingCircleDiameter( this.currentOrgContributorCircles.width, this.currentOrgContributorCircles.height );
+        this.height = this.width;
 
         maxOrgCircleDiameter = this.width; // not really used, just being diligent
     } else {
         // yes, and populate child org infos
         for (o in this.childOrgs) {
-            this.children.add( new RenderInfoOrganization( o, mioarchy ) )
+            this.children.push( new RenderInfoOrganization( this.childOrgs[o], mioarchy ) );
         }
 
         // next, take the remaining nodes and treat them as a circle (without having explicitly an org)
@@ -141,12 +141,11 @@ function RenderInfoOrganization(org, mioarchy)
         this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, this.currentOrgContributorCircles.height );
 
         // include the org without a circle as a fake org
-        numSubOrgCircles = childOrgs.length;
-        //numSubOrgCircles = jobsAtThisLevel.length == 0 ? childOrgs.length : childOrgs.length + 1;
+        numSubOrgCircles = this.childOrgs.length;
+        //numSubOrgCircles = jobsAtThisLevel.length == 0 ? this.childOrgs.length : this.childOrgs.length + 1;
 
         // calculate circle rendering info as though the sub orgs were just circles
-        this.subOrgCircles = new RenderInfoCircles(
-                numSubOrgCircles, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.maxOrgCircleDiameter, false );
+        this.subOrgCircles = new RenderInfoCircles( numSubOrgCircles, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.maxOrgCircleDiameter, false );
 
         // max dimensions determine by the sub org circle max dimensions
         this.width = this.subOrgCircles.width;
@@ -168,26 +167,29 @@ RenderInfoOrganization.prototype =
     render: function(x, y, graph) {
         var circleLocations;
 
+        console.log("===========================");
+        console.log(this);
+
         if (this.isLeaf) {
             // translate to 0,0
-            var d = getXYOffsetFromPoints( this.currentOrgContributorCircles.circleCenters );
+            var d = this.getXYOffsetFromPoints( this.currentOrgContributorCircles.circleCenters );
 
             // account for differences in circle sizes
-            var w = this.width - currentOrgContributorCircles.width / 2;
-            var h = this.height - currentOrgContributorCircles.height / 2;
+            var w = this.width - this.currentOrgContributorCircles.width / 2;
+            var h = this.height - this.currentOrgContributorCircles.height / 2;
 
             // now account for containing circle center
             var dx = x - d.x + w;
             var dy = y - d.y + h;
 
             // now move all the circle locations as needed
-            circleLocations = translatePoints( this.currentOrgContributorCircles.circleCenters, dx, dy );
+            circleLocations = this.translatePoints( this.currentOrgContributorCircles.circleCenters, dx, dy );
 
             // render jobs (circles)
-            for (j in jobsAtThisLevel) {
+            for (j in this.jobsAtThisLevel) {
 
                 var defaultStyle = "shape=ellipse;whiteSpace=wrap;gradientColor=none";
-                var color = determineContributorColor( j, mioarchy );
+                var color = this.determineContributorColor( j, mioarchy );
                 var defaultWidth = this.CIRCLE_DIAMETER;
                 var defaultHeight = this.CIRCLE_DIAMETER;
                 var cx = circleLocations[i].x;
@@ -223,6 +225,7 @@ RenderInfoOrganization.prototype =
             }
 
         } else {
+
             // note that this is an organization that has other organizations but also child jobs at this level
             var isParentOrgWithJobs = this.jobsAtThisLevel.length > 0;
 
@@ -237,7 +240,7 @@ RenderInfoOrganization.prototype =
             // render organizations (circles)
             for (var i = 0; i < this.children.length; i++ ) {
                 // current org rendering info
-                var orgRenderInfo = this.children.get(i);
+                var orgRenderInfo = this.children[i];
                 var orgLabel = orgRenderInfo.org.name;
 
                 graph.getModel().beginUpdate();
@@ -251,7 +254,6 @@ RenderInfoOrganization.prototype =
                 } finally {
                     graph.getModel().endUpdate();
                 }
-
                 // render organization internals
                 orgRenderInfo.render( circleLocations[i].x, circleLocations[i].y, graph );
             }

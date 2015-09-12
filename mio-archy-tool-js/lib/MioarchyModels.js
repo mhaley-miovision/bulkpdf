@@ -35,6 +35,7 @@ Mioarchy.prototype =
         return children;
     },
     getOrganizationJobs: function(organization, recurse) {
+
         var list = [];
 
         // jobs at sub levels
@@ -46,7 +47,7 @@ Mioarchy.prototype =
 
         // jobs at this level
         for (c in this.jobs) {
-            if (c.organization != null) {
+            if (c.organization) {
                 if (c.organization.name.toLowerCase() === organization.name.toLowerCase()) {
                     list.push(c);
                 }
