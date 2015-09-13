@@ -35,20 +35,21 @@ Mioarchy.prototype =
         return children;
     },
     getOrganizationJobs: function(organization, recurse) {
-
         var list = [];
 
         // jobs at sub levels
         if (recurse) {
-            for (o in this.getOrganizationChildren( organization )) {
+            for (o in this.getOrganizationJobs( organization )) {
                 list.push(o);
             }
         }
-
         // jobs at this level
         for (c in this.jobs) {
-            if (c.organization) {
-                if (c.organization.name.toLowerCase() === organization.name.toLowerCase()) {
+            // make sure the job is attached to an org
+            var jobOrgName = this.jobs[c].organization;
+            if (jobOrgName) {
+                // see if the names match
+                if (jobOrgName.toLowerCase() === organization.name.toLowerCase()) {
                     list.push(c);
                 }
             }

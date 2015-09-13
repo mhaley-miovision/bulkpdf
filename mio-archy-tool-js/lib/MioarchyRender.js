@@ -1,3 +1,5 @@
+'use strict';
+
 function RenderInfoCircles(numCircles, minDistanceBetweenCircles, circleDiameter, useMiddle)
 {
     this.circleCenters = {};
@@ -80,14 +82,17 @@ RenderInfoCircles.prototype = {
                 radiusIncrement++;
                 Nc_remaining -= Nc_current;
             }
-            width = (R + rc) * 2;
-            height = width;
+            this.width = (R + rc) * 2;
+            this.height = this.width;
         }
     }
 }
 
 function RenderInfoOrganization(org, mioarchy) 
 {
+    console.log("===================================");
+    console.log("RenderInfoOrganization - Contructor");
+
     // constants
     this.CIRCLE_DIAMETER = 40;
     this.MIN_DISTANCE_BETWEEN_CIRCLES = 40;
@@ -113,10 +118,11 @@ function RenderInfoOrganization(org, mioarchy)
             this.jobsAtThisLevel.length, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, true);
 
         // circle
+        console.log(this.currentOrgContributorCircles);
         this.width = this.calculateBoundingCircleDiameter( this.currentOrgContributorCircles.width, this.currentOrgContributorCircles.height );
         this.height = this.width;
 
-        maxOrgCircleDiameter = this.width; // not really used, just being diligent
+        this.maxOrgCircleDiameter = this.width; // not really used, just being diligent
     } else {
         // yes, and populate child org infos
         for (o in this.childOrgs) {
@@ -151,6 +157,9 @@ function RenderInfoOrganization(org, mioarchy)
         this.width = this.subOrgCircles.width;
         this.height = this.subOrgCircles.height;
     }
+
+
+    console.log(this);
 }
 
 RenderInfoOrganization.prototype = 
@@ -167,12 +176,11 @@ RenderInfoOrganization.prototype =
     render: function(x, y, graph) {
         var circleLocations;
 
-        console.log("===========================");
-        console.log(this);
-
         if (this.isLeaf) {
             // translate to 0,0
             var d = this.getXYOffsetFromPoints( this.currentOrgContributorCircles.circleCenters );
+
+            console.log(this);
 
             // account for differences in circle sizes
             var w = this.width - this.currentOrgContributorCircles.width / 2;
@@ -184,20 +192,23 @@ RenderInfoOrganization.prototype =
 
             // now move all the circle locations as needed
             circleLocations = this.translatePoints( this.currentOrgContributorCircles.circleCenters, dx, dy );
+            console.log(circleLocations);
 
             // render jobs (circles)
-            for (j in this.jobsAtThisLevel) {
+            for (var j in this.jobsAtThisLevel) 
+            {
+                var job = this.mioarchy.jobs[ this.jobsAtThisLevel[j] ];
 
                 var defaultStyle = "shape=ellipse;whiteSpace=wrap;gradientColor=none";
-                var color = this.determineContributorColor( j, mioarchy );
+                var color = this.determineContributorColor( job, this.mioarchy );
                 var defaultWidth = this.CIRCLE_DIAMETER;
                 var defaultHeight = this.CIRCLE_DIAMETER;
-                var cx = circleLocations[i].x;
-                var cy = circleLocations[i].y;
+                var cx = circleLocations[j].x;
+                var cy = circleLocations[j].y;
 
                 var label;
-                if ( j.contributor != null) {
-                    label = j.contributor.name; //hortName.toLowerCase();
+                if ( job.contributor != null) {
+                    label = j.contributor; //hortName.toLowerCase();
                 } else {
                     label = "NEW"; // not yet hired
                 }
@@ -215,7 +226,7 @@ RenderInfoOrganization.prototype =
                 graph.getModel().beginUpdate();
                 try {
                     var parent = graph.getDefaultParent();
-                    var orgLabel = org.name();
+                    var orgLabel = job.organization;
                     graph.insertVertex(parent, null, orgLabel, x, y, this.width, this.height,
                             "shape=ellipse;fillColor=none;whiteSpace=wrap;fillColor=none;" +
                             "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
@@ -315,20 +326,19 @@ RenderInfoOrganization.prototype =
         }
     },
 
-    determineContributorColor: function(c, mioarchy)
+    determineContributorColor: function(job, mioarchy)
     {
         var colorString = "";
+        var l = job.accountabilityLevel.toLowerCase();
 
         // this is a lead
-        if (c.role.name.toLowerCase().indexOf("lead") >= 0) {
-            colorString += "dark";
+        if (l.indexOf("senior") >= 0 || l.indexOf("executive") >= 0 || l.indexOf("director") >= 0) {
+            colorString += "dark"; 
         }
 
-        var app = mioarchy.applications[c.application];
-
         // by app now
-        if (c.application != null) {
-            var appName = app.name.toLowerCase();
+        if (job.application != null) {
+            var appName = job.application.toLowerCase();
 
             if (appName.indexOf("product") >= 0) {
                 colorString = "green";
@@ -345,7 +355,7 @@ RenderInfoOrganization.prototype =
             }
         } else {
             // try by organization
-            if (c.organization != null) {
+            if (job.organization != null) {
                 if (mioarchy.isDescendantOfOrganization(c.organization, mioarchy.organizations["Engineering"])) {
                     colorString = "purple";
                 } else if (mioarchy.isDescendantOfOrganization(c.organization, mioarchy.organizations["Finance"])) {
@@ -363,8 +373,8 @@ RenderInfoOrganization.prototype =
     // Moves a list of points by dx,dy
     translatePoints: function(points, dx, dy) {
         var pointsTranslated = [];
-        for (p in points) {
-            pointsTranslated.push( { x: p.x + dx, y: p.y + dy } );
+        for (var p in points) {
+            pointsTranslated.push( { x: points[p].x + dx, y: points[p].y + dy } );
         }
         return pointsTranslated;
     },
@@ -377,9 +387,9 @@ RenderInfoOrganization.prototype =
     getXYOffsetFromPoints: function(points) {
         var x = Number.MAX_VALUE;
         var y = Number.MAX_VALUE;
-        for (p in points) {
-            x = Math.min(x, p.x);
-            y = Math.min(y, p.y);
+        for (var p in points) {
+            x = Math.min(x, points[p].x);
+            y = Math.min(y, points[p].y);
         }
         return { x: x, y: y };
     }
