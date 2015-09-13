@@ -90,9 +90,6 @@ RenderInfoCircles.prototype = {
 
 function RenderInfoOrganization(org, mioarchy) 
 {
-    console.log("===================================");
-    console.log("RenderInfoOrganization - Contructor");
-
     // constants
     this.CIRCLE_DIAMETER = 40;
     this.MIN_DISTANCE_BETWEEN_CIRCLES = 40;
@@ -118,7 +115,6 @@ function RenderInfoOrganization(org, mioarchy)
             this.jobsAtThisLevel.length, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, false );
 
         // circle
-        console.log(this.currentOrgContributorCircles);
         this.width = this.calculateBoundingCircleDiameter( this.currentOrgContributorCircles.width, this.currentOrgContributorCircles.height );
         this.height = this.width;
 
@@ -137,7 +133,9 @@ function RenderInfoOrganization(org, mioarchy)
         //draw a circle around each sub org with radius = width / 2
 
         // determine the radius of the new circle based on width and height of the biggest sub org
-        for (var ri in this.children) {
+        this.maxOrgCircleDiameter = 0;
+        for (var riIndex in this.children) {
+            var ri = this.children[riIndex];
             this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, ri.width );
             this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, ri.height );
         }
@@ -151,15 +149,12 @@ function RenderInfoOrganization(org, mioarchy)
         //numSubOrgCircles = jobsAtThisLevel.length == 0 ? this.childOrgs.length : this.childOrgs.length + 1;
 
         // calculate circle rendering info as though the sub orgs were just circles
-        this.subOrgCircles = new RenderInfoCircles( numSubOrgCircles, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.maxOrgCircleDiameter, false );
+        this.subOrgCircles = new RenderInfoCircles( numSubOrgCircles, 0, this.maxOrgCircleDiameter, true );
 
         // max dimensions determine by the sub org circle max dimensions
         this.width = this.subOrgCircles.width;
         this.height = this.subOrgCircles.height;
     }
-
-
-    console.log(this);
 }
 
 RenderInfoOrganization.prototype = 
@@ -174,29 +169,31 @@ RenderInfoOrganization.prototype =
     actually rendering based on render info applies rendering rules
      */
     render: function(x, y, graph) {
-        var circleLocations;
-
+        // leaf is treated differently (as simple set of job circles)
         if (this.isLeaf) {
-            // translate to 0,0
-            /*
-            var d = this.getXYOffsetFromPoints( this.currentOrgContributorCircles.circleCenters );
+            // first we will draw the circle that will contain our job circles
+            graph.getModel().beginUpdate();
+            try {
+                var parent = graph.getDefaultParent();
+                var orgLabel = this.org.name;
 
-            console.log(this);
+                // the normal drawing is the top-left of the circle, so we must offset by the circle dimensions
+                var cx = x;
+                var cy = y;
 
-            // account for differences in circle sizes
-            var w = this.width - this.currentOrgContributorCircles.width / 2;
-            var h = this.height - this.currentOrgContributorCircles.height / 2;
+                graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
+                    "shape=ellipse;fillColor=none;whiteSpace=wrap;" +
+                    "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+            } finally {
+                graph.getModel().endUpdate();
+            }
 
-            // now account for containing circle center
-            var dx = x - d.x + w;
-            var dy = y - d.y + h;
-            */
-            var dx = 0;
-            var dy = 0;
+            // offset by half of the containing circle dimensions
+            var dx = this.width/2;
+            var dy = this.height/2;
 
             // now move all the circle locations as needed
-            circleLocations = this.translatePoints( this.currentOrgContributorCircles.circleCenters, dx, dy );
-            console.log(circleLocations);
+            var circleLocations = this.translatePoints( this.currentOrgContributorCircles.circleCenters, dx, dy );
 
             // render jobs (circles)
             for (var j in this.jobsAtThisLevel) 
@@ -214,8 +211,11 @@ RenderInfoOrganization.prototype =
                 var cy = y + circleLocations[j].y - this.CIRCLE_DIAMETER/2;
 
                 var label;
-                if ( job.contributor != null) {
-                    label = j.contributor; //hortName.toLowerCase();
+                if ( job.contributor ) {
+                    var fi = this.mioarchy.contributors[job.contributor].firstName.substring(0,1);
+                    var li = this.mioarchy.contributors[job.contributor].lastName.substring(0,1);
+                    // TODO: resolve name clashes in order to make unique
+                    label = (fi + li).toLowerCase();
                 } else {
                     label = "NEW"; // not yet hired
                 }
@@ -230,15 +230,16 @@ RenderInfoOrganization.prototype =
                 }
             }
 
-            // now we will draw a circle around our org
+        } else {
+            // first we will draw the circle that will contain our sub circles
             graph.getModel().beginUpdate();
             try {
                 var parent = graph.getDefaultParent();
-                var orgLabel = job.organization;
+                var orgLabel = this.org.name;
 
                 // the normal drawing is the top-left of the circle, so we must offset by the circle dimensions
-                var cx = x - this.width/2;
-                var cy = y - this.height/2;
+                var cx = x;
+                var cy = y;
 
                 graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
                     "shape=ellipse;fillColor=none;whiteSpace=wrap;" +
@@ -247,18 +248,24 @@ RenderInfoOrganization.prototype =
                 graph.getModel().endUpdate();
             }
 
-        } else {
-
             // note that this is an organization that has other organizations but also child jobs at this level
             var isParentOrgWithJobs = this.jobsAtThisLevel.length > 0;
 
+            /*
             // translate to 0,0
             var d = this.getXYOffsetFromPoints( this.currentOrgContributorCircles.circleCenters );
             // now account for containing circle center, using the org sub circles as reference
             //TODO: this might be causing the offset problem for DES which has a smaller circle
             var dx = x - d.x + (this.width - this.subOrgCircles.width / 2);
-            var dy = y - d.y + (this.height - this.subOrgCircles.height / 2);
+            var dy = y - d.y + (this.height - this.subOrgCircles.height / 2);*/
+
+            /*
+            var dx = x + this.width/2;
+            var dy = y + this.width/2;
+
             circleLocations = this.translatePoints( this.subOrgCircles.circleCenters, dx, dy );
+            */
+            var circleLocations = this.subOrgCircles.circleCenters;
 
             // render organizations (circles)
             for (var i = 0; i < this.children.length; i++ ) {
@@ -266,19 +273,22 @@ RenderInfoOrganization.prototype =
                 var orgRenderInfo = this.children[i];
                 var orgLabel = orgRenderInfo.org.name;
 
+                // offset by containing circle dimensions, as well as sub circle dimensions
+                var cx = x + circleLocations[i].x + this.width/2 - orgRenderInfo.width/2;
+                var cy = y + circleLocations[i].y + this.width/2 - orgRenderInfo.height/2;
+/*
                 graph.getModel().beginUpdate();
                 try {
                     var parent = graph.getDefaultParent();
                     graph.insertVertex(
-                            parent, null, orgLabel, 
-                            circleLocations[i].x, circleLocations[i].y, orgRenderInfo.width, orgRenderInfo.height,
+                            parent, null, orgLabel, cx, cy, orgRenderInfo.width, orgRenderInfo.height,
                             "shape=ellipse;fillColor=none;whiteSpace=wrap;fillColor=none;" +
                             "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
                 } finally {
                     graph.getModel().endUpdate();
-                }
+                }*/
                 // render organization internals
-                orgRenderInfo.render( circleLocations[i].x, circleLocations[i].y, graph );
+                orgRenderInfo.render( cx, cy, graph );
             }
 
             /*
@@ -341,13 +351,9 @@ RenderInfoOrganization.prototype =
     determineContributorColor: function(job, mioarchy)
     {
         var colorString = "";
-        var l = job.accountabilityLabel.toLowerCase();
-
-
-        console.log("l = " + l);
-
         // this is a lead
         /*
+        var l = job.accountabilityLabel.toLowerCase();
         if (l.indexOf("senior") >= 0 || l.indexOf("executive") >= 0 || l.indexOf("director") >= 0) {
             colorString += "dark";
         }*/
@@ -371,12 +377,8 @@ RenderInfoOrganization.prototype =
             }
         } else {
             // try by organization
-
-            console.log(job.organization);
-
             if (job.organization) {
                 var org = mioarchy.organizations[job.organization];
-
                 if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Engineering"] )) {
                     colorString += "purple";
                 } else if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Finance"] )) {
@@ -388,7 +390,6 @@ RenderInfoOrganization.prototype =
                 colorString = "white";
             }
         }
-        console.log("colorString = " + colorString);
         return colorString;
     },
 

@@ -39,12 +39,12 @@ Mioarchy.prototype =
 
         // jobs at sub levels
         if (recurse) {
-            for (o in this.getOrganizationJobs( organization )) {
+            for (var o in this.getOrganizationJobs( organization )) {
                 list.push(o);
             }
         }
         // jobs at this level
-        for (c in this.jobs) {
+        for (var c in this.jobs) {
             // make sure the job is attached to an org
             var jobOrgName = this.jobs[c].organization;
             if (jobOrgName) {
