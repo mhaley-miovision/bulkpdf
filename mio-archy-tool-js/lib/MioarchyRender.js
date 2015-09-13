@@ -145,8 +145,7 @@ function RenderInfoOrganization(org, mioarchy)
         this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, this.currentOrgContributorCircles.height );
 
         // include the org without a circle as a fake org
-        var numSubOrgCircles = this.childOrgs.length;
-        //numSubOrgCircles = jobsAtThisLevel.length == 0 ? this.childOrgs.length : this.childOrgs.length + 1;
+        var numSubOrgCircles = this.jobsAtThisLevel.length == 0 ? this.childOrgs.length : this.childOrgs.length + 1;
 
         // calculate circle rendering info as though the sub orgs were just circles
         this.subOrgCircles = new RenderInfoCircles( numSubOrgCircles, 0, this.maxOrgCircleDiameter, true );
@@ -168,8 +167,46 @@ RenderInfoOrganization.prototype =
     draw a circle around each sub org with radius = width / 2
     actually rendering based on render info applies rendering rules
      */
-    render: function(x, y, graph) {
+    render: function(x, y, graph)
+    {
         // leaf is treated differently (as simple set of job circles)
+        if (!this.isLeaf) {
+            // first we will draw the circle that will contain our sub circles
+            graph.getModel().beginUpdate();
+            try {
+                var parent = graph.getDefaultParent();
+                var orgLabel = this.org.name;
+
+                // the normal drawing is the top-left of the circle, so we must offset by the circle dimensions
+                var cx = x;
+                var cy = y;
+
+                graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
+                    "shape=ellipse;fillColor=none;whiteSpace=wrap;" +
+                    "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+            } finally {
+                graph.getModel().endUpdate();
+            }
+
+            // render organizations (circles)
+            var circleLocations = this.subOrgCircles.circleCenters;
+            for (var i = 0; i < this.children.length; i++) {
+                // current org rendering info
+                var orgRenderInfo = this.children[i];
+                var orgLabel = orgRenderInfo.org.name;
+
+                // offset by containing circle dimensions, as well as sub circle dimensions
+                var cx = x + circleLocations[i].x + this.width / 2 - orgRenderInfo.width / 2;
+                var cy = y + circleLocations[i].y + this.width / 2 - orgRenderInfo.height / 2;
+
+                // render organization internals
+                orgRenderInfo.render(cx, cy, graph);
+            }
+        }
+        // offsets
+        var dx = 0;
+        var dy = 0;
+        // only draw the containing circle if this is a leaf
         if (this.isLeaf) {
             // first we will draw the circle that will contain our job circles
             graph.getModel().beginUpdate();
@@ -187,10 +224,21 @@ RenderInfoOrganization.prototype =
             } finally {
                 graph.getModel().endUpdate();
             }
-
             // offset by half of the containing circle dimensions
-            var dx = this.width/2;
-            var dy = this.height/2;
+            dx = this.width / 2;
+            dy = this.height / 2;
+        } else {
+            // this is the last "virtual" circle in the calculate rendering infos for this org, which contains the
+            // jobs at this level
+            var lastCircle = this.subOrgCircles.circleCenters[this.subOrgCircles.circleCenters.length - 1];
+            dx = lastCircle.x + this.width / 2;
+            dy = lastCircle.y + this.width / 2;
+        }
+        // if there are jobs, render them
+        if (this.jobsAtThisLevel.length > 0) {
+            if (!this.isLeaf) {
+                console.log("let's make this work!");
+            }
 
             // now move all the circle locations as needed
             var circleLocations = this.translatePoints( this.currentOrgContributorCircles.circleCenters, dx, dy );
@@ -229,122 +277,6 @@ RenderInfoOrganization.prototype =
                     graph.getModel().endUpdate();
                 }
             }
-
-        } else {
-            // first we will draw the circle that will contain our sub circles
-            graph.getModel().beginUpdate();
-            try {
-                var parent = graph.getDefaultParent();
-                var orgLabel = this.org.name;
-
-                // the normal drawing is the top-left of the circle, so we must offset by the circle dimensions
-                var cx = x;
-                var cy = y;
-
-                graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
-                    "shape=ellipse;fillColor=none;whiteSpace=wrap;" +
-                    "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
-            } finally {
-                graph.getModel().endUpdate();
-            }
-
-            // note that this is an organization that has other organizations but also child jobs at this level
-            var isParentOrgWithJobs = this.jobsAtThisLevel.length > 0;
-
-            /*
-            // translate to 0,0
-            var d = this.getXYOffsetFromPoints( this.currentOrgContributorCircles.circleCenters );
-            // now account for containing circle center, using the org sub circles as reference
-            //TODO: this might be causing the offset problem for DES which has a smaller circle
-            var dx = x - d.x + (this.width - this.subOrgCircles.width / 2);
-            var dy = y - d.y + (this.height - this.subOrgCircles.height / 2);*/
-
-            /*
-            var dx = x + this.width/2;
-            var dy = y + this.width/2;
-
-            circleLocations = this.translatePoints( this.subOrgCircles.circleCenters, dx, dy );
-            */
-            var circleLocations = this.subOrgCircles.circleCenters;
-
-            // render organizations (circles)
-            for (var i = 0; i < this.children.length; i++ ) {
-                // current org rendering info
-                var orgRenderInfo = this.children[i];
-                var orgLabel = orgRenderInfo.org.name;
-
-                // offset by containing circle dimensions, as well as sub circle dimensions
-                var cx = x + circleLocations[i].x + this.width/2 - orgRenderInfo.width/2;
-                var cy = y + circleLocations[i].y + this.width/2 - orgRenderInfo.height/2;
-/*
-                graph.getModel().beginUpdate();
-                try {
-                    var parent = graph.getDefaultParent();
-                    graph.insertVertex(
-                            parent, null, orgLabel, cx, cy, orgRenderInfo.width, orgRenderInfo.height,
-                            "shape=ellipse;fillColor=none;whiteSpace=wrap;fillColor=none;" +
-                            "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
-                } finally {
-                    graph.getModel().endUpdate();
-                }*/
-                // render organization internals
-                orgRenderInfo.render( cx, cy, graph );
-            }
-
-            /*
-            // now render the jobs at this level
-
-            // translate to 0,0
-            Point d = getXYOffsetFromPoints(this.currentOrgContributorCircles.circleCenters);
-
-            double w = (this.width - this.currentOrgContributorCircles.width()) / 2;
-            double h = (this.height - this.currentOrgContributorCircles.height()) / 2;
-            if (isParentOrgWithJobs) {
-                w = 0;
-                h = 0;
-            }
-
-            // now account for containing circle center
-            double dx = x - d.x + w;
-            double dy = y - d.y + h;
-
-            // if this the fake circle, we have to offset to account for the location the fake circle
-            // this will be the very last circle in the list
-
-            Point fakeCircleCenter = this.subOrgCircles.circleCenters[this.subOrgCircles.circleCenters.length - 1];
-            dx += fakeCircleCenter.getX();
-            dy += fakeCircleCenter.getY();
-
-            // now move all the circle locations as needed
-            Point[] circleLocations = translatePoints(this.currentOrgContributorCircles.circleCenters, dx, dy);
-
-            // render jobs (circles)
-            for (int i = 0; i < jobsAtThisLevel.size(); i++) {
-                String defaultStyle = "shape=ellipse;whiteSpace=wrap;gradientColor=none";
-                String color = determineContributorColor(jobsAtThisLevel.get(i), mioarchy);
-                double defaultWidth = CIRCLE_DIAMETER;
-                double defaultHeight = CIRCLE_DIAMETER;
-                double cx = circleLocations[i].x;
-                double cy = circleLocations[i].y;
-
-                String label;
-                if (jobsAtThisLevel.get(i).employee() != null) {
-                    label = jobsAtThisLevel.get(i).employee().shortName().toLowerCase();
-                } else {
-                    label = "NEW"; // not yet hired
-                }
-
-                // actually "draw" :)
-                graph.getModel().beginUpdate();
-                try {
-                    Object parent = graph.getDefaultParent();
-                    graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight, defaultStyle +
-                            ";gradientColor=" + color);
-                } finally {
-                    graph.getModel().endUpdate();
-                }
-            }
-            */
         }
     },
 
