@@ -57,11 +57,19 @@ Mioarchy.prototype =
         return list;
     },
     isDescendantOfOrganization: function(testSubject, desiredParent) {
-        if (testSubject.parent == null || testSubject.parent.name == null || desiredParent == null || desiredParent.name == null)
+        if (testSubject.parent) {
+            // is this the parent we are looking for?
+            if (testSubject.parent.toLowerCase() === desiredParent.name.toLowerCase()) {
+                return true; // yes, this is the parent, thus it's a descendant
+            } else {
+                // try looking to the parent's parent
+                var parent = this.organizations[testSubject.parent];
+                return this.isDescendantOfOrganization( parent, desiredParent );
+            }
+        } else {
+            // this org has no parent
             return false;
-        if (testSubject.parent.name.toLowerCase() === desiredParent.name.toLowerCase())
-            return true;
-        return isDescendantOfOrganization( testSubject.parent, desiredParent );
+        }
     }
 };
 
@@ -97,7 +105,7 @@ function Job(id, organization, application, role, accountabilityLevel, accountab
     this.accountabilityLabel = accountabilityLabel;
     this.accountabilityLevel = accountabilityLevel;
     this.contributor = contributor;
-    this.primaryAccountability;
+    this.primaryAccountability = primaryAccountability;
 }
 
 // module is only define in nodejs context, if this is client side, ignore since the context is 'window'

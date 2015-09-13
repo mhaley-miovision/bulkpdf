@@ -115,7 +115,7 @@ function RenderInfoOrganization(org, mioarchy)
         // no, treat this as a group of contributors - assume circle rendering
         // generate circle info for this org (it is a LEAF!)
         this.currentOrgContributorCircles = new RenderInfoCircles(
-            this.jobsAtThisLevel.length, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, true);
+            this.jobsAtThisLevel.length, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, false );
 
         // circle
         console.log(this.currentOrgContributorCircles);
@@ -125,7 +125,7 @@ function RenderInfoOrganization(org, mioarchy)
         this.maxOrgCircleDiameter = this.width; // not really used, just being diligent
     } else {
         // yes, and populate child org infos
-        for (o in this.childOrgs) {
+        for (var o in this.childOrgs) {
             this.children.push( new RenderInfoOrganization( this.childOrgs[o], mioarchy ) );
         }
 
@@ -137,7 +137,7 @@ function RenderInfoOrganization(org, mioarchy)
         //draw a circle around each sub org with radius = width / 2
 
         // determine the radius of the new circle based on width and height of the biggest sub org
-        for (ri in this.children) {
+        for (var ri in this.children) {
             this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, ri.width );
             this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, ri.height );
         }
@@ -147,7 +147,7 @@ function RenderInfoOrganization(org, mioarchy)
         this.maxOrgCircleDiameter = Math.max( this.maxOrgCircleDiameter, this.currentOrgContributorCircles.height );
 
         // include the org without a circle as a fake org
-        numSubOrgCircles = this.childOrgs.length;
+        var numSubOrgCircles = this.childOrgs.length;
         //numSubOrgCircles = jobsAtThisLevel.length == 0 ? this.childOrgs.length : this.childOrgs.length + 1;
 
         // calculate circle rendering info as though the sub orgs were just circles
@@ -178,6 +178,7 @@ RenderInfoOrganization.prototype =
 
         if (this.isLeaf) {
             // translate to 0,0
+            /*
             var d = this.getXYOffsetFromPoints( this.currentOrgContributorCircles.circleCenters );
 
             console.log(this);
@@ -189,6 +190,9 @@ RenderInfoOrganization.prototype =
             // now account for containing circle center
             var dx = x - d.x + w;
             var dy = y - d.y + h;
+            */
+            var dx = 0;
+            var dy = 0;
 
             // now move all the circle locations as needed
             circleLocations = this.translatePoints( this.currentOrgContributorCircles.circleCenters, dx, dy );
@@ -203,8 +207,11 @@ RenderInfoOrganization.prototype =
                 var color = this.determineContributorColor( job, this.mioarchy );
                 var defaultWidth = this.CIRCLE_DIAMETER;
                 var defaultHeight = this.CIRCLE_DIAMETER;
-                var cx = circleLocations[j].x;
-                var cy = circleLocations[j].y;
+
+                // normal coords are the x,y coords + the circle coords
+                // (the normal drawing is the top-left of the circle, so we must offset by the circle dimensions)
+                var cx = x + circleLocations[j].x - this.CIRCLE_DIAMETER/2;
+                var cy = y + circleLocations[j].y - this.CIRCLE_DIAMETER/2;
 
                 var label;
                 if ( job.contributor != null) {
@@ -221,18 +228,23 @@ RenderInfoOrganization.prototype =
                 } finally {
                     graph.getModel().endUpdate();
                 }
+            }
 
-                // now we will draw a circle around our org
-                graph.getModel().beginUpdate();
-                try {
-                    var parent = graph.getDefaultParent();
-                    var orgLabel = job.organization;
-                    graph.insertVertex(parent, null, orgLabel, x, y, this.width, this.height,
-                            "shape=ellipse;fillColor=none;whiteSpace=wrap;fillColor=none;" +
-                            "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
-                } finally {
-                    graph.getModel().endUpdate();
-                }
+            // now we will draw a circle around our org
+            graph.getModel().beginUpdate();
+            try {
+                var parent = graph.getDefaultParent();
+                var orgLabel = job.organization;
+
+                // the normal drawing is the top-left of the circle, so we must offset by the circle dimensions
+                var cx = x - this.width/2;
+                var cy = y - this.height/2;
+
+                graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
+                    "shape=ellipse;fillColor=none;whiteSpace=wrap;" +
+                    "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+            } finally {
+                graph.getModel().endUpdate();
             }
 
         } else {
@@ -261,7 +273,7 @@ RenderInfoOrganization.prototype =
                             parent, null, orgLabel, 
                             circleLocations[i].x, circleLocations[i].y, orgRenderInfo.width, orgRenderInfo.height,
                             "shape=ellipse;fillColor=none;whiteSpace=wrap;fillColor=none;" +
-                            "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+                            "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
                 } finally {
                     graph.getModel().endUpdate();
                 }
@@ -329,15 +341,19 @@ RenderInfoOrganization.prototype =
     determineContributorColor: function(job, mioarchy)
     {
         var colorString = "";
-        var l = job.accountabilityLevel.toLowerCase();
+        var l = job.accountabilityLabel.toLowerCase();
+
+
+        console.log("l = " + l);
 
         // this is a lead
+        /*
         if (l.indexOf("senior") >= 0 || l.indexOf("executive") >= 0 || l.indexOf("director") >= 0) {
-            colorString += "dark"; 
-        }
+            colorString += "dark";
+        }*/
 
         // by app now
-        if (job.application != null) {
+        if (job.application) {
             var appName = job.application.toLowerCase();
 
             if (appName.indexOf("product") >= 0) {
@@ -355,18 +371,24 @@ RenderInfoOrganization.prototype =
             }
         } else {
             // try by organization
-            if (job.organization != null) {
-                if (mioarchy.isDescendantOfOrganization(c.organization, mioarchy.organizations["Engineering"])) {
-                    colorString = "purple";
-                } else if (mioarchy.isDescendantOfOrganization(c.organization, mioarchy.organizations["Finance"])) {
-                    colorString = "orange";
-                } else if (mioarchy.isDescendantOfOrganization(c.organization, mioarchy.organizations["Operations"])) {
-                    colorString = "blue";
+
+            console.log(job.organization);
+
+            if (job.organization) {
+                var org = mioarchy.organizations[job.organization];
+
+                if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Engineering"] )) {
+                    colorString += "purple";
+                } else if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Finance"] )) {
+                    colorString += "orange";
+                } else if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Operations"] )) {
+                    colorString += "blue";
                 }
             } else {
                 colorString = "white";
             }
         }
+        console.log("colorString = " + colorString);
         return colorString;
     },
 
