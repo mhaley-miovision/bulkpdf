@@ -87,8 +87,12 @@
 <body class="geEditor">
 	<script type="text/javascript">
 		// read from the backend
-		var mioarchyClient = new MioarchyClient( onDBReadCompleted );
-		mioarchyClient.readDB();
+		var mioarchyClient = new MioarchyClient();
+		mioarchyClient.readDB( onDBReadCompleted );
+
+		// stores the graph object
+		var _graph;
+		var _lastUpdated = new Date();
 
 		// initialize the editor once the DB is ready
 		function onDBReadCompleted() 
@@ -122,13 +126,39 @@
 		}
 
 		function onEditorUIInitCompleted( graph ) {
-			var mioarchy = mioarchyClient.mioarchy;
-
-			var ri = new RenderInfoOrganization( mioarchy.organizations["Miovision"], mioarchy );
-			//var ri = new RenderInfoOrganization( mioarchy.organizations["Data Extraction System"], mioarchy );
-			//var ri = new RenderInfoOrganization( mioarchy.organizations["DES Platform"], mioarchy );
-			ri.render( 0, 0, graph );
+			_graph = graph;
+			renderOrganization();
 		}
+
+		function renderOrganization() {
+			if (_graph) {
+				// first, clear everything
+				_graph.removeCells(_graph.getChildVertices(_graph.getDefaultParent()));
+
+				// then get the mioarchy client object
+				var mioarchy = mioarchyClient.mioarchy;
+				var ri = new RenderInfoOrganization( mioarchy.organizations["Miovision"], mioarchy );
+
+				ri.render( 0, 0, _graph );
+			} else {
+				console.log("renderOrganization: _graph is undefined!!!");
+			}
+		}
+
+		function processLastUpdated( lastUpdated ) {
+			var t1 = new Date(lastUpdated).getTime();
+			var t2 = _lastUpdated.getTime();
+			if (t2 < t1) {
+				_lastUpdated = new Date();
+				console.log("NOW UPDATING!!!");
+				mioarchyClient.readDB( renderOrganization );
+			} else {
+				console.log("NO UPDATE NEEDED.");
+			}
+		}
+
+		// check for updates every x seconds
+		setInterval( function() { mioarchyClient.getLastUpdated( processLastUpdated ) }, 5000 );
 	</script>
 </body>
 </html>

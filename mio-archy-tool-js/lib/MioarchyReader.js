@@ -27,6 +27,13 @@ var _lastUpdated;
 exports.readDatabase = function (sourceSheet, onCompleteCallback) {
     // spreadsheet key is the long id in the sheets URL
     var db = new GoogleSpreadsheet(sourceSheet);
+
+    // clear tables! (useful for if calling this function again)
+    applications = {};
+    contributors = {};
+    organizations = {};
+    roles = {};
+    jobs = {};
      
     // Without auth -- read only 
     // IMPORTANT: See note below on how to make a sheet public-readable! 

@@ -236,10 +236,6 @@ RenderInfoOrganization.prototype =
         }
         // if there are jobs, render them
         if (this.jobsAtThisLevel.length > 0) {
-            if (!this.isLeaf) {
-                console.log("let's make this work!");
-            }
-
             // now move all the circle locations as needed
             var circleLocations = this.translatePoints( this.currentOrgContributorCircles.circleCenters, dx, dy );
 
@@ -259,7 +255,7 @@ RenderInfoOrganization.prototype =
                 var cy = y + circleLocations[j].y - this.CIRCLE_DIAMETER/2;
 
                 var label;
-                if ( job.contributor ) {
+                if ( job.contributor && this.mioarchy.contributors[job.contributor] ) {
                     var fi = this.mioarchy.contributors[job.contributor].firstName.substring(0,1);
                     var li = this.mioarchy.contributors[job.contributor].lastName.substring(0,1);
                     // TODO: resolve name clashes in order to make unique

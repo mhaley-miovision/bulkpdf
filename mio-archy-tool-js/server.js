@@ -5,7 +5,6 @@ var models = require("./lib/MioarchyModels.js");
 var http = require("http"),
     url = require("url"),
     path = require("path"),
-    fs = require("fs"),
     port = process.argv[2] || 8082,
     mio = require("./lib/MioarchyReader.js");
 
@@ -29,7 +28,7 @@ var intervalID = setInterval( function() {
         lastUpdated = new Date();
       });
     }
-  })}, 2000);
+  })}, 5000);
 
 var express = require('express');
 var app = express();

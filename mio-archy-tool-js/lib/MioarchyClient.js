@@ -6,21 +6,23 @@ var ROLE_DONE = 8;
 var JOBS_DONE = 16;
 var ALL_DONE = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE;
 
-function MioarchyClient(readyStateCallback) {
-	this.isReady = false;
-	this.isError = false;
-	this.doneFlags = 0;
-	this.mioarchy = {};
-	this.applications = {};
-	this.organizations = {};
-	this.contributors = {};
-	this.roles = {};
-	this.jobs = {};
-	this.readyStateCallback = readyStateCallback;
+function MioarchyClient() {
+	this.init();
 }
 
 MioarchyClient.prototype = 
 {
+	init: function() {
+		this.isReady = false;
+		this.isError = false;
+		this.doneFlags = 0;
+		this.mioarchy = {};
+		this.applications = {};
+		this.organizations = {};
+		this.contributors = {};
+		this.roles = {};
+		this.jobs = {};
+	},
 	notifySuccess: function(flag) {
 		this.doneFlags |= flag;	
 		if (this.doneFlags == ALL_DONE) {
@@ -55,14 +57,22 @@ MioarchyClient.prototype =
 	},
 	notifySuccessJobs: function(jobs) {
 		this.jobs = jobs;
+		console.log(this.jobs);
 		this.notifySuccess(JOBS_DONE);
 	},
-	readDB: function() {
+	readDB: function( readyStateCallback ) {
+		this.init(); // clear tables
+
+		this.readyStateCallback = readyStateCallback;
+
 		this.getJSON("/applications", this.notifySuccessApps, this.notifyError);
 		this.getJSON("/organizations", this.notifySuccessOrgs, this.notifyError);
 		this.getJSON("/contributors", this.notifySuccessContribs, this.notifyError);
 		this.getJSON("/roles", this.notifySuccessRoles, this.notifyError);
 		this.getJSON("/jobs", this.notifySuccessJobs, this.notifyError);
+	},
+	getLastUpdated: function(updateCheckCallback) {
+		this.getJSON("/lastUpdated", updateCheckCallback, this.notifyError);
 	},
 	getJSON: function(url, successHandler, errorHandler) {
 	  var xhr = typeof XMLHttpRequest != 'undefined'
