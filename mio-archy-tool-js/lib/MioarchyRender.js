@@ -317,6 +317,8 @@ RenderInfoOrganization.prototype =
                     colorString += "orange";
                 } else if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Operations"] )) {
                     colorString += "blue";
+                } else if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Operations"] )) {
+                    colorString += "blue";
                 }
             } else {
                 colorString = "white";
@@ -337,15 +339,4 @@ RenderInfoOrganization.prototype =
     calculateBoundingCircleDiameter: function(width, height) {
         return Math.sqrt( width*width + height*height );
     },
-
-    // TODO: this ignores circle radius -- this could be causing positioning errors i've been seeing
-    getXYOffsetFromPoints: function(points) {
-        var x = Number.MAX_VALUE;
-        var y = Number.MAX_VALUE;
-        for (var p in points) {
-            x = Math.min(x, points[p].x);
-            y = Math.min(y, points[p].y);
-        }
-        return { x: x, y: y };
-    }
 }

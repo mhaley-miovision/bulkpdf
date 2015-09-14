@@ -22,9 +22,10 @@ var JOBS_DONE = 16;
 var _doneFlags = 0;
 var _allDone = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE;
 var _doneCallback;
+var _lastUpdated;
 
 exports.readDatabase = function (sourceSheet, onCompleteCallback) {
-    // spreadsheet key is the long id in the sheets URL 
+    // spreadsheet key is the long id in the sheets URL
     var db = new GoogleSpreadsheet(sourceSheet);
      
     // Without auth -- read only 
@@ -56,6 +57,8 @@ function notifyDone() {
 
         console.log("All data read from DB.");
         console.timeEnd("read_db");
+
+        _lastUpdated = new Date(); // save the last updated time
 
         _doneCallback();
     }
@@ -156,5 +159,22 @@ function processJobs(jobsSrc)
         //console.log(exports.jobs);
         _doneFlags |= JOBS_DONE;
         notifyDone();
+    });
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Monitoring functionality
+//
+exports.checkForDatabaseChanges = function (sourceSheet, onChangedCallback) {
+    // spreadsheet key is the long id in the sheets URL
+    var db = new GoogleSpreadsheet(sourceSheet);
+
+    db.getInfo( function( err, sheetInfo ){
+        console.log( sheetInfo.title + ' is loaded' );
+        // use worksheet object if you want to stop using the # in your calls
+        var updated = new Date(sheetInfo.updated);
+
+        // notify of change state
+        onChangedCallback( updated.getTime() > _lastUpdated.getTime() );
     });
 }

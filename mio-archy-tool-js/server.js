@@ -10,10 +10,26 @@ var http = require("http"),
     mio = require("./lib/MioarchyReader.js");
 
 var dbReady = false;
+var lastUpdated;
 
-mio.readDatabase('1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ', function(err) {
+var sheetID ='1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ';
+
+mio.readDatabase(sheetID, function(err) {
   dbReady = true;
+  lastUpdated = new Date();
 });
+
+var intervalID = setInterval( function() {
+  mio.checkForDatabaseChanges( sheetID, function(changed) {
+    console.log(changed);
+
+    if (changed) {
+      mio.readDatabase(sheetID, function(err) {
+        dbReady = true;
+        lastUpdated = new Date();
+      });
+    }
+  })}, 2000);
 
 var express = require('express');
 var app = express();
@@ -76,6 +92,11 @@ app.get('/contributors', function(req, res){
   else {
     res.send(JSON.stringify({}));
   }
+});
+
+app.get('/lastUpdated', function(req, res){
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify( lastUpdated ));
 });
 
 app.listen(port);
