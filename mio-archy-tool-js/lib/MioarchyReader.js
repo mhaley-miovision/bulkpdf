@@ -9,6 +9,9 @@ var contributors = {};
 var organizations = {};
 var roles = {};
 var jobs = {};
+var accountabilities = {};
+
+var knownTables = [ "Applications", "Contributors", "Roles", "Organizations", "Jobs", "JobAccountabilities" ];
 
 // this will be the resulting object
 exports.mioarchy = {};
@@ -19,8 +22,9 @@ var CONT_DONE = 2;
 var ORGS_DONE = 4;
 var ROLE_DONE = 8;
 var JOBS_DONE = 16;
+var ACCOUNTABILITIES_DONE = 32;
 var _doneFlags = 0;
-var _allDone = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE;
+var _allDone = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE | ACCOUNTABILITIES_DONE;
 var _doneCallback;
 var _lastUpdated;
 
@@ -34,6 +38,7 @@ exports.readDatabase = function (sourceSheet, onCompleteCallback) {
     organizations = {};
     roles = {};
     jobs = {};
+    accountabilities = {};
      
     // Without auth -- read only 
     // IMPORTANT: See note below on how to make a sheet public-readable! 
@@ -50,8 +55,10 @@ exports.readDatabase = function (sourceSheet, onCompleteCallback) {
 
         for (var i = 0; i < sheetInfo.worksheets.length; i++) {
             var s = sheetInfo.worksheets[i];
-            if (knownTables.indexOf(s.title) >= 0) {
-                eval("process" + s.title + "(s);");
+            var titleNoSpaces = s.title.replace(/\s+/g, '');
+
+            if (knownTables.indexOf( titleNoSpaces ) >= 0) {
+                eval("process" + titleNoSpaces + "(s);");
             }
         }
     });
@@ -60,7 +67,7 @@ exports.readDatabase = function (sourceSheet, onCompleteCallback) {
 function notifyDone() {
     if (_doneFlags == _allDone) {
 
-        exports.mioarchy = new Models.Mioarchy( jobs, organizations, contributors, applications, roles );
+        exports.mioarchy = new Models.Mioarchy( jobs, organizations, contributors, applications, roles, accountabilities );
 
         console.log("All data read from DB.");
         console.timeEnd("read_db");
@@ -70,8 +77,6 @@ function notifyDone() {
         _doneCallback();
     }
 }
-
-var knownTables = [ "Applications", "Contributors", "Roles", "Organizations", "Jobs" ];
 
 // BRITTLENESS WARNING: for now, assume the columns are in the same place as the gdoc
 // also ignores first row
@@ -160,11 +165,31 @@ function processJobs(jobsSrc)
             var contributor = row['contributor'];
             var primaryAccountability = row['primaryaccountability'];
 
-            jobs[id] = new Models.Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability); 
+            jobs[id] = new Models.Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability);
         }
         console.log("read " + rows.length + " jobs.");
         //console.log(exports.jobs);
         _doneFlags |= JOBS_DONE;
+        notifyDone();
+    });
+}
+function processJobAccountabilities(src)
+{
+    src.getRows( 0, function( err, rows) {
+        for (var r = 0; r < rows.length; r++) {
+            var row = rows[r];
+            var id = row['id'];
+            var job = row['job'];
+            var jobId = row['jobid'];
+            var accountability = row['accountability'];
+
+            if (typeof(accountabilities[job]) == 'undefined') {
+                accountabilities[job] = new Models.Accountabilities(id, job, jobId, []);
+            }
+            accountabilities[job].accountabilities.push(accountability);
+        }
+        console.log("read " + rows.length + " accountabilities.");
+        _doneFlags |= ACCOUNTABILITIES_DONE;
         notifyDone();
     });
 }
@@ -177,11 +202,16 @@ exports.checkForDatabaseChanges = function (sourceSheet, onChangedCallback) {
     var db = new GoogleSpreadsheet(sourceSheet);
 
     db.getInfo( function( err, sheetInfo ){
-        console.log( sheetInfo.title + ' is loaded' );
-        // use worksheet object if you want to stop using the # in your calls
-        var updated = new Date(sheetInfo.updated);
+        if (err) {
+            console.log("Error trying to read DB: ");
+            console.log(err);
+        } else {
+            console.log(sheetInfo.title + ' is loaded');
+            // use worksheet object if you want to stop using the # in your calls
+            var updated = new Date(sheetInfo.updated);
 
-        // notify of change state
-        onChangedCallback( updated.getTime() > _lastUpdated.getTime() );
+            // notify of change state
+            onChangedCallback( updated.getTime() > _lastUpdated.getTime());
+        }
     });
 }

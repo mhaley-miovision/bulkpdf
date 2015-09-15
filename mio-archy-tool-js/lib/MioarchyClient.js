@@ -1,10 +1,13 @@
+'use strict';
+
 // retrieval completion flags
 var APPS_DONE = 1;
 var CONT_DONE = 2;
 var ORGS_DONE = 4;
 var ROLE_DONE = 8;
 var JOBS_DONE = 16;
-var ALL_DONE = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE;
+var ACCOUNTABILITIES_DONE = 32;
+var ALL_DONE = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE | ACCOUNTABILITIES_DONE;
 
 function MioarchyClient() {
 	this.init();
@@ -22,12 +25,13 @@ MioarchyClient.prototype =
 		this.contributors = {};
 		this.roles = {};
 		this.jobs = {};
+		this.accountabilities = {};
 	},
 	notifySuccess: function(flag) {
 		this.doneFlags |= flag;	
 		if (this.doneFlags == ALL_DONE) {
 			// create the mioarchy object
-			this.mioarchy = new Mioarchy( this.jobs, this.organizations, this.contributors, this.apps, this.roles );
+			this.mioarchy = new Mioarchy( this.jobs, this.organizations, this.contributors, this.apps, this.roles, this.accountabilities );
 			this.notifyComplete();
 		}
 	},
@@ -40,25 +44,46 @@ MioarchyClient.prototype =
 		this.isError = true;
 	},
 	notifySuccessApps: function(apps) {
-		this.applications = apps;
+		for (var a in apps) {
+			var app = apps[a];
+			this.applications[app.name] = app;
+		}
 		this.notifySuccess(APPS_DONE);
 	},
 	notifySuccessOrgs: function(orgs) {
-		this.organizations = orgs;
+		for (var o in orgs) {
+			var org = orgs[o];
+			this.organizations[org.name] = org;
+		}
 		this.notifySuccess(ORGS_DONE);
 	},
 	notifySuccessContribs: function(contribs) {
-		this.contributors = contribs;
+		for (var c in contribs) {
+			var contrib = contribs[c];
+			this.contributors[contrib.name] = contrib;
+		}
 		this.notifySuccess(CONT_DONE);
 	},
 	notifySuccessRoles: function(roles) {
-		this.roles = roles;
+		for (var r in roles) {
+			var role = roles[r];
+			this.roles[role.name] = role;
+		}
 		this.notifySuccess(ROLE_DONE);
 	},
 	notifySuccessJobs: function(jobs) {
-		this.jobs = jobs;
-		console.log(this.jobs);
+		for (var j in jobs) {
+			var job = jobs[j];
+			this.jobs[job.id] = job;
+		}
 		this.notifySuccess(JOBS_DONE);
+	},
+	notifySuccessAccountabilities: function(accountabilities) {
+		for (var a in accountabilities) {
+			var acc = accountabilities[a];
+			this.accountabilities[acc.job] = acc;
+		}
+		this.notifySuccess(ACCOUNTABILITIES_DONE);
 	},
 	readDB: function( readyStateCallback ) {
 		this.init(); // clear tables
@@ -70,6 +95,7 @@ MioarchyClient.prototype =
 		this.getJSON("/contributors", this.notifySuccessContribs, this.notifyError);
 		this.getJSON("/roles", this.notifySuccessRoles, this.notifyError);
 		this.getJSON("/jobs", this.notifySuccessJobs, this.notifyError);
+		this.getJSON("/accountabilities", this.notifySuccessAccountabilities, this.notifyError);
 	},
 	getLastUpdated: function(updateCheckCallback) {
 		this.getJSON("/lastUpdated", updateCheckCallback, this.notifyError);

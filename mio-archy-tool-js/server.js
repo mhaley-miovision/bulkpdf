@@ -93,6 +93,16 @@ app.get('/contributors', function(req, res){
   }
 });
 
+app.get('/accountabilities', function(req, res){
+  res.setHeader('Content-Type', 'application/json');
+  if(dbReady)
+
+    res.send(JSON.stringify( mio.mioarchy.accountabilities ));
+  else {
+    res.send(JSON.stringify({}));
+  }
+});
+
 app.get('/lastUpdated', function(req, res){
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify( lastUpdated ));

@@ -288,7 +288,7 @@ Format.prototype.refresh = function()
 	this.clear();
 	var ui = this.editorUi;
 	var graph = ui.editor.graph;
-	
+
 	var div = document.createElement('div');
 	div.style.whiteSpace = 'nowrap';
 	div.style.color = 'rgb(112, 112, 112)';
@@ -301,12 +301,41 @@ Format.prototype.refresh = function()
 	label.style.textAlign = 'center';
 	label.style.fontWeight = 'bold';
 	label.style.overflow = 'hidden';
-	label.style.display = (mxClient.IS_QUIRKS) ? 'inline' : 'inline-block';
+	label.style.display = 'overflow';
 	label.style.paddingTop = '8px';
 	label.style.height = (mxClient.IS_QUIRKS) ? '34px' : '25px';
 	label.style.width = '100%';
+	label.style.backgroundColor = '#00CCFF';
 	this.container.appendChild(div);
-	
+
+	if (!graph.isSelectionEmpty()) {
+		// see if the selected object is a job
+		var vertices = this.getSelectionState().vertices;
+
+		if (vertices.length == 1 && vertices[0].job) {
+			var job = vertices[0].job;
+			var accountabilities = this.editorUi.mioarchy.accountabilities[job.accountabilityLabel];
+
+			if (accountabilities) {
+				label.textContent = "Accountabilities";
+				div.appendChild(label);
+
+				accountabilities = accountabilities.accountabilities; // hahaha EWW
+
+				for (var i = 0; i < accountabilities.length; i++) {
+					label2 = label.cloneNode(true);
+					label2.style.backgroundColor = '#d7d7d7';
+					label2.style.borderLeftWidth = '1px';
+
+					label2.textContent = accountabilities[i];
+					div.appendChild(label2);
+
+				}
+			}
+		}
+	}
+
+	/*
 	if (graph.isSelectionEmpty())
 	{
 		mxUtils.write(label, mxResources.get('diagram'));
@@ -449,7 +478,7 @@ Format.prototype.refresh = function()
 		
 		addClickHandler(label2, textPanel, idx++);
 		addClickHandler(label3, arrangePanel, idx++);
-	}
+	}*/
 };
 
 /**

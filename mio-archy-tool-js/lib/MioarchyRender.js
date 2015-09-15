@@ -181,9 +181,12 @@ RenderInfoOrganization.prototype =
                 var cx = x;
                 var cy = y;
 
-                graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
+                var vertex = graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
                     "shape=ellipse;fillColor=none;whiteSpace=wrap;" +
-                    "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+                    "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+                // attach the org info to the vertex
+                vertex.org = this.org;
+
             } finally {
                 graph.getModel().endUpdate();
             }
@@ -218,9 +221,12 @@ RenderInfoOrganization.prototype =
                 var cx = x;
                 var cy = y;
 
-                graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
+                var vertex = graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
                     "shape=ellipse;fillColor=none;whiteSpace=wrap;" +
                     "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+                // attach the org info to the vertex
+                vertex.org = this.org;
+
             } finally {
                 graph.getModel().endUpdate();
             }
@@ -268,7 +274,10 @@ RenderInfoOrganization.prototype =
                 graph.getModel().beginUpdate();
                 try {
                     var parent = graph.getDefaultParent();
-                    graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight, defaultStyle + ";gradientColor=" + color);
+                    var v = graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight,
+                        defaultStyle + ";gradientColor=" + color);
+                    // attach the org info to the vertex
+                    v.job = job;
                 } finally {
                     graph.getModel().endUpdate();
                 }

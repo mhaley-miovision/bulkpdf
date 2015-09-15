@@ -125,11 +125,13 @@
 			new EditorUi( mioarchyClient, onEditorUIInitCompleted, new Editor(urlParams['chrome'] == '0') );
 		}
 
+		// called when editor UI has been fully initialized (to render the org)
 		function onEditorUIInitCompleted( graph ) {
 			_graph = graph;
 			renderOrganization();
 		}
 
+		// renders the organization (first clears the graph)
 		function renderOrganization() {
 			if (_graph) {
 				// first, clear everything
@@ -137,6 +139,7 @@
 
 				// then get the mioarchy client object
 				var mioarchy = mioarchyClient.mioarchy;
+				//var ri = new RenderInfoOrganization( mioarchy.organizations["Data Extraction System"], mioarchy );
 				var ri = new RenderInfoOrganization( mioarchy.organizations["Miovision"], mioarchy );
 
 				ri.render( 0, 0, _graph );
@@ -145,6 +148,7 @@
 			}
 		}
 
+		// called when last updated is read from the API
 		function processLastUpdated( lastUpdated ) {
 			var t1 = new Date(lastUpdated).getTime();
 			var t2 = _lastUpdated.getTime();
