@@ -1917,8 +1917,7 @@ EditorUi.prototype.createUi = function()
 	}
 
 	// Creates the sidebar
-	//VIC-EDIT
-	this.sidebar = null;// (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer);
+	this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer);
 	
 	if (this.sidebar != null)
 	{

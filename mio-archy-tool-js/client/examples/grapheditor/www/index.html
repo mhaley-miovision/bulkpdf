@@ -89,10 +89,11 @@
 		// read from the backend
 		var mioarchyClient = new MioarchyClient();
 		mioarchyClient.readDB( onDBReadCompleted );
+		mioarchyClient.targetRenderingOrg = "Miovision";
 
 		// stores the graph object
-		var _graph;
-		var _lastUpdated = new Date();
+		mioarchyClient.graph;
+		mioarchyClient.lastUpdated = new Date();
 
 		// initialize the editor once the DB is ready
 		function onDBReadCompleted() 
@@ -122,47 +123,45 @@
 				};
 			})();
 
-			new EditorUi( mioarchyClient, onEditorUIInitCompleted, new Editor(urlParams['chrome'] == '0') );
+			new EditorUi( mioarchyClient, mioarchyClient.onEditorUIInitCompleted, new Editor(urlParams['chrome'] == '0') );
 		}
 
 		// called when editor UI has been fully initialized (to render the org)
-		function onEditorUIInitCompleted( graph ) {
-			_graph = graph;
-			renderOrganization();
+		mioarchyClient.onEditorUIInitCompleted = function( graph ) {
+			mioarchyClient.graph = graph;
+			mioarchyClient.renderOrganization();
 		}
 
 		// renders the organization (first clears the graph)
-		function renderOrganization() {
-			if (_graph) {
+		mioarchyClient.renderOrganization = function() {
+			if (mioarchyClient.graph) {
 				// first, clear everything
-				_graph.removeCells(_graph.getChildVertices(_graph.getDefaultParent()));
+				mioarchyClient.graph.removeCells(mioarchyClient.graph.getChildVertices(mioarchyClient.graph.getDefaultParent()));
 
 				// then get the mioarchy client object
 				var mioarchy = mioarchyClient.mioarchy;
-				//var ri = new RenderInfoOrganization( mioarchy.organizations["Data Extraction System"], mioarchy );
-				var ri = new RenderInfoOrganization( mioarchy.organizations["Miovision"], mioarchy );
+				var ri = new RenderInfoOrganization( mioarchy.organizations[mioarchyClient.targetRenderingOrg], mioarchy );
 
-				ri.render( 0, 0, _graph );
+				ri.render( 0, 0, mioarchyClient.graph );
 			} else {
 				console.log("renderOrganization: _graph is undefined!!!");
 			}
 		}
 
 		// called when last updated is read from the API
-		function processLastUpdated( lastUpdated ) {
+		mioarchyClient.processLastUpdated = function( lastUpdated ) {
 			var t1 = new Date(lastUpdated).getTime();
-			var t2 = _lastUpdated.getTime();
+			var t2 = mioarchyClient.lastUpdated.getTime();
 			if (t2 < t1) {
-				_lastUpdated = new Date();
+				mioarchyClient.lastUpdated = new Date();
 				console.log("NOW UPDATING!!!");
-				mioarchyClient.readDB( renderOrganization );
+				mioarchyClient.readDB( mioarchyClient.renderOrganization );
 			} else {
 				console.log("NO UPDATE NEEDED.");
 			}
 		}
-
 		// check for updates every x seconds
-		setInterval( function() { mioarchyClient.getLastUpdated( processLastUpdated ) }, 5000 );
+		setInterval( function() { mioarchyClient.getLastUpdated( mioarchyClient.processLastUpdated ) }, 5000 );
 	</script>
 </body>
 </html>
