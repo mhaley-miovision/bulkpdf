@@ -143,6 +143,10 @@
 				var ri = new RenderInfoOrganization( mioarchy.organizations[mioarchyClient.targetRenderingOrg], mioarchy );
 
 				ri.render( 0, 0, mioarchyClient.graph );
+
+				mioarchyClient.graph.fit();
+				mioarchyClient.graph.view.rendering = true;
+				mioarchyClient.graph.refresh();
 			} else {
 				console.log("renderOrganization: _graph is undefined!!!");
 			}
