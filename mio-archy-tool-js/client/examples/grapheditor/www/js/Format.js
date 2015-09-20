@@ -314,7 +314,7 @@ Format.prototype.refresh = function()
 
 		if (vertices.length == 1 && vertices[0].mioObject && vertices[0].mioObject.type === Mioarchy.prototype.Types.Job) {
             var job = vertices[0].mioObject;
-            var accountabilities = this.editorUi.mioarchyClient.jobAccountabilities[job.accountabilityLabel];
+            var accountabilities = this.editorUi.mioarchyClient.jobAccountabilities[job.id];
 
             label.textContent = job.accountabilityLabel + " Accountabilities";
             div.appendChild(label);
@@ -1969,11 +1969,13 @@ TextFormatPanel.prototype.addFont = function(container)
 	colorPanel.style.paddingTop = '6px';
 	colorPanel.style.paddingBottom = '6px';
 
-	var fontMenu = this.editorUi.toolbar.addMenu('All', 'All', true, 'contributor', stylePanel);
+    /*
+	var fontMenu = this.editorUi.toolbar.addMenu('All Contributors', 'View all contributors', true, 'contributor', stylePanel);
 	fontMenu.style.color = 'rgb(112, 112, 112)';
 	fontMenu.style.whiteSpace = 'nowrap';
 	fontMenu.style.overflow = 'hidden';
 	fontMenu.style.margin = '0px';
+    */
 	
 	this.addArrow(fontMenu);
 	fontMenu.style.width = '192px';

@@ -191,12 +191,13 @@ function processJobAccountabilities(src)
             var label = row['accountability'];
             var app = row['application'];
 
-            if (typeof(jobAccountabilities[job]) == 'undefined') {
-                jobAccountabilities[job] = [];
+            if (typeof(jobAccountabilities[jobId]) == 'undefined') {
+                jobAccountabilities[jobId] = [];
             }
-            jobAccountabilities[job].push(new Models.Accountability( id, appId, app, label ));
+            jobAccountabilities[jobId].push( new Models.Accountability( id, appId, app, label ) );
         }
         console.log("read " + rows.length + " job accountabilities.");
+        console.log(jobAccountabilities[5]);
         _doneFlags |= JOB_ACCOUNTABILITIES_DONE;
         notifyDone();
     });

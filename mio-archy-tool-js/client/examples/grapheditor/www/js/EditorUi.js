@@ -553,12 +553,11 @@ EditorUi = function(mioarchyClient, initCallback, editor, container)
 			}
 		}
 
+		/*
 		if (this.toolbar != null) {
 
 			this.toolbar.fontMenu.innerHTML = "VICTOR";
-		}
 
-		/*
 		if (this.toolbar != null)
 		{
 			var ff = currentStyle['fontFamily'] || Menus.prototype.defaultFont;

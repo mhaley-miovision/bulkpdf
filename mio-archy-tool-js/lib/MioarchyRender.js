@@ -278,7 +278,7 @@ RenderInfoOrganization.prototype =
                     "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
                 // attach the org info to the vertex
                 vertex.mioObject = this.org;
-                this.mioarchy.orgToVertex = vertex;
+                this.mioarchy.orgToVertex[orgLabel] = vertex;
 
             } finally {
                 graph.getModel().endUpdate();
@@ -331,7 +331,7 @@ RenderInfoOrganization.prototype =
                         defaultStyle + ";gradientColor=" + color);
                     // attach the org info to the vertex
                     v.mioObject = job;
-                    this.mioarchy.jobToVertex[job.accountabilityLabel] = v;
+                    this.mioarchy.jobToVertex[job.id] = v;
                 } finally {
                     graph.getModel().endUpdate();
                 }

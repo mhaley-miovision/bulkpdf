@@ -52,19 +52,128 @@ Menus.prototype.init = function()
 
 	this.put('contributor', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		var addItem = mxUtils.bind(this, function(contributor)
+		var addItem = mxUtils.bind(this, function(contributorName)
 		{
-			return menu.addItem(contributor, null, mxUtils.bind(this, function()
+			return menu.addItem(contributorName, null, mxUtils.bind(this, function()
 			{
-				console.log("clicked on " + contributor);
+				console.log("clicked on " + contributorName);
+
+				// first unselect all the other selected jobs
+				// TODO:delete this.temporaryHighlightVertices
+				if (this.editorUi.temporaryHighlightVertices) {
+					// highlight the jobs this person has taken on
+					graph.getModel().beginUpdate();
+					try {
+						for (var i = 0; i < this.editorUi.temporaryHighlightVertices.length; i++) {
+							graph.getModel().remove(this.editorUi.temporaryHighlightVertices[i]);
+						}
+					} finally {
+						graph.getModel().endUpdate();
+					}
+				}
+				this.editorUi.temporaryHighlightVertices = [];
+
+				// don't highlight anything by default
+				if (contributorName === "All Contributors") {
+					return;
+				}
+
+				// find all this person's jobs
+				var contributor = this.editorUi.mioarchyClient.contributors[contributorName];
+				var jobList = [];
+				for (j in this.editorUi.mioarchyClient.jobs) {
+					if (this.editorUi.mioarchyClient.jobs[j].contributor.toLowerCase()
+						=== contributor.name.toLowerCase()) {
+						jobList.push(j);
+					}
+				}
+				console.log(jobList);
+
+				// highlight the jobs this person has taken on
+				graph.getModel().beginUpdate();
+				try {
+					var parent = graph.getDefaultParent();
+					for (var i = 0; i < jobList.length; i++) {
+						var jobVertex = this.editorUi.mioarchyClient.mioarchy.jobToVertex[ jobList[i] ];
+
+						var ow = jobVertex.geometry.width;
+						var oh = jobVertex.geometry.width;
+						var w = ow * 1.3;
+						var h = oh * 1.3;
+						var x = jobVertex.geometry.x - (w - ow)/2;
+						var y = jobVertex.geometry.y - (h - oh)/2;
+
+						var v = graph.insertVertex(parent, null, "", x, y, w, h,
+							"ellipse;whiteSpace=wrap;html=1;strokeWidth=5;plain-green;fillColor=#00FF00;" +
+							"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
+						this.editorUi.temporaryHighlightVertices.push(v);
+						// move the highlighted region to the back
+						graph.orderCells(true, v);
+					}
+
+					// fully connect the graph with edges
+					var numVertices = this.editorUi.temporaryHighlightVertices.length;
+					for (var i = 0; i < numVertices; i++) {
+						for (var j = 0; j < numVertices/2; j++) {
+							if (i != j) {
+								var v1 = this.editorUi.temporaryHighlightVertices[i];
+								var v2 = this.editorUi.temporaryHighlightVertices[j];
+
+								var v = graph.insertEdge(parent, null, "", v1, v2,
+									"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
+									"exitX=1;exitY=0.5;entryX=0.5;entryY=1;" +
+									"strokeWidth=5;strokeColor=#00FF00;opacity=50");
+								this.editorUi.temporaryHighlightVertices.push(v);
+							}
+						}
+					}
+
+				} finally {
+					graph.getModel().endUpdate();
+				}
+
 			}), parent, null);
 		});
 		var contributorList = Object.keys(this.editorUi.mioarchyClient.contributors);
-		addItem("All");
+		addItem("All Contributors");
 		menu.addSeparator(parent);
 		for (var i = 0; i < contributorList.length; i++)
 		{
 			addItem(contributorList[i]);
+		}
+	})));
+
+	this.put('application', new Menu(mxUtils.bind(this, function(menu, parent)
+	{
+		var addItem = mxUtils.bind(this, function(applicationName)
+		{
+			return menu.addItem(applicationName, null, mxUtils.bind(this, function()
+			{
+				console.log("clicked on " + applicationName);
+
+				// first delete added edges prior to this
+
+				// don't highlight anything by default
+				if (applicationName === "All Applications") {
+					return;
+				}
+
+				// find all this person's jobs
+				var application = this.editorUi.mioarchyClient.applications[applicationName];
+
+				// highlight them by adding edges to show interconnections
+				// edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0.5;entryY=1;strokeWidth=10;plain-yellow
+				console.log(application);
+
+
+			}), parent, null);
+		});
+		var applicationList = Object.keys(this.editorUi.mioarchyClient.applications);
+		addItem("All Applications");
+		menu.addSeparator(parent);
+		for (var i = 0; i < applicationList.length; i++)
+		{
+			addItem(applicationList[i]);
 		}
 	})));
 
