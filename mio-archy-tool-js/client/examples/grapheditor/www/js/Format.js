@@ -1969,7 +1969,7 @@ TextFormatPanel.prototype.addFont = function(container)
 	colorPanel.style.paddingTop = '6px';
 	colorPanel.style.paddingBottom = '6px';
 
-	var fontMenu = this.editorUi.toolbar.addMenu('Helvetica', mxResources.get('fontFamily'), true, 'fontFamily', stylePanel);
+	var fontMenu = this.editorUi.toolbar.addMenu('All', 'All', true, 'contributor', stylePanel);
 	fontMenu.style.color = 'rgb(112, 112, 112)';
 	fontMenu.style.whiteSpace = 'nowrap';
 	fontMenu.style.overflow = 'hidden';

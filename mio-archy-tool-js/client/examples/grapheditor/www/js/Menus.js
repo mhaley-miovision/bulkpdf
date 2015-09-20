@@ -50,6 +50,24 @@ Menus.prototype.init = function()
 	this.customFonts = [];
 	this.customFontSizes = [];
 
+	this.put('contributor', new Menu(mxUtils.bind(this, function(menu, parent)
+	{
+		var addItem = mxUtils.bind(this, function(contributor)
+		{
+			return menu.addItem(contributor, null, mxUtils.bind(this, function()
+			{
+				console.log("clicked on " + contributor);
+			}), parent, null);
+		});
+		var contributorList = Object.keys(this.editorUi.mioarchyClient.contributors);
+		addItem("All");
+		menu.addSeparator(parent);
+		for (var i = 0; i < contributorList.length; i++)
+		{
+			addItem(contributorList[i]);
+		}
+	})));
+
 	this.put('fontFamily', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		var addItem = mxUtils.bind(this, function(fontname)

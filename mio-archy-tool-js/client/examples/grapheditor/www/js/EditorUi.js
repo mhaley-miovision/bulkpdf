@@ -553,6 +553,12 @@ EditorUi = function(mioarchyClient, initCallback, editor, container)
 			}
 		}
 
+		if (this.toolbar != null) {
+
+			this.toolbar.fontMenu.innerHTML = "VICTOR";
+		}
+
+		/*
 		if (this.toolbar != null)
 		{
 			var ff = currentStyle['fontFamily'] || Menus.prototype.defaultFont;
@@ -621,10 +627,11 @@ EditorUi = function(mioarchyClient, initCallback, editor, container)
 						currentEdgeStyle['shape'], currentEdgeStyle[mxConstants.STYLE_ENDARROW],
 						mxUtils.getValue(currentEdgeStyle, 'endFill', '0'));
 			}
-		}
+		}*/
 	}));
 	
 	// Update font size and font family labels
+	/*
 	if (this.toolbar != null)
 	{
 		var update = mxUtils.bind(this, function()
@@ -650,7 +657,7 @@ EditorUi = function(mioarchyClient, initCallback, editor, container)
 		
 	    graph.getSelectionModel().addListener(mxEvent.CHANGE, update);
 	    graph.getModel().addListener(mxEvent.CHANGE, update);
-	}
+	}*/
 	
 	// Makes sure the current layer is visible when cells are added
 	graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt)

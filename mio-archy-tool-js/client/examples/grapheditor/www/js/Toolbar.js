@@ -32,20 +32,23 @@ Toolbar.prototype.unselectedBackground = 'none';
  */
 Toolbar.prototype.init = function()
 {
-	var elts = this.addItems(['undo', 'redo', 'delete', '-', 'actualSize', 'zoomIn', 'zoomOut', '-']);
-	
-	// Adds keyboard shortcuts to tooltips
-	elts[0].setAttribute('title', mxResources.get('undo') + ' (Ctrl+Z)');
-	elts[1].setAttribute('title', mxResources.get('redo') + (mxClient.IS_MAC) ? ' (Ctrl+Shift+Z)' : ' (Ctrl+Y)');
-	elts[2].setAttribute('title', mxResources.get('delete') + ' (Delete)');
-	elts[4].setAttribute('title', mxResources.get('actualSize') + ' (Ctrl+0)');
-	elts[5].setAttribute('title', mxResources.get('zoomIn') + ' (Ctrl + / Alt+Scroll)');
-	elts[6].setAttribute('title', mxResources.get('zoomOut') + ' (Ctrl - / Alt+Scroll)');
+/*
+	 var elts = this.addItems(['undo', 'redo', 'delete', '-', 'actualSize', 'zoomIn', 'zoomOut', '-']);
 
-	this.fontMenu = this.addMenu(Menus.prototype.defaultFont, mxResources.get('fontFamily'), true, 'fontFamily');
+	 // Adds keyboard shortcuts to tooltips
+	 elts[0].setAttribute('title', mxResources.get('undo') + ' (Ctrl+Z)');
+	 elts[1].setAttribute('title', mxResources.get('redo') + (mxClient.IS_MAC) ? ' (Ctrl+Shift+Z)' : ' (Ctrl+Y)');
+	 elts[2].setAttribute('title', mxResources.get('delete') + ' (Delete)');
+	 elts[4].setAttribute('title', mxResources.get('actualSize') + ' (Ctrl+0)');
+	 elts[5].setAttribute('title', mxResources.get('zoomIn') + ' (Ctrl + / Alt+Scroll)');
+	 elts[6].setAttribute('title', mxResources.get('zoomOut') + ' (Ctrl - / Alt+Scroll)');
+*/
+	this.fontMenu = this.addMenu("All", "All", true, 'contributor');
 	this.fontMenu.style.whiteSpace = 'nowrap';
 	this.fontMenu.style.overflow = 'hidden';
 	this.fontMenu.style.width = (mxClient.IS_QUIRKS) ? '76px' : '56px';
+
+	/*
 	this.addSeparator();
 	this.sizeMenu = this.addMenu(Menus.prototype.defaultFontSize, mxResources.get('fontSize'), true, 'fontSize');
 	this.sizeMenu.style.whiteSpace = 'nowrap';
@@ -163,7 +166,7 @@ Toolbar.prototype.init = function()
 	if (items.length > 3)
 	{
 		items[4].style.background = (this.editorUi.actions.get('formatPanel').selectedCallback()) ? scolor : ucolor;
-	}
+	}*/
 };
 
 /**
