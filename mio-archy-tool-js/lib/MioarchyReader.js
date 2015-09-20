@@ -9,9 +9,11 @@ var contributors = {};
 var organizations = {};
 var roles = {};
 var jobs = {};
-var accountabilities = {};
+var orgAccountabilities = {};
+var jobAccountabilities = {};
 
-var knownTables = [ "Applications", "Contributors", "Roles", "Organizations", "Jobs", "JobAccountabilities" ];
+var knownTables = [ "Applications", "Contributors", "Roles", "Organizations", "Jobs",
+    "JobAccountabilities", "OrganizationAccountabilities" ];
 
 // this will be the resulting object
 exports.mioarchy = {};
@@ -22,9 +24,11 @@ var CONT_DONE = 2;
 var ORGS_DONE = 4;
 var ROLE_DONE = 8;
 var JOBS_DONE = 16;
-var ACCOUNTABILITIES_DONE = 32;
+var ORG_ACCOUNTABILITIES_DONE = 32;
+var JOB_ACCOUNTABILITIES_DONE = 64;
 var _doneFlags = 0;
-var _allDone = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE | ACCOUNTABILITIES_DONE;
+var _allDone = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE |
+    ORG_ACCOUNTABILITIES_DONE | JOB_ACCOUNTABILITIES_DONE;
 var _doneCallback;
 var _lastUpdated;
 
@@ -38,7 +42,8 @@ exports.readDatabase = function (sourceSheet, onCompleteCallback) {
     organizations = {};
     roles = {};
     jobs = {};
-    accountabilities = {};
+    orgAccountabilities = {};
+    jobAccountabilities = {};
      
     // Without auth -- read only 
     // IMPORTANT: See note below on how to make a sheet public-readable! 
@@ -67,7 +72,8 @@ exports.readDatabase = function (sourceSheet, onCompleteCallback) {
 function notifyDone() {
     if (_doneFlags == _allDone) {
 
-        exports.mioarchy = new Models.Mioarchy( jobs, organizations, contributors, applications, roles, accountabilities );
+        exports.mioarchy = new Models.Mioarchy( jobs, organizations, contributors, applications, roles,
+            orgAccountabilities, jobAccountabilities );
 
         console.log("All data read from DB.");
         console.timeEnd("read_db");
@@ -179,17 +185,41 @@ function processJobAccountabilities(src)
         for (var r = 0; r < rows.length; r++) {
             var row = rows[r];
             var id = row['id'];
+            var appId = row['appid'];
             var job = row['job'];
             var jobId = row['jobid'];
-            var accountability = row['accountability'];
+            var label = row['accountability'];
+            var app = row['application'];
 
-            if (typeof(accountabilities[job]) == 'undefined') {
-                accountabilities[job] = new Models.Accountabilities(id, job, jobId, []);
+            if (typeof(jobAccountabilities[job]) == 'undefined') {
+                jobAccountabilities[job] = [];
             }
-            accountabilities[job].accountabilities.push(accountability);
+            jobAccountabilities[job].push(new Models.Accountability( id, appId, app, label ));
         }
-        console.log("read " + rows.length + " accountabilities.");
-        _doneFlags |= ACCOUNTABILITIES_DONE;
+        console.log("read " + rows.length + " job accountabilities.");
+        _doneFlags |= JOB_ACCOUNTABILITIES_DONE;
+        notifyDone();
+    });
+}
+function processOrganizationAccountabilities(src)
+{
+    src.getRows( 0, function( err, rows) {
+        for (var r = 0; r < rows.length; r++) {
+            var row = rows[r];
+            var id = row['id'];
+            var orgId = row['orgid'];
+            var appId = row['applicationid'];
+            var org = row['organization'];
+            var app = row['application'];
+            var label = row['accountability'];
+
+            if (typeof(orgAccountabilities[org]) == 'undefined') {
+                orgAccountabilities[org] = [];
+            }
+            orgAccountabilities[org].push(new Models.Accountability( id, appId, app, label ));
+        }
+        console.log("read " + rows.length + " org accountabilities.");
+        _doneFlags |= ORG_ACCOUNTABILITIES_DONE;
         notifyDone();
     });
 }

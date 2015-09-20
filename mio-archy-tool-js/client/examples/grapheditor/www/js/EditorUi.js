@@ -4,11 +4,11 @@
 /**
  * Constructs a new graph editor
  */
-EditorUi = function(mioarchy, initCallback, editor, container)
+EditorUi = function(mioarchyClient, initCallback, editor, container)
 {
 	mxEventSource.call(this);
 
-	this.mioarchy = mioarchy;
+	this.mioarchyClient = mioarchyClient;
 	
 	this.editor = editor || new Editor();
 	this.container = container || document.body;

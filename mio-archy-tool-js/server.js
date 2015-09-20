@@ -5,7 +5,7 @@ var models = require("./lib/MioarchyModels.js");
 var http = require("http"),
     url = require("url"),
     path = require("path"),
-    port = process.argv[2] || 8082,
+    port = process.argv[2] || 8081,
     mio = require("./lib/MioarchyReader.js");
 
 var dbReady = false;
@@ -93,11 +93,21 @@ app.get('/contributors', function(req, res){
   }
 });
 
-app.get('/accountabilities', function(req, res){
+app.get('/orgAccountabilities', function(req, res){
   res.setHeader('Content-Type', 'application/json');
   if(dbReady)
 
-    res.send(JSON.stringify( mio.mioarchy.accountabilities ));
+    res.send(JSON.stringify( mio.mioarchy.orgAccountabilities ));
+  else {
+    res.send(JSON.stringify({}));
+  }
+});
+
+app.get('/jobAccountabilities', function(req, res){
+  res.setHeader('Content-Type', 'application/json');
+  if(dbReady)
+
+    res.send(JSON.stringify( mio.mioarchy.jobAccountabilities ));
   else {
     res.send(JSON.stringify({}));
   }

@@ -45,7 +45,7 @@ function Sidebar(editorUi, container)
 	label1.style.width = '100%';
 	label1.style.backgroundColor = '#00CCFF';
 	this.container.appendChild(div);
-	var organizations = this.editorUi.mioarchy.organizations;
+	var organizations = this.editorUi.mioarchyClient.organizations;
 	label1.textContent = "Organizations";
 	div.appendChild(label1);
 
@@ -69,64 +69,14 @@ function Sidebar(editorUi, container)
 		{
 			console.log(evt);
 			var src = mxEvent.getSource(evt);
-			this.editorUi.mioarchy.targetRenderingOrg = src.innerText;
-			this.editorUi.mioarchy.renderOrganization();
+			this.editorUi.mioarchyClient.targetRenderingOrg = src.innerText;
+			this.editorUi.mioarchyClient.renderOrganization();
 		}));
 
 		div.appendChild(label);
 	}
-	/*
-	mxEvent.addListener(document, (mxClient.IS_POINTER) ? 'MSPointerUp' : 'mouseup', mxUtils.bind(this, function()
-	{
-		this.showTooltips = true;
-	}));
-
-	mxEvent.addListener(document, (mxClient.IS_POINTER) ? 'MSPointerDown' : 'mousedown', mxUtils.bind(this, function()
-	{
-		this.showTooltips = false;
-		this.hideTooltip();
-	}));
-
-	mxEvent.addListener(document, (mxClient.IS_POINTER) ? 'MSPointerMove' : 'mousemove', mxUtils.bind(this, function(evt)
-	{
-		var src = mxEvent.getSource(evt);
-
-		while (src != null)
-		{
-			if (src == this.currentElt)
-			{
-				return;
-			}
-
-			src = src.parentNode;
-		}
-
-		this.hideTooltip();
-	}));
-
-	// Handles mouse leaving the window
-	mxEvent.addListener(document, (mxClient.IS_POINTER) ? 'MSPointerOut' : 'mouseout', mxUtils.bind(this, function(evt)
-	{
-		if (evt.toElement == null && evt.relatedTarget == null)
-		{
-			this.hideTooltip();
-		}
-	}));
-
-	// Enables tooltips after scroll
-	mxEvent.addListener(container, 'scroll', mxUtils.bind(this, function()
-	{
-		this.showTooltips = true;
-	}));
-
-	this.init();
-
-	// Pre-fetches tooltip image
-	if (!mxClient.IS_SVG)
-	{
-		new Image().src = IMAGE_PATH + '/tooltip.png';
-	}*/
 };
+
 
 /**
  * Adds all palettes to the sidebar.

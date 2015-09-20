@@ -169,6 +169,57 @@ RenderInfoOrganization.prototype =
      */
     render: function(x, y, graph)
     {
+        /*
+        if (this.mioarchy.getOrganizationLevel(this.org) == 1) {
+
+            // get max circle height
+            var maxCircleHeight = 0;
+            for (var i = 0; i < this.children.length; i++) {
+                // current org rendering info
+                var orgRenderInfo = this.children[i];
+                maxCircleHeight = Math.max( maxCircleHeight, orgRenderInfo.height );
+            }
+            var height = maxCircleHeight + 2 * this.MIN_DISTANCE_BETWEEN_CIRCLES;
+
+            // render organizations (circles) in a line at this level
+            var cy = x + height/2;
+            var cx = y + this.MIN_DISTANCE_BETWEEN_CIRCLES;
+            var width = x;
+            for (var i = 0; i < this.children.length; i++) {
+                // current org rendering info
+                var orgRenderInfo = this.children[i];
+                var orgLabel = orgRenderInfo.org.name;
+
+                // render organization internals
+                orgRenderInfo.render( cx, cy, graph );
+
+                // next circle
+                x += orgRenderInfo.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
+                width = x;
+            }
+
+            // first we will draw the box that will contain our sub circles
+            graph.getModel().beginUpdate();
+            try {
+                var parent = graph.getDefaultParent();
+                var orgLabel = this.org.name;
+
+                // the normal drawing is the top-left of the circle, so we must offset by the circle dimensions
+                var cx = x;
+                var cy = y;
+
+                var vertex = graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
+                    "rounded=1;fillColor=none;whiteSpace=wrap;" +
+                    "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+                // attach the org info to the vertex
+                vertex.org = this.org;
+
+            } finally {
+                graph.getModel().endUpdate();
+            }
+        }
+*/
+
         // leaf is treated differently (as simple set of job circles)
         if (!this.isLeaf) {
             // first we will draw the circle that will contain our sub circles
@@ -185,7 +236,8 @@ RenderInfoOrganization.prototype =
                     "shape=ellipse;fillColor=none;whiteSpace=wrap;" +
                     "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
                 // attach the org info to the vertex
-                vertex.org = this.org;
+                vertex.mioObject = this.org;
+                this.mioarchy.orgToVertex[orgLabel] = vertex;
 
             } finally {
                 graph.getModel().endUpdate();
@@ -225,7 +277,8 @@ RenderInfoOrganization.prototype =
                     "shape=ellipse;fillColor=none;whiteSpace=wrap;" +
                     "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
                 // attach the org info to the vertex
-                vertex.org = this.org;
+                vertex.mioObject = this.org;
+                this.mioarchy.orgToVertex = vertex;
 
             } finally {
                 graph.getModel().endUpdate();
@@ -277,14 +330,14 @@ RenderInfoOrganization.prototype =
                     var v = graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight,
                         defaultStyle + ";gradientColor=" + color);
                     // attach the org info to the vertex
-                    v.job = job;
+                    v.mioObject = job;
+                    this.mioarchy.jobToVertex[job.accountabilityLabel] = v;
                 } finally {
                     graph.getModel().endUpdate();
                 }
             }
         }
     },
-
     determineContributorColor: function(job, mioarchy)
     {
         var colorString = "";
@@ -331,7 +384,6 @@ RenderInfoOrganization.prototype =
         }
         return colorString;
     },
-
     // Moves a list of points by dx,dy
     translatePoints: function(points, dx, dy) {
         var pointsTranslated = [];
@@ -340,7 +392,6 @@ RenderInfoOrganization.prototype =
         }
         return pointsTranslated;
     },
-
     calculateBoundingCircleDiameter: function(width, height) {
         return Math.sqrt( width*width + height*height );
     },

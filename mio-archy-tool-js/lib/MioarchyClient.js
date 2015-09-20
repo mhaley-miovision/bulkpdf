@@ -6,8 +6,10 @@ var CONT_DONE = 2;
 var ORGS_DONE = 4;
 var ROLE_DONE = 8;
 var JOBS_DONE = 16;
-var ACCOUNTABILITIES_DONE = 32;
-var ALL_DONE = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE | ACCOUNTABILITIES_DONE;
+var ORG_ACCOUNTABILITIES_DONE = 32;
+var JOB_ACCOUNTABILITIES_DONE = 64;
+var ALL_DONE = APPS_DONE | CONT_DONE | ORGS_DONE | ROLE_DONE | JOBS_DONE |
+	ORG_ACCOUNTABILITIES_DONE | JOB_ACCOUNTABILITIES_DONE;
 
 function MioarchyClient() {
 	this.init();
@@ -25,13 +27,15 @@ MioarchyClient.prototype =
 		this.contributors = {};
 		this.roles = {};
 		this.jobs = {};
-		this.accountabilities = {};
+		this.orgAccountabilities = {};
+		this.jobAccountabilities = {};
 	},
 	notifySuccess: function(flag) {
 		this.doneFlags |= flag;	
 		if (this.doneFlags == ALL_DONE) {
 			// create the mioarchy object
-			this.mioarchy = new Mioarchy( this.jobs, this.organizations, this.contributors, this.apps, this.roles, this.accountabilities );
+			this.mioarchy = new Mioarchy( this.jobs, this.organizations, this.contributors, this.apps, this.roles,
+				this.orgAccountabilities, this.jobAccountabilities );
 			this.notifyComplete();
 		}
 	},
@@ -78,12 +82,19 @@ MioarchyClient.prototype =
 		}
 		this.notifySuccess(JOBS_DONE);
 	},
-	notifySuccessAccountabilities: function(accountabilities) {
-		for (var a in accountabilities) {
-			var acc = accountabilities[a];
-			this.accountabilities[acc.job] = acc;
+	notifySuccessOrgAccountabilities: function(accountabilities) {
+		for (var org in accountabilities) {
+			var acc = accountabilities[org];
+			this.orgAccountabilities[org] = acc;
 		}
-		this.notifySuccess(ACCOUNTABILITIES_DONE);
+		this.notifySuccess(ORG_ACCOUNTABILITIES_DONE);
+	},
+	notifySuccessJobAccountabilities: function(accountabilities) {
+		for (var job in accountabilities) {
+			var acc = accountabilities[job];
+			this.jobAccountabilities[job] = acc;
+		}
+		this.notifySuccess(JOB_ACCOUNTABILITIES_DONE);
 	},
 	readDB: function( readyStateCallback ) {
 		this.init(); // clear tables
@@ -95,7 +106,8 @@ MioarchyClient.prototype =
 		this.getJSON("/contributors", this.notifySuccessContribs, this.notifyError);
 		this.getJSON("/roles", this.notifySuccessRoles, this.notifyError);
 		this.getJSON("/jobs", this.notifySuccessJobs, this.notifyError);
-		this.getJSON("/accountabilities", this.notifySuccessAccountabilities, this.notifyError);
+		this.getJSON("/orgAccountabilities", this.notifySuccessOrgAccountabilities, this.notifyError);
+		this.getJSON("/jobAccountabilities", this.notifySuccessJobAccountabilities, this.notifyError);
 	},
 	getLastUpdated: function(updateCheckCallback) {
 		this.getJSON("/lastUpdated", updateCheckCallback, this.notifyError);

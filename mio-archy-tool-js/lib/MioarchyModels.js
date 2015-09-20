@@ -1,12 +1,18 @@
 'use strict';
 
-function Mioarchy(jobs, orgs, contribs, apps, roles, accountabilities) {
+function Mioarchy(jobs, orgs, contribs, apps, roles, orgAccountabilites, jobAccountabilities) {
     this.jobs = jobs;
     this.applications = apps;
     this.contributors = contribs;
     this.roles = roles;
     this.organizations = orgs;
-    this.accountabilities = accountabilities;
+    this.orgAccountabilities = orgAccountabilites;
+    this.jobAccountabilities = jobAccountabilities;
+
+    // post-rendering populated objects (this is a big of a kludge :( should be a separate resulting object out of the
+    // rendering in order to have proper separation of concerns
+    this.orgToVertex = []; // orgName -> vertex
+    this.jobToVertex = []; // jobName -> vertex
 };
 
 Mioarchy.prototype = 
@@ -72,6 +78,13 @@ Mioarchy.prototype =
             // this org has no parent
             return false;
         }
+    },
+    // returns the level # of this org
+    getOrganizationLevel: function(organization) {
+        if (organization.parent) {
+            return 1 + this.getOrganizationLevel(organization);
+        }
+        return 1;
     },
     // returns the # of immediate childen of the given organization (does not recurse)
     getContributorJobs: function(organization)
@@ -154,12 +167,11 @@ function Job(id, organization, application, role, accountabilityLabel, accountab
     this.primaryAccountability = primaryAccountability;
 }
 
-function Accountabilities(id, job, jobId, accountabilities)
-{
+function Accountability(id, appId, application, label) {
     this.id = id;
-    this.job = job;
-    this.jobId = jobId;
-    this.accountabilities = accountabilities;
+    this.appId = appId;
+    this.application = application;
+    this.label = label;
 }
 
 // module is only define in nodejs context, if this is client side, ignore since the context is 'window'
@@ -171,7 +183,7 @@ if ( typeof(module) != "undefined" ) {
         Organization: Organization, 
         Contributor: Contributor, 
         Job: Job,
-        Accountabilities: Accountabilities
+        Accountability: Accountability
     };
 }
 
