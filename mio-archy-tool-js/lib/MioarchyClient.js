@@ -34,8 +34,10 @@ MioarchyClient.prototype =
 		this.doneFlags |= flag;	
 		if (this.doneFlags == ALL_DONE) {
 			// create the mioarchy object
-			this.mioarchy = new Mioarchy( this.jobs, this.organizations, this.contributors, this.apps, this.roles,
+			this.mioarchy = new Mioarchy( this.jobs, this.organizations, this.contributors, this.applications, this.roles,
 				this.orgAccountabilities, this.jobAccountabilities );
+			console.log("================");
+			console.log(this.mioarchy);
 			this.notifyComplete();
 		}
 	},

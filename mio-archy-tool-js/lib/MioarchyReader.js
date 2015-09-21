@@ -96,9 +96,10 @@ function processApplications(appsSrc)
             var row = rows[r];
             var id = row['id'];
             var name = row['application'];
-            var parentOrg = row['organization']; 
+            var parentOrg = row['organization'];
+            var color = row['color'];
 
-            applications[name] = new Models.Application( id, name, parentOrg );
+            applications[name] = new Models.Application( id, name, parentOrg, color );
         }
         console.log("read " + rows.length + " applications.");
         //console.log(_.keys(exports.applications));

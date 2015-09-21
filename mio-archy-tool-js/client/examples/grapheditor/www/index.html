@@ -136,7 +136,8 @@
 		mioarchyClient.renderOrganization = function() {
 			if (mioarchyClient.graph) {
 				// first, clear everything
-				mioarchyClient.graph.removeCells(mioarchyClient.graph.getChildVertices(mioarchyClient.graph.getDefaultParent()));
+				mioarchyClient.graph.removeCells(
+						mioarchyClient.graph.getChildVertices( mioarchyClient.graph.getDefaultParent() ) );
 
 				// then get the mioarchy client object
 				var mioarchy = mioarchyClient.mioarchy;

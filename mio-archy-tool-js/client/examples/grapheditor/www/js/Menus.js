@@ -59,19 +59,18 @@ Menus.prototype.init = function()
 				console.log("clicked on " + contributorName);
 
 				// first unselect all the other selected jobs
-				// TODO:delete this.temporaryHighlightVertices
-				if (this.editorUi.temporaryHighlightVertices) {
+				if (this.editorUi.temporaryContributorHightedCells) {
 					// highlight the jobs this person has taken on
 					graph.getModel().beginUpdate();
 					try {
-						for (var i = 0; i < this.editorUi.temporaryHighlightVertices.length; i++) {
-							graph.getModel().remove(this.editorUi.temporaryHighlightVertices[i]);
+						for (var i = 0; i < this.editorUi.temporaryContributorHightedCells.length; i++) {
+							graph.getModel().remove(this.editorUi.temporaryContributorHightedCells[i]);
 						}
 					} finally {
 						graph.getModel().endUpdate();
 					}
 				}
-				this.editorUi.temporaryHighlightVertices = [];
+				this.editorUi.temporaryContributorHightedCells = [];
 
 				// don't highlight anything by default
 				if (contributorName === "All Contributors") {
@@ -106,24 +105,24 @@ Menus.prototype.init = function()
 						var v = graph.insertVertex(parent, null, "", x, y, w, h,
 							"ellipse;whiteSpace=wrap;html=1;strokeWidth=5;plain-green;fillColor=#00FF00;" +
 							"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
-						this.editorUi.temporaryHighlightVertices.push(v);
+						this.editorUi.temporaryContributorHightedCells.push(v);
 						// move the highlighted region to the back
 						graph.orderCells(true, v);
 					}
 
 					// fully connect the graph with edges
-					var numVertices = this.editorUi.temporaryHighlightVertices.length;
+					var numVertices = this.editorUi.temporaryContributorHightedCells.length;
 					for (var i = 0; i < numVertices; i++) {
 						for (var j = 0; j < numVertices/2; j++) {
 							if (i != j) {
-								var v1 = this.editorUi.temporaryHighlightVertices[i];
-								var v2 = this.editorUi.temporaryHighlightVertices[j];
+								var v1 = this.editorUi.temporaryContributorHightedCells[i];
+								var v2 = this.editorUi.temporaryContributorHightedCells[j];
 
 								var v = graph.insertEdge(parent, null, "", v1, v2,
 									"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
 									"exitX=1;exitY=0.5;entryX=0.5;entryY=1;" +
 									"strokeWidth=5;strokeColor=#00FF00;opacity=50");
-								this.editorUi.temporaryHighlightVertices.push(v);
+								this.editorUi.temporaryContributorHightedCells.push(v);
 							}
 						}
 					}
@@ -151,20 +150,122 @@ Menus.prototype.init = function()
 			{
 				console.log("clicked on " + applicationName);
 
-				// first delete added edges prior to this
+				// first delete added cells prior to this
+				var tempCells = this.editorUi.temporaryApplicationHightedCells;
+				if (tempCells) {
+					// highlight the jobs this person has taken on
+					graph.getModel().beginUpdate();
+					try {
+						for (var i = 0; i < tempCells.length; i++) {
+							graph.getModel().remove(tempCells[i]);
+						}
+					} finally {
+						graph.getModel().endUpdate();
+					}
+				}
+				console.log("this.editorUi.temporaryApplicationHightedCells");
+				console.log(this.editorUi.temporaryApplicationHightedCells);
+				tempCells = [];
+				console.log("this.editorUi.temporaryApplicationHightedCells");
+				console.log(this.editorUi.temporaryApplicationHightedCells);
+				this.editorUi.temporaryApplicationHightedCells = [];
+				var tempCells = this.editorUi.temporaryApplicationHightedCells;
 
 				// don't highlight anything by default
 				if (applicationName === "All Applications") {
 					return;
 				}
 
-				// find all this person's jobs
-				var application = this.editorUi.mioarchyClient.applications[applicationName];
+				// obtain our application reference
+				var application = this.editorUi.mioarchyClient.mioarchy.applications[applicationName];
+
+				// determine application's org dependency graph (how it implements itself)
+				var subordinatesTree = this.editorUi.mioarchyClient.mioarchy.getApplicationSubordinatesTree(
+					applicationName, application.parentOrg
+				);
+
+				// the parent organization of this application
+				var parentOrgVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ application.parentOrg ];
+
+				console.log(subordinatesTree);
 
 				// highlight them by adding edges to show interconnections
 				// edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0.5;entryY=1;strokeWidth=10;plain-yellow
 				console.log(application);
 
+				// highlight the jobs this person has taken on
+				var appColor = this.editorUi.mioarchyClient.mioarchy.applications[applicationName].color;
+				console.log(appColor);
+
+				// recursively draw the nodes (clojure will take care of scope)
+				var drawingFunction = function(node, lastSubordinateOrgParentVertex) {
+					// draw at this level
+					graph.getModel().beginUpdate();
+					try {
+						// highlight contributors at this level
+						var parent = graph.getDefaultParent();
+						for (var i = 0; i < node.matchingJobs.length; i++) {
+							var jobVertex = this.editorUi.mioarchyClient.mioarchy.jobToVertex[ node.matchingJobs[i] ];
+
+							var ow = jobVertex.geometry.width;
+							var oh = jobVertex.geometry.width;
+							var w = ow * 2;
+							var h = oh * 2;
+							var x = jobVertex.geometry.x - (w - ow)/2;
+							var y = jobVertex.geometry.y - (h - oh)/2;
+
+							// draw the highlight circle
+							var v = graph.insertVertex(parent, null, "", x, y, w, h,
+								"ellipse;whiteSpace=wrap;html=1;strokeWidth=5;plain-green;fillColor="+appColor+";" +
+								"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
+							tempCells.push(v);
+							graph.cellsOrdered( [ v ], true);
+
+							// also draw a link from the last containing org to this job
+							var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, v,
+								"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
+								"exitX=1;exitY=0.5;entryX=0.5;entryY=0;" +
+								"strokeWidth=5;strokeColor="+appColor+";opacity=50");
+							tempCells.push(e);
+
+							// move the highlighted region to the back
+							graph.cellsOrdered( [ e ], true);
+							//graph.orderCells(true, v);
+						}
+						// connect the org with sub orgs that match
+						for (var i = 0; i < node.children.length; i++) {
+							if (node.children[i].hasAccountabilities) {
+								// connect up the parent org vertext to this org's vertex
+								var childOrgName = node.children[i].name;
+								var childOrgVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ childOrgName ];
+
+								// also draw a link from the last containing org to this job
+								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, childOrgVertex,
+									"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
+									"exitX=1;exitY=0.5;entryX=0.5;entryY=0; " +
+									"strokeWidth=5;strokeColor="+appColor+";opacity=50");
+								tempCells.push(e);
+
+								graph.cellsOrdered( [ e ], true);
+							}
+						}
+					} finally {
+						graph.getModel().endUpdate();
+					}
+					// next, recurse on the kids
+					// connect the org with sub orgs that match
+					for (var i = 0; i < node.children.length; i++) {
+						var newParentVertex = lastSubordinateOrgParentVertex;
+						if (node.children[i].hasAccountabilities) {
+							// new parent vertex to pass down to drawing recursion function
+							var childOrgName = node.children[i].name;
+							newParentVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ childOrgName ];
+						}
+						// recurse, providing a new parent vertex to draw edges from
+						drawingFunction.call( this, node.children[i], newParentVertex );
+					}
+				}
+				drawingFunction.call( this, subordinatesTree, parentOrgVertex ); // draw the root, which will draw the rest recursively
 
 			}), parent, null);
 		});
