@@ -76,7 +76,6 @@ Menus.prototype.init = function()
 				if (contributorName === "All Contributors") {
 					return;
 				}
-
 				// find all this person's jobs
 				var contributor = this.editorUi.mioarchyClient.contributors[contributorName];
 				var jobList = [];
@@ -86,8 +85,6 @@ Menus.prototype.init = function()
 						jobList.push(j);
 					}
 				}
-				console.log(jobList);
-
 				// highlight the jobs this person has taken on
 				graph.getModel().beginUpdate();
 				try {
@@ -97,8 +94,8 @@ Menus.prototype.init = function()
 
 						var ow = jobVertex.geometry.width;
 						var oh = jobVertex.geometry.width;
-						var w = ow * 1.3;
-						var h = oh * 1.3;
+						var w = ow * 2;
+						var h = oh * 2;
 						var x = jobVertex.geometry.x - (w - ow)/2;
 						var y = jobVertex.geometry.y - (h - oh)/2;
 
@@ -109,7 +106,6 @@ Menus.prototype.init = function()
 						// move the highlighted region to the back
 						graph.orderCells(true, v);
 					}
-
 					// fully connect the graph with edges
 					var numVertices = this.editorUi.temporaryContributorHightedCells.length;
 					for (var i = 0; i < numVertices; i++) {
@@ -126,7 +122,6 @@ Menus.prototype.init = function()
 							}
 						}
 					}
-
 				} finally {
 					graph.getModel().endUpdate();
 				}
@@ -163,11 +158,6 @@ Menus.prototype.init = function()
 						graph.getModel().endUpdate();
 					}
 				}
-				console.log("this.editorUi.temporaryApplicationHightedCells");
-				console.log(this.editorUi.temporaryApplicationHightedCells);
-				tempCells = [];
-				console.log("this.editorUi.temporaryApplicationHightedCells");
-				console.log(this.editorUi.temporaryApplicationHightedCells);
 				this.editorUi.temporaryApplicationHightedCells = [];
 				var tempCells = this.editorUi.temporaryApplicationHightedCells;
 
@@ -189,7 +179,6 @@ Menus.prototype.init = function()
 
 				// highlight the jobs this person has taken on
 				var appColor = this.editorUi.mioarchyClient.mioarchy.applications[applicationName].color;
-				console.log(appColor);
 
 				// recursively draw the nodes (clojure will take care of scope)
 				var drawingFunction = function(node, lastSubordinateOrgParentVertex) {
@@ -199,34 +188,53 @@ Menus.prototype.init = function()
 						// highlight contributors at this level
 						var parent = graph.getDefaultParent();
 						for (var i = 0; i < node.matchingJobs.length; i++) {
-							var jobVertex = this.editorUi.mioarchyClient.mioarchy.jobToVertex[ node.matchingJobs[i] ];
 
-							var ow = jobVertex.geometry.width;
-							var oh = jobVertex.geometry.width;
-							var w = ow * 2;
-							var h = oh * 2;
-							var x = jobVertex.geometry.x - (w - ow)/2;
-							var y = jobVertex.geometry.y - (h - oh)/2;
+							// see what organization is selected, and make sure this job is a child of that
+							// otherwise when zoomed in to one org, we render highlights for other organizations
+							var jobIsWithinThisOrg = false;
+							var selectedOrgName = this.editorUi.mioarchyClient.targetRenderingOrg;
+							if (selectedOrgName) {
+								var org = this.editorUi.mioarchyClient.mioarchy.organizations[selectedOrgName];
+								var orgJobs = this.editorUi.mioarchyClient.mioarchy.getOrganizationJobs(org, true);
+								for (var j = 0; j < orgJobs.length; j++) {
+									if (orgJobs[j] === node.matchingJobs[i]) {
+										jobIsWithinThisOrg = true;
+										break;
+									}
+								}
+							}
+							if (jobIsWithinThisOrg) {
+								console.log("DRAWING JOB --- " + node.matchingJobs[i]);
+								var jobVertex = this.editorUi.mioarchyClient.mioarchy.jobToVertex[node.matchingJobs[i]];
 
-							// draw the highlight circle
-							var v = graph.insertVertex(parent, null, "", x, y, w, h,
-								"ellipse;whiteSpace=wrap;html=1;strokeWidth=10;plain-green;fillColor="+appColor+";" +
-								"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
-							tempCells.push(v);
-							graph.cellsOrdered( [ v ], true);
+								var ow = jobVertex.geometry.width;
+								var oh = jobVertex.geometry.width;
+								var w = ow * 2;
+								var h = oh * 2;
+								var x = jobVertex.geometry.x - (w - ow) / 2;
+								var y = jobVertex.geometry.y - (h - oh) / 2;
 
-							// also draw a link from the last containing org to this job
-							var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, v,
-								"curved=0;rounded=0;html=1;" +
-								"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
-								//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
-								//"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
-								"strokeWidth=10;strokeColor="+appColor+";opacity=50");
-							tempCells.push(e);
+								// draw the highlight circle
+								var v = graph.insertVertex(parent, null, "", x, y, w, h,
+									"ellipse;whiteSpace=wrap;html=1;strokeWidth=10;plain-green;fillColor=" + appColor + ";" +
+									"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
+								tempCells.push(v);
+								graph.cellsOrdered([v], true);
 
-							// move the highlighted region to the back
-							graph.cellsOrdered( [ e ], true);
-							//graph.orderCells(true, v);
+								// also draw a link from the last containing org to this job
+								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, v,
+									"curved=0;rounded=0;html=1;" +
+									"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
+										//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
+										//"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
+									"strokeWidth=10;strokeColor=" + appColor + ";opacity=50");
+								tempCells.push(e);
+
+								// move the highlighted region to the back
+								graph.cellsOrdered([e], true);
+							} else {
+								console.log("DISCARDED JOB!!! --- " + node.matchingJobs[i]);
+							}
 						}
 						// connect the org with sub orgs that match
 						for (var i = 0; i < node.children.length; i++) {
@@ -237,11 +245,11 @@ Menus.prototype.init = function()
 
 								// also draw a link from the last containing org to this job
 								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, childOrgVertex,
-									"curved=0;rounded=0;html=1;" +
-									"exitX=0.5;exitY=0;entryX=0.5;entryY=0" +
-									//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
-									//"exitX=0.5;exitY=0;entryX=0.5;entryY=0; " +
-									"strokeWidth=10;strokeColor="+appColor+";opacity=50");
+                                    "curved=0;rounded=0;html=1;" +
+                                    "exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
+                                        //"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
+                                        //"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
+                                    "strokeWidth=10;strokeColor="+appColor+";opacity=50");
 								tempCells.push(e);
 
 								graph.cellsOrdered( [ e ], true);

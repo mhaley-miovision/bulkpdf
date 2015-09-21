@@ -20,7 +20,7 @@ Mioarchy.prototype =
     Types: {Job: 0, Application: 1, Contributor: 2, Role: 3, Organization: 4},
 
     // returns the # of immediate childen of the given organization (does not recurse)
-    getOrganizationChildren: function (organization, recurse) {
+    getOrganizationChildren: function (organization) {
         // loop through all orgs
         // if the org identifies having a parent with the same name as the specified org, we add it to the list of children of that org
 
@@ -37,23 +37,11 @@ Mioarchy.prototype =
                 }
             }
         }
-        if (recurse) {
-            var numChildren = children.length;
-            for (var i = 0; i < numChildren; i++) {
-                children.concat( this.getOrganizationChildren( children[i], true ));
-            }
-        }
         return children;
     },
     getOrganizationJobs: function (organization, recurse) {
         var list = [];
 
-        // jobs at sub levels
-        if (recurse) {
-            for (var o in this.getOrganizationJobs(organization)) {
-                list.push(o);
-            }
-        }
         // jobs at this level
         for (var c in this.jobs) {
             // make sure the job is attached to an org
@@ -62,6 +50,17 @@ Mioarchy.prototype =
                 // see if the names match
                 if (jobOrgName.toLowerCase() === organization.name.toLowerCase()) {
                     list.push(c);
+                }
+            }
+        }
+
+        // jobs at sub levels
+        if (recurse) {
+            var children = this.getOrganizationChildren( organization );
+            for (var i = 0; i < children.length; i++) {
+                var childJobs = this.getOrganizationJobs(children[i], true);
+                for (var j = 0; j < childJobs.length; j++) {
+                    list.push(childJobs[j]);
                 }
             }
         }
@@ -147,10 +146,9 @@ Mioarchy.prototype =
         }
         // for each child, attach the new subordinate tree
         // there is a case where multiple trees are returned
-        var childOrgs = this.getOrganizationChildren( org, false );
+        var childOrgs = this.getOrganizationChildren( org );
         if (childOrgs && childOrgs.length > 0) {
             for (var i = 0; i < childOrgs.length; i++) {
-                console.log(childOrgs[i]);
                 var tree = this.getApplicationSubordinatesTree( applicationName, childOrgs[i].name );
                 if (tree) {
                     // there are subordinates in this branch, so add them to the new tree
