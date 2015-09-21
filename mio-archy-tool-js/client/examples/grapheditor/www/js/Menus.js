@@ -187,12 +187,6 @@ Menus.prototype.init = function()
 				// the parent organization of this application
 				var parentOrgVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ application.parentOrg ];
 
-				console.log(subordinatesTree);
-
-				// highlight them by adding edges to show interconnections
-				// edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0.5;entryY=1;strokeWidth=10;plain-yellow
-				console.log(application);
-
 				// highlight the jobs this person has taken on
 				var appColor = this.editorUi.mioarchyClient.mioarchy.applications[applicationName].color;
 				console.log(appColor);
@@ -216,16 +210,18 @@ Menus.prototype.init = function()
 
 							// draw the highlight circle
 							var v = graph.insertVertex(parent, null, "", x, y, w, h,
-								"ellipse;whiteSpace=wrap;html=1;strokeWidth=5;plain-green;fillColor="+appColor+";" +
+								"ellipse;whiteSpace=wrap;html=1;strokeWidth=10;plain-green;fillColor="+appColor+";" +
 								"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
 							tempCells.push(v);
 							graph.cellsOrdered( [ v ], true);
 
 							// also draw a link from the last containing org to this job
 							var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, v,
-								"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
-								"exitX=1;exitY=0.5;entryX=0.5;entryY=0;" +
-								"strokeWidth=5;strokeColor="+appColor+";opacity=50");
+								"curved=0;rounded=0;html=1;" +
+								"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
+								//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
+								//"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
+								"strokeWidth=10;strokeColor="+appColor+";opacity=50");
 							tempCells.push(e);
 
 							// move the highlighted region to the back
@@ -241,9 +237,11 @@ Menus.prototype.init = function()
 
 								// also draw a link from the last containing org to this job
 								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, childOrgVertex,
-									"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
-									"exitX=1;exitY=0.5;entryX=0.5;entryY=0; " +
-									"strokeWidth=5;strokeColor="+appColor+";opacity=50");
+									"curved=0;rounded=0;html=1;" +
+									"exitX=0.5;exitY=0;entryX=0.5;entryY=0" +
+									//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
+									//"exitX=0.5;exitY=0;entryX=0.5;entryY=0; " +
+									"strokeWidth=10;strokeColor="+appColor+";opacity=50");
 								tempCells.push(e);
 
 								graph.cellsOrdered( [ e ], true);
