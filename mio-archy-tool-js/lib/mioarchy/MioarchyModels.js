@@ -198,11 +198,12 @@ function Role(id, name) {
     this.name = name;
 }
 
-function Organization(id, name, parent) {
+function Organization(id, name, parent, isApplication) {
     this.type = Mioarchy.prototype.Types.Organization;
     this.id = id;
     this.name = name;
     this.parent = parent;
+    this.isApplication = isApplication;
 }
 
 function Contributor(id, name, firstName, lastName) {

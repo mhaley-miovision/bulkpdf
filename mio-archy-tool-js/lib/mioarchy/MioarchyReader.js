@@ -148,8 +148,9 @@ function processOrganizations(orgsSrc)
             var id = row['id'];
             var name = row['organization'];
             var parent = row['parent'];
+            var isApplication = row['isapplication'];
 
-            organizations[name] = new Models.Organization(id, name, parent);
+            organizations[name] = new Models.Organization(id, name, parent, isApplication);
         }
         console.log("read " + rows.length + " organizations.");
         //console.log(_.keys(exports.organizations));
