@@ -298,6 +298,8 @@ RenderInfoOrganization.prototype =
                  // attach the org info to the vertex
                  vertex.mioObject = this.org;
                  this.mioarchy.orgToVertex[orgLabel] = vertex;
+                 // send to back
+                 graph.cellsOrdered([vertex], true);
 
              } finally {
                  graph.getModel().endUpdate();
@@ -321,6 +323,8 @@ RenderInfoOrganization.prototype =
                      // attach the org info to the vertex
                      vertex.mioObject = this.org;
                      this.mioarchy.orgToVertex[orgLabel] = vertex;
+                     // send to back
+                     graph.cellsOrdered([vertex], true);
 
                  } finally {
                      graph.getModel().endUpdate();
@@ -433,21 +437,7 @@ RenderInfoOrganization.prototype =
 
         // by app now
         if (job.application) {
-            var appName = job.application.toLowerCase();
-
-            if (appName.indexOf("product") >= 0) {
-                colorString = "green";
-            } else if (appName.toLowerCase().indexOf("strategic") >= 0) {
-                colorString = "red";
-            } else if (appName.toLowerCase().indexOf("innovation") >= 0) {
-                colorString = "gray";
-            } else if (appName.toLowerCase().indexOf("organizational development") >= 0) {
-                colorString = "yellow";
-            } else if (appName.toLowerCase().indexOf("culture committee") >= 0) {
-                colorString = "pink";
-            } else if (appName.toLowerCase().indexOf("quality control") >= 0) {
-                colorString = "magenta";
-            }
+            colorString = mioarchy.applications[job.application].color;
         } else {
             // try by organization
             if (job.organization) {

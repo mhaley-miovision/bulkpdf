@@ -50,7 +50,6 @@ function Sidebar(editorUi, container)
 	div.appendChild(label1);
 
 	for (var o in organizations) {
-
 		var label = document.createElement('div');
 		label.style.border = '1px solid #c0c0c0';
 		label.style.borderWidth = '0px 0px 1px 0px';

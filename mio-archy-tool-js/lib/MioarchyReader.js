@@ -191,11 +191,13 @@ function processJobAccountabilities(src)
             var jobId = row['jobid'];
             var label = row['accountability'];
             var app = row['application'];
+            var rating = row['rating'];
+            var type = row['type'];
 
             if (typeof(jobAccountabilities[jobId]) == 'undefined') {
                 jobAccountabilities[jobId] = [];
             }
-            jobAccountabilities[jobId].push( new Models.Accountability( id, appId, app, label ) );
+            jobAccountabilities[jobId].push( new Models.Accountability( id, appId, app, label, rating, type ) );
         }
         console.log("read " + rows.length + " job accountabilities.");
         console.log(jobAccountabilities[5]);
@@ -214,11 +216,13 @@ function processOrganizationAccountabilities(src)
             var org = row['organization'];
             var app = row['application'];
             var label = row['accountability'];
+            var rating = row['rating'];
+            var type = row['type'];
 
             if (typeof(orgAccountabilities[org]) == 'undefined') {
                 orgAccountabilities[org] = [];
             }
-            orgAccountabilities[org].push(new Models.Accountability( id, appId, app, label ));
+            orgAccountabilities[org].push(new Models.Accountability( id, appId, app, label, rating, type ));
         }
         console.log("read " + rows.length + " org accountabilities.");
         _doneFlags |= ORG_ACCOUNTABILITIES_DONE;

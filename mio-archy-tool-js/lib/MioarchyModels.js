@@ -17,7 +17,7 @@ function Mioarchy(jobs, orgs, contribs, apps, roles, orgAccountabilites, jobAcco
 
 Mioarchy.prototype =
 {
-    Types: {Job: 0, Application: 1, Contributor: 2, Role: 3, Organization: 4},
+    Types: {Job: 0, Application: 1, Contributor: 2, Role: 3, Organization: 4, Accountability: 5},
 
     // returns the # of immediate childen of the given organization (does not recurse)
     getOrganizationChildren: function (organization) {
@@ -225,11 +225,14 @@ function Job(id, organization, application, role, accountabilityLabel, accountab
     this.primaryAccountability = primaryAccountability;
 }
 
-function Accountability(id, appId, application, label) {
+function Accountability(id, appId, application, label, rating, accountabilityType) {
+    this.type = Mioarchy.prototype.Types.Accountability;
     this.id = id;
     this.appId = appId;
     this.application = application;
     this.label = label;
+    this.rating = rating;
+    this.accountabilityType = accountabilityType;
 }
 
 // module is only define in nodejs context, if this is client side, ignore since the context is 'window'

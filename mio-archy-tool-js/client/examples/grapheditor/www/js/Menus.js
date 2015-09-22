@@ -218,6 +218,7 @@ Menus.prototype.init = function()
 									"ellipse;whiteSpace=wrap;html=1;strokeWidth=10;plain-green;fillColor=" + appColor + ";" +
 									"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
 								tempCells.push(v);
+								// send to back
 								graph.cellsOrdered([v], true);
 
 								// also draw a link from the last containing org to this job
@@ -228,8 +229,7 @@ Menus.prototype.init = function()
 										//"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
 									"strokeWidth=10;strokeColor=" + appColor + ";opacity=50");
 								tempCells.push(e);
-
-								// move the highlighted region to the back
+								// send to back
 								graph.cellsOrdered([e], true);
 							}
 						}
@@ -253,7 +253,7 @@ Menus.prototype.init = function()
                                         //"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
                                     "strokeWidth=10;strokeColor="+appColor+";opacity=50");
 								tempCells.push(e);
-
+								// send to back
 								graph.cellsOrdered( [ e ], true);
 							}
 						}
