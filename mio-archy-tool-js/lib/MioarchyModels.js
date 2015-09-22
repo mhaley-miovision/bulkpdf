@@ -84,7 +84,7 @@ Mioarchy.prototype =
     // returns the level # of this org
     getOrganizationLevel: function (organization) {
         if (organization.parent) {
-            return 1 + this.getOrganizationLevel(organization);
+            return 1 + this.getOrganizationLevel( this.organizations[organization.parent] );
         }
         return 1;
     },
