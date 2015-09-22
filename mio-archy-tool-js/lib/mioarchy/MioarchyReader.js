@@ -12,8 +12,7 @@ var jobs = {};
 var orgAccountabilities = {};
 var jobAccountabilities = {};
 
-var knownTables = [ "Applications", "Contributors", "Roles", "Organizations", "Jobs",
-    "JobAccountabilities", "OrganizationAccountabilities" ];
+var knownTables = [ "Applications", "Contributors", "Roles", "Organizations", "Jobs", "JobAccountabilities", "OrganizationAccountabilities" ];
 
 // this will be the resulting object
 exports.mioarchy = {};
@@ -200,7 +199,6 @@ function processJobAccountabilities(src)
             jobAccountabilities[jobId].push( new Models.Accountability( id, appId, app, label, rating, type ) );
         }
         console.log("read " + rows.length + " job accountabilities.");
-        console.log(jobAccountabilities[5]);
         _doneFlags |= JOB_ACCOUNTABILITIES_DONE;
         notifyDone();
     });

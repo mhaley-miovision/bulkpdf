@@ -1,12 +1,12 @@
 'use strict';
 
-var models = require("./lib/MioarchyModels.js");
+var models = require("./lib/mioarchy/MioarchyModels.js");
 
 var http = require("http"),
     url = require("url"),
     path = require("path"),
     port = process.argv[2] || 8081,
-    mio = require("./lib/MioarchyReader.js");
+    mio = require("./lib/mioarchy/MioarchyReader.js");
 
 var dbReady = false;
 var lastUpdated;
