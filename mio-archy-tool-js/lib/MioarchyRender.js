@@ -182,6 +182,19 @@ function processRectangularOrgRendering() {
     // TODO: refactor this so that we are not using different objects when doing rectangular vs. circular (i.e. use inheritance)
     this.subOrgPositions = [];
     var x = this.MIN_DISTANCE_BETWEEN_CIRCLES;
+
+    // first is the set of contributors at this level, which have to be separately added
+    if (this.jobsAtThisLevel.length > 0) {
+        var ri = this.circleForContributorsAtThisOrgLevel;
+
+        // center vertically wrt this rectangle
+        var y = this.MIN_DISTANCE_BETWEEN_CIRCLES + (this.height-ri.height)/2;
+        // save the coordinate
+        this.subOrgPositions.push( {x:x, y:y} );
+        // next
+        x += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
+    }
+
     for (var r in this.childRenderingInfos) {
         var ri = this.childRenderingInfos[r];
 
@@ -195,6 +208,49 @@ function processRectangularOrgRendering() {
 
     // now we can deduce total width
     this.width = x;
+}
+
+function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
+    // now move all the circle locations as needed
+    var circleLocations = this.translatePoints(this.circleForContributorsAtThisOrgLevel.circleCenters, dx, dy);
+
+    // render jobs (circles)
+    for (var j in this.jobsAtThisLevel) {
+        var job = this.mioarchy.jobs[this.jobsAtThisLevel[j]];
+
+        var defaultStyle = "shape=ellipse;whiteSpace=wrap;gradientColor=none";
+        var color = this.determineContributorColor(job, this.mioarchy);
+        var defaultWidth = this.CIRCLE_DIAMETER;
+        var defaultHeight = this.CIRCLE_DIAMETER;
+
+        // normal coords are the x,y coords + the circle coords
+        // (the normal drawing is the top-left of the circle, so we must offset by the circle dimensions)
+        var cx = x + circleLocations[j].x - this.CIRCLE_DIAMETER / 2;
+        var cy = y + circleLocations[j].y - this.CIRCLE_DIAMETER / 2;
+
+        var label;
+        if (job.contributor && this.mioarchy.contributors[job.contributor]) {
+            var fi = this.mioarchy.contributors[job.contributor].firstName.substring(0, 1);
+            var li = this.mioarchy.contributors[job.contributor].lastName.substring(0, 1);
+            // TODO: resolve name clashes in order to make unique
+            label = (fi + li).toLowerCase();
+        } else {
+            label = "NEW"; // not yet hired
+        }
+
+        // actually "draw" :)
+        graph.getModel().beginUpdate();
+        try {
+            var parent = graph.getDefaultParent();
+            var v = graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight,
+                defaultStyle + ";gradientColor=" + color);
+            // attach the org info to the vertex
+            v.mioObject = job;
+            this.mioarchy.jobToVertex[job.id] = v;
+        } finally {
+            graph.getModel().endUpdate();
+        }
+    }
 }
 
 RenderInfoOrganization.prototype =
@@ -211,11 +267,21 @@ RenderInfoOrganization.prototype =
     render: function(x, y, graph)
     {
          if (this.orgLevel <= 2) {
+             // if there are jobs, render them
+             var pIndex = 0;
+             if (this.jobsAtThisLevel.length > 0) {
+                 var dx = this.subOrgPositions[0].x + this.circleForContributorsAtThisOrgLevel.width/2;
+                 var dy = this.subOrgPositions[0].y + this.circleForContributorsAtThisOrgLevel.height/2;
+
+                 renderJobsAtThisOrgLevel.call(this, x, y, dx, dy, graph);
+                 var pIndex = 1;
+             }
+
              // render the children of this org
              for (var i = 0; i < this.childRenderingInfos.length; i++) {
                  // current org rendering info
                  var orgRenderInfo = this.childRenderingInfos[i];
-                 var orgPosition = this.subOrgPositions[i];
+                 var orgPosition = this.subOrgPositions[pIndex++];
 
                  // render organization internals
                  orgRenderInfo.render(x + orgPosition.x, y + orgPosition.y, graph);
@@ -226,16 +292,12 @@ RenderInfoOrganization.prototype =
              try {
                  var parent = graph.getDefaultParent();
                  var orgLabel = this.org.name;
-
-                 // the normal drawing is the top-left of the circle, so we must offset by the circle dimensions
-                 var cx = x;
-                 var cy = y;
-
                  var vertex = graph.insertVertex(parent, null, orgLabel, x, y, this.width, this.height,
                      "rounded=1;fillColor=none;whiteSpace=wrap;" +
                      "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
                  // attach the org info to the vertex
-                 vertex.org = this.org;
+                 vertex.mioObject = this.org;
+                 this.mioarchy.orgToVertex[orgLabel] = vertex;
 
              } finally {
                  graph.getModel().endUpdate();

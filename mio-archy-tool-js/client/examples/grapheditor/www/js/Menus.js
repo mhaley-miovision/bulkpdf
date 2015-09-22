@@ -204,7 +204,6 @@ Menus.prototype.init = function()
 								}
 							}
 							if (jobIsWithinThisOrg) {
-								console.log("DRAWING JOB --- " + node.matchingJobs[i]);
 								var jobVertex = this.editorUi.mioarchyClient.mioarchy.jobToVertex[node.matchingJobs[i]];
 
 								var ow = jobVertex.geometry.width;
@@ -232,8 +231,6 @@ Menus.prototype.init = function()
 
 								// move the highlighted region to the back
 								graph.cellsOrdered([e], true);
-							} else {
-								console.log("DISCARDED JOB!!! --- " + node.matchingJobs[i]);
 							}
 						}
 						// connect the org with sub orgs that match
@@ -242,6 +239,11 @@ Menus.prototype.init = function()
 								// connect up the parent org vertext to this org's vertex
 								var childOrgName = node.children[i].name;
 								var childOrgVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ childOrgName ];
+
+								// if this is the first subordinate parent, note it
+								if (typeof(lastSubordinateOrgParentVertex) == 'undefined' && node.hasAccountabilities) {
+									lastSubordinateOrgParentVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ node.name ];
+								}
 
 								// also draw a link from the last containing org to this job
 								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, childOrgVertex,
