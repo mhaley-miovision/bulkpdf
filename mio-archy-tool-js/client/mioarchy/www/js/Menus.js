@@ -50,14 +50,16 @@ Menus.prototype.init = function()
 	this.customFonts = [];
 	this.customFontSizes = [];
 
+	//==================================================================================================================
+	//	CONTRIBUTOR JOB LOAD HIGHLIGHTING
+	//==================================================================================================================
+
 	this.put('contributor', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		var addItem = mxUtils.bind(this, function(contributorName)
 		{
 			return menu.addItem(contributorName, null, mxUtils.bind(this, function()
 			{
-				console.log("clicked on " + contributorName);
-
 				// first unselect all the other selected jobs
 				if (this.editorUi.temporaryContributorHightedCells) {
 					// highlight the jobs this person has taken on
@@ -137,14 +139,16 @@ Menus.prototype.init = function()
 		}
 	})));
 
+	//==================================================================================================================
+	//	APPLICATION RELATIONSHIP HIGHLIGHTING
+	//==================================================================================================================
+
 	this.put('application', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		var addItem = mxUtils.bind(this, function(applicationName)
 		{
 			return menu.addItem(applicationName, null, mxUtils.bind(this, function()
 			{
-				console.log("clicked on " + applicationName);
-
 				// first delete added cells prior to this
 				var tempCells = this.editorUi.temporaryApplicationHightedCells;
 				if (tempCells) {
@@ -175,7 +179,10 @@ Menus.prototype.init = function()
 				);
 
 				// the parent organization of this application
-				var parentOrgVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ application.parentOrg ];
+				var parentOrgVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ application.name ];
+				if (typeof(parentOrgVertex) == 'undefined') {
+					console.error("Could not find organization for: " + applicationName + " (parentOrgVertex is undefined)");
+				}
 
 				// highlight the jobs this person has taken on
 				var appColor = this.editorUi.mioarchyClient.mioarchy.applications[applicationName].color;
@@ -185,6 +192,9 @@ Menus.prototype.init = function()
 					// draw at this level
 					graph.getModel().beginUpdate();
 					try {
+						//==============================================================================================
+						//	APP-CONTRIBUTOR RELATIONSHIP HIGHLIGHTING
+						//==============================================================================================
 						// highlight contributors at this level
 						var parent = graph.getDefaultParent();
 						for (var i = 0; i < node.matchingJobs.length; i++) {
@@ -205,7 +215,6 @@ Menus.prototype.init = function()
 							}
 							if (jobIsWithinThisOrg) {
 								var jobVertex = this.editorUi.mioarchyClient.mioarchy.jobToVertex[node.matchingJobs[i]];
-
 								var ow = jobVertex.geometry.width;
 								var oh = jobVertex.geometry.width;
 								var w = ow * 2;
@@ -221,18 +230,26 @@ Menus.prototype.init = function()
 								// send to back
 								graph.cellsOrdered([v], true);
 
+								// if this is the app node, draw it from the bottom of the app.
+								var style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
+								if (parentOrgVertex == lastSubordinateOrgParentVertex) {
+									style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;";
+								}
+
 								// also draw a link from the last containing org to this job
 								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, v,
-									"curved=0;rounded=0;html=1;" +
-									"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
-										//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
-										//"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
+									style +
+									//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
+									//"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
 									"strokeWidth=10;strokeColor=" + appColor + ";opacity=50");
 								tempCells.push(e);
 								// send to back
 								graph.cellsOrdered([e], true);
 							}
 						}
+						//==================================================================================================================
+						//	APPLICATION-ORG RELATIONSHIP HIGHLIGHTING
+						//==================================================================================================================
 						// connect the org with sub orgs that match
 						for (var i = 0; i < node.children.length; i++) {
 							if (node.children[i].hasAccountabilities) {
@@ -242,15 +259,24 @@ Menus.prototype.init = function()
 
 								// if this is the first subordinate parent, note it
 								if (typeof(lastSubordinateOrgParentVertex) == 'undefined' && node.hasAccountabilities) {
-									lastSubordinateOrgParentVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ node.name ];
+									// try to find the matching organization for the application
+									lastSubordinateOrgParentVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ applicationName ];
+									if (typeof(lastSubordinateOrgParentVertex) == 'undefined') {
+										console.error("Could not find an organization matching the application: " + applicationName);
+									}
+								}
+
+								var style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
+								// if this is the app node, draw it from the bottom of the app.
+								if (parentOrgVertex == lastSubordinateOrgParentVertex) {
+									style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;";
 								}
 
 								// also draw a link from the last containing org to this job
 								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, childOrgVertex,
-                                    "curved=0;rounded=0;html=1;" +
-                                    "exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
-                                        //"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
-                                        //"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
+                                    style +
+									//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
+									//"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
                                     "strokeWidth=10;strokeColor="+appColor+";opacity=50");
 								tempCells.push(e);
 								// send to back

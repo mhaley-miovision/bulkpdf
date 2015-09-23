@@ -30,7 +30,9 @@ function RenderInfoOrganization(org, mioarchy)
     // the remaining contributors at this level could be treated as their own organization, without the
     // actual org boundaries, so essentially they will be accounted for as a circle in the rendering calculations
     // but will not have a circle drawn around them
-    this.circleForContributorsAtThisOrgLevel = new RenderInfoCircles(this.jobsAtThisLevel.length, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, true);
+    var useMiddle = this.childOrgs.length > 0;
+    this.circleForContributorsAtThisOrgLevel = new RenderInfoCircles(this.jobsAtThisLevel.length,
+        this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, useMiddle); // orgs with children use middle
 
     determineMaximumSubOrgDimensions.call(this);
 
@@ -42,11 +44,6 @@ function RenderInfoOrganization(org, mioarchy)
     } else {
         processRectangularOrgRendering.call(this);
     }
-
-    console.log("RenderingInfo[" + this.org.name + "]");
-    console.log("  w,h = " + this.width + "," + this.height);
-    console.log("  containedJobs = " + this.numJobsInTotal);
-    console.log("  jobsAtThisLevel = " + this.jobsAtThisLevel.length);
 }
 
 function determineMaximumSubOrgDimensions() {
@@ -66,16 +63,10 @@ function determineMaximumSubOrgDimensions() {
 }
 
 function processCircularSubOrgRendering() {
-    /*
-    // if this is an empty org, rendering is simple
-    if (this.numJobsInTotal == 0) {
-        this.height = 0;
-        this.width = 0;
-        return;
-    }*/
 
     // calculate circle rendering info as though the sub orgs were just circles
-    this.subOrgCircles = new RenderInfoCircles(this.numSubOrgCircles, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.maxOrgCircleDiameter, true);
+    var useMiddle = this.childOrgs.length > 0;
+    this.subOrgCircles = new RenderInfoCircles(this.numSubOrgCircles, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.maxOrgCircleDiameter, useMiddle);
 
     // max dimensions determine by the sub org circle max dimensions
     this.width = this.subOrgCircles.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
@@ -229,7 +220,7 @@ RenderInfoOrganization.prototype =
             console.log(this.org.name + " has no contributors. Skipping rendering.");
             return;
         }*/
-        //=============================================================================================================
+        //==============================================================================================================
         // TOP LEVEL ORGANIZATIONS
         if (this.orgLevel <= 2 || this.org.isApplication) {
             // if there are jobs, render them

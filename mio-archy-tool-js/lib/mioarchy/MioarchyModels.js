@@ -20,6 +20,9 @@ Mioarchy.prototype =
 {
     Types: {Job: 0, Application: 1, Contributor: 2, Role: 3, Organization: 4, Accountability: 5},
 
+    //==================================================================================================================
+    // ORGANIZATION TREE PROPERTIES AND TRAVERSAL
+    //==================================================================================================================
     // returns the # of immediate childen of the given organization (does not recurse)
     getOrganizationChildren: function (organization) {
         // loop through all orgs
@@ -109,32 +112,20 @@ Mioarchy.prototype =
         }
         return children;
     },
-    loadFromObject: function (obj) {
-        if (obj.type) {
-            if (obj.type === Mioarchy.prototype.Types.Application) {
-                return new Application(obj.id, obj.name, obj.parent);
-            } else if (obj.type === Mioarchy.prototype.Types.Role) {
-                return new Role(obj.id, obj.name);
-            } else if (obj.type === Mioarchy.prototype.Types.Organization) {
-                return new Organization(obj.id, obj.name, obj.parent);
-            } else if (obj.type === Mioarchy.prototype.Types.Contributor) {
-                return new Contributor(obj.id, obj.name, obj.firstName, obj.lastName);
-            } else if (obj.type === Mioarchy.prototype.Types.Job) {
-                return new Job(obj.id, obj.organization, obj.application, obj.role,
-                    obj.accountabilityLevel, obj.accountabilityLabel, obj.contributor, obj.primaryAccountability);
-            }
-        }
-    },
+    //==================================================================================================================
+    // APPLICATION AND ORGANIZATION RELATIONSHIPS
+    //==================================================================================================================
     // returns an org traversal tree that notes which org node matches the application, with a list of matching jobs
     getApplicationSubordinatesTree: function ( applicationName, organizationName ) {
         var newNode = {children: [], matchingJobs: [], name: organizationName};
         // is this the application parent org?
+        /*
         if (this.applications[applicationName].parentOrg === organizationName) {
             newNode.hasAccountabilities = true;
         } else {
-            newNode.hasAccountabilities = this.applicationHasAccountabilitiesInOrganization(
+           */ newNode.hasAccountabilities = this.applicationHasAccountabilitiesInOrganization(
                 applicationName, organizationName);
-        }
+        //}
 
         // add matching jobs
         var org = this.organizations[organizationName];
@@ -183,6 +174,9 @@ Mioarchy.prototype =
         }
         return false;
     },
+    //==================================================================================================================
+    // UTILITIES
+    //==================================================================================================================
     buildCollisionFreeShortNameMap: function() {
         var buildMapping = function(contributorSubset, numLetters) {
             var map = [];
@@ -261,6 +255,22 @@ Mioarchy.prototype =
             assignGoodKeys(finalMap, collisionCheckResults.okMap);
         }
         return finalMap;
+    },
+    loadFromObject: function (obj) {
+        if (obj.type) {
+            if (obj.type === Mioarchy.prototype.Types.Application) {
+                return new Application(obj.id, obj.name, obj.parent);
+            } else if (obj.type === Mioarchy.prototype.Types.Role) {
+                return new Role(obj.id, obj.name);
+            } else if (obj.type === Mioarchy.prototype.Types.Organization) {
+                return new Organization(obj.id, obj.name, obj.parent);
+            } else if (obj.type === Mioarchy.prototype.Types.Contributor) {
+                return new Contributor(obj.id, obj.name, obj.firstName, obj.lastName);
+            } else if (obj.type === Mioarchy.prototype.Types.Job) {
+                return new Job(obj.id, obj.organization, obj.application, obj.role,
+                    obj.accountabilityLevel, obj.accountabilityLabel, obj.contributor, obj.primaryAccountability);
+            }
+        }
     }
 };
 
