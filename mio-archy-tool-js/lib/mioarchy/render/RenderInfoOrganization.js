@@ -68,14 +68,88 @@ function processCircularSubOrgRendering() {
 }
 
 function processRectangularOrgRendering() {
-    // the height is the max org height plus margins
-    this.height = this.maxOrgHeight + this.MIN_DISTANCE_BETWEEN_CIRCLES * 4;
+    // ### FIRST ORG OF THE APPLICATIONS WILL BE THE CONTRIBUTOR CIRCLE, IFF THERE ARE ANY!! ###
+    // CHECK FOR THIS DOWNSTREAM
 
-    // width requires us to calculate the positions of the sub orgs
-    // start from the left, and add until all done
-    // TODO: refactor this so that we are not using different objects when doing rectangular vs. circular (i.e. use inheritance)
+    // first, sort orgs into two piles: normal orgs and applications
+    var applicationOrgInfos = { positions:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES, height:0 };
+    var normalOrgInfos = { positions:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES, height:0 };
+    // first, find the max heights so we can properly calculate the y positions and total org height
+    for (var r in this.childRenderingInfos) {
+        var ri = this.childRenderingInfos[r];
+        if (ri.org.isApplication) {
+            applicationOrgInfos.height = Math.max(applicationOrgInfos.height, ri.height);
+        } else {
+            normalOrgInfos.height = Math.max(normalOrgInfos.height, ri.height);
+        }
+    }
+    // also include the contributor org in the set of apps
+    if (this.jobsAtThisLevel.length > 0) {
+        applicationOrgInfos.height = Math.max(applicationOrgInfos.height, this.circleForContributorsAtThisOrgLevel.height);
+    }
+    // we are now ready to determine the height of this org
+    this.height = applicationOrgInfos.height + normalOrgInfos.height + this.MIN_DISTANCE_BETWEEN_CIRCLES * 8;
+    // add the contributor org in the set of apps if it exists
+    if (this.jobsAtThisLevel.length > 0) {
+        applicationOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-this.circleForContributorsAtThisOrgLevel.height)/2;
+        applicationOrgInfos.positions.push( {x: applicationOrgInfos.cx, y: applicationOrgInfos.cy} );
+        applicationOrgInfos.cx += this.circleForContributorsAtThisOrgLevel.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
+        applicationOrgInfos.width = applicationOrgInfos.cx;
+    }
+    // next, calculate the x and y positions for the apps and normal sub orgs
+    for (var r in this.childRenderingInfos) {
+        var ri = this.childRenderingInfos[r];
+        if (ri.org.isApplication) {
+            applicationOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-ri.height)/2;
+            applicationOrgInfos.positions.push( {x: applicationOrgInfos.cx, y: applicationOrgInfos.cy} );
+            applicationOrgInfos.cx += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
+            applicationOrgInfos.width = applicationOrgInfos.cx;
+        } else {
+            normalOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (normalOrgInfos.height-ri.height)/2;
+            normalOrgInfos.positions.push( {x: normalOrgInfos.cx, y: normalOrgInfos.cy} );
+            normalOrgInfos.cx += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
+            normalOrgInfos.width = normalOrgInfos.cx;
+        }
+    }
+    // finally, determine which is the widest, and that becomes the total org width
+    this.width = Math.max( applicationOrgInfos.cx, normalOrgInfos.cx );
+    // the last step is to translate each coord to its respective position
+    if (applicationOrgInfos.width < normalOrgInfos.width) {
+        // applications are smaller, so translate the application orgs on the x axis (centering)
+        var dx = (this.width - applicationOrgInfos.width) / 2;
+        RenderingUtilities.translatePoints(applicationOrgInfos.positions, dx, 0);
+    } else {
+        // normal orgs are wider, so translate them on the x axis (centering)
+        var dx = (this.width - normalOrgInfos.width) / 2;
+        RenderingUtilities.translatePoints(normalOrgInfos.positions, dx, 0);
+    }
+    // also, normal orgs always get rendered underneath the apps
+    var dy = applicationOrgInfos.height;
+    RenderingUtilities.translatePoints(normalOrgInfos.positions, 0, dy);
+
+    // now combine both arrays into the final product
     this.subOrgPositions = [];
-    var x = this.MIN_DISTANCE_BETWEEN_CIRCLES;
+    for (var i = 0; i < applicationOrgInfos.positions.length; i++) {
+        this.subOrgPositions.push( applicationOrgInfos.positions[i] );
+    }
+    for (var i = 0; i < normalOrgInfos.positions.length; i++) {
+        this.subOrgPositions.push( normalOrgInfos.positions[i] );
+    }
+
+    console.log(this.subOrgPositions);
+
+    /*
+
+    for (var r in this.childRenderingInfos) {
+        var ri = this.childRenderingInfos[r];
+
+        // center vertically wrt this rectangle
+        var y = this.MIN_DISTANCE_BETWEEN_CIRCLES + (this.height-ri.height)/2;
+        // save the coordinate
+        this.subOrgPositions.push( {x:x, y:y} );
+        // next
+        x += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
+    }
 
     // first is the set of contributors at this level, which have to be separately added
     if (this.jobsAtThisLevel.length > 0) {
@@ -103,7 +177,7 @@ function processRectangularOrgRendering() {
         x += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
     }
     // now we can deduce total width
-    this.width = x;
+    this.width = x;*/
 }
 
 function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
@@ -165,7 +239,7 @@ RenderInfoOrganization.prototype =
             console.log(this.org.name + " has no contributors. Skipping rendering.");
             return;
         }
-
+        // orgs at the top level are rendered differently
         if (this.orgLevel <= 2) {
             // if there are jobs, render them
             var pIndex = 0;
@@ -189,6 +263,10 @@ RenderInfoOrganization.prototype =
                 var orgRenderInfo = this.childRenderingInfos[i];
                 var orgPosition = this.subOrgPositions[pIndex++];
 
+                if (typeof(orgPosition) == 'undefined') {
+                    console.log("UNDEFINED ORG");
+                }
+
                 // render organization internals
                 orgRenderInfo.render(x + orgPosition.x, y + orgPosition.y, graph);
             }
@@ -200,7 +278,7 @@ RenderInfoOrganization.prototype =
 
                 // stroke is different for applications
                 var stroke = "";
-                if (this.org.isApplication.toLowerCase() == "true") {
+                if (this.org.isApplication) {
                     // highlight the jobs this person has taken on
                     var appColor = this.mioarchy.applications[this.org.name].color;
                     stroke = "strokeWidth=10;strokeColor="+appColor+";opacity=50";

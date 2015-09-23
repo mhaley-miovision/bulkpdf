@@ -149,6 +149,9 @@ function processOrganizations(orgsSrc)
             var name = row['organization'];
             var parent = row['parent'];
             var isApplication = row['isapplication'];
+            if (isApplication) {
+                isApplication = isApplication.toLowerCase() == 'true';
+            }
 
             organizations[name] = new Models.Organization(id, name, parent, isApplication);
         }
