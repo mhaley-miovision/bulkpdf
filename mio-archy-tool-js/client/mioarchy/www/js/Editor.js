@@ -82,7 +82,7 @@ Editor = function(chromeless)
 	{
 		this.setModified(true);
 	};
-	
+
 	this.graph.getModel().addListener(mxEvent.CHANGE, mxUtils.bind(this, function()
 	{
 		this.graphChangeListener.apply(this, arguments);
@@ -180,10 +180,10 @@ Editor.prototype.createGraph = function()
  */
 Editor.prototype.resetGraph = function()
 {
-	this.graph.gridEnabled = true;
-	this.graph.graphHandler.guidesEnabled = true;
-	this.graph.setTooltips(true);
-	this.graph.setConnectable(true);
+	this.graph.gridEnabled = false;
+	this.graph.graphHandler.guidesEnabled = false;
+	this.graph.setTooltips(false);
+	this.graph.setConnectable(false);
 	this.graph.foldingEnabled = true;
 	this.graph.scrollbars = this.defaultScrollbars;
 	this.graph.pageVisible = this.defaultPageVisible;

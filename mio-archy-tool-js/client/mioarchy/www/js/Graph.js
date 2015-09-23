@@ -102,9 +102,9 @@ Graph = function(container, model, renderHint, stylesheet)
 	// All code below not available and not needed in embed mode
 	if (typeof mxVertexHandler !== 'undefined')
 	{
-		this.setConnectable(true);
-		this.setDropEnabled(true);
-		this.setPanning(true);
+		this.setConnectable(false);
+		this.setDropEnabled(false);
+		this.setPanning(false);
 		this.setTooltips(true);
 		this.setAllowLoops(true);
 		this.allowAutoPanning = true;

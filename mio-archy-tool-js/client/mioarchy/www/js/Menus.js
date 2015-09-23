@@ -149,6 +149,15 @@ Menus.prototype.init = function()
 		{
 			return menu.addItem(applicationName, null, mxUtils.bind(this, function()
 			{
+				/////// TEST ***************
+
+				{
+					this.editorUi.
+					points = pixels * 72 / 96
+				}
+
+				////////// END TEST *******
+
 				// first delete added cells prior to this
 				var tempCells = this.editorUi.temporaryApplicationHightedCells;
 				if (tempCells) {
