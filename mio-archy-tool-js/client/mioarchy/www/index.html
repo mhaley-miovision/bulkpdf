@@ -161,18 +161,49 @@
 		// check for updates every x seconds
 		setInterval( function() { mioarchyClient.getLastUpdated( mioarchyClient.processLastUpdated ) }, 5000 );
 
+		var lastMousedOverSelectedCell = null;
+		var lastMousedOverSelectedCellBackupStyle = null;
+
 		mioarchyClient.setupClickHandling = function() {
-			// Enables links if graph is "disabled" (ie. read-only)
-			mioarchyClient.graph.click = function(me) {
-				var cell = me.getCell();
+			var mouseListener =
+			{
+				mouseDown: function(sender, me) {
 
-				//TODO: VIC'S TWEAK TO HIDE EDITOR FUNCTIONALITY IN ONE SWIFT MOTION
-				this.selectedGraphObject = cell;
-				console.log(this.selectedGraphObject);
-				console.log(this);
+				},
+				mouseMove: function(sender, me) {
+					var cell = me.getCell();
+					if (cell) {
+						console.log(cell);
+						try {
+							mioarchyClient.graph.getModel().beginUpdate();
+							if (lastMousedOverSelectedCell) {
+								// revert
+								lastMousedOverSelectedCell.setStyle(lastMousedOverSelectedCellBackupStyle);
+							}
+							lastMousedOverSelectedCell = cell;
+							lastMousedOverSelectedCellBackupStyle = cell.getStyle();
 
-				mioarchyClient.editor.format.refresh();
-			}
+							console.log(cell.style);
+							cell.setStyle(cell.getStyle() + ";shadow=1;filColor=#ff0000");
+							console.log(cell.style);
+
+						}
+						finally {
+							mioarchyClient.graph.getModel().endUpdate();
+						}
+					}
+				},
+				mouseUp: mxUtils.bind(this, function(sender, me)
+				{
+					var cell = me.getCell();
+
+					//TODO: VIC'S TWEAK TO HIDE EDITOR FUNCTIONALITY IN ONE SWIFT MOTION
+					mioarchyClient.graph.selectedGraphObject = cell;
+					console.log(mioarchyClient.graph.selectedGraphObject);
+					mioarchyClient.editor.format.refresh();
+				})
+			};
+			mioarchyClient.graph.addMouseListener(mouseListener);
 		}
 	</script>
 </body>

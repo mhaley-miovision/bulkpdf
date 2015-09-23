@@ -322,8 +322,6 @@ Format.prototype.refresh = function() {
 		return color;
 	};
 
-	console.log(graph.selectedGraphObject);
-
 	// see if the selected object is a job
 	var selectedGraphObject = graph.selectedGraphObject;
 

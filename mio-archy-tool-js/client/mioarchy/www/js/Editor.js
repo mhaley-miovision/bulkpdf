@@ -186,9 +186,9 @@ Editor.prototype.resetGraph = function()
 	this.graph.setConnectable(false);
 	this.graph.foldingEnabled = true;
 	this.graph.scrollbars = this.defaultScrollbars;
-	this.graph.pageVisible = this.defaultPageVisible;
-	this.graph.pageBreaksVisible = this.graph.pageVisible; 
-	this.graph.preferPageSize = this.graph.pageBreaksVisible;
+	this.graph.pageVisible = false;
+	this.graph.pageBreaksVisible = false;
+	this.graph.preferPageSize = false;
 	this.graph.background = null;
 	this.graph.pageScale = mxGraph.prototype.pageScale;
 	this.graph.pageFormat = mxGraph.prototype.pageFormat;
