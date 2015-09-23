@@ -37,7 +37,7 @@ function RenderInfoOrganization(org, mioarchy)
     // include the org without a circle as a fake org
     this.numSubOrgCircles = this.jobsAtThisLevel.length == 0 ? this.childOrgs.length : this.childOrgs.length + 1;
 
-    if (this.orgLevel > 2) {
+    if (this.orgLevel > 2 && !this.org.isApplication) {
         processCircularSubOrgRendering.call(this);
     } else {
         processRectangularOrgRendering.call(this);
@@ -231,7 +231,7 @@ RenderInfoOrganization.prototype =
         }*/
         //=============================================================================================================
         // TOP LEVEL ORGANIZATIONS
-        if (this.orgLevel <= 2) {
+        if (this.orgLevel <= 2 || this.org.isApplication) {
             // if there are jobs, render them
             if (this.jobsAtThisLevel.length > 0) {
                 if (this.subOrgPositions) {
