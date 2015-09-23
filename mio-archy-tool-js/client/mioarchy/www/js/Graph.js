@@ -275,30 +275,6 @@ Graph = function(container, model, renderHint, stylesheet)
 		{
 			return mxEvent.isMouseEvent(me.getEvent());
 		};
-	
-		// Enables links if graph is "disabled" (ie. read-only)
-		var click = this.click;
-		this.click = function(me)
-		{
-			if (!this.isEnabled())
-			{
-				var cell = me.getCell();
-				
-				if (cell != null)
-				{
-					var link = this.getLinkForCell(cell);
-					
-					if (link != null)
-					{
-						window.open(link);
-					}
-				}
-			}
-			else
-			{
-				return click.apply(this, arguments);
-			}
-		};
 		
 		// Shows pointer cursor for clickable cells with links
 		// ie. if the graph is disabled and cells cannot be selected

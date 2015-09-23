@@ -277,14 +277,12 @@ Format.prototype.clear = function()
 /**
  * Adds the label menu items to the given menu and parent.
  */
-Format.prototype.refresh = function()
-{
+Format.prototype.refresh = function() {
 	// Performance tweak: No refresh needed if not visible
-	if (this.container.style.width == '0px')
-	{
+	if (this.container.style.width == '0px') {
 		return;
 	}
-	
+
 	this.clear();
 	var ui = this.editorUi;
 	var graph = ui.editor.graph;
@@ -294,7 +292,7 @@ Format.prototype.refresh = function()
 	div.style.color = 'rgb(112, 112, 112)';
 	div.style.textAlign = 'left';
 	div.style.cursor = 'default';
-	
+
 	var label = document.createElement('div');
 	label.style.border = '1px solid #c0c0c0';
 	label.style.borderWidth = '0px 0px 1px 0px';
@@ -308,7 +306,7 @@ Format.prototype.refresh = function()
 	label.style.backgroundColor = '#00CCFF';
 	this.container.appendChild(div);
 
-	var getAccountabilityRatingColor = function(accountabilityType) {
+	var getAccountabilityRatingColor = function (accountabilityType) {
 		var color = "#f7f7f7";
 		switch (accountabilityType) {
 			case "3":
@@ -324,53 +322,55 @@ Format.prototype.refresh = function()
 		return color;
 	};
 
-	if (!graph.isSelectionEmpty()) {
-		// see if the selected object is a job
-		var vertices = this.getSelectionState().vertices;
+	console.log(graph.selectedGraphObject);
 
-		if (vertices.length == 1 && vertices[0].mioObject && vertices[0].mioObject.type === Mioarchy.prototype.Types.Job) {
-            var job = vertices[0].mioObject;
-            var accountabilities = this.editorUi.mioarchyClient.jobAccountabilities[job.id];
+	// see if the selected object is a job
+	var selectedGraphObject = graph.selectedGraphObject;
 
-            label.textContent = job.accountabilityLabel + " Accountabilities";
-            div.appendChild(label);
+	if (selectedGraphObject && selectedGraphObject.mioObject && selectedGraphObject.mioObject.type === Mioarchy.prototype.Types.Job) {
+		var job = selectedGraphObject.mioObject;
+		var accountabilities = this.editorUi.mioarchyClient.jobAccountabilities[job.id];
 
-            if (typeof(accountabilities) == 'undefined') {
-                label2 = label.cloneNode(true);
-                label2.style.backgroundColor = '#f7f7f7';
-                label2.textContent = "None defined."
-                div.appendChild(label2);
-            } else {for (var i = 0; i < accountabilities.length; i++) {
-                    label2 = label.cloneNode(true);
-                    label2.style.backgroundColor = getAccountabilityRatingColor(accountabilities[i].rating);
-                    label2.style.borderLeftWidth = '1px';
+		label.textContent = job.accountabilityLabel + " Accountabilities";
+		div.appendChild(label);
 
-                    label2.textContent = accountabilities[i].label;
-                    div.appendChild(label2);
-                }
-            }
-        } else if (vertices.length == 1 && vertices[0].mioObject && vertices[0].mioObject.type === Mioarchy.prototype.Types.Organization) {
-            var organization = vertices[0].mioObject.name;
-            var accountabilities = this.editorUi.mioarchyClient.orgAccountabilities[organization];
+		if (typeof(accountabilities) == 'undefined') {
+			label2 = label.cloneNode(true);
+			label2.style.backgroundColor = '#f7f7f7';
+			label2.textContent = "None defined."
+			div.appendChild(label2);
+		} else {
+			for (var i = 0; i < accountabilities.length; i++) {
+				label2 = label.cloneNode(true);
+				label2.style.backgroundColor = getAccountabilityRatingColor(accountabilities[i].rating);
+				label2.style.borderLeftWidth = '1px';
 
-            label.textContent = organization + " Accountabilities";
-            div.appendChild(label);
+				label2.textContent = accountabilities[i].label;
+				div.appendChild(label2);
+			}
+		}
+	} else if (selectedGraphObject && selectedGraphObject.mioObject && selectedGraphObject.mioObject.type === Mioarchy.prototype.Types.Organization) {
+		var organization = selectedGraphObject.mioObject.name;
+		var accountabilities = this.editorUi.mioarchyClient.orgAccountabilities[organization];
 
-            if (typeof(accountabilities) == 'undefined') {
-                label2 = label.cloneNode(true);
-				label2.style.backgroundColor = "#f7f7f7";;
-                label2.textContent = "None defined."
-                div.appendChild(label2);
-            } else {
-                for (var i = 0; i < accountabilities.length; i++) {
-                    label2 = label.cloneNode(true);
-                    label2.style.backgroundColor = getAccountabilityRatingColor(accountabilities[i].rating);
-                    label2.textContent = accountabilities[i].label;
-                    div.appendChild(label2);
+		label.textContent = organization + " Accountabilities";
+		div.appendChild(label);
 
-                }
-            }
-        }
+		if (typeof(accountabilities) == 'undefined') {
+			label2 = label.cloneNode(true);
+			label2.style.backgroundColor = "#f7f7f7";
+			;
+			label2.textContent = "None defined."
+			div.appendChild(label2);
+		} else {
+			for (var i = 0; i < accountabilities.length; i++) {
+				label2 = label.cloneNode(true);
+				label2.style.backgroundColor = getAccountabilityRatingColor(accountabilities[i].rating);
+				label2.textContent = accountabilities[i].label;
+				div.appendChild(label2);
+
+			}
+		}
 	}
 };
 

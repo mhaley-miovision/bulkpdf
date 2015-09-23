@@ -94,7 +94,7 @@
 		mioarchyClient.targetRenderingOrg = "Miovision";
 
 		// stores the graph object
-		mioarchyClient.graph;
+		mioarchyClient.graph = null;
 		mioarchyClient.lastUpdated = new Date();
 
 		// initialize the editor once the DB is ready
@@ -108,21 +108,6 @@
 				{
 					editorUiInit.apply(this, arguments);
 					this.actions.get('export').setEnabled(false);
-
-					/*
-					// Updates action states which require a backend
-					if ( !useLocalStorage )
-					{
-						mxUtils.post(OPEN_URL, '', mxUtils.bind(this, function(req)
-						{
-							var enabled = req.getStatus() != 404;
-							this.actions.get('open').setEnabled(enabled || fileSupport);
-							this.actions.get('import').setEnabled(enabled || fileSupport);
-							this.actions.get('save').setEnabled(enabled);
-							this.actions.get('saveAs').setEnabled(enabled);
-							this.actions.get('export').setEnabled(enabled);
-						}));
-					}*/
 				};
 			})();
 
@@ -130,8 +115,9 @@
 		}
 
 		// called when editor UI has been fully initialized (to render the org)
-		mioarchyClient.onEditorUIInitCompleted = function( graph ) {
+		mioarchyClient.onEditorUIInitCompleted = function( graph, editor ) {
 			mioarchyClient.graph = graph;
+			mioarchyClient.editor = editor;
 			mioarchyClient.renderOrganization();
 		}
 
@@ -152,6 +138,9 @@
 				mioarchyClient.graph.view.rendering = true;
 				mioarchyClient.graph.refresh();
 
+				mioarchyClient.graph.setEnabled(false);
+				mioarchyClient.setupClickHandling();
+
 			} else {
 				console.log("renderOrganization: _graph is undefined!!!");
 			}
@@ -171,6 +160,20 @@
 		}
 		// check for updates every x seconds
 		setInterval( function() { mioarchyClient.getLastUpdated( mioarchyClient.processLastUpdated ) }, 5000 );
+
+		mioarchyClient.setupClickHandling = function() {
+			// Enables links if graph is "disabled" (ie. read-only)
+			mioarchyClient.graph.click = function(me) {
+				var cell = me.getCell();
+
+				//TODO: VIC'S TWEAK TO HIDE EDITOR FUNCTIONALITY IN ONE SWIFT MOTION
+				this.selectedGraphObject = cell;
+				console.log(this.selectedGraphObject);
+				console.log(this);
+
+				mioarchyClient.editor.format.refresh();
+			}
+		}
 	</script>
 </body>
 </html>

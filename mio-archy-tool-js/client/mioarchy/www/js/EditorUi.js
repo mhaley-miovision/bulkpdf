@@ -620,7 +620,7 @@ EditorUi = function(mioarchyClient, initCallback, editor, container)
    	this.open();
 
    	// call the finished init callback, so that miovision things can be rendered
-   	initCallback( graph );
+   	initCallback( graph, this );
 };
 
 // Extends mxEventSource
