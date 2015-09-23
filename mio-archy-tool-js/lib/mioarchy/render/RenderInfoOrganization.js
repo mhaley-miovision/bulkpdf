@@ -165,6 +165,11 @@ function processRectangularOrgRendering()
         var orgName = normalOrgInfos.orgRefs[i].name;
         this.subOrgPositions[orgName] = position;
     }
+
+    // final correction: if there weren't any normal orgs, i.e. this was an app, reduce the overall height
+    if (normalOrgInfos.positions.length == 0) {
+        this.height -= this.MIN_DISTANCE_BETWEEN_CIRCLES * 2;
+    }
 }
 
 function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
