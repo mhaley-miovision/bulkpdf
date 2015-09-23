@@ -152,8 +152,10 @@ Menus.prototype.init = function()
 				/////// TEST ***************
 
 				{
+					/*
 					this.editorUi.
 					points = pixels * 72 / 96
+					*/
 				}
 
 				////////// END TEST *******
@@ -240,14 +242,14 @@ Menus.prototype.init = function()
 								graph.cellsOrdered([v], true);
 
 								// if this is the app node, draw it from the bottom of the app.
+								style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
 								if (parentOrgVertex == lastSubordinateOrgParentVertex) {
 									style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;";
 								}
 
 								// also draw a link from the last containing org to this job
 								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, v,
-									"curved=0;rounded=0;html=1;" +
-									"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
+									style +
 										//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
 										//"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
 									"strokeWidth=10;strokeColor=" + appColor + ";opacity=50");
