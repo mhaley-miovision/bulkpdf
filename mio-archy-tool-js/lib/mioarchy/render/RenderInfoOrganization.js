@@ -19,6 +19,7 @@ function RenderInfoOrganization(org, mioarchy)
 
     // get list of jobs
     this.jobsAtThisLevel = mioarchy.getOrganizationJobs( org, false );
+    this.jobsAtThisLevelPosition = { x: 0, y: 0 };
 
     // yes, and populate child org infos
     for (var o in this.childOrgs) {
@@ -72,8 +73,9 @@ function processRectangularOrgRendering() {
     // CHECK FOR THIS DOWNSTREAM
 
     // first, sort orgs into two piles: normal orgs and applications
-    var applicationOrgInfos = { positions:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES, height:0 };
-    var normalOrgInfos = { positions:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES, height:0 };
+    var applicationOrgInfos = { positions:[], orgRefs:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES };
+    var normalOrgInfos = { positions:[], orgRefs:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES };
+
     // first, find the max heights so we can properly calculate the y positions and total org height
     for (var r in this.childRenderingInfos) {
         var ri = this.childRenderingInfos[r];
@@ -83,30 +85,36 @@ function processRectangularOrgRendering() {
             normalOrgInfos.height = Math.max(normalOrgInfos.height, ri.height);
         }
     }
+
     // also include the contributor org in the set of apps
     if (this.jobsAtThisLevel.length > 0) {
         applicationOrgInfos.height = Math.max(applicationOrgInfos.height, this.circleForContributorsAtThisOrgLevel.height);
     }
+
     // we are now ready to determine the height of this org
     this.height = applicationOrgInfos.height + normalOrgInfos.height + this.MIN_DISTANCE_BETWEEN_CIRCLES * 8;
+
     // add the contributor org in the set of apps if it exists
     if (this.jobsAtThisLevel.length > 0) {
-        applicationOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-this.circleForContributorsAtThisOrgLevel.height)/2;
-        applicationOrgInfos.positions.push( {x: applicationOrgInfos.cx, y: applicationOrgInfos.cy} );
+        applicationOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-this.circleForContributorsAtThisOrgLevel.height)/2
+        this.jobsAtThisLevelPosition = {x: applicationOrgInfos.cx, y: applicationOrgInfos.cy };
         applicationOrgInfos.cx += this.circleForContributorsAtThisOrgLevel.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
         applicationOrgInfos.width = applicationOrgInfos.cx;
     }
+
     // next, calculate the x and y positions for the apps and normal sub orgs
     for (var r in this.childRenderingInfos) {
         var ri = this.childRenderingInfos[r];
         if (ri.org.isApplication) {
             applicationOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-ri.height)/2;
-            applicationOrgInfos.positions.push( {x: applicationOrgInfos.cx, y: applicationOrgInfos.cy} );
+            applicationOrgInfos.positions.push( {x: applicationOrgInfos.cx, y: applicationOrgInfos.cy, } );
+            applicationOrgInfos.orgRefs.push( ri.org );
             applicationOrgInfos.cx += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
             applicationOrgInfos.width = applicationOrgInfos.cx;
         } else {
             normalOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (normalOrgInfos.height-ri.height)/2;
-            normalOrgInfos.positions.push( {x: normalOrgInfos.cx, y: normalOrgInfos.cy} );
+            normalOrgInfos.positions.push( {x: normalOrgInfos.cx, y: normalOrgInfos.cy } );
+            normalOrgInfos.orgRefs.push( ri.org );
             normalOrgInfos.cx += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
             normalOrgInfos.width = normalOrgInfos.cx;
         }
@@ -117,67 +125,28 @@ function processRectangularOrgRendering() {
     if (applicationOrgInfos.width < normalOrgInfos.width) {
         // applications are smaller, so translate the application orgs on the x axis (centering)
         var dx = (this.width - applicationOrgInfos.width) / 2;
-        RenderingUtilities.translatePoints(applicationOrgInfos.positions, dx, 0);
+        applicationOrgInfos.positions = RenderingUtilities.translatePoints(applicationOrgInfos.positions, dx, 0);
     } else {
         // normal orgs are wider, so translate them on the x axis (centering)
         var dx = (this.width - normalOrgInfos.width) / 2;
-        RenderingUtilities.translatePoints(normalOrgInfos.positions, dx, 0);
+        normalOrgInfos.positions = RenderingUtilities.translatePoints(normalOrgInfos.positions, dx, 0);
     }
     // also, normal orgs always get rendered underneath the apps
     var dy = applicationOrgInfos.height;
-    RenderingUtilities.translatePoints(normalOrgInfos.positions, 0, dy);
+    normalOrgInfos.positions = RenderingUtilities.translatePoints(normalOrgInfos.positions, 0, dy);
 
     // now combine both arrays into the final product
     this.subOrgPositions = [];
     for (var i = 0; i < applicationOrgInfos.positions.length; i++) {
-        this.subOrgPositions.push( applicationOrgInfos.positions[i] );
+        var position = applicationOrgInfos.positions[i];
+        var orgName = applicationOrgInfos.orgRefs[i].name;
+        this.subOrgPositions[orgName] = position;
     }
     for (var i = 0; i < normalOrgInfos.positions.length; i++) {
-        this.subOrgPositions.push( normalOrgInfos.positions[i] );
+        var position = normalOrgInfos.positions[i];
+        var orgName = normalOrgInfos.orgRefs[i].name;
+        this.subOrgPositions[orgName] = position;
     }
-
-    console.log(this.subOrgPositions);
-
-    /*
-
-    for (var r in this.childRenderingInfos) {
-        var ri = this.childRenderingInfos[r];
-
-        // center vertically wrt this rectangle
-        var y = this.MIN_DISTANCE_BETWEEN_CIRCLES + (this.height-ri.height)/2;
-        // save the coordinate
-        this.subOrgPositions.push( {x:x, y:y} );
-        // next
-        x += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
-    }
-
-    // first is the set of contributors at this level, which have to be separately added
-    if (this.jobsAtThisLevel.length > 0) {
-        var ri = this.circleForContributorsAtThisOrgLevel;
-
-        // center vertically wrt this rectangle
-        var y = this.MIN_DISTANCE_BETWEEN_CIRCLES + (this.height-ri.height)/2;
-        // save the coordinate
-        this.subOrgPositions.push( {x:x, y:y} );
-        // next
-        x += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
-
-        // account for contributors being tall enough to resize this box
-        this.height = Math.max(this.height, ri.height + this.MIN_DISTANCE_BETWEEN_CIRCLES);
-    }
-
-    for (var r in this.childRenderingInfos) {
-        var ri = this.childRenderingInfos[r];
-
-        // center vertically wrt this rectangle
-        var y = this.MIN_DISTANCE_BETWEEN_CIRCLES + (this.height-ri.height)/2;
-        // save the coordinate
-        this.subOrgPositions.push( {x:x, y:y} );
-        // next
-        x += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
-    }
-    // now we can deduce total width
-    this.width = x;*/
 }
 
 function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
@@ -200,10 +169,7 @@ function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
 
         var label;
         if (job.contributor && this.mioarchy.contributors[job.contributor]) {
-            var fi = this.mioarchy.contributors[job.contributor].firstName.substring(0, 1);
-            var li = this.mioarchy.contributors[job.contributor].lastName.substring(0, 1);
-            // TODO: resolve name clashes in order to make unique
-            label = (fi + li).toLowerCase();
+            label = this.mioarchy.namesToShortNames[job.contributor].shortName;
         } else {
             label = "NEW"; // not yet hired
         }
@@ -242,31 +208,22 @@ RenderInfoOrganization.prototype =
         // orgs at the top level are rendered differently
         if (this.orgLevel <= 2) {
             // if there are jobs, render them
-            var pIndex = 0;
             if (this.jobsAtThisLevel.length > 0) {
-                var dx, dy;
                 if (this.subOrgPositions) {
-                    dx = this.subOrgPositions[0].x + this.circleForContributorsAtThisOrgLevel.width / 2;
-                    dy = this.subOrgPositions[0].y + this.circleForContributorsAtThisOrgLevel.height / 2;
-                } else {
-                    console.log("failed to find subOrgPositions but was expecting them! org=" + this.org.name);
-                    dx = 0;
-                    dy = 0;
+                    var dx, dy;
+                    dx = this.jobsAtThisLevelPosition.x + (this.width - this.circleForContributorsAtThisOrgLevel.width) / 2;
+                    dy = this.jobsAtThisLevelPosition.y;
+                    renderJobsAtThisOrgLevel.call(this, x, y, dx, dy, graph);
                 }
-
-                renderJobsAtThisOrgLevel.call(this, x, y, dx, dy, graph);
-                pIndex = 1;
             }
             // render the children of this org
             for (var i = 0; i < this.childRenderingInfos.length; i++) {
                 // current org rendering info
                 var orgRenderInfo = this.childRenderingInfos[i];
-                var orgPosition = this.subOrgPositions[pIndex++];
-
+                var orgPosition = this.subOrgPositions[ orgRenderInfo.org.name ];
                 if (typeof(orgPosition) == 'undefined') {
-                    console.log("UNDEFINED ORG");
+                    console.log("UNDEFINED ORG POSITION!!!");
                 }
-
                 // render organization internals
                 orgRenderInfo.render(x + orgPosition.x, y + orgPosition.y, graph);
             }
@@ -326,7 +283,6 @@ RenderInfoOrganization.prototype =
                 for (var i = 0; i < this.childRenderingInfos.length; i++) {
                     // current org rendering info
                     var orgRenderInfo = this.childRenderingInfos[i];
-                    var orgLabel = orgRenderInfo.org.name;
 
                     // offset by containing circle dimensions, as well as sub circle dimensions
                     var cx = x + circleLocations[i].x + this.width / 2 - orgRenderInfo.width / 2;
@@ -392,10 +348,7 @@ RenderInfoOrganization.prototype =
 
                     var label;
                     if (job.contributor && this.mioarchy.contributors[job.contributor]) {
-                        var fi = this.mioarchy.contributors[job.contributor].firstName.substring(0, 1);
-                        var li = this.mioarchy.contributors[job.contributor].lastName.substring(0, 1);
-                        // TODO: resolve name clashes in order to make unique
-                        label = (fi + li).toLowerCase();
+                        label = this.mioarchy.namesToShortNames[job.contributor].shortName;
                     } else {
                         label = "NEW"; // not yet hired
                     }

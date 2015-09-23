@@ -8,6 +8,7 @@ function Mioarchy(jobs, orgs, contribs, apps, roles, orgAccountabilites, jobAcco
     this.organizations = orgs;
     this.orgAccountabilities = orgAccountabilites;
     this.jobAccountabilities = jobAccountabilities;
+    this.namesToShortNames = this.buildCollisionFreeShortNameMap();
 
     // post-rendering populated objects (this is a big of a kludge :( should be a separate resulting object out of the
     // rendering in order to have proper separation of concerns
@@ -181,6 +182,85 @@ Mioarchy.prototype =
             }
         }
         return false;
+    },
+    buildCollisionFreeShortNameMap: function() {
+        var buildMapping = function(contributorSubset, numLetters) {
+            var map = [];
+            var error = false;
+            for (var name in contributorSubset) {
+                var contributor = contributorSubset[name];
+                var fn = contributor.firstName;
+                var ln = contributor.lastName;
+                var fi = fn.substring(0, 1);
+                if (numLetters > ln.length) {
+                    console.log("ERROR: Contributor name collision coux`ld not be resolved!!!");
+                    error = true;
+                }
+                var li = ln.substring(0, numLetters);
+                map[contributor.name] = {
+                    shortName: (fi + li).toLowerCase(),
+                    firstName: fn,
+                    lastName: ln,
+                    name: contributor.name
+                };
+            }
+            return { map:map, error:error };
+        };
+        var sortCollisions = function(map) {
+            var n = Object.keys(map).length;
+            var collidingMap = [];
+            var okMap = [];
+            for (var i = 0; i < n; i++) {
+                var isColliding = false;
+                var keyI = Object.keys(map)[i];
+                for (var j = 0; j < n; j++) {
+                    if (i != j) {
+                        var keyJ = Object.keys(map)[j];
+                        if (map[keyI].shortName == map[keyJ].shortName) {
+                            // we have a collision
+                            var containsAlready = false;
+                            for (var k in collidingMap) {
+                                if (k === keyI) {
+                                    containsAlready = true;
+                                    break;
+                                }
+                            }
+                            if (!containsAlready) {
+                                collidingMap[keyI] = map[keyI];
+                            }
+                            isColliding = true;
+                        }
+                    }
+                }
+                if (!isColliding) {
+                    okMap[keyI] = map[keyI];
+                }
+            }
+            return { collidingMap:collidingMap, okMap:okMap };
+        }
+
+        var assignGoodKeys = function(finalMap, goodKeys) {
+            for (var k in goodKeys) {
+                finalMap[k] = goodKeys[k];
+            }
+        }
+
+        // n passes until no collisions occur
+        var passNumber = 1;
+        var mappingResult = buildMapping(this.contributors, passNumber);
+        var finalMap = [];
+
+        // now continue doing this until there are no name collisions
+        var collisionCheckResults = sortCollisions(mappingResult.map);
+        // add the good keys
+        assignGoodKeys(finalMap, collisionCheckResults.okMap);
+        while (Object.keys(collisionCheckResults.collidingMap).length > 0 && !mappingResult.error) {
+            passNumber++;
+            mappingResult = buildMapping(collisionCheckResults.collidingMap, passNumber);
+            collisionCheckResults = sortCollisions(mappingResult.map);
+            assignGoodKeys(finalMap, collisionCheckResults.okMap);
+        }
+        return finalMap;
     }
 };
 
