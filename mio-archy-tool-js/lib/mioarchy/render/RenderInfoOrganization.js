@@ -10,6 +10,7 @@ function RenderInfoOrganization(org, mioarchy)
     this.childRenderingInfos = [];
     this.mioarchy = mioarchy;
     this.orgLevel = mioarchy.getOrganizationLevel( org );
+    this.numJobsInTotal = mioarchy.getOrganizationJobs( org, true ).length;
 
     // retrieve child orgs
     this.childOrgs = mioarchy.getOrganizationChildren( org );
@@ -41,6 +42,11 @@ function RenderInfoOrganization(org, mioarchy)
     } else {
         processRectangularOrgRendering.call(this);
     }
+
+    console.log("RenderingInfo[" + this.org.name + "]");
+    console.log("  w,h = " + this.width + "," + this.height);
+    console.log("  containedJobs = " + this.numJobsInTotal);
+    console.log("  jobsAtThisLevel = " + this.jobsAtThisLevel.length);
 }
 
 function determineMaximumSubOrgDimensions() {
@@ -60,6 +66,14 @@ function determineMaximumSubOrgDimensions() {
 }
 
 function processCircularSubOrgRendering() {
+    /*
+    // if this is an empty org, rendering is simple
+    if (this.numJobsInTotal == 0) {
+        this.height = 0;
+        this.width = 0;
+        return;
+    }*/
+
     // calculate circle rendering info as though the sub orgs were just circles
     this.subOrgCircles = new RenderInfoCircles(this.numSubOrgCircles, this.MIN_DISTANCE_BETWEEN_CIRCLES, this.maxOrgCircleDiameter, true);
 
@@ -68,11 +82,9 @@ function processCircularSubOrgRendering() {
     this.height = this.subOrgCircles.height + this.MIN_DISTANCE_BETWEEN_CIRCLES;
 }
 
-function processRectangularOrgRendering() {
-    // ### FIRST ORG OF THE APPLICATIONS WILL BE THE CONTRIBUTOR CIRCLE, IFF THERE ARE ANY!! ###
-    // CHECK FOR THIS DOWNSTREAM
-
-    // first, sort orgs into two piles: normal orgs and applications
+function processRectangularOrgRendering()
+{
+    // we will be sorting orgs into two piles: normal orgs and applications
     var applicationOrgInfos = { positions:[], orgRefs:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES };
     var normalOrgInfos = { positions:[], orgRefs:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES };
 
@@ -85,19 +97,23 @@ function processRectangularOrgRendering() {
             normalOrgInfos.height = Math.max(normalOrgInfos.height, ri.height);
         }
     }
-
     // also include the contributor org in the set of apps
     if (this.jobsAtThisLevel.length > 0) {
         applicationOrgInfos.height = Math.max(applicationOrgInfos.height, this.circleForContributorsAtThisOrgLevel.height);
     }
 
     // we are now ready to determine the height of this org
-    this.height = applicationOrgInfos.height + normalOrgInfos.height + this.MIN_DISTANCE_BETWEEN_CIRCLES * 8;
+    // (m + hmax_a + 2m + hmax_o + m)
+    this.height = applicationOrgInfos.height + normalOrgInfos.height + this.MIN_DISTANCE_BETWEEN_CIRCLES * 4;
 
-    // add the contributor org in the set of apps if it exists
+    // add the contributor circles first in the set of apps if it exists
     if (this.jobsAtThisLevel.length > 0) {
+        // org must be corrected to 0,0 (TODO: this really should be circle org rendering's responsibility!)
+        var dx = this.circleForContributorsAtThisOrgLevel.width/2;
+        var dy = this.circleForContributorsAtThisOrgLevel.height/2;
+
         applicationOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-this.circleForContributorsAtThisOrgLevel.height)/2
-        this.jobsAtThisLevelPosition = {x: applicationOrgInfos.cx, y: applicationOrgInfos.cy };
+        this.jobsAtThisLevelPosition = {x: applicationOrgInfos.cx + dx, y: applicationOrgInfos.cy + dy };
         applicationOrgInfos.cx += this.circleForContributorsAtThisOrgLevel.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
         applicationOrgInfos.width = applicationOrgInfos.cx;
     }
@@ -131,8 +147,10 @@ function processRectangularOrgRendering() {
         var dx = (this.width - normalOrgInfos.width) / 2;
         normalOrgInfos.positions = RenderingUtilities.translatePoints(normalOrgInfos.positions, dx, 0);
     }
+    // move the contributor circle over
+    this.jobsAtThisLevelPosition.x += (this.width - applicationOrgInfos.width) / 2;
     // also, normal orgs always get rendered underneath the apps
-    var dy = applicationOrgInfos.height;
+    var dy = applicationOrgInfos.height + this.MIN_DISTANCE_BETWEEN_CIRCLES * 2;
     normalOrgInfos.positions = RenderingUtilities.translatePoints(normalOrgInfos.positions, 0, dy);
 
     // now combine both arrays into the final product
@@ -201,22 +219,25 @@ RenderInfoOrganization.prototype =
      actually rendering based on render info applies rendering rules
      */
     render: function(x, y, graph) {
+        /*
         if (this.jobsAtThisLevel == 0) {
             console.log(this.org.name + " has no contributors. Skipping rendering.");
             return;
-        }
-        // orgs at the top level are rendered differently
+        }*/
+        //=============================================================================================================
+        // TOP LEVEL ORGANIZATIONS
         if (this.orgLevel <= 2) {
             // if there are jobs, render them
             if (this.jobsAtThisLevel.length > 0) {
                 if (this.subOrgPositions) {
                     var dx, dy;
-                    dx = this.jobsAtThisLevelPosition.x + (this.width - this.circleForContributorsAtThisOrgLevel.width) / 2;
-                    dy = this.jobsAtThisLevelPosition.y;
-                    renderJobsAtThisOrgLevel.call(this, x, y, dx, dy, graph);
+                    cx = x + this.jobsAtThisLevelPosition.x;
+                    cy = y + this.jobsAtThisLevelPosition.y;
+                    renderJobsAtThisOrgLevel.call(this, cx, cy, 0, 0, graph);
                 }
             }
-            // render the children of this org
+            //==========================================================================================================
+            // CHILDREN OF TOP LEVEL ORGANIZATION
             for (var i = 0; i < this.childRenderingInfos.length; i++) {
                 // current org rendering info
                 var orgRenderInfo = this.childRenderingInfos[i];
@@ -227,7 +248,8 @@ RenderInfoOrganization.prototype =
                 // render organization internals
                 orgRenderInfo.render(x + orgPosition.x, y + orgPosition.y, graph);
             }
-            // next we will draw the box that will contain our sub orgs
+            //==========================================================================================================
+            // BOUNDING BOX FOR TOP LEVEL ORGANIZATION
             graph.getModel().beginUpdate();
             try {
                 var parent = graph.getDefaultParent();
@@ -235,14 +257,15 @@ RenderInfoOrganization.prototype =
 
                 // stroke is different for applications
                 var stroke = "";
+                var shape = "rounded=1;"
                 if (this.org.isApplication) {
                     // highlight the jobs this person has taken on
                     var appColor = this.mioarchy.applications[this.org.name].color;
-                    stroke = "strokeWidth=10;strokeColor="+appColor+";opacity=50";
+                    stroke = "strokeWidth=10;strokeColor="+appColor+";opacity=100;";
+                    shape = "shape=process;";
                 }
-
                 var vertex = graph.insertVertex(parent, null, orgLabel, x, y, this.width, this.height,
-                    "rounded=1;fillColor=none;whiteSpace=wrap;" + stroke +
+                    shape + "fillColor=none;whiteSpace=wrap;" + stroke +
                     "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
                 // attach the org info to the vertex
                 vertex.mioObject = this.org;
@@ -253,8 +276,12 @@ RenderInfoOrganization.prototype =
             } finally {
                 graph.getModel().endUpdate();
             }
-        } else {
-            // leaf is treated differently (as simple set of job circles)
+        }
+        //==============================================================================================================
+        // SUB ORGANIZATION
+        else {
+            //==========================================================================================================
+            // SUB ORGANIZATION WITH CHILDREN
             if (!this.isLeaf) {
                 // first we will draw the circle that will contain our sub circles
                 graph.getModel().beginUpdate();
@@ -292,7 +319,8 @@ RenderInfoOrganization.prototype =
                     orgRenderInfo.render(cx, cy, graph);
                 }
             }
-            // offsets
+            //==========================================================================================================
+            // LEAF ORGANIZATION
             var dx = 0;
             var dy = 0;
             // only draw the containing circle if this is a leaf
@@ -327,7 +355,8 @@ RenderInfoOrganization.prototype =
                 dx = lastCircle.x + this.width / 2;
                 dy = lastCircle.y + this.width / 2;
             }
-            // if there are jobs, render them
+            //==========================================================================================================
+            // JOBS AT THIS SUB ORGANIZATION LEVEL
             if (this.jobsAtThisLevel.length > 0) {
                 // now move all the circle locations as needed
                 var circleLocations = RenderingUtilities.translatePoints(this.circleForContributorsAtThisOrgLevel.circleCenters, dx, dy);
@@ -372,12 +401,6 @@ RenderInfoOrganization.prototype =
     determineContributorColor: function(job, mioarchy)
     {
         var colorString = "";
-        // this is a lead
-        /*
-         var l = job.accountabilityLabel.toLowerCase();
-         if (l.indexOf("senior") >= 0 || l.indexOf("executive") >= 0 || l.indexOf("director") >= 0) {
-         colorString += "dark";
-         }*/
 
         // by app now
         if (job.application) {
