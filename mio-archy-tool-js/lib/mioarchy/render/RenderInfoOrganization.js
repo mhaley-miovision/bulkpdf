@@ -75,6 +75,9 @@ function processCircularSubOrgRendering() {
 
 function processRectangularOrgRendering()
 {
+    var orgLevel = this.mioarchy.getOrganizationLevel(this.org);
+    var paddingForLabel = orgLevel == 1 ? 180 : 100;
+
     // we will be sorting orgs into two piles: normal orgs and applications
     var applicationOrgInfos = { positions:[], orgRefs:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES };
     var normalOrgInfos = { positions:[], orgRefs:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES };
@@ -95,7 +98,7 @@ function processRectangularOrgRendering()
 
     // we are now ready to determine the height of this org
     // (m + hmax_a + 2m + hmax_o + m)
-    this.height = applicationOrgInfos.height + normalOrgInfos.height + this.MIN_DISTANCE_BETWEEN_CIRCLES * 4;
+    this.height = applicationOrgInfos.height + normalOrgInfos.height + this.MIN_DISTANCE_BETWEEN_CIRCLES * 4 + paddingForLabel;
 
     // add the contributor circles first in the set of apps if it exists
     if (this.jobsAtThisLevel.length > 0) {
@@ -103,7 +106,7 @@ function processRectangularOrgRendering()
         var dx = this.circleForContributorsAtThisOrgLevel.width/2;
         var dy = this.circleForContributorsAtThisOrgLevel.height/2;
 
-        applicationOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-this.circleForContributorsAtThisOrgLevel.height)/2
+        applicationOrgInfos.cy = paddingForLabel + this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-this.circleForContributorsAtThisOrgLevel.height)/2
         this.jobsAtThisLevelPosition = {x: applicationOrgInfos.cx + dx, y: applicationOrgInfos.cy + dy };
         applicationOrgInfos.cx += this.circleForContributorsAtThisOrgLevel.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
         applicationOrgInfos.width = applicationOrgInfos.cx;
@@ -113,13 +116,13 @@ function processRectangularOrgRendering()
     for (var r in this.childRenderingInfos) {
         var ri = this.childRenderingInfos[r];
         if (ri.org.isApplication) {
-            applicationOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-ri.height)/2;
+            applicationOrgInfos.cy = paddingForLabel + this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-ri.height)/2;
             applicationOrgInfos.positions.push( {x: applicationOrgInfos.cx, y: applicationOrgInfos.cy, } );
             applicationOrgInfos.orgRefs.push( ri.org );
             applicationOrgInfos.cx += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
             applicationOrgInfos.width = applicationOrgInfos.cx;
         } else {
-            normalOrgInfos.cy = this.MIN_DISTANCE_BETWEEN_CIRCLES + (normalOrgInfos.height-ri.height)/2;
+            normalOrgInfos.cy = paddingForLabel + this.MIN_DISTANCE_BETWEEN_CIRCLES + (normalOrgInfos.height-ri.height)/2;
             normalOrgInfos.positions.push( {x: normalOrgInfos.cx, y: normalOrgInfos.cy } );
             normalOrgInfos.orgRefs.push( ri.org );
             normalOrgInfos.cx += ri.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
@@ -253,7 +256,7 @@ RenderInfoOrganization.prototype =
 
                 // stroke is different for applications
                 var vertex = graph.insertVertex(parent, null, orgLabel, x, y, this.width, this.height,
-                    this.getOrgRenderStyle(this.org));
+                    this.getOrgRenderStyle(this.org, graph));
                 // attach the org info to the vertex
                 vertex.mioObject = this.org;
                 this.mioarchy.orgToVertex[orgLabel] = vertex;
@@ -281,7 +284,7 @@ RenderInfoOrganization.prototype =
                     var cy = y;
 
                     var vertex = graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
-                        this.getOrgRenderStyle(this.org));
+                        this.getOrgRenderStyle(this.org, graph));
                     // attach the org info to the vertex
                     vertex.mioObject = this.org;
                     this.mioarchy.orgToVertex[orgLabel] = vertex;
@@ -322,7 +325,7 @@ RenderInfoOrganization.prototype =
                     var cy = y;
 
                     var vertex = graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
-                        this.getOrgRenderStyle(this.org));
+                        this.getOrgRenderStyle(this.org, graph));
                     // attach the org info to the vertex
                     vertex.mioObject = this.org;
                     this.mioarchy.orgToVertex[orgLabel] = vertex;
@@ -410,8 +413,9 @@ RenderInfoOrganization.prototype =
         return colorString;
     },
 
-    getOrgRenderStyle: function(org)
+    getOrgRenderStyle: function(org, graph)
     {
+        var orgLevel = this.mioarchy.getOrganizationLevel(org);
         var style = "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;editable=0;whiteSpace=wrap;fillColor=none;";
 
         if (org.isApplication) {
@@ -422,12 +426,45 @@ RenderInfoOrganization.prototype =
         } else {
             if (this.isLeaf) {
                 style += "shape=ellipse;"
-            } else if (this.mioarchy.getOrganizationLevel(org) <= 2) {
-                style += "rounded=1";
+            } else if (orgLevel <= 2) {
+                style += "rounded=1;";
             } else {
                 style += "shape=ellipse;";
             }
         }
+
+        var fontSize = 11;
+        switch (orgLevel) {
+            case 1:
+                fontSize = 130;
+                break;
+            case 2:
+                fontSize = 80;
+                break;
+            case 3:
+                fontSize = 50;
+                break;
+            case 4:
+                fontSize = 20;
+                break;
+            default:
+                fontSize = 15;
+                break;
+        }
+        if (org.isApplication) {
+            fontSize = 30;
+        }
+        if (this.mioarchy.getOrganizationChildren(org).length == 0) {
+            fontSize = 20;
+        }
+
+        if (orgLevel <= 2) {
+            style += "fontColor=#357EC7;";
+        } else if (!org.isApplication) {
+            style += "fontColor=#98AFC7;";
+        }
+
+        style += "fontSize=" + fontSize + ";";
 
         return style;
     }
