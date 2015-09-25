@@ -277,6 +277,7 @@ Format.prototype.clear = function()
 /**
  * Adds the label menu items to the given menu and parent.
  */
+
 Format.prototype.refresh = function() {
 	// Performance tweak: No refresh needed if not visible
 	if (this.container.style.width == '0px') {
@@ -293,19 +294,9 @@ Format.prototype.refresh = function() {
 	div.style.textAlign = 'left';
 	div.style.cursor = 'default';
 
-	var label = document.createElement('div');
-	label.style.border = '1px solid #c0c0c0';
-	label.style.borderWidth = '0px 0px 1px 0px';
-	label.style.textAlign = 'center';
-	label.style.fontWeight = 'bold';
-	label.style.overflow = 'hidden';
-	label.style.display = 'overflow';
-	label.style.paddingTop = '8px';
-	label.style.height = (mxClient.IS_QUIRKS) ? '34px' : '25px';
-	label.style.width = '100%';
-	label.style.backgroundColor = '#00CCFF';
-	this.container.appendChild(div);
+	this.editorUi.mioarchyClient.handleRightPaneRefresh(this.container, graph);
 
+	/*
 	var getAccountabilityRatingColor = function (accountabilityType) {
 		var color = "#f7f7f7";
 		switch (accountabilityType) {
@@ -322,54 +313,84 @@ Format.prototype.refresh = function() {
 		return color;
 	};
 
+	var sortAccountabilityList = function(accountabilityList) {
+		var accountabilities = [];
+		// add to key value pair dictionary
+		for (var i = 0; i < accountabilityList.length; i++) {
+			var a = accountabilityList[i];
+			// does it exist in the list
+			if (typeof(accountabilities[a.accountabilityType]) == 'undefined') {
+				accountabilities[a.accountabilityType] = [];
+			}
+			accountabilities[a.accountabilityType].push(a);
+		}
+		return accountabilities;
+	}
+
+	function createDefaultAccountabilityLabel(textContent, backgroundColor, isHeading) {
+		var label = document.createElement('div');
+		label.style.border = '1px solid #c0c0c0';
+		label.style.borderWidth = '0px 0px 1px 0px';
+		label.style.textAlign = isHeading ? 'center' : 'left';
+		label.style.fontWeight = isHeading ? 'bold' : 'normal';
+		label.style.overflow = 'hidden';
+		label.style.fontSize = 'hidden';
+		label.style.display = isHeading ? '13' : '9';
+		label.style.padding = '8px';
+		label.style.height = (mxClient.IS_QUIRKS) ? '34px' : '25px';
+		label.style.width = '100%';
+		label.style.backgroundColor = backgroundColor;
+		label.textContent = textContent;
+		return label;
+	}
+
+	function renderSortedAccountabilities(accountabilities, groupLabel, parentElement) {
+		// group label
+		var label = parentElement.appendChild(createDefaultAccountabilityLabel(groupLabel, '#BDEDFF', false));
+
+		// each accountability belonging to this label
+		for (var i = 0; i < accountabilities.length; i++) {
+			var label2 = label.cloneNode(true);
+			label2.style.backgroundColor = "#f7f7f7";
+			label2.textContent = "None defined."
+			label2.style.backgroundColor = getAccountabilityRatingColor(accountabilities[i].rating);
+			label2.style.borderLeftWidth = '1px';
+			label2.textContent = accountabilities[i].label;
+			parentElement.appendChild(label2);
+		}
+	}
+
+	function renderAccountabilities(accountabilities, accountabilityLabel, parentElement) {
+		// accountabilities label
+		parentElement.appendChild(createDefaultAccountabilityLabel(accountabilityLabel, '#00CCFF', true));
+
+		if (typeof(accountabilities) == 'undefined') {
+			renderAccountabilitiesUndefined(parentElement);
+		} else {
+			var sortedAccountabilities = sortAccountabilityList(accountabilities);
+			for (at in sortedAccountabilities) {
+				renderSortedAccountabilities(sortedAccountabilities[at], at, parentElement);
+			}
+		}
+	}
+
+	function renderAccountabilitiesUndefined(parentElement) {
+		// accountabilities label
+		parentElement.appendChild(createDefaultAccountabilityLabel("None defined.", '#f7f7f7', true));
+	}
+
 	// see if the selected object is a job
 	var selectedGraphObject = graph.selectedGraphObject;
 
 	if (selectedGraphObject && selectedGraphObject.mioObject && selectedGraphObject.mioObject.type === Mioarchy.prototype.Types.Job) {
 		var job = selectedGraphObject.mioObject;
 		var accountabilities = this.editorUi.mioarchyClient.jobAccountabilities[job.id];
-
-		label.textContent = job.accountabilityLabel + " Accountabilities";
-		div.appendChild(label);
-
-		if (typeof(accountabilities) == 'undefined') {
-			label2 = label.cloneNode(true);
-			label2.style.backgroundColor = '#f7f7f7';
-			label2.textContent = "None defined."
-			div.appendChild(label2);
-		} else {
-			for (var i = 0; i < accountabilities.length; i++) {
-				label2 = label.cloneNode(true);
-				label2.style.backgroundColor = getAccountabilityRatingColor(accountabilities[i].rating);
-				label2.style.borderLeftWidth = '1px';
-
-				label2.textContent = accountabilities[i].label;
-				div.appendChild(label2);
-			}
-		}
+		renderAccountabilities(accountabilities, job.accountabilityLabel + " Accountabilities", this.container);
 	} else if (selectedGraphObject && selectedGraphObject.mioObject && selectedGraphObject.mioObject.type === Mioarchy.prototype.Types.Organization) {
-		var organization = selectedGraphObject.mioObject.name;
-		var accountabilities = this.editorUi.mioarchyClient.orgAccountabilities[organization];
-
-		label.textContent = organization + " Accountabilities";
-		div.appendChild(label);
-
-		if (typeof(accountabilities) == 'undefined') {
-			label2 = label.cloneNode(true);
-			label2.style.backgroundColor = "#f7f7f7";
-			;
-			label2.textContent = "None defined."
-			div.appendChild(label2);
-		} else {
-			for (var i = 0; i < accountabilities.length; i++) {
-				label2 = label.cloneNode(true);
-				label2.style.backgroundColor = getAccountabilityRatingColor(accountabilities[i].rating);
-				label2.textContent = accountabilities[i].label;
-				div.appendChild(label2);
-
-			}
-		}
-	}
+		var organizationName = selectedGraphObject.mioObject.name;
+		var accountabilities = this.editorUi.mioarchyClient.orgAccountabilities[organizationName];
+		renderAccountabilities(accountabilities, organizationName + " Accountabilities", this.container);
+	}*/
 };
 
 /**
