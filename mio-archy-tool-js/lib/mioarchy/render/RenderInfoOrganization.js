@@ -172,7 +172,7 @@ function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
         var job = this.mioarchy.jobs[this.jobsAtThisLevel[j]];
 
         var defaultStyle = "shape=ellipse;whiteSpace=wrap;gradientColor=none;editable=0;";
-        var color = this.determineContributorColor(job, this.mioarchy);
+        var color = this.getContributorColor(job, this.mioarchy);
         var defaultWidth = this.CIRCLE_DIAMETER;
         var defaultHeight = this.CIRCLE_DIAMETER;
 
@@ -193,7 +193,7 @@ function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
         try {
             var parent = graph.getDefaultParent();
             var v = graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight,
-                defaultStyle + "gradientColor=" + color);
+                defaultStyle + "gradientColor=" + color + ";");
             // attach the org info to the vertex
             v.mioObject = job;
             this.mioarchy.jobToVertex[job.id] = v;
@@ -333,7 +333,7 @@ RenderInfoOrganization.prototype =
 
                     var vertex = graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
                         "shape=ellipse;fillColor=none;whiteSpace=wrap;editable=0;" +
-                        "abelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+                        "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
                     // attach the org info to the vertex
                     vertex.mioObject = this.org;
                     this.mioarchy.orgToVertex[orgLabel] = vertex;
@@ -362,7 +362,7 @@ RenderInfoOrganization.prototype =
                     var job = this.mioarchy.jobs[this.jobsAtThisLevel[j]];
 
                     var defaultStyle = "shape=ellipse;whiteSpace=wrap;gradientColor=none;editable=0;";
-                    var color = this.determineContributorColor(job, this.mioarchy);
+                    var color = this.getContributorColor(job, this.mioarchy);
                     var defaultWidth = this.CIRCLE_DIAMETER;
                     var defaultHeight = this.CIRCLE_DIAMETER;
 
@@ -394,7 +394,8 @@ RenderInfoOrganization.prototype =
             }
         }
     },
-    determineContributorColor: function(job, mioarchy)
+    
+    getContributorColor: function(job, mioarchy)
     {
         var colorString = "";
 

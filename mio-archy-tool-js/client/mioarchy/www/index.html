@@ -152,56 +152,91 @@
 			var t2 = mioarchyClient.lastUpdated.getTime();
 			if (t2 < t1) {
 				mioarchyClient.lastUpdated = new Date();
-				console.log("NOW UPDATING!!!");
+				console.log("NOW UPDATING DUE TO DETECTED DATA MODEL CHANGE!!!");
 				mioarchyClient.readDB( mioarchyClient.renderOrganization );
 			} else {
-				console.log("NO UPDATE NEEDED.");
 			}
 		}
 		// check for updates every x seconds
 		setInterval( function() { mioarchyClient.getLastUpdated( mioarchyClient.processLastUpdated ) }, 5000 );
 
-		var lastMousedOverSelectedCell = null;
-		var lastMousedOverSelectedCellBackupStyle = null;
+		// scales points based on zoom level
+		function scaleTextSizeBasedOnZoom() {
+			/*
+			var view = mioarchyClient.graph.view;
+			var compLen = mioarchyClient.graph.view.width;
+			var viewLen = view.graphBounds.width;
+			view.setScale( compLen/viewLen * view.scale );
+			*/
+		}
 
 		mioarchyClient.setupClickHandling = function() {
+			mioarchyClient.graph.click = function(me) {
+				/*
+				mioarchyClient.graph.zoomIn();
+				scrollTo(mioarchyClient.graph, me.layerX, me.layerY);
+				*/
+
+				//TODO: gets called 4 time every time for some reason
+				var cell = me.getCell();
+				mioarchyClient.graph.selectedGraphObject = cell;
+				console.log(mioarchyClient.graph.selectedGraphObject);
+				mioarchyClient.editor.format.refresh();
+			}
+
 			var mouseListener =
 			{
+				currentState:null,
+				lastHoveredCell:null,
+				stateStyleBackup:null,
+
+				mouseUp: function()
+				{
+					scaleTextSizeBasedOnZoom();
+				},
 				mouseDown: function(sender, me) {
 
 				},
 				mouseMove: function(sender, me) {
+
+					if (this.currentState != null && me.getState() == this.currentState) {
+						return;
+					}
 					var cell = me.getCell();
-					if (cell) {
-						console.log(cell);
-						try {
-							mioarchyClient.graph.getModel().beginUpdate();
-							if (lastMousedOverSelectedCell) {
-								// revert
-								lastMousedOverSelectedCell.setStyle(lastMousedOverSelectedCellBackupStyle);
-							}
-							lastMousedOverSelectedCell = cell;
-							lastMousedOverSelectedCellBackupStyle = cell.getStyle();
+					if (cell == this.lastHoveredCell) {
+						return;
+					}
 
-							console.log(cell.style);
-							cell.setStyle(cell.getStyle() + ";shadow=1;filColor=#ff0000");
-							console.log(cell.style);
+					// revert the previous cell to the old state, using the backup
+					if (this.stateStyleBackup) {
+						var state = mioarchyClient.graph.view.getState(this.lastHoveredCell);
 
-						}
-						finally {
-							mioarchyClient.graph.getModel().endUpdate();
+						if (state) {
+							state.style = mxUtils.clone(this.stateStyleBackup);
+							//state.style[mxConstants.STYLE_FILLCOLOR] = '#ffffff'; // deep sky blue for hovering
+							state.style[mxConstants.STYLE_STROKEWIDTH] = '1';
+							state.shape.apply(state);
+							state.shape.redraw();
+
+							this.stateStyleBackup = null;
+							this.lastHoveredCell = null;
+							this.currentState = null;
 						}
 					}
-				},
-				mouseUp: mxUtils.bind(this, function(sender, me)
-				{
-					var cell = me.getCell();
+					// save the previous cell information
+					var state = mioarchyClient.graph.view.getState(cell);
+					if (state != null) {
+						this.stateStyleBackup = mxUtils.clone(state.style);
+						this.lastHoveredCell = cell;
+						this.currentState = state;
 
-					//TODO: VIC'S TWEAK TO HIDE EDITOR FUNCTIONALITY IN ONE SWIFT MOTION
-					mioarchyClient.graph.selectedGraphObject = cell;
-					console.log(mioarchyClient.graph.selectedGraphObject);
-					mioarchyClient.editor.format.refresh();
-				})
+						// set new style to highlight the cell
+						//state.style[mxConstants.STYLE_FILLCOLOR] = '#00bfff'; // deep sky blue for hovering
+						state.style[mxConstants.STYLE_STROKEWIDTH] = 4 * 1/mioarchyClient.graph.view.scale;
+						state.shape.apply(state);
+						state.shape.redraw();
+					}
+				},
 			};
 			mioarchyClient.graph.addMouseListener(mouseListener);
 		}
