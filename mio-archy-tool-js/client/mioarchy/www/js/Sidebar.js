@@ -33,36 +33,13 @@ function Sidebar(editorUi, container)
 	div.style.textAlign = 'left';
 	div.style.cursor = 'default';
 
-	var label1 = document.createElement('div');
-	label1.style.border = '1px solid #c0c0c0';
-	label1.style.borderWidth = '0px 0px 1px 0px';
-	label1.style.textAlign = 'center';
-	label1.style.fontWeight = 'bold';
-	label1.style.overflow = 'hidden';
-	label1.style.display = 'overflow';
-	label1.style.paddingTop = '8px';
-	label1.style.height = (mxClient.IS_QUIRKS) ? '34px' : '25px';
-	label1.style.width = '100%';
-	label1.style.backgroundColor = '#00CCFF';
 	this.container.appendChild(div);
 	var organizations = this.editorUi.mioarchyClient.organizations;
-	label1.textContent = "Organizations";
-	div.appendChild(label1);
+	div.appendChild(mioarchyClient.createMiovisionLabel("Organizations", "#00CCFF", true));
 
 	for (var o in organizations) {
-		var label = document.createElement('div');
-		label.style.border = '1px solid #c0c0c0';
-		label.style.borderWidth = '0px 0px 1px 0px';
-		label.style.textAlign = 'center';
-		label.style.fontWeight = 'bold';
-		label.style.overflow = 'hidden';
-		label.style.display = 'overflow';
-		label.style.paddingTop = '8px';
-		label.style.height = (mxClient.IS_QUIRKS) ? '34px' : '25px';
-		label.style.width = '100%';
-		label.style.backgroundColor = '#d7d7d7';
-		label.style.borderLeftWidth = '1px';
-		label.textContent = organizations[o].name;
+		var label = mioarchyClient.createMiovisionLabel( organizations[o].name, "#d7d7d7", false);
+		div.appendChild(label);
 
 		mxEvent.addListener(label, 'click', mxUtils.bind(this, function(evt)
 		{
@@ -71,8 +48,6 @@ function Sidebar(editorUi, container)
 			this.editorUi.mioarchyClient.targetRenderingOrg = src.innerText;
 			this.editorUi.mioarchyClient.renderOrganization();
 		}));
-
-		div.appendChild(label);
 	}
 };
 

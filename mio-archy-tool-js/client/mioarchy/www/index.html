@@ -241,6 +241,37 @@
 			mioarchyClient.graph.addMouseListener(mouseListener);
 		}
 
+		mioarchyClient.createMiovisionLabel = function(textContent, backgroundColor, isHeading) {
+			var label = document.createElement('div');
+			label.style.border = '1px solid #c0c0c0';
+			label.style.borderWidth = '0px 0px 1px 0px';
+			//label.style.textAlign = isHeading ? 'center' : 'left';
+			label.style.fontWeight = isHeading ? 'bold' : 'normal';
+			label.style.overflow = 'hidden';
+			label.style.fontSize = 'hidden';
+			label.style.display = isHeading ? '13' : '9';
+			label.style.padding = '13px';
+			//label.style.paddingTop = '8px';
+			//label.style.paddingLeft = '8px';
+			//label.style.paddingRight = '8px';
+			//label.style.height = (mxClient.IS_QUIRKS) ? '34px' : '25px';
+			label.style.width = '100%';
+			label.style.color = 'rgb(112, 112, 112)';
+			label.style.backgroundColor = backgroundColor;
+			label.textContent = textContent;
+
+			label.onmouseover=function() {
+				label.style.color='rgb(0, 0, 0)';
+				label.style.border = '1px solid #000000';
+			}
+			label.onmouseout=function() {
+				label.style.color='rgb(112, 112, 112';
+				label.style.border = '1px solid #c0c0c0';
+			}
+
+			return label;
+		};
+
 		mioarchyClient.handleRightPaneRefresh = function(container, graph) {
 			var getAccountabilityRatingColor = function (accountabilityType) {
 				var color = "#f7f7f7";
@@ -272,34 +303,14 @@
 				return accountabilities;
 			}
 
-			function createDefaultAccountabilityLabel(textContent, backgroundColor, isHeading) {
-				var label = document.createElement('div');
-				label.style.border = '1px solid #c0c0c0';
-				label.style.borderWidth = '0px 0px 1px 0px';
-				//label.style.textAlign = isHeading ? 'center' : 'left';
-				label.style.fontWeight = isHeading ? 'bold' : 'normal';
-				label.style.overflow = 'hidden';
-				label.style.fontSize = 'hidden';
-				label.style.display = isHeading ? '13' : '9';
-				label.style.padding = '13px';
-				//label.style.paddingTop = '8px';
-				//label.style.paddingLeft = '8px';
-				//label.style.paddingRight = '8px';
-				//label.style.height = (mxClient.IS_QUIRKS) ? '34px' : '25px';
-				label.style.width = '100%';
-				label.style.backgroundColor = backgroundColor;
-				label.textContent = textContent;
-				return label;
-			}
-
 			function renderSortedAccountabilities(accountabilities, groupLabel, parentElement) {
 				// group label
-				var label = parentElement.appendChild(createDefaultAccountabilityLabel(groupLabel, '#BDEDFF', true));
+				var label = parentElement.appendChild(mioarchyClient.createMiovisionLabel(groupLabel, '#BDEDFF', true));
 
 				// each accountability belonging to this label
 				for (var i = 0; i < accountabilities.length; i++) {
 					parentElement.appendChild(
-							createDefaultAccountabilityLabel(
+							mioarchyClient.createMiovisionLabel(
 									accountabilities[i].label,
 									getAccountabilityRatingColor(accountabilities[i].rating), false));
 				}
@@ -307,7 +318,7 @@
 
 			function renderAccountabilities(accountabilities, accountabilityLabel, parentElement) {
 				// accountabilities label
-				parentElement.appendChild(createDefaultAccountabilityLabel(accountabilityLabel, '#00CCFF', true));
+				parentElement.appendChild(mioarchyClient.createMiovisionLabel(accountabilityLabel, '#00CCFF', true));
 
 				if (typeof(accountabilities) == 'undefined') {
 					renderAccountabilitiesUndefined(parentElement);
@@ -321,7 +332,7 @@
 
 			function renderAccountabilitiesUndefined(parentElement) {
 				// accountabilities label
-				parentElement.appendChild(createDefaultAccountabilityLabel("None defined.", '#f7f7f7', true));
+				parentElement.appendChild(mioarchyClient.createMiovisionLabel("None defined.", '#f7f7f7', false));
 			}
 
 			// see if the selected object is a job

@@ -214,12 +214,12 @@ RenderInfoOrganization.prototype =
      draw a circle around each sub org with radius = width / 2
      actually rendering based on render info applies rendering rules
      */
-    render: function(x, y, graph) {
+    render: function (x, y, graph) {
         /*
-        if (this.jobsAtThisLevel == 0) {
-            console.log(this.org.name + " has no contributors. Skipping rendering.");
-            return;
-        }*/
+         if (this.jobsAtThisLevel == 0) {
+         console.log(this.org.name + " has no contributors. Skipping rendering.");
+         return;
+         }*/
         //==============================================================================================================
         // TOP LEVEL ORGANIZATIONS
         if (this.orgLevel <= 2 || this.org.isApplication) {
@@ -237,7 +237,7 @@ RenderInfoOrganization.prototype =
             for (var i = 0; i < this.childRenderingInfos.length; i++) {
                 // current org rendering info
                 var orgRenderInfo = this.childRenderingInfos[i];
-                var orgPosition = this.subOrgPositions[ orgRenderInfo.org.name ];
+                var orgPosition = this.subOrgPositions[orgRenderInfo.org.name];
                 if (typeof(orgPosition) == 'undefined') {
                     console.log("UNDEFINED ORG POSITION!!!");
                 }
@@ -252,17 +252,8 @@ RenderInfoOrganization.prototype =
                 var orgLabel = this.org.name;
 
                 // stroke is different for applications
-                var stroke = "";
-                var shape = "rounded=1;"
-                if (this.org.isApplication) {
-                    // highlight the jobs this person has taken on
-                    var appColor = this.mioarchy.applications[this.org.name].color;
-                    stroke = "strokeWidth=10;strokeColor="+appColor+";opacity=100;";
-                    shape = "shape=process;";
-                }
                 var vertex = graph.insertVertex(parent, null, orgLabel, x, y, this.width, this.height,
-                    shape + "fillColor=none;whiteSpace=wrap;editable=0;" + stroke +
-                    "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+                    this.getOrgRenderStyle(this.org));
                 // attach the org info to the vertex
                 vertex.mioObject = this.org;
                 this.mioarchy.orgToVertex[orgLabel] = vertex;
@@ -290,8 +281,7 @@ RenderInfoOrganization.prototype =
                     var cy = y;
 
                     var vertex = graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
-                        "shape=ellipse;fillColor=none;whiteSpace=wrap;editable=0;" +
-                        "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+                        this.getOrgRenderStyle(this.org));
                     // attach the org info to the vertex
                     vertex.mioObject = this.org;
                     this.mioarchy.orgToVertex[orgLabel] = vertex;
@@ -332,8 +322,7 @@ RenderInfoOrganization.prototype =
                     var cy = y;
 
                     var vertex = graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
-                        "shape=ellipse;fillColor=none;whiteSpace=wrap;editable=0;" +
-                        "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;");
+                        this.getOrgRenderStyle(this.org));
                     // attach the org info to the vertex
                     vertex.mioObject = this.org;
                     this.mioarchy.orgToVertex[orgLabel] = vertex;
@@ -394,9 +383,8 @@ RenderInfoOrganization.prototype =
             }
         }
     },
-    
-    getContributorColor: function(job, mioarchy)
-    {
+
+    getContributorColor: function (job, mioarchy) {
         var colorString = "";
 
         // by app now
@@ -406,13 +394,13 @@ RenderInfoOrganization.prototype =
             // try by organization
             if (job.organization) {
                 var org = mioarchy.organizations[job.organization];
-                if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Engineering"] )) {
+                if (mioarchy.isDescendantOfOrganization(org, mioarchy.organizations["Engineering"])) {
                     colorString += "purple";
-                } else if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Finance"] )) {
+                } else if (mioarchy.isDescendantOfOrganization(org, mioarchy.organizations["Finance"])) {
                     colorString += "orange";
-                } else if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Operations"] )) {
+                } else if (mioarchy.isDescendantOfOrganization(org, mioarchy.organizations["Operations"])) {
                     colorString += "blue";
-                } else if (mioarchy.isDescendantOfOrganization( org, mioarchy.organizations["Operations"] )) {
+                } else if (mioarchy.isDescendantOfOrganization(org, mioarchy.organizations["Operations"])) {
                     colorString += "blue";
                 }
             } else {
@@ -422,4 +410,25 @@ RenderInfoOrganization.prototype =
         return colorString;
     },
 
+    getOrgRenderStyle: function(org)
+    {
+        var style = "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;editable=0;whiteSpace=wrap;fillColor=none;";
+
+        if (org.isApplication) {
+            // highlight the jobs this person has taken on
+            var appColor = this.mioarchy.applications[org.name].color;
+            var stroke = "strokeWidth=10;strokeColor=" + appColor + ";opacity=100;";
+            style += stroke + "shape=process;";
+        } else {
+            if (this.isLeaf) {
+                style += "shape=ellipse;"
+            } else if (this.mioarchy.getOrganizationLevel(org) <= 2) {
+                style += "rounded=1";
+            } else {
+                style += "shape=ellipse;";
+            }
+        }
+
+        return style;
+    }
 }
