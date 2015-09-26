@@ -5,7 +5,8 @@
     <title>Miovision Organization</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" type="text/css" href="styles/grapheditor.css">
+	<link rel="stylesheet" type="text/css" href="styles/grapheditor.css">
+	<link rel="stylesheet" type="text/css" href="dtree/dtree.css">
 	<script type="text/javascript">
 		// Public global variables
 		var MAX_REQUEST_SIZE = 10485760;
@@ -70,6 +71,7 @@
 	<script type="text/javascript" src="jscolor/jscolor.js"></script>
 	<script type="text/javascript" src="sanitizer/sanitizer.min.js"></script>
 	<script type="text/javascript" src="../../src/js/mxClient.js"></script>
+	<script type="text/javascript" src="dtree/dtree.js"></script>
 	<script type="text/javascript" src="/editor/lib/mioarchy/MioarchyModels.js"></script>
 	<script type="text/javascript" src="/editor/lib/mioarchy/MioarchyClient.js"></script>
 	<script type="text/javascript" src="/editor/lib/mioarchy/render/RenderingUtilities.js"></script>
@@ -122,7 +124,11 @@
 		}
 
 		// renders the organization (first clears the graph)
-		mioarchyClient.renderOrganization = function() {
+		mioarchyClient.renderOrganization = function(newOrg) {
+			if (newOrg) {
+				mioarchyClient.targetRenderingOrg = newOrg;
+			}
+
 			if (mioarchyClient.graph) {
 				// first, clear everything
 				mioarchyClient.graph.removeCells(
@@ -236,7 +242,6 @@
 			*/
 				},
 				mouseMove: function(sender, me) {
-
 					if (this.currentState != null && me.getState() == this.currentState) {
 						return;
 					}
@@ -279,32 +284,36 @@
 			mioarchyClient.graph.addMouseListener(mouseListener);
 		}
 
-		mioarchyClient.createMiovisionLabel = function(textContent, backgroundColor, isHeading) {
+		mioarchyClient.createMiovisionLabel = function(textContent, backgroundColor, textColor, isHeading) {
 			var label = document.createElement('div');
+
+			label.style.color = 'rgb(112, 112, 112)';
 			label.style.border = '1px solid #c0c0c0';
-			label.style.borderWidth = '0px 0px 1px 0px';
+
+			label.style.border = '1px solid #c0c0c0';
+			//label.style.borderWidth = '0px 0px 1px 0px';
 			//label.style.textAlign = isHeading ? 'center' : 'left';
 			label.style.fontWeight = isHeading ? 'bold' : 'normal';
 			label.style.overflow = 'hidden';
 			label.style.fontSize = 'hidden';
 			label.style.display = isHeading ? '13' : '9';
 			label.style.padding = '13px';
-			//label.style.paddingTop = '8px';
-			//label.style.paddingLeft = '8px';
-			//label.style.paddingRight = '8px';
-			//label.style.height = (mxClient.IS_QUIRKS) ? '34px' : '25px';
 			label.style.width = '100%';
-			label.style.color = 'rgb(112, 112, 112)';
+			label.style.color = textColor;
 			label.style.backgroundColor = backgroundColor;
 			label.textContent = textContent;
 
-			label.onmouseover=function() {
-				label.style.color='rgb(0, 0, 0)';
-				label.style.border = '1px solid #000000';
-			}
-			label.onmouseout=function() {
-				label.style.color='rgb(112, 112, 112';
-				label.style.border = '1px solid #c0c0c0';
+			if (!isHeading) {
+				label.onmousemove = function () {
+					label.style.color = "#3f403f";
+					label.style.border = '1px solid #000000';
+					label.style.backgroundColor = "#B9D6E9";
+				}
+				label.onmouseout = function () {
+					label.style.color = textColor;
+					label.style.border = '1px solid #c0c0c0';
+					label.style.backgroundColor = backgroundColor;
+				}
 			}
 
 			return label;
@@ -343,7 +352,7 @@
 
 			function renderSortedAccountabilities(accountabilities, groupLabel, parentElement) {
 				// group label
-				var label = parentElement.appendChild(mioarchyClient.createMiovisionLabel(groupLabel, '#BDEDFF', true));
+				var label = parentElement.appendChild(mioarchyClient.createMiovisionLabel(groupLabel, '#B9D6E9', '#3F403F', true));
 
 				// each accountability belonging to this label
 				for (var i = 0; i < accountabilities.length; i++) {
@@ -356,9 +365,9 @@
 
 			function renderAccountabilities(accountabilities, accountabilityLabel, parentElement) {
 				// accountabilities label
-				parentElement.appendChild(mioarchyClient.createMiovisionLabel(accountabilityLabel, '#00CCFF', true));
+				parentElement.appendChild(mioarchyClient.createMiovisionLabel(accountabilityLabel, '#5885AA', '#FFFFFF',  true));
 
-				if (typeof(accountabilities) == 'undefined') {
+				if (typeof(accountabilities) == 'undefined' || accountabilities.length == 0) {
 					renderAccountabilitiesUndefined(parentElement);
 				} else {
 					var sortedAccountabilities = sortAccountabilityList(accountabilities);
@@ -370,7 +379,7 @@
 
 			function renderAccountabilitiesUndefined(parentElement) {
 				// accountabilities label
-				parentElement.appendChild(mioarchyClient.createMiovisionLabel("None defined.", '#f7f7f7', false));
+				parentElement.appendChild(mioarchyClient.createMiovisionLabel("None defined.", '#E2E2E2', "3F403F", false));
 			}
 
 			// see if the selected object is a job
