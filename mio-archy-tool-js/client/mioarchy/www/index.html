@@ -171,17 +171,30 @@
 		}
 
 		mioarchyClient.setupClickHandling = function() {
-			mioarchyClient.graph.click = function(me) {
-				/*
-				mioarchyClient.graph.zoomIn();
-				scrollTo(mioarchyClient.graph, me.layerX, me.layerY);
-				*/
 
-				//TODO: gets called 4 time every time for some reason
-				var cell = me.getCell();
-				mioarchyClient.graph.selectedGraphObject = cell;
-				console.log(mioarchyClient.graph.selectedGraphObject);
-				mioarchyClient.editor.format.refresh();
+
+			/*
+			mioarchyClient.click = function(me) {
+			};*/
+			mioarchyClient.graph.click = function(me) {
+				var now = new Date();
+				if (mioarchyClient.lastMouseClickTime && Math.abs(now.getTime() - mioarchyClient.lastMouseClickTime.getTime()) < 1000) {
+					// double-clicked org, zoom in!
+					var cell = me.getCell();
+					mioarchyClient.graph.selectedGraphObject = cell;
+					if (cell && mioarchyClient.graph.selectedGraphObject.mioObject
+							&& mioarchyClient.graph.selectedGraphObject.mioObject.type == Mioarchy.prototype.Types.Organization) {
+						mioarchyClient.targetRenderingOrg = mioarchyClient.graph.selectedGraphObject.mioObject.name;
+						mioarchyClient.renderOrganization();
+					}
+				} else {
+					 //TODO: gets called 4 time every time for some reason
+					 var cell = me.getCell();
+					 mioarchyClient.graph.selectedGraphObject = cell;
+					 mioarchyClient.editor.format.refresh();
+				}
+
+				mioarchyClient.lastMouseClickTime = now;
 			}
 
 			var mouseListener =
@@ -195,7 +208,32 @@
 					scaleTextSizeBasedOnZoom();
 				},
 				mouseDown: function(sender, me) {
+					/*
+					var now = new Date();
+					console.log(now);
+					if (mioarchyClient.lastMouseClickTime && Math.abs(now.getTime() - mioarchyClient.lastMouseClickTime.getTime()) < 1000) {
+						// double-clicked org, zoom in!
+						console.log("mouse double click");
+						var cell = me.getCell();
+						mioarchyClient.graph.selectedGraphObject = cell;
+						if (cell && mioarchyClient.graph.selectedGraphObject.mioObject
+								&& mioarchyClient.graph.selectedGraphObject.mioObject.type == Mioarchy.prototype.Types.Organization) {
+							mioarchyClient.targetRenderingOrg = mioarchyClient.graph.selectedGraphObject.mioObject.name;
+							mioarchyClient.renderOrganization();
+						}
+					} else {
+						console.log("mouse click");
 
+						//TODO: gets called 4 time every time for some reason
+						var cell = me.getCell();
+						mioarchyClient.graph.selectedGraphObject = cell;
+						mioarchyClient.editor.format.refresh();
+
+
+					}
+
+					mioarchyClient.lastMouseClickTime = now;
+			*/
 				},
 				mouseMove: function(sender, me) {
 
