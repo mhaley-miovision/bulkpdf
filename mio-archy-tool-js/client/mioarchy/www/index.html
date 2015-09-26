@@ -290,7 +290,11 @@
 			label.style.color = 'rgb(112, 112, 112)';
 			label.style.border = '1px solid #c0c0c0';
 
-			label.style.border = '1px solid #c0c0c0';
+			if (isHeading) {
+				label.style.borderBottomColor = "#3F403F";
+				label.style.borderBottomWidth = "2px";
+			}
+
 			//label.style.borderWidth = '0px 0px 1px 0px';
 			//label.style.textAlign = isHeading ? 'center' : 'left';
 			label.style.fontWeight = isHeading ? 'bold' : 'normal';
