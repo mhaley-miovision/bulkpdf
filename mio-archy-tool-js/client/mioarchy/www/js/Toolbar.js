@@ -33,25 +33,30 @@ Toolbar.prototype.unselectedBackground = 'none';
 Toolbar.prototype.init = function()
 {
 
-	 var elts = this.addItems(['undo', 'redo', 'delete', '-', 'actualSize', 'zoomIn', 'zoomOut', '-']);
-
-	 // Adds keyboard shortcuts to tooltips
-	 elts[0].setAttribute('title', mxResources.get('undo') + ' (Ctrl+Z)');
-	 elts[1].setAttribute('title', mxResources.get('redo') + (mxClient.IS_MAC) ? ' (Ctrl+Shift+Z)' : ' (Ctrl+Y)');
-	 elts[2].setAttribute('title', mxResources.get('delete') + ' (Delete)');
-	 elts[4].setAttribute('title', mxResources.get('actualSize') + ' (Ctrl+0)');
-	 elts[5].setAttribute('title', mxResources.get('zoomIn') + ' (Ctrl + / Alt+Scroll)');
-	 elts[6].setAttribute('title', mxResources.get('zoomOut') + ' (Ctrl - / Alt+Scroll)');
-
-	this.contributorMenu = this.addMenu("All Contributors", "Select an contributor to highlight jobs.", true, 'contributor');
+	this.contributorMenu = this.addMenu("Highlight Contributor...", "Select an contributor to highlight jobs.", true, 'contributor');
 	this.contributorMenu.style.whiteSpace = 'nowrap';
 	this.contributorMenu.style.overflow = 'hidden';
-	this.contributorMenu.style.width =  '120px';
+	this.contributorMenu.style.width =  '130px';
 
-	this.applicationMenu = this.addMenu("All Applications", "Select an application to highlight interrelationships.", true, 'application');
+	this.addSeparator();
+
+	this.applicationMenu = this.addMenu("Highlight Application...", "Select an application to highlight interrelationships.", true, 'application');
 	this.applicationMenu.style.whiteSpace = 'nowrap';
 	this.applicationMenu.style.overflow = 'hidden';
-	this.applicationMenu.style.width = '120px';
+	this.applicationMenu.style.width = '130px';
+
+	this.addSeparator();
+
+	this.applicationMenu = this.addMenu('Switch Accountability Mode...', "Select view mode for accountabilities..", true, 'accountabilityMode');
+	this.applicationMenu.style.whiteSpace = 'nowrap';
+	this.applicationMenu.style.overflow = 'hidden';
+	this.applicationMenu.style.width = '180px';
+
+	this.addSeparator();
+
+	var elts = this.addItems(['actualSize', 'zoomIn', 'zoomOut', '-']);
+	elts[0].setAttribute('title', mxResources.get('actualSize') + ' (Ctrl+0)');
+	elts[1].setAttribute('title', mxResources.get('zoomIn') + ' (Ctrl + / Alt+Scroll)');
 };
 
 /**
@@ -60,6 +65,7 @@ Toolbar.prototype.init = function()
 Toolbar.prototype.createTextToolbar = function()
 {
 	var graph = this.editorUi.editor.graph;
+
 	this.addItems(['undo', 'redo', '-']);
 	
 	var fontElt = this.addMenu(mxResources.get('style'), mxResources.get('style'), true, 'formatBlock');

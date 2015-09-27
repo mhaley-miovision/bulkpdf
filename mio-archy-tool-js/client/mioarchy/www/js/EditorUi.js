@@ -1542,6 +1542,8 @@ EditorUi.prototype.addUndoListener = function()
 */
 EditorUi.prototype.updateActionStates = function()
 {
+	/*
+
 	var graph = this.editor.graph;
 	var selected = !graph.isSelectionEmpty();
 	var vertexSelected = false;
@@ -1630,6 +1632,8 @@ EditorUi.prototype.updateActionStates = function()
     		graph.getLinkForCell(graph.getSelectionCell()) != null);
     this.actions.get('guides').setEnabled(graph.isEnabled());
     this.actions.get('grid').setEnabled(graph.isEnabled());
+
+	*/
 };
 
 /**

@@ -50,6 +50,23 @@ Menus.prototype.init = function()
 	this.customFonts = [];
 	this.customFontSizes = [];
 
+	var accountabilityModeMenu = this.put('accountabilityMode', new Menu(mxUtils.bind(this, function(menu, parent)
+	{
+		console.log(this);
+		console.log(menu);
+		var addSetAccountabilityModeItem = mxUtils.bind(this, function(val, label)
+		{
+			return menu.addItem(label, null, mxUtils.bind(this, function() {
+				console.log(this);
+				mioarchyClient.accountabilityMode = val;
+				mioarchyClient.editor.format.refresh();
+			}), parent, null, true);
+		});
+		addSetAccountabilityModeItem(2, "Ratings View");
+		addSetAccountabilityModeItem(1, "Application View");
+	})));
+	console.log(accountabilityModeMenu);
+
 	//==================================================================================================================
 	//	CONTRIBUTOR JOB LOAD HIGHLIGHTING
 	//==================================================================================================================
@@ -323,6 +340,7 @@ Menus.prototype.init = function()
 		}
 	})));
 
+	/*
 	this.put('fontFamily', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		var addItem = mxUtils.bind(this, function(fontname)
@@ -363,6 +381,7 @@ Menus.prototype.init = function()
 			this.customFonts.push(newValue);
 		}));
 	})));
+
 	this.put('formatBlock', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		function addItem(label, tag)
@@ -422,7 +441,7 @@ Menus.prototype.init = function()
 		}
 
 		menu.addSeparator(parent);
-		
+
 		if (this.customFontSizes.length > 0)
 		{
 			for (var i = 0; i < this.customFontSizes.length; i++)
@@ -855,6 +874,7 @@ Menus.prototype.init = function()
 		this.addMenuItems(menu, ['pageView', '-', 'grid', 'guides', '-', 'scrollbars', 'tooltips', '-',
  		                         'connectionPoints', 'copyConnect', 'collapseExpand', '-', 'pageBackgroundColor', 'autosave']);
 	})));
+	 */
 	this.put('help', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		this.addMenuItems(menu, ['help', '-', 'about']);
@@ -1470,7 +1490,8 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 Menus.prototype.createMenubar = function(container)
 {
 	var menubar = new Menubar(this.editorUi, container);
-	var menus = ['file', 'edit', 'view', 'format', 'text', 'arrange', 'options', 'help'];
+
+	var menus = [/*'file', 'edit', 'view', 'format', 'text', 'arrange', 'options',*/ 'help'];
 	
 	for (var i = 0; i < menus.length; i++)
 	{

@@ -324,18 +324,28 @@
 		};
 
 		mioarchyClient.handleRightPaneRefresh = function(container, graph) {
-			var getAccountabilityRatingColor = function (accountabilityType) {
+			var getAccountabilityRatingColor = function (accountability) {
 				var color = "#f7f7f7";
-				switch (accountabilityType) {
-					case "3":
-						color = "#b7e1cd";
-						break;
-					case "2":
-						color = "#fce8b2";
-						break;
-					case "1":
-						color = "#f4c7c3";
-						break;
+
+				if (mioarchyClient.accountabilityMode == 1) {
+					if (accountability.application) {
+						var app = mioarchyClient.applications[accountability.application];
+						color = app.color;
+					}
+				} else {
+					if (accountability.rating) {
+						switch (accountability.rating) {
+							case "3":
+								color = "#b7e1cd";
+								break;
+							case "2":
+								color = "#fce8b2";
+								break;
+							case "1":
+								color = "#f4c7c3";
+								break;
+						}
+					}
 				}
 				return color;
 			};
@@ -363,13 +373,13 @@
 					parentElement.appendChild(
 							mioarchyClient.createMiovisionLabel(
 									accountabilities[i].label,
-									getAccountabilityRatingColor(accountabilities[i].rating), false));
+									getAccountabilityRatingColor(accountabilities[i]), false));
 				}
 			}
 
 			function renderAccountabilities(accountabilities, accountabilityLabel, parentElement) {
 				// accountabilities label
-				parentElement.appendChild(mioarchyClient.createMiovisionLabel(accountabilityLabel, '#5885AA', '#FFFFFF',  true));
+				parentElement.appendChild(mioarchyClient.createMiovisionLabel(accountabilityLabel, '#5885AA', '#FFFFFF', true));
 
 				if (typeof(accountabilities) == 'undefined' || accountabilities.length == 0) {
 					renderAccountabilitiesUndefined(parentElement);
