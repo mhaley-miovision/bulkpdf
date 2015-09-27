@@ -166,17 +166,6 @@ Menus.prototype.init = function()
 		{
 			return menu.addItem(applicationName, null, mxUtils.bind(this, function()
 			{
-				/////// TEST ***************
-
-				{
-					/*
-					this.editorUi.
-					points = pixels * 72 / 96
-					*/
-				}
-
-				////////// END TEST *******
-
 				// first delete added cells prior to this
 				var tempCells = this.editorUi.temporaryApplicationHightedCells;
 				if (tempCells) {
@@ -214,6 +203,9 @@ Menus.prototype.init = function()
 
 				// highlight the jobs this person has taken on
 				var appColor = this.editorUi.mioarchyClient.mioarchy.applications[applicationName].color;
+
+                // keeps track of connections so we don't duplicate reporting lines
+                var jobIsConnectedToOrg = [];
 
 				// recursively draw the nodes (clojure will take care of scope)
 				var drawingFunction = function(node, lastSubordinateOrgParentVertex) {
@@ -258,11 +250,50 @@ Menus.prototype.init = function()
 								// send to back
 								graph.cellsOrdered([v], true);
 
+                                // check which orgs are connected, and link them
+                                var jobId = jobVertex.mioObject.id;
+                                var accountabilities = mioarchyClient.jobAccountabilities[jobId];
+                                for (var j = 0; j < accountabilities.length; j++) {
+                                    var a = accountabilities[j];
+
+                                    // typeof(jobIsConnectedToOrg[jobId]) == 'undefined'
+
+                                    if (a.organization  && a.application == applicationName) {
+                                        console.log(a.organization);
+                                        console.log(a.application);
+
+                                        // note the connection about to be made
+                                        if (typeof(jobIsConnectedToOrg[jobId]) == 'undefined') {
+                                            jobIsConnectedToOrg[jobId] = [];
+                                        }
+                                        jobIsConnectedToOrg[jobId][a.organization] = true;
+
+                                        var orgVertex = mioarchyClient.mioarchy.orgToVertex[a.organization];
+
+                                        // make the connection
+                                        // if this is the app node, draw it from the bottom of the app.
+                                        style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
+                                        if (parentOrgVertex == lastSubordinateOrgParentVertex) {
+                                            style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;";
+                                        }
+
+                                        // also draw a link from the last containing org to this job
+                                        var e = graph.insertEdge(parent, null, "", v, orgVertex,
+                                            style + "strokeWidth=10;strokeColor=" + appColor + ";opacity=50");
+                                        tempCells.push(e);
+                                        // send to back
+                                        graph.cellsOrdered([e], true);
+                                    }
+                                }
+
+								/*
+
 								// if this is the app node, draw it from the bottom of the app.
 								style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
 								if (parentOrgVertex == lastSubordinateOrgParentVertex) {
 									style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;";
 								}
+
 
 								// also draw a link from the last containing org to this job
 								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, v,
@@ -273,12 +304,51 @@ Menus.prototype.init = function()
 								tempCells.push(e);
 								// send to back
 								graph.cellsOrdered([e], true);
+								*/
+
+                                /*
+								// also draw a link to all the organizations this person is accountable for
+								for (var o in mioarchyClient.organizations) {
+									var org = mioarchyClient.organizations[o];
+									// first, make sure this is the org of it's a subchild of this org so we don't
+									// try to renders off-screen links
+									if (org.name == node.name ||
+										mioarchyClient.mioarchy.isDescendantOfOrganization(
+											org, mioarchyClient.organizations[node.name])) {
+										// now see if this person owns any application-related accountabilities for this organization
+										for (var a in mioarchyClient.orgAccountabilities[org.name]) {
+											var accountability = mioarchyClient.orgAccountabilities[org.name][a];
+
+											// is this our person?
+											if (accountability.owner == jobVertex.mioObject.contributor && accountability.application == applicationName) {
+
+												// get this org's vertex
+												var orgVertex = mioarchyClient.mioarchy.orgToVertex[org.name];
+
+												var style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
+												if (parentOrgVertex == lastSubordinateOrgParentVertex) {
+													style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;";
+												}
+
+												// also draw a link from this job to the related organization
+												var e = graph.insertEdge(parent, null, "", v, orgVertex,
+													style +
+													"strokeWidth=10;strokeColor=" + appColor + ";opacity=50");
+												tempCells.push(e);
+
+												// send to back
+												graph.cellsOrdered([e], true);
+											}
+										}
+									}
+								}*/
 							}
 						}
 						//==================================================================================================================
 						//	APPLICATION-ORG RELATIONSHIP HIGHLIGHTING
 						//==================================================================================================================
 						// connect the org with sub orgs that match
+                        /*
 						for (var i = 0; i < node.children.length; i++) {
 							if (node.children[i].hasAccountabilities) {
 								// connect up the parent org vertext to this org's vertex
@@ -310,7 +380,7 @@ Menus.prototype.init = function()
 								// send to back
 								graph.cellsOrdered( [ e ], true);
 							}
-						}
+						}*/
 					} finally {
 						graph.getModel().endUpdate();
 					}

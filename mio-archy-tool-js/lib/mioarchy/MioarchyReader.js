@@ -174,8 +174,11 @@ function processJobs(jobsSrc)
             var accountabilityLevel = row['accountabilitylevel'];
             var contributor = row['contributor'];
             var primaryAccountability = row['primaryaccountability'];
+            var active = row['active'];
 
-            jobs[id] = new Models.Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability);
+            if (active && active.toLowerCase() == "true") {
+                jobs[id] = new Models.Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability);
+            }
         }
         console.log("read " + rows.length + " jobs.");
         //console.log(exports.jobs);
@@ -196,11 +199,12 @@ function processJobAccountabilities(src)
             var app = row['application'];
             var rating = row['rating'];
             var type = row['type'];
+            var organization = row['organization'];
 
             if (typeof(jobAccountabilities[jobId]) == 'undefined') {
                 jobAccountabilities[jobId] = [];
             }
-            jobAccountabilities[jobId].push( new Models.Accountability( id, appId, app, label, rating, type ) );
+            jobAccountabilities[jobId].push(new Models.Accountability(id, appId, app, label, rating, type, organization));
         }
         console.log("read " + rows.length + " job accountabilities.");
         _doneFlags |= JOB_ACCOUNTABILITIES_DONE;
