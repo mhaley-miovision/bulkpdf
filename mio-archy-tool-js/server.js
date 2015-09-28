@@ -5,34 +5,37 @@ var models = require("./lib/mioarchy/MioarchyModels.js");
 var http = require("http"),
     url = require("url"),
     path = require("path"),
+    express = require('express'),
     port = process.argv[2] || 8081,
-    mio = require("./lib/mioarchy/MioarchyReader.js");
+    mio = require("./lib/mioarchy/MioarchyReader.js"),
+    bodyParser = require('body-parser');
+
+var app = express();
+app.use(bodyParser.json());
 
 var dbReady = false;
 var lastUpdated;
 
-//var sheetID ='1U9tNn84XPoawbVsBZ3l45phCtQ71P6YGqqMCR1-l7mM';
-var sheetID ='1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ';
+var sheetId ='1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ'; // current, production
 
-mio.readDatabase(sheetID, function(err) {
+mio.readDatabase(sheetId, function(err) {
   dbReady = true;
   lastUpdated = new Date();
 });
 
 var intervalID = setInterval( function() {
-  mio.checkForDatabaseChanges( sheetID, function(changed) {
-    console.log(changed);
+  mio.checkForDatabaseChanges( sheetId, function(changed) {
+    console.log("Detected changes: " + changed);
 
     if (changed) {
-      mio.readDatabase(sheetID, function(err) {
+      mio.readDatabase(sheetId, function(err) {
         dbReady = true;
         lastUpdated = new Date();
       });
     }
   })}, 5000);
 
-var express = require('express');
-var app = express();
+
 
 app.get('/editor/*', function(req, res){
   var uid = req.params.uid,
@@ -117,6 +120,17 @@ app.get('/jobAccountabilities', function(req, res){
 app.get('/lastUpdated', function(req, res){
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify( lastUpdated ));
+});
+
+app.post('/updateSourceSheet', function(req, res) {
+  if (req.body.sheetId) {
+      sheetId = req.body.sheetId;
+        mio.readDatabase(req.body.sheetId, function(err) {
+        dbReady = true;
+        lastUpdated = new Date();
+      });
+  }
+  res.send(JSON.stringify({}));
 });
 
 app.listen(port);

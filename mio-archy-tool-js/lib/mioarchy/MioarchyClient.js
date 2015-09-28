@@ -15,9 +15,9 @@ function MioarchyClient() {
 	this.init();
 }
 
-MioarchyClient.prototype = 
+MioarchyClient.prototype =
 {
-	init: function() {
+	init: function () {
 		this.isReady = false;
 		this.isError = false;
 		this.doneFlags = 0;
@@ -30,73 +30,73 @@ MioarchyClient.prototype =
 		this.orgAccountabilities = {};
 		this.jobAccountabilities = {};
 	},
-	notifySuccess: function(flag) {
-		this.doneFlags |= flag;	
+	notifySuccess: function (flag) {
+		this.doneFlags |= flag;
 		if (this.doneFlags == ALL_DONE) {
 			// create the mioarchy object
-			this.mioarchy = new Mioarchy( this.jobs, this.organizations, this.contributors, this.applications, this.roles,
-				this.orgAccountabilities, this.jobAccountabilities );
+			this.mioarchy = new Mioarchy(this.jobs, this.organizations, this.contributors, this.applications, this.roles,
+				this.orgAccountabilities, this.jobAccountabilities);
 			this.notifyComplete();
 		}
 	},
-	notifyComplete: function() {
+	notifyComplete: function () {
 		this.isReady = true;
 		console.log("Mioarchy: All DB data loaded on the front-end, initiating callback.");
 		this.readyStateCallback();
 	},
-	notifyErrors: function(err) {
+	notifyError: function (err) {
 		this.isError = true;
 	},
-	notifySuccessApps: function(apps) {
+	notifySuccessApps: function (apps) {
 		for (var a in apps) {
 			var app = apps[a];
 			this.applications[app.name] = app;
 		}
 		this.notifySuccess(APPS_DONE);
 	},
-	notifySuccessOrgs: function(orgs) {
+	notifySuccessOrgs: function (orgs) {
 		for (var o in orgs) {
 			var org = orgs[o];
 			this.organizations[org.name] = org;
 		}
 		this.notifySuccess(ORGS_DONE);
 	},
-	notifySuccessContribs: function(contribs) {
+	notifySuccessContribs: function (contribs) {
 		for (var c in contribs) {
 			var contrib = contribs[c];
 			this.contributors[contrib.name] = contrib;
 		}
 		this.notifySuccess(CONT_DONE);
 	},
-	notifySuccessRoles: function(roles) {
+	notifySuccessRoles: function (roles) {
 		for (var r in roles) {
 			var role = roles[r];
 			this.roles[role.name] = role;
 		}
 		this.notifySuccess(ROLE_DONE);
 	},
-	notifySuccessJobs: function(jobs) {
+	notifySuccessJobs: function (jobs) {
 		for (var j in jobs) {
 			var job = jobs[j];
 			this.jobs[job.id] = job;
 		}
 		this.notifySuccess(JOBS_DONE);
 	},
-	notifySuccessOrgAccountabilities: function(accountabilities) {
+	notifySuccessOrgAccountabilities: function (accountabilities) {
 		for (var org in accountabilities) {
 			var acc = accountabilities[org];
 			this.orgAccountabilities[org] = acc;
 		}
 		this.notifySuccess(ORG_ACCOUNTABILITIES_DONE);
 	},
-	notifySuccessJobAccountabilities: function(accountabilities) {
+	notifySuccessJobAccountabilities: function (accountabilities) {
 		for (var job in accountabilities) {
 			var acc = accountabilities[job];
 			this.jobAccountabilities[job] = acc;
 		}
 		this.notifySuccess(JOB_ACCOUNTABILITIES_DONE);
 	},
-	readDB: function( readyStateCallback ) {
+	readDB: function (readyStateCallback) {
 		this.init(); // clear tables
 
 		this.readyStateCallback = readyStateCallback;
@@ -109,32 +109,65 @@ MioarchyClient.prototype =
 		this.getJSON("/orgAccountabilities", this.notifySuccessOrgAccountabilities, this.notifyError);
 		this.getJSON("/jobAccountabilities", this.notifySuccessJobAccountabilities, this.notifyError);
 	},
-	getLastUpdated: function(updateCheckCallback) {
+	getLastUpdated: function (updateCheckCallback) {
 		this.getJSON("/lastUpdated", updateCheckCallback, this.notifyError);
 	},
-	getJSON: function(url, successHandler, errorHandler) {
-	  var xhr = typeof XMLHttpRequest != 'undefined'
-	    ? new XMLHttpRequest()
-	    : new ActiveXObject('Microsoft.XMLHTTP');
+	updateSourceSheet: function (sheetId, updateSourceSheetCallback) {
+		this.postJson("/updateSourceSheet", { sheetId: sheetId }, updateSourceSheetCallback, this.notifyError);
+	},
+	getJSON: function (url, successHandler, errorHandler) {
+		var xhr = typeof XMLHttpRequest != 'undefined'
+			? new XMLHttpRequest()
+			: new ActiveXObject('Microsoft.XMLHTTP');
 
-	  xhr.open('get', url, true);
+		xhr.open('get', url, true);
 
-	  var _this = this;
-	  xhr.onreadystatechange = function() {
-	    var status;
-	    var data;
-	    // https://xhr.spec.whatwg.org/#dom-xmlhttprequest-readystate
-	    if (xhr.readyState == 4) { // `DONE`
-	      status = xhr.status;
-	      if (status == 200) {
-	        data = JSON.parse(xhr.responseText);
+		var _this = this;
+		xhr.onreadystatechange = function () {
+			var status;
+			var data;
+			// https://xhr.spec.whatwg.org/#dom-xmlhttprequest-readystate
+			if (xhr.readyState == 4) { // `DONE`
+				status = xhr.status;
+				if (status == 200) {
+					data = JSON.parse(xhr.responseText);
 
-	        successHandler && successHandler.call(_this, data);
-	      } else {
-	        errorHandler && errorHandler.call(_this, status);
-	      }
-	    }
-	  };
-	  xhr.send();
+					successHandler && successHandler.call(_this, data);
+				} else {
+					errorHandler && errorHandler.call(_this, status);
+				}
+			}
+		};
+		xhr.send();
+	},
+
+	postJson: function (url, body, successHandler, errorHandler) {
+		var xhr = typeof XMLHttpRequest != 'undefined'
+			? new XMLHttpRequest()
+			: new ActiveXObject('Microsoft.XMLHTTP');
+
+		xhr.open("POST", url, true);
+
+		//Send the proper header information along with the request
+		xhr.setRequestHeader("content-type", "application/json");
+
+		var _this = this;
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState == 4) { // `DONE`
+				var status;
+				var data;
+				status = xhr.status;
+				if (status == 200) {
+					data = JSON.parse(xhr.responseText);
+
+					successHandler && successHandler.call(_this, data);
+				} else {
+					errorHandler && errorHandler.call(_this, status);
+				}
+			}
+		}
+		var json = JSON.stringify(body);
+
+		xhr.send( json );
 	}
 }

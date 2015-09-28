@@ -32,6 +32,12 @@ Toolbar.prototype.unselectedBackground = 'none';
  */
 Toolbar.prototype.init = function()
 {
+	this.contributorMenu = this.addMenu("Switch timeframe...", "Select a time frame for the organization", true, 'organizationTimeFrame');
+	this.contributorMenu.style.whiteSpace = 'nowrap';
+	this.contributorMenu.style.overflow = 'hidden';
+	this.contributorMenu.style.width =  '130px';
+
+	this.addSeparator();
 
 	this.contributorMenu = this.addMenu("Highlight Contributor...", "Select an contributor to highlight jobs.", true, 'contributor');
 	this.contributorMenu.style.whiteSpace = 'nowrap';
