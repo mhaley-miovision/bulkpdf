@@ -76,7 +76,7 @@ function processCircularSubOrgRendering() {
 function processRectangularOrgRendering()
 {
     var orgLevel = this.mioarchy.getOrganizationLevel(this.org);
-    var paddingForLabel = orgLevel == 1 ? 180 : 100;
+    var paddingForLabel = this.org.isApplication ? 50 : (orgLevel == 1 ? 180 : 100);
 
     // we will be sorting orgs into two piles: normal orgs and applications
     var applicationOrgInfos = { positions:[], orgRefs:[], width:0, height:0, cx:this.MIN_DISTANCE_BETWEEN_CIRCLES };
@@ -218,172 +218,11 @@ RenderInfoOrganization.prototype =
      actually rendering based on render info applies rendering rules
      */
     render: function (x, y, graph) {
-        /*
-         if (this.jobsAtThisLevel == 0) {
-         console.log(this.org.name + " has no contributors. Skipping rendering.");
-         return;
-         }*/
-        //==============================================================================================================
-        // TOP LEVEL ORGANIZATIONS
+
         if (this.orgLevel <= 2 || this.org.isApplication) {
-            // if there are jobs, render them
-            if (this.jobsAtThisLevel.length > 0) {
-                if (this.subOrgPositions) {
-                    var dx, dy;
-                    cx = x + this.jobsAtThisLevelPosition.x;
-                    cy = y + this.jobsAtThisLevelPosition.y;
-                    renderJobsAtThisOrgLevel.call(this, cx, cy, 0, 0, graph);
-                }
-            }
-            //==========================================================================================================
-            // CHILDREN OF TOP LEVEL ORGANIZATION
-            for (var i = 0; i < this.childRenderingInfos.length; i++) {
-                // current org rendering info
-                var orgRenderInfo = this.childRenderingInfos[i];
-                var orgPosition = this.subOrgPositions[orgRenderInfo.org.name];
-                if (typeof(orgPosition) == 'undefined') {
-                    console.log("UNDEFINED ORG POSITION!!!");
-                }
-                // render organization internals
-                orgRenderInfo.render(x + orgPosition.x, y + orgPosition.y, graph);
-            }
-            //==========================================================================================================
-            // BOUNDING BOX FOR TOP LEVEL ORGANIZATION
-            graph.getModel().beginUpdate();
-            try {
-                var parent = graph.getDefaultParent();
-                var orgLabel = this.org.name;
-
-                // stroke is different for applications
-                var vertex = graph.insertVertex(parent, null, orgLabel, x, y, this.width, this.height,
-                    this.getOrgRenderStyle(this.org, graph));
-                // attach the org info to the vertex
-                vertex.mioObject = this.org;
-                this.mioarchy.orgToVertex[orgLabel] = vertex;
-                // send to back
-                graph.cellsOrdered([vertex], true);
-
-            } finally {
-                graph.getModel().endUpdate();
-            }
-        }
-        //==============================================================================================================
-        // SUB ORGANIZATION
-        else {
-            //==========================================================================================================
-            // SUB ORGANIZATION WITH CHILDREN
-            if (!this.isLeaf) {
-                // first we will draw the circle that will contain our sub circles
-                graph.getModel().beginUpdate();
-                try {
-                    var parent = graph.getDefaultParent();
-                    var orgLabel = this.org.name;
-
-                    // the normal drawing is the top-left of the circle, so we must offset by the circle dimensions
-                    var cx = x;
-                    var cy = y;
-
-                    var vertex = graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
-                        this.getOrgRenderStyle(this.org, graph));
-                    // attach the org info to the vertex
-                    vertex.mioObject = this.org;
-                    this.mioarchy.orgToVertex[orgLabel] = vertex;
-                    // send to back
-                    graph.cellsOrdered([vertex], true);
-
-                } finally {
-                    graph.getModel().endUpdate();
-                }
-                // render organizations (circles)
-                var circleLocations = this.subOrgCircles.circleCenters;
-                for (var i = 0; i < this.childRenderingInfos.length; i++) {
-                    // current org rendering info
-                    var orgRenderInfo = this.childRenderingInfos[i];
-
-                    // offset by containing circle dimensions, as well as sub circle dimensions
-                    var cx = x + circleLocations[i].x + this.width / 2 - orgRenderInfo.width / 2;
-                    var cy = y + circleLocations[i].y + this.width / 2 - orgRenderInfo.height / 2;
-
-                    // render organization internals
-                    orgRenderInfo.render(cx, cy, graph);
-                }
-            }
-            //==========================================================================================================
-            // LEAF ORGANIZATION
-            var dx = 0;
-            var dy = 0;
-            // only draw the containing circle if this is a leaf
-            if (this.isLeaf) {
-                // first we will draw the circle that will contain our job circles
-                graph.getModel().beginUpdate();
-                try {
-                    var parent = graph.getDefaultParent();
-                    var orgLabel = this.org.name;
-
-                    // the normal drawing is the top-left of the circle, so we must offset by the circle dimensions
-                    var cx = x;
-                    var cy = y;
-
-                    var vertex = graph.insertVertex(parent, null, orgLabel, cx, cy, this.width, this.height,
-                        this.getOrgRenderStyle(this.org, graph));
-                    // attach the org info to the vertex
-                    vertex.mioObject = this.org;
-                    this.mioarchy.orgToVertex[orgLabel] = vertex;
-
-                } finally {
-                    graph.getModel().endUpdate();
-                }
-                // offset by half of the containing circle dimensions
-                dx = this.width / 2;
-                dy = this.height / 2;
-            } else {
-                // this is the last "virtual" circle in the calculate rendering infos for this org, which contains the
-                // jobs at this level
-                var lastCircle = this.subOrgCircles.circleCenters[this.subOrgCircles.circleCenters.length - 1];
-                dx = lastCircle.x + this.width / 2;
-                dy = lastCircle.y + this.width / 2;
-            }
-            //==========================================================================================================
-            // JOBS AT THIS SUB ORGANIZATION LEVEL
-            if (this.jobsAtThisLevel.length > 0) {
-                // now move all the circle locations as needed
-                var circleLocations = RenderingUtilities.translatePoints(this.circleForContributorsAtThisOrgLevel.circleCenters, dx, dy);
-
-                // render jobs (circles)
-                for (var j in this.jobsAtThisLevel) {
-                    var job = this.mioarchy.jobs[this.jobsAtThisLevel[j]];
-
-                    var defaultStyle = "shape=ellipse;whiteSpace=wrap;gradientColor=none;editable=0;";
-                    var color = this.getContributorColor(job, this.mioarchy);
-                    var defaultWidth = this.CIRCLE_DIAMETER;
-                    var defaultHeight = this.CIRCLE_DIAMETER;
-
-                    // normal coords are the x,y coords + the circle coords
-                    // (the normal drawing is the top-left of the circle, so we must offset by the circle dimensions)
-                    var cx = x + circleLocations[j].x - this.CIRCLE_DIAMETER / 2;
-                    var cy = y + circleLocations[j].y - this.CIRCLE_DIAMETER / 2;
-
-                    var label;
-                    if (job.contributor && this.mioarchy.contributors[job.contributor]) {
-                        label = this.mioarchy.namesToShortNames[job.contributor].shortName;
-                    } else {
-                        label = "NEW"; // not yet hired
-                    }
-
-                    // actually "draw" :)
-                    graph.getModel().beginUpdate();
-                    try {
-                        var parent = graph.getDefaultParent();
-                        var v = graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight,
-                            defaultStyle + ";gradientColor=" + color);
-                        // attach the org info to the vertex
-                        v.mioObject = job;
-                        this.mioarchy.jobToVertex[job.id] = v;
-                    } finally {
-                        graph.getModel().endUpdate();
-                    }
-                }
-            }
+            this.renderRectangularOrg(x, y, graph);
+        } else {
+            this.renderCircularOrg(x, y, graph);
         }
     },
 
@@ -413,10 +252,156 @@ RenderInfoOrganization.prototype =
         return colorString;
     },
 
-    getOrgRenderStyle: function(org, graph)
-    {
+    //==============================================================================================================
+    // TOP LEVEL ORGANIZATIONS
+    renderRectangularOrg: function (x, y, graph) {
+        // if there are jobs, render them
+        if (this.jobsAtThisLevel.length > 0) {
+            if (this.subOrgPositions) {
+                var cx, cy;
+                cx = x + this.jobsAtThisLevelPosition.x;
+                cy = y + this.jobsAtThisLevelPosition.y;
+                renderJobsAtThisOrgLevel.call(this, cx, cy, 0, 0, graph);
+            }
+        }
+        //==========================================================================================================
+        // CHILDREN OF TOP LEVEL ORGANIZATION
+        for (var i = 0; i < this.childRenderingInfos.length; i++) {
+            // current org rendering info
+            var orgRenderInfo = this.childRenderingInfos[i];
+            var orgPosition = this.subOrgPositions[orgRenderInfo.org.name];
+            if (typeof(orgPosition) == 'undefined') {
+                console.log("UNDEFINED ORG POSITION!!!");
+            }
+            // render organization internals
+            orgRenderInfo.render(x + orgPosition.x, y + orgPosition.y, graph);
+        }
+        //==========================================================================================================
+        // BOUNDING BOX FOR TOP LEVEL ORGANIZATION
+        graph.getModel().beginUpdate();
+        try {
+            // stroke is different for applications
+            var vertex = this.insertOrgVertex (graph.getDefaultParent(), this.org, x, y, this.width, this.height, graph);
+
+            // attach the org info to the vertex
+            vertex.mioObject = this.org;
+            this.mioarchy.orgToVertex[this.org.name] = vertex;
+            // send to back
+            graph.cellsOrdered([vertex], true);
+
+        } finally {
+            graph.getModel().endUpdate();
+        }
+    },
+
+    //==============================================================================================================
+    // SUB ORGANIZATION
+    renderCircularOrg: function (x, y, graph) {
+        //==========================================================================================================
+        // SUB ORGANIZATION WITH CHILDREN
+        if (!this.isLeaf) {
+            // first we will draw the circle that will contain our sub circles
+            graph.getModel().beginUpdate();
+            try {
+                var vertex = this.insertOrgVertex (graph.getDefaultParent(), this.org, x, y, this.width, this.height, graph);
+
+                // attach the org info to the vertex
+                vertex.mioObject = this.org;
+                this.mioarchy.orgToVertex[this.org.name] = vertex;
+                // send to back
+                graph.cellsOrdered([vertex], true);
+
+            } finally {
+                graph.getModel().endUpdate();
+            }
+            // render organizations (circles)
+            var circleLocations = this.subOrgCircles.circleCenters;
+            for (var i = 0; i < this.childRenderingInfos.length; i++) {
+                // current org rendering info
+                var orgRenderInfo = this.childRenderingInfos[i];
+
+                // offset by containing circle dimensions, as well as sub circle dimensions
+                var cx = x + circleLocations[i].x + this.width / 2 - orgRenderInfo.width / 2;
+                var cy = y + circleLocations[i].y + this.width / 2 - orgRenderInfo.height / 2;
+
+                // render organization internals
+                orgRenderInfo.render(cx, cy, graph);
+            }
+        }
+        //==========================================================================================================
+        // LEAF ORGANIZATION
+        var dx = 0;
+        var dy = 0;
+        // only draw the containing circle if this is a leaf
+        if (this.isLeaf) {
+            // first we will draw the circle that will contain our job circles
+            graph.getModel().beginUpdate();
+            try {
+                var vertex = this.insertOrgVertex (graph.getDefaultParent(), this.org, x, y, this.width, this.height, graph);
+
+                // attach the org info to the vertex
+                vertex.mioObject = this.org;
+                this.mioarchy.orgToVertex[this.org.name] = vertex;
+
+            } finally {
+                graph.getModel().endUpdate();
+            }
+            // offset by half of the containing circle dimensions
+            dx = this.width / 2;
+            dy = this.height / 2;
+        } else {
+            // this is the last "virtual" circle in the calculate rendering infos for this org, which contains the
+            // jobs at this level
+            var lastCircle = this.subOrgCircles.circleCenters[this.subOrgCircles.circleCenters.length - 1];
+            dx = lastCircle.x + this.width / 2;
+            dy = lastCircle.y + this.width / 2;
+        }
+        //==========================================================================================================
+        // JOBS AT THIS SUB ORGANIZATION LEVEL
+        if (this.jobsAtThisLevel.length > 0) {
+            // now move all the circle locations as needed
+            var circleLocations = RenderingUtilities.translatePoints(this.circleForContributorsAtThisOrgLevel.circleCenters, dx, dy);
+
+            // render jobs (circles)
+            for (var j in this.jobsAtThisLevel) {
+                var job = this.mioarchy.jobs[this.jobsAtThisLevel[j]];
+
+                var defaultStyle = "shape=ellipse;whiteSpace=wrap;gradientColor=none;editable=0;";
+                var color = this.getContributorColor(job, this.mioarchy);
+                var defaultWidth = this.CIRCLE_DIAMETER;
+                var defaultHeight = this.CIRCLE_DIAMETER;
+
+                // normal coords are the x,y coords + the circle coords
+                // (the normal drawing is the top-left of the circle, so we must offset by the circle dimensions)
+                var cx = x + circleLocations[j].x - this.CIRCLE_DIAMETER / 2;
+                var cy = y + circleLocations[j].y - this.CIRCLE_DIAMETER / 2;
+
+                var label;
+                if (job.contributor && this.mioarchy.contributors[job.contributor]) {
+                    label = this.mioarchy.namesToShortNames[job.contributor].shortName;
+                } else {
+                    label = "NEW"; // not yet hired
+                }
+
+                // actually "draw" :)
+                graph.getModel().beginUpdate();
+                try {
+                    var parent = graph.getDefaultParent();
+                    var v = graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight,
+                        defaultStyle + ";gradientColor=" + color);
+                    // attach the org info to the vertex
+                    v.mioObject = job;
+                    this.mioarchy.jobToVertex[job.id] = v;
+                } finally {
+                    graph.getModel().endUpdate();
+                }
+            }
+        }
+    },
+
+    insertOrgVertex: function (parent, org, x, y, width, height, graph) {
         var orgLevel = this.mioarchy.getOrganizationLevel(org);
-        var style = "labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;editable=0;whiteSpace=wrap;fillColor=none;";
+        var style = "labelPosition=center;align=center;verticalAlign=top;editable=0;whiteSpace=wrap;fillColor=none;";
 
         if (org.isApplication) {
             // highlight the jobs this person has taken on
@@ -463,9 +448,8 @@ RenderInfoOrganization.prototype =
         } else if (!org.isApplication) {
             style += "fontColor=#98AFC7;";
         }
-
         style += "fontSize=" + fontSize + ";";
 
-        return style;
+        return graph.insertVertex(parent, null, org.name, x, y, width, height, style);
     }
 }
