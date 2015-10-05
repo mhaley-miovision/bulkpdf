@@ -198,8 +198,13 @@ Menus.prototype.init = function()
 
 				// don't highlight anything by default
 				if (applicationName === "All Applications") {
+					mioarchyClient.selectedApplicationName = null;
 					return;
 				}
+
+				// store application name, and redraw the accountabilities panel to only show the relevant ones
+				this.editorUi.mioarchyClient.selectedApplicationName = applicationName;
+				mioarchyClient.editor.format.refresh();
 
 				// obtain our application reference
 				var application = this.editorUi.mioarchyClient.mioarchy.applications[applicationName];
@@ -273,9 +278,6 @@ Menus.prototype.init = function()
                                     // typeof(jobIsConnectedToOrg[jobId]) == 'undefined'
 
                                     if (a.organization  && a.application == applicationName) {
-                                        console.log(a.organization);
-                                        console.log(a.application);
-
                                         // note the connection about to be made
                                         if (typeof(jobIsConnectedToOrg[jobId]) == 'undefined') {
                                             jobIsConnectedToOrg[jobId] = [];
@@ -299,102 +301,8 @@ Menus.prototype.init = function()
                                         graph.cellsOrdered([e], true);
                                     }
                                 }
-
-								/*
-
-								// if this is the app node, draw it from the bottom of the app.
-								style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
-								if (parentOrgVertex == lastSubordinateOrgParentVertex) {
-									style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;";
-								}
-
-
-								// also draw a link from the last containing org to this job
-								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, v,
-									style +
-										//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
-										//"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
-									"strokeWidth=10;strokeColor=" + appColor + ";opacity=50");
-								tempCells.push(e);
-								// send to back
-								graph.cellsOrdered([e], true);
-								*/
-
-                                /*
-								// also draw a link to all the organizations this person is accountable for
-								for (var o in mioarchyClient.organizations) {
-									var org = mioarchyClient.organizations[o];
-									// first, make sure this is the org of it's a subchild of this org so we don't
-									// try to renders off-screen links
-									if (org.name == node.name ||
-										mioarchyClient.mioarchy.isDescendantOfOrganization(
-											org, mioarchyClient.organizations[node.name])) {
-										// now see if this person owns any application-related accountabilities for this organization
-										for (var a in mioarchyClient.orgAccountabilities[org.name]) {
-											var accountability = mioarchyClient.orgAccountabilities[org.name][a];
-
-											// is this our person?
-											if (accountability.owner == jobVertex.mioObject.contributor && accountability.application == applicationName) {
-
-												// get this org's vertex
-												var orgVertex = mioarchyClient.mioarchy.orgToVertex[org.name];
-
-												var style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
-												if (parentOrgVertex == lastSubordinateOrgParentVertex) {
-													style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;";
-												}
-
-												// also draw a link from this job to the related organization
-												var e = graph.insertEdge(parent, null, "", v, orgVertex,
-													style +
-													"strokeWidth=10;strokeColor=" + appColor + ";opacity=50");
-												tempCells.push(e);
-
-												// send to back
-												graph.cellsOrdered([e], true);
-											}
-										}
-									}
-								}*/
 							}
 						}
-						//==================================================================================================================
-						//	APPLICATION-ORG RELATIONSHIP HIGHLIGHTING
-						//==================================================================================================================
-						// connect the org with sub orgs that match
-                        /*
-						for (var i = 0; i < node.children.length; i++) {
-							if (node.children[i].hasAccountabilities) {
-								// connect up the parent org vertext to this org's vertex
-								var childOrgName = node.children[i].name;
-								var childOrgVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ childOrgName ];
-
-								// if this is the first subordinate parent, note it
-								if (typeof(lastSubordinateOrgParentVertex) == 'undefined' && node.hasAccountabilities) {
-									// try to find the matching organization for the application
-									lastSubordinateOrgParentVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ applicationName ];
-									if (typeof(lastSubordinateOrgParentVertex) == 'undefined') {
-										console.error("Could not find an organization matching the application: " + applicationName);
-									}
-								}
-
-								var style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
-								// if this is the app node, draw it from the bottom of the app.
-								if (parentOrgVertex == lastSubordinateOrgParentVertex) {
-									style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;";
-								}
-
-								// also draw a link from the last containing org to this job
-								var e = graph.insertEdge(parent, null, "", lastSubordinateOrgParentVertex, childOrgVertex,
-                                    style +
-									//"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
-									//"exitX=0.5;exitY=0;entryX=0.5;entryY=0;" +
-                                    "strokeWidth=10;strokeColor="+appColor+";opacity=50");
-								tempCells.push(e);
-								// send to back
-								graph.cellsOrdered( [ e ], true);
-							}
-						}*/
 					} finally {
 						graph.getModel().endUpdate();
 					}
@@ -468,6 +376,7 @@ Menus.prototype.addSubmenu = function(name, menu, parent)
 Menus.prototype.addMenu = function(name, popupMenu, parent)
 {
 	var menu = this.get(name);
+	console.log(name);
 	
 	if (menu != null && (popupMenu.showDisabled || menu.isEnabled()))
 	{

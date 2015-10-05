@@ -178,10 +178,6 @@
 
 		mioarchyClient.setupClickHandling = function() {
 
-
-			/*
-			mioarchyClient.click = function(me) {
-			};*/
 			mioarchyClient.graph.click = function(me) {
 				var now = new Date();
 				if (mioarchyClient.lastMouseClickTime && Math.abs(now.getTime() - mioarchyClient.lastMouseClickTime.getTime()) < 1000) {
@@ -286,15 +282,12 @@
 
 		mioarchyClient.createMiovisionLabel = function(textContent, backgroundColor, textColor, isHeading) {
 			var label = document.createElement('div');
-
 			label.style.color = 'rgb(112, 112, 112)';
 			label.style.border = '1px solid #c0c0c0';
-
 			if (isHeading) {
 				label.style.borderBottomColor = "#3F403F";
 				label.style.borderBottomWidth = "2px";
 			}
-
 			//label.style.borderWidth = '0px 0px 1px 0px';
 			//label.style.textAlign = isHeading ? 'center' : 'left';
 			label.style.fontWeight = isHeading ? 'bold' : 'normal';
@@ -306,7 +299,6 @@
 			label.style.color = textColor;
 			label.style.backgroundColor = backgroundColor;
 			label.textContent = textContent;
-
 			if (!isHeading) {
 				label.onmousemove = function () {
 					label.style.color = "#3f403f";
@@ -319,7 +311,6 @@
 					label.style.backgroundColor = backgroundColor;
 				}
 			}
-
 			return label;
 		};
 
@@ -355,6 +346,16 @@
 				// add to key value pair dictionary
 				for (var i = 0; i < accountabilityList.length; i++) {
 					var a = accountabilityList[i];
+
+					// if currently highlightingthis.editorUi. an app, only show relevant
+					if (mioarchyClient.selectedApplicationName) {
+						var app = accountabilityList[i].application;
+						if (app !== mioarchyClient.selectedApplicationName) {
+							// do not add to the list!
+							continue;
+						}
+					}
+
 					// does it exist in the list
 					if (typeof(accountabilities[a.accountabilityType]) == 'undefined') {
 						accountabilities[a.accountabilityType] = [];
@@ -371,22 +372,20 @@
 				// each accountability belonging to this label
 				for (var i = 0; i < accountabilities.length; i++) {
 					parentElement.appendChild(
-							mioarchyClient.createMiovisionLabel(
-									accountabilities[i].label,
-									getAccountabilityRatingColor(accountabilities[i]), false));
+							mioarchyClient.createMiovisionLabel(accountabilities[i].label, getAccountabilityRatingColor(accountabilities[i])));
 				}
 			}
 
 			function renderAccountabilities(accountabilities, accountabilityLabel, parentElement) {
 				// accountabilities label
-				parentElement.appendChild(mioarchyClient.createMiovisionLabel(accountabilityLabel, '#5885AA', '#FFFFFF', true));
+				var headingLabel = parentElement.appendChild(mioarchyClient.createMiovisionLabel(accountabilityLabel, '#5885AA', '#FFFFFF', true));
 
 				if (typeof(accountabilities) == 'undefined' || accountabilities.length == 0) {
 					renderAccountabilitiesUndefined(parentElement);
 				} else {
 					var sortedAccountabilities = sortAccountabilityList(accountabilities);
-					for (at in sortedAccountabilities) {
-						renderSortedAccountabilities(sortedAccountabilities[at], at, parentElement);
+					for (var acc in sortedAccountabilities) {
+						renderSortedAccountabilities(sortedAccountabilities[acc], acc, parentElement);
 					}
 				}
 			}
