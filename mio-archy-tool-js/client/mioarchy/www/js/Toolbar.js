@@ -32,12 +32,48 @@ Toolbar.prototype.unselectedBackground = 'none';
  */
 Toolbar.prototype.init = function()
 {
-	this.contributorMenu = this.addMenu("Switch timeframe...", "Select a time frame for the organization", true, 'organizationTimeFrame');
-	this.contributorMenu.style.whiteSpace = 'nowrap';
-	this.contributorMenu.style.overflow = 'hidden';
-	this.contributorMenu.style.width =  '130px';
+	var createSelectElt = function(labelText, valuesToLabelsMap, onChangedFn) {
+		var container = document.createElement("div");
+
+		container.style.float = "left";
+		container.style.margin = "2px";
+		container.style.padding = "5px";
+
+		var label = document.createElement("span");
+		label.innerText = labelText;
+		container.appendChild(label);
+
+		var combo = document.createElement("select");
+		container.appendChild(combo);
+
+		combo.onchange = function(evt) { onChangedFn(combo.value); };
+
+		for (var val in valuesToLabelsMap) {
+			combo.innerHTML += "<option value='" + valuesToLabelsMap[val] + "'>" + val + "</option>";
+		}
+
+		return container;
+	}
+
+	var timeFrameValues = {
+		"Current" : "1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ",
+		"In 6 months" : "1sfsIsfYCbyigxLjAHzcmX4c43m4tdprJnyNK4srEOJs"
+	};
+	var onTimeFrameChanged = function (newVal) {
+		console.log(newVal);
+	}
+	this.container.appendChild(createSelectElt("Timeframe: ", timeFrameValues, onTimeFrameChanged));
 
 	this.addSeparator();
+
+	var applicationValues = {"All Applications" : "All Applications"};
+	var applicationList = Object.keys(this.editorUi.mioarchyClient.applications);
+	for (var i = 0; i < applicationList.length; i++) {
+		applicationValues[applicationList[i]] = applicationList[i];
+	}
+	this.container.appendChild(createSelectElt("Application: ", applicationValues, mioarchyClient.handleApplicationFilterSelectionChange));
+
+	/*
 
 	this.contributorMenu = this.addMenu("Highlight Contributor...", "Select an contributor to highlight jobs.", true, 'contributor');
 	this.contributorMenu.style.whiteSpace = 'nowrap';
@@ -57,6 +93,26 @@ Toolbar.prototype.init = function()
 	this.applicationMenu.style.whiteSpace = 'nowrap';
 	this.applicationMenu.style.overflow = 'hidden';
 	this.applicationMenu.style.width = '180px';
+
+	this.addSeparator();
+
+	var combo = document.createElement("div");
+	combo.className = "geLabel";
+	combo.innerHTML = "<select>"+
+		"<option value='volvo'>Volvo</option>"+
+		"<option value='saab'>Saab</option>"+
+	"</select>";
+
+	mioarchyClient.updateSourceSheet(sourceSheetId);
+
+}), parent, null, true);
+});
+addOrganizationTimeFrameItem("1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ", "Current");
+addOrganizationTimeFrameItem("1sfsIsfYCbyigxLjAHzcmX4c43m4tdprJnyNK4srEOJs", "In 6 Months");
+
+
+	this.container.appendChild(combo);
+*/
 
 	this.addSeparator();
 

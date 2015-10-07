@@ -1200,7 +1200,7 @@ EditorUi.prototype.onBeforeUnload = function()
 {
 	if (this.editor.modified)
 	{
-		return mxResources.get('allChangesLost');
+		//return mxResources.get('allChangesLost');
 	}
 };
 

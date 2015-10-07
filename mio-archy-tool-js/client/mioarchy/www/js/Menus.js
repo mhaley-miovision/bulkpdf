@@ -46,6 +46,7 @@ Menus.prototype.init = function()
 {
 	var graph = this.editorUi.editor.graph;
 
+	/*
 	//==================================================================================================================
 	//	SWITCHING TIME FRAMES
 	//==================================================================================================================
@@ -62,11 +63,12 @@ Menus.prototype.init = function()
 		addOrganizationTimeFrameItem("1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ", "Current");
 		addOrganizationTimeFrameItem("1sfsIsfYCbyigxLjAHzcmX4c43m4tdprJnyNK4srEOJs", "In 6 Months");
 	})));
-
+*/
 	//==================================================================================================================
 	//	SWITCHING ACCOUNTABILITY MODES
 	//==================================================================================================================
 
+	/*
 	this.put('accountabilityMode', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		var addSetAccountabilityModeItem = mxUtils.bind(this, function(val, label)
@@ -80,6 +82,7 @@ Menus.prototype.init = function()
 		addSetAccountabilityModeItem(2, "Ratings View");
 		addSetAccountabilityModeItem(1, "Application View");
 	})));
+
 
 	//==================================================================================================================
 	//	CONTRIBUTOR JOB LOAD HIGHLIGHTING
@@ -180,146 +183,7 @@ Menus.prototype.init = function()
 		{
 			return menu.addItem(applicationName, null, mxUtils.bind(this, function()
 			{
-				// first delete added cells prior to this
-				var tempCells = this.editorUi.temporaryApplicationHightedCells;
-				if (tempCells) {
-					// highlight the jobs this person has taken on
-					graph.getModel().beginUpdate();
-					try {
-						for (var i = 0; i < tempCells.length; i++) {
-							graph.getModel().remove(tempCells[i]);
-						}
-					} finally {
-						graph.getModel().endUpdate();
-					}
-				}
-				this.editorUi.temporaryApplicationHightedCells = [];
-				var tempCells = this.editorUi.temporaryApplicationHightedCells;
 
-				// don't highlight anything by default
-				if (applicationName === "All Applications") {
-					mioarchyClient.selectedApplicationName = null;
-					return;
-				}
-
-				// store application name, and redraw the accountabilities panel to only show the relevant ones
-				this.editorUi.mioarchyClient.selectedApplicationName = applicationName;
-				mioarchyClient.editor.format.refresh();
-
-				// obtain our application reference
-				var application = this.editorUi.mioarchyClient.mioarchy.applications[applicationName];
-
-				// determine application's org dependency graph (how it implements itself)
-				var subordinatesTree = this.editorUi.mioarchyClient.mioarchy.getApplicationSubordinatesTree(
-					applicationName, application.parentOrg
-				);
-
-				// the parent organization of this application
-				var parentOrgVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ application.name ];
-				if (typeof(parentOrgVertex) == 'undefined') {
-					console.error("Could not find organization for: " + applicationName + " (parentOrgVertex is undefined)");
-				}
-
-				// highlight the jobs this person has taken on
-				var appColor = this.editorUi.mioarchyClient.mioarchy.applications[applicationName].color;
-
-                // keeps track of connections so we don't duplicate reporting lines
-                var jobIsConnectedToOrg = [];
-
-				// recursively draw the nodes (clojure will take care of scope)
-				var drawingFunction = function(node, lastSubordinateOrgParentVertex) {
-					// draw at this level
-					graph.getModel().beginUpdate();
-					try {
-						//==============================================================================================
-						//	APP-CONTRIBUTOR RELATIONSHIP HIGHLIGHTING
-						//==============================================================================================
-						// highlight contributors at this level
-						var parent = graph.getDefaultParent();
-						for (var i = 0; i < node.matchingJobs.length; i++) {
-
-							// see what organization is selected, and make sure this job is a child of that
-							// otherwise when zoomed in to one org, we render highlights for other organizations
-							var jobIsWithinThisOrg = false;
-							var selectedOrgName = this.editorUi.mioarchyClient.targetRenderingOrg;
-							if (selectedOrgName) {
-								var org = this.editorUi.mioarchyClient.mioarchy.organizations[selectedOrgName];
-								var orgJobs = this.editorUi.mioarchyClient.mioarchy.getOrganizationJobs(org, true);
-								for (var j = 0; j < orgJobs.length; j++) {
-									if (orgJobs[j] === node.matchingJobs[i]) {
-										jobIsWithinThisOrg = true;
-										break;
-									}
-								}
-							}
-							if (jobIsWithinThisOrg) {
-								var jobVertex = this.editorUi.mioarchyClient.mioarchy.jobToVertex[node.matchingJobs[i]];
-								var ow = jobVertex.geometry.width;
-								var oh = jobVertex.geometry.width;
-								var w = ow * 2;
-								var h = oh * 2;
-								var x = jobVertex.geometry.x - (w - ow) / 2;
-								var y = jobVertex.geometry.y - (h - oh) / 2;
-
-								// draw the highlight circle
-								var v = graph.insertVertex(parent, null, "", x, y, w, h,
-									"ellipse;whiteSpace=wrap;html=1;strokeWidth=10;plain-green;fillColor=" + appColor + ";" +
-									"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
-								tempCells.push(v);
-								// send to back
-								graph.cellsOrdered([v], true);
-
-                                // check which orgs are connected, and link them
-                                var jobId = jobVertex.mioObject.id;
-                                var accountabilities = mioarchyClient.jobAccountabilities[jobId];
-                                for (var j = 0; j < accountabilities.length; j++) {
-                                    var a = accountabilities[j];
-
-                                    // typeof(jobIsConnectedToOrg[jobId]) == 'undefined'
-
-                                    if (a.organization  && a.application == applicationName) {
-                                        // note the connection about to be made
-                                        if (typeof(jobIsConnectedToOrg[jobId]) == 'undefined') {
-                                            jobIsConnectedToOrg[jobId] = [];
-                                        }
-                                        jobIsConnectedToOrg[jobId][a.organization] = true;
-
-                                        var orgVertex = mioarchyClient.mioarchy.orgToVertex[a.organization];
-
-                                        // make the connection
-                                        // if this is the app node, draw it from the bottom of the app.
-                                        style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
-                                        if (parentOrgVertex == lastSubordinateOrgParentVertex) {
-                                            style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;";
-                                        }
-
-                                        // also draw a link from the last containing org to this job
-                                        var e = graph.insertEdge(parent, null, "", v, orgVertex,
-                                            style + "strokeWidth=10;strokeColor=" + appColor + ";opacity=50");
-                                        tempCells.push(e);
-                                        // send to back
-                                        graph.cellsOrdered([e], true);
-                                    }
-                                }
-							}
-						}
-					} finally {
-						graph.getModel().endUpdate();
-					}
-					// next, recurse on the kids
-					// connect the org with sub orgs that match
-					for (var i = 0; i < node.children.length; i++) {
-						var newParentVertex = lastSubordinateOrgParentVertex;
-						if (node.children[i].hasAccountabilities) {
-							// new parent vertex to pass down to drawing recursion function
-							var childOrgName = node.children[i].name;
-							newParentVertex = this.editorUi.mioarchyClient.mioarchy.orgToVertex[ childOrgName ];
-						}
-						// recurse, providing a new parent vertex to draw edges from
-						drawingFunction.call( this, node.children[i], newParentVertex );
-					}
-				}
-				drawingFunction.call( this, subordinatesTree, parentOrgVertex ); // draw the root, which will draw the rest recursively
 
 			}), parent, null);
 		});
@@ -331,6 +195,7 @@ Menus.prototype.init = function()
 			addItem(applicationList[i]);
 		}
 	})));
+	*/
 
 	this.put('help', new Menu(mxUtils.bind(this, function(menu, parent)
 	{

@@ -45,7 +45,7 @@ function Sidebar(editorUi, container)
 		var id = Number(org.id) - 1;
 		var parent = org.parent ? Number(organizations[org.parent].id) - 1 : -1;
 
-		d.add(id, parent, org.name, "javascript:mioarchyClient.renderOrganization('"+org.name+"');", org.name, '', 'images/mio-swirl-48px.png');
+		d.add(id, parent, org.name, "javascript:mioarchyClient.render('"+org.name+"');", org.name, '', 'images/mio-swirl-48px.png');
 		//d.add(id, parent, org.name, org.name, org.name, '', 'images/mio-swirl-48px.png');
 	}
 
