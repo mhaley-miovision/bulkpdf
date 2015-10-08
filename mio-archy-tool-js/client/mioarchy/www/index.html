@@ -170,6 +170,7 @@
 					// double-clicked org, zoom in!
 					var cell = me.getCell();
 					mioarchyClient.graph.selectedGraphObject = cell;
+
 					if (cell && mioarchyClient.graph.selectedGraphObject.mioObject
 							&& mioarchyClient.graph.selectedGraphObject.mioObject.type == Mioarchy.prototype.Types.Organization) {
 						mioarchyClient.targetRenderingOrg = mioarchyClient.graph.selectedGraphObject.mioObject.name;
@@ -554,6 +555,90 @@
 				}
 			}
 			drawingFunction.call( this, subordinatesTree, parentOrgVertex ); // draw the root, which will draw the rest recursively
+		}
+
+		mioarchyClient.renderHighlightedContributorOverlays = function () {
+			// don't highlight anything by default
+			if (mioarchyClient.selectedContributorName === "All Contributors") {
+				return;
+			}
+			var contributorName = mioarchyClient.selectedContributorName;
+
+			var graph = mioarchyClient.editor.editor.graph;
+
+			// first unselect all the other selected jobs
+			if (mioarchyClient.temporaryContributorHightedCells) {
+				// highlight the jobs this person has taken on
+				graph.getModel().beginUpdate();
+				try {
+					for (var i = 0; i < mioarchyClient.temporaryContributorHightedCells.length; i++) {
+						graph.getModel().remove(mioarchyClient.temporaryContributorHightedCells[i]);
+					}
+				} finally {
+					graph.getModel().endUpdate();
+				}
+			}
+			mioarchyClient.temporaryContributorHightedCells = [];
+
+
+			// find all this person's jobs
+			var contributor = mioarchyClient.contributors[contributorName];
+			var jobList = [];
+			for (j in mioarchyClient.jobs) {
+				if (mioarchyClient.jobs[j].contributor.toLowerCase()
+						=== contributor.name.toLowerCase()) {
+					jobList.push(j);
+				}
+			}
+			// highlight the jobs this person has taken on
+			graph.getModel().beginUpdate();
+			try {
+				var parent = graph.getDefaultParent();
+				for (var i = 0; i < jobList.length; i++) {
+					var jobVertex = mioarchyClient.mioarchy.jobToVertex[ jobList[i] ];
+
+					var ow = jobVertex.geometry.width;
+					var oh = jobVertex.geometry.width;
+					var w = ow * 2;
+					var h = oh * 2;
+					var x = jobVertex.geometry.x - (w - ow)/2;
+					var y = jobVertex.geometry.y - (h - oh)/2;
+
+					var v = graph.insertVertex(parent, null, "", x, y, w, h,
+							"ellipse;whiteSpace=wrap;html=1;strokeWidth=5;plain-green;fillColor=#00FF00;" +
+							"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
+					mioarchyClient.temporaryContributorHightedCells.push(v);
+					// move the highlighted region to the back
+					graph.orderCells(true, v);
+				}
+				// fully connect the graph with edges
+				var numVertices = mioarchyClient.temporaryContributorHightedCells.length;
+				for (var i = 0; i < numVertices; i++) {
+					for (var j = 0; j < numVertices/2; j++) {
+						if (i != j) {
+							var v1 = mioarchyClient.temporaryContributorHightedCells[i];
+							var v2 = mioarchyClient.temporaryContributorHightedCells[j];
+
+							var v = graph.insertEdge(parent, null, "", v1, v2,
+									"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
+									"exitX=1;exitY=0.5;entryX=0.5;entryY=1;" +
+									"strokeWidth=5;strokeColor=#00FF00;opacity=50");
+							mioarchyClient.temporaryContributorHightedCells.push(v);
+						}
+					}
+				}
+			} finally {
+				graph.getModel().endUpdate();
+			}
+		}
+
+		mioarchyClient.handleContributorFilterSelectionChange = function (contributorName) {
+			// store contributor name, and redraw the highlights
+			mioarchyClient.selectedContributorName = contributorName;
+
+			mioarchyClient.renderHighlightedContributorOverlays();
+
+			//mioarchyClient.render();
 		}
 	</script>
 </body>

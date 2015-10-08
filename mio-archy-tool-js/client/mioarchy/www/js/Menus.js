@@ -94,73 +94,7 @@ Menus.prototype.init = function()
 		{
 			return menu.addItem(contributorName, null, mxUtils.bind(this, function()
 			{
-				// first unselect all the other selected jobs
-				if (this.editorUi.temporaryContributorHightedCells) {
-					// highlight the jobs this person has taken on
-					graph.getModel().beginUpdate();
-					try {
-						for (var i = 0; i < this.editorUi.temporaryContributorHightedCells.length; i++) {
-							graph.getModel().remove(this.editorUi.temporaryContributorHightedCells[i]);
-						}
-					} finally {
-						graph.getModel().endUpdate();
-					}
-				}
-				this.editorUi.temporaryContributorHightedCells = [];
 
-				// don't highlight anything by default
-				if (contributorName === "All Contributors") {
-					return;
-				}
-				// find all this person's jobs
-				var contributor = this.editorUi.mioarchyClient.contributors[contributorName];
-				var jobList = [];
-				for (j in this.editorUi.mioarchyClient.jobs) {
-					if (this.editorUi.mioarchyClient.jobs[j].contributor.toLowerCase()
-						=== contributor.name.toLowerCase()) {
-						jobList.push(j);
-					}
-				}
-				// highlight the jobs this person has taken on
-				graph.getModel().beginUpdate();
-				try {
-					var parent = graph.getDefaultParent();
-					for (var i = 0; i < jobList.length; i++) {
-						var jobVertex = this.editorUi.mioarchyClient.mioarchy.jobToVertex[ jobList[i] ];
-
-						var ow = jobVertex.geometry.width;
-						var oh = jobVertex.geometry.width;
-						var w = ow * 2;
-						var h = oh * 2;
-						var x = jobVertex.geometry.x - (w - ow)/2;
-						var y = jobVertex.geometry.y - (h - oh)/2;
-
-						var v = graph.insertVertex(parent, null, "", x, y, w, h,
-							"ellipse;whiteSpace=wrap;html=1;strokeWidth=5;plain-green;fillColor=#00FF00;" +
-							"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
-						this.editorUi.temporaryContributorHightedCells.push(v);
-						// move the highlighted region to the back
-						graph.orderCells(true, v);
-					}
-					// fully connect the graph with edges
-					var numVertices = this.editorUi.temporaryContributorHightedCells.length;
-					for (var i = 0; i < numVertices; i++) {
-						for (var j = 0; j < numVertices/2; j++) {
-							if (i != j) {
-								var v1 = this.editorUi.temporaryContributorHightedCells[i];
-								var v2 = this.editorUi.temporaryContributorHightedCells[j];
-
-								var v = graph.insertEdge(parent, null, "", v1, v2,
-									"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
-									"exitX=1;exitY=0.5;entryX=0.5;entryY=1;" +
-									"strokeWidth=5;strokeColor=#00FF00;opacity=50");
-								this.editorUi.temporaryContributorHightedCells.push(v);
-							}
-						}
-					}
-				} finally {
-					graph.getModel().endUpdate();
-				}
 
 			}), parent, null);
 		});

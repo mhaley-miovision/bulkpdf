@@ -1905,14 +1905,6 @@ TextFormatPanel.prototype.addFont = function(container)
 	colorPanel.style.borderTop = '1px solid #c0c0c0';
 	colorPanel.style.paddingTop = '6px';
 	colorPanel.style.paddingBottom = '6px';
-
-    /*
-	var fontMenu = this.editorUi.toolbar.addMenu('All Contributors', 'View all contributors', true, 'contributor', stylePanel);
-	fontMenu.style.color = 'rgb(112, 112, 112)';
-	fontMenu.style.whiteSpace = 'nowrap';
-	fontMenu.style.overflow = 'hidden';
-	fontMenu.style.margin = '0px';
-    */
 	
 	this.addArrow(fontMenu);
 	fontMenu.style.width = '192px';

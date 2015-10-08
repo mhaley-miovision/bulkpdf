@@ -32,7 +32,38 @@ Toolbar.prototype.unselectedBackground = 'none';
  */
 Toolbar.prototype.init = function()
 {
-	var createSelectElt = function(labelText, valuesToLabelsMap, onChangedFn) {
+	/*
+	var createSelectElt = function(id, labelText, valuesToLabelsMap, onChangedFn) {
+		var container = document.createElement("div");
+
+		container.style.float = "left";
+		container.style.margin = "2px";
+		container.style.padding = "5px";
+
+		var label = document.createElement("span");
+		label.innerText = labelText;
+		container.appendChild(label);
+
+		var input = document.createElement("input");
+		input.type = "text";
+		input.name = id + "Value";
+		input.value = Object.keys(valuesToLabelsMap)[0];
+		input.setAttribute("list", id);
+		input.onchange = function(evt) { alert(input.value); };
+		container.appendChild(input);
+
+		var combo = document.createElement("datalist");
+		combo.id = id;
+		container.appendChild(combo);
+
+		for (var val in valuesToLabelsMap) {
+			combo.innerHTML += "<option value='" + valuesToLabelsMap[val] + "'>" + val + "</option>";
+		}
+
+		return container;
+	}*/
+
+	var createSelectElt = function(id, labelText, valuesToLabelsMap, onChangedFn) {
 		var container = document.createElement("div");
 
 		container.style.float = "left";
@@ -62,7 +93,7 @@ Toolbar.prototype.init = function()
 	var onTimeFrameChanged = function (newVal) {
 		console.log(newVal);
 	}
-	this.container.appendChild(createSelectElt("Timeframe: ", timeFrameValues, onTimeFrameChanged));
+	this.container.appendChild(createSelectElt("timeframe", "Timeframe: ", timeFrameValues, onTimeFrameChanged));
 
 	this.addSeparator();
 
@@ -71,7 +102,16 @@ Toolbar.prototype.init = function()
 	for (var i = 0; i < applicationList.length; i++) {
 		applicationValues[applicationList[i]] = applicationList[i];
 	}
-	this.container.appendChild(createSelectElt("Application: ", applicationValues, mioarchyClient.handleApplicationFilterSelectionChange));
+	this.container.appendChild(createSelectElt("application", "Application: ", applicationValues, mioarchyClient.handleApplicationFilterSelectionChange));
+
+	this.addSeparator();
+
+	var contributorValues = {"All Contributors" : "All Contributors"};
+	var contributorList = Object.keys(this.editorUi.mioarchyClient.contributors);
+	for (var i = 0; i < contributorList.length; i++) {
+		contributorValues[contributorList[i]] = contributorList[i];
+	}
+	this.container.appendChild(createSelectElt("contributor", "Contributor: ", contributorValues, mioarchyClient.handleContributorFilterSelectionChange));
 
 	/*
 
