@@ -35,8 +35,6 @@ var intervalID = setInterval( function() {
     }
   })}, 5000);
 
-
-
 app.get('/editor/*', function(req, res){
   var uid = req.params.uid,
     path = req.params[0] ? req.params[0] : 'index.html';

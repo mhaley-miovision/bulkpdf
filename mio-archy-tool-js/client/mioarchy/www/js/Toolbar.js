@@ -106,56 +106,6 @@ Toolbar.prototype.init = function()
 
 	this.addSeparator();
 
-	var contributorValues = {"All Contributors" : "All Contributors"};
-	var contributorList = Object.keys(this.editorUi.mioarchyClient.contributors);
-	for (var i = 0; i < contributorList.length; i++) {
-		contributorValues[contributorList[i]] = contributorList[i];
-	}
-	this.container.appendChild(createSelectElt("contributor", "Contributor: ", contributorValues, mioarchyClient.handleContributorFilterSelectionChange));
-
-	/*
-
-	this.contributorMenu = this.addMenu("Highlight Contributor...", "Select an contributor to highlight jobs.", true, 'contributor');
-	this.contributorMenu.style.whiteSpace = 'nowrap';
-	this.contributorMenu.style.overflow = 'hidden';
-	this.contributorMenu.style.width =  '130px';
-
-	this.addSeparator();
-
-	this.applicationMenu = this.addMenu("Highlight Application...", "Select an application to highlight interrelationships.", true, 'application');
-	this.applicationMenu.style.whiteSpace = 'nowrap';
-	this.applicationMenu.style.overflow = 'hidden';
-	this.applicationMenu.style.width = '130px';
-
-	this.addSeparator();
-
-	this.applicationMenu = this.addMenu('Switch Accountability Mode...', "Select view mode for accountabilities..", true, 'accountabilityMode');
-	this.applicationMenu.style.whiteSpace = 'nowrap';
-	this.applicationMenu.style.overflow = 'hidden';
-	this.applicationMenu.style.width = '180px';
-
-	this.addSeparator();
-
-	var combo = document.createElement("div");
-	combo.className = "geLabel";
-	combo.innerHTML = "<select>"+
-		"<option value='volvo'>Volvo</option>"+
-		"<option value='saab'>Saab</option>"+
-	"</select>";
-
-	mioarchyClient.updateSourceSheet(sourceSheetId);
-
-}), parent, null, true);
-});
-addOrganizationTimeFrameItem("1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ", "Current");
-addOrganizationTimeFrameItem("1sfsIsfYCbyigxLjAHzcmX4c43m4tdprJnyNK4srEOJs", "In 6 Months");
-
-
-	this.container.appendChild(combo);
-*/
-
-	this.addSeparator();
-
 	var elts = this.addItems(['actualSize', 'zoomIn', 'zoomOut', '-']);
 	elts[0].setAttribute('title', mxResources.get('actualSize') + ' (Ctrl+0)');
 	elts[1].setAttribute('title', mxResources.get('zoomIn') + ' (Ctrl + / Alt+Scroll)');

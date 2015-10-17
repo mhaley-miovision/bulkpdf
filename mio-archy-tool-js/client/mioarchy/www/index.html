@@ -120,6 +120,7 @@
 		mioarchyClient.onEditorUIInitCompleted = function( graph, editor ) {
 			mioarchyClient.graph = graph;
 			mioarchyClient.editor = editor;
+			mioarchyClient.setupClickHandling(); // only once
 			mioarchyClient.render();
 		}
 
@@ -141,7 +142,6 @@
 				mioarchyClient.graph.refresh();
 
 				mioarchyClient.graph.setEnabled(false);
-				mioarchyClient.setupClickHandling();
 
 			} else {
 				console.log("renderOrganization: _graph is undefined!!!");
@@ -164,27 +164,15 @@
 
 		mioarchyClient.setupClickHandling = function() {
 
-			mioarchyClient.graph.click = function(me) {
-				var now = new Date();
-				if (mioarchyClient.lastMouseClickTime && Math.abs(now.getTime() - mioarchyClient.lastMouseClickTime.getTime()) < 1000) {
-					// double-clicked org, zoom in!
-					var cell = me.getCell();
-					mioarchyClient.graph.selectedGraphObject = cell;
+			Graph.prototype.dblClick = function (evt, cell) {
+				mioarchyClient.graph.selectedGraphObject = cell;
 
-					if (cell && mioarchyClient.graph.selectedGraphObject.mioObject
-							&& mioarchyClient.graph.selectedGraphObject.mioObject.type == Mioarchy.prototype.Types.Organization) {
-						mioarchyClient.targetRenderingOrg = mioarchyClient.graph.selectedGraphObject.mioObject.name;
-						mioarchyClient.render();
-					}
-				} else {
-					 //TODO: gets called 4 time every time for some reason
-					 var cell = me.getCell();
-					 mioarchyClient.graph.selectedGraphObject = cell;
-					 mioarchyClient.editor.format.refresh();
+				if (cell && mioarchyClient.graph.selectedGraphObject.mioObject
+						&& mioarchyClient.graph.selectedGraphObject.mioObject.type == Mioarchy.prototype.Types.Organization) {
+					mioarchyClient.targetRenderingOrg = mioarchyClient.graph.selectedGraphObject.mioObject.name;
+					mioarchyClient.render();
 				}
-
-				mioarchyClient.lastMouseClickTime = now;
-			}
+			};
 
 			var mouseListener =
 			{
@@ -192,36 +180,11 @@
 				lastHoveredCell:null,
 				stateStyleBackup:null,
 
-				mouseUp: function()
-				{
+				mouseUp: function(sender, me) {
+					mioarchyClient.handleRightPaneRefresh(mioarchyClient.graph.container, mioarchyClient.graph);
 				},
 				mouseDown: function(sender, me) {
-					/*
-					var now = new Date();
-					console.log(now);
-					if (mioarchyClient.lastMouseClickTime && Math.abs(now.getTime() - mioarchyClient.lastMouseClickTime.getTime()) < 1000) {
-						// double-clicked org, zoom in!
-						console.log("mouse double click");
-						var cell = me.getCell();
-						mioarchyClient.graph.selectedGraphObject = cell;
-						if (cell && mioarchyClient.graph.selectedGraphObject.mioObject
-								&& mioarchyClient.graph.selectedGraphObject.mioObject.type == Mioarchy.prototype.Types.Organization) {
-							mioarchyClient.targetRenderingOrg = mioarchyClient.graph.selectedGraphObject.mioObject.name;
-							mioarchyClient.renderOrganization();
-						}
-					} else {
-						console.log("mouse click");
 
-						//TODO: gets called 4 time every time for some reason
-						var cell = me.getCell();
-						mioarchyClient.graph.selectedGraphObject = cell;
-						mioarchyClient.editor.format.refresh();
-
-
-					}
-
-					mioarchyClient.lastMouseClickTime = now;
-			*/
 				},
 				mouseMove: function(sender, me) {
 					if (this.currentState != null && me.getState() == this.currentState) {
@@ -334,7 +297,7 @@
 					var a = accountabilityList[i];
 
 					// if currently highlighting an app, only show relevant
-					if (mioarchyClient.selectedApplicationName) {
+					if (mioarchyClient.selectedApplicationName && mioarchyClient.selectedApplicationName !== "All Applications") {
 						var app = accountabilityList[i].application;
 						if (app !== mioarchyClient.selectedApplicationName) {
 							// do not add to the list!
@@ -388,6 +351,7 @@
 				var job = selectedGraphObject.mioObject;
 				var accountabilities = mioarchyClient.jobAccountabilities[job.id];
 				renderAccountabilities(accountabilities, job.accountabilityLabel + " Accountabilities", container);
+				mioarchyClient.renderHighlightedContributorOverlays();
 			} else if (selectedGraphObject && selectedGraphObject.mioObject && selectedGraphObject.mioObject.type === Mioarchy.prototype.Types.Organization) {
 				var organizationName = selectedGraphObject.mioObject.name;
 				var accountabilities = mioarchyClient.orgAccountabilities[organizationName];
@@ -409,9 +373,29 @@
 			mioarchyClient.renderOrganization();
 			mioarchyClient.editor.format.refresh();
 			mioarchyClient.renderHighlightedApplicationOverlays();
+			//mioarchyClient.renderHighlightedContributorOverlays();
+		}
+
+		mioarchyClient.getSelectedContributor = function() {
+			// see if the selected object is a job
+			var graph = mioarchyClient.editor.editor.graph;
+			var selectedGraphObject = graph.selectedGraphObject;
+
+			if (selectedGraphObject && selectedGraphObject.mioObject && selectedGraphObject.mioObject.type === Mioarchy.prototype.Types.Job) {
+				var job = selectedGraphObject.mioObject;
+				return job.contributor;
+			}
+			return null;
 		}
 
 		mioarchyClient.renderHighlightedApplicationOverlays = function () {
+			// if a contributor is selected, don't draw the global overlay view of applications
+			// don't highlight anything by default
+			var selectedContributor = mioarchyClient.getSelectedContributor();
+			if (selectedContributor) {
+				console.log("renderHighlightedApplicationOverlays: contributor is currently selected, not rendering.");
+				return;
+			}
 			var applicationName = mioarchyClient.selectedApplicationName;
 			if (typeof(applicationName) == 'undefined' || applicationName === "All Applications") {
 				return;
@@ -557,18 +541,24 @@
 			drawingFunction.call( this, subordinatesTree, parentOrgVertex ); // draw the root, which will draw the rest recursively
 		}
 
-		mioarchyClient.renderHighlightedContributorOverlays = function () {
-			// don't highlight anything by default
-			if (mioarchyClient.selectedContributorName === "All Contributors") {
-				return;
+		mioarchyClient.getContributorJobs = function(contributorName) {
+			// find all this person's jobs
+			var contributor = mioarchyClient.contributors[contributorName];
+			var jobList = [];
+			for (j in mioarchyClient.jobs) {
+				if (mioarchyClient.jobs[j].contributor.toLowerCase()
+						=== contributor.name.toLowerCase()) {
+					jobList.push(j);
+				}
 			}
-			var contributorName = mioarchyClient.selectedContributorName;
+			return jobList;
+		}
 
+		mioarchyClient.highlightContributorJobs = function(contributorName) {
 			var graph = mioarchyClient.editor.editor.graph;
 
 			// first unselect all the other selected jobs
 			if (mioarchyClient.temporaryContributorHightedCells) {
-				// highlight the jobs this person has taken on
 				graph.getModel().beginUpdate();
 				try {
 					for (var i = 0; i < mioarchyClient.temporaryContributorHightedCells.length; i++) {
@@ -580,38 +570,38 @@
 			}
 			mioarchyClient.temporaryContributorHightedCells = [];
 
-
 			// find all this person's jobs
-			var contributor = mioarchyClient.contributors[contributorName];
-			var jobList = [];
-			for (j in mioarchyClient.jobs) {
-				if (mioarchyClient.jobs[j].contributor.toLowerCase()
-						=== contributor.name.toLowerCase()) {
-					jobList.push(j);
-				}
-			}
+			var jobList = mioarchyClient.mioarchy.getContributorJobs( contributorName );
+			var highlightColor = "magenta";
+
 			// highlight the jobs this person has taken on
 			graph.getModel().beginUpdate();
 			try {
 				var parent = graph.getDefaultParent();
 				for (var i = 0; i < jobList.length; i++) {
-					var jobVertex = mioarchyClient.mioarchy.jobToVertex[ jobList[i] ];
+					// only render if on screen
+					var isVisible = mioarchyClient.isJobWithinSelectedOrg( jobList[i] );
+					if (isVisible) {
+						var jobVertex = mioarchyClient.mioarchy.jobToVertex[jobList[i]];
 
-					var ow = jobVertex.geometry.width;
-					var oh = jobVertex.geometry.width;
-					var w = ow * 2;
-					var h = oh * 2;
-					var x = jobVertex.geometry.x - (w - ow)/2;
-					var y = jobVertex.geometry.y - (h - oh)/2;
+						var ow = jobVertex.geometry.width;
+						var oh = jobVertex.geometry.width;
+						var w = ow * 2;
+						var h = oh * 2;
+						var x = jobVertex.geometry.x - (w - ow) / 2;
+						var y = jobVertex.geometry.y - (h - oh) / 2;
 
-					var v = graph.insertVertex(parent, null, "", x, y, w, h,
-							"ellipse;whiteSpace=wrap;html=1;strokeWidth=5;plain-green;fillColor=#00FF00;" +
-							"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
-					mioarchyClient.temporaryContributorHightedCells.push(v);
-					// move the highlighted region to the back
-					graph.orderCells(true, v);
+						var v = graph.insertVertex(parent, null, "", x, y, w, h,
+								"ellipse;whiteSpace=wrap;html=1;strokeWidth=10;plain-green;fillColor=none;" +
+								"strokeColor=" + highlightColor + ";shadow=0;gradientColor=none;opacity=50;");
+						mioarchyClient.temporaryContributorHightedCells.push(v);
+						// move the highlighted region to the back
+						graph.orderCells(true, v);
+					}
 				}
+
 				// fully connect the graph with edges
+				/*
 				var numVertices = mioarchyClient.temporaryContributorHightedCells.length;
 				for (var i = 0; i < numVertices; i++) {
 					for (var j = 0; j < numVertices/2; j++) {
@@ -622,9 +612,48 @@
 							var v = graph.insertEdge(parent, null, "", v1, v2,
 									"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
 									"exitX=1;exitY=0.5;entryX=0.5;entryY=1;" +
-									"strokeWidth=5;strokeColor=#00FF00;opacity=50");
+									"strokeWidth=5;strokeColor="+highlightColor+";opacity=50");
 							mioarchyClient.temporaryContributorHightedCells.push(v);
 						}
+					}
+				}*/
+
+			} finally {
+				graph.getModel().endUpdate();
+			}
+		}
+
+		mioarchyClient.highlightJobAccountabilities = function(jobId) {
+			//var filteringApplication = mioarchyClient.getSelectedApplication();
+			var graph = mioarchyClient.editor.editor.graph;
+
+			// each accountability that points at an organization should be highlighted
+
+			// get the list of accountabilities first
+			graph.getModel().beginUpdate();
+			var accountabilities = mioarchyClient.jobAccountabilities[jobId];
+			try {
+				for (var a in accountabilities) {
+					var acc = accountabilities[a];
+					var orgName = acc.organization;
+					var appName = acc.application;
+
+					if (mioarchyClient.isOrgWithinSelectedOrg(orgName)) {
+
+						var jobVertex = mioarchyClient.mioarchy.jobToVertex[jobId];
+						var orgVertex = mioarchyClient.mioarchy.orgToVertex[orgName];
+
+						// make the connection
+						var style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
+
+						var appColor = mioarchyClient.mioarchy.applications[appName].color;
+
+						// also draw a link from the last containing org to this job
+						var e = graph.insertEdge(parent, null, "", jobVertex, orgVertex,
+								style + "strokeWidth=10;strokeColor=" + appColor + ";opacity=50");
+						mioarchyClient.temporaryContributorAccountabilityHighlightedCells.push(e);
+						// send to back
+						graph.cellsOrdered([e], true);
 					}
 				}
 			} finally {
@@ -632,13 +661,83 @@
 			}
 		}
 
-		mioarchyClient.handleContributorFilterSelectionChange = function (contributorName) {
-			// store contributor name, and redraw the highlights
-			mioarchyClient.selectedContributorName = contributorName;
+		mioarchyClient.getSelectedApplication = function() {
+			// is there a filtering app?
+			var applicationName = mioarchyClient.selectedApplicationName;
+			if (typeof(applicationName) == 'undefined' || applicationName === "All Applications") {
+				applicationName = null;
+			}
+			return applicationName;
+		}
 
-			mioarchyClient.renderHighlightedContributorOverlays();
+		mioarchyClient.clearContributorAccountabilityHighlighting = function() {
+			var graph = mioarchyClient.editor.editor.graph;
 
-			//mioarchyClient.render();
+			// first unselect all the other selected jobs
+			if (mioarchyClient.temporaryContributorAccountabilityHighlightedCells) {
+				graph.getModel().beginUpdate();
+				try {
+					for (var i = 0; i < mioarchyClient.temporaryContributorAccountabilityHighlightedCells.length; i++) {
+						graph.getModel().remove(mioarchyClient.temporaryContributorAccountabilityHighlightedCells[i]);
+					}
+				} finally {
+					graph.getModel().endUpdate();
+				}
+			}
+			mioarchyClient.temporaryContributorAccountabilityHighlightedCells = [];
+		}
+
+		mioarchyClient.isJobWithinSelectedOrg = function(jobId) {
+			// see what organization is selected, and make sure this job is a child of that
+			// otherwise when zoomed in to one org, we render highlights for other organizations
+			var selectedOrgName = mioarchyClient.targetRenderingOrg;
+			if (selectedOrgName) {
+				var org = mioarchyClient.mioarchy.organizations[selectedOrgName];
+				var orgJobs = mioarchyClient.mioarchy.getOrganizationJobs(org, true);
+				for (var j = 0; j < orgJobs.length; j++) {
+					if (orgJobs[j] === jobId) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		mioarchyClient.isOrgWithinSelectedOrg = function(orgName) {
+			// see what organization is selected, and make sure this job is a child of that
+			// otherwise when zoomed in to one org, we render highlights for other organizations
+			var jobIsWithinThisOrg = false;
+			var selectedOrgName = mioarchyClient.targetRenderingOrg;
+			// it's contained since it's the same
+			if (mioarchyClient.targetRenderingOrg == orgName) {
+				return true;
+			}
+			// it's contained because it's a descendant
+			return mioarchyClient.mioarchy.isDescendantOfOrganization(orgName, mioarchyClient.targetRenderingOrg);
+		}
+
+		mioarchyClient.renderHighlightedContributorOverlays = function () {
+			// don't highlight anything by default
+			var selectedContributor = mioarchyClient.getSelectedContributor();
+			if (typeof(selectedContributor) == 'undefined' || selectedContributor == "") {
+				return;
+			}
+			// show the circles around each of the jobs taken on by this person
+			mioarchyClient.highlightContributorJobs( selectedContributor );
+
+			mioarchyClient.clearContributorAccountabilityHighlighting();
+
+			var jobs = mioarchyClient.mioarchy.getContributorJobs( selectedContributor );
+			for (var j in jobs) {
+				var jobId = jobs[j];
+				if (mioarchyClient.isJobWithinSelectedOrg( jobId )) {
+
+					console.log("rendering job "  + jobId);
+					mioarchyClient.highlightJobAccountabilities( jobId );
+				} else {
+					console.log("skipping job "  + jobId);
+				}
+			}
 		}
 	</script>
 </body>

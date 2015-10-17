@@ -279,11 +279,6 @@ Format.prototype.clear = function()
  */
 
 Format.prototype.refresh = function() {
-	// Performance tweak: No refresh needed if not visible
-	if (this.container.style.width == '0px') {
-		return;
-	}
-
 	this.clear();
 	var ui = this.editorUi;
 	var graph = ui.editor.graph;
@@ -293,8 +288,6 @@ Format.prototype.refresh = function() {
 	div.style.color = 'rgb(112, 112, 112)';
 	div.style.textAlign = 'left';
 	div.style.cursor = 'default';
-
-	this.editorUi.mioarchyClient.handleRightPaneRefresh(this.container, graph);
 };
 
 /**

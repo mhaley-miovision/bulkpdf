@@ -1272,6 +1272,8 @@ if (typeof mxVertexHandler != 'undefined')
 		
 			mxGraph.prototype.dblClick.call(this, evt, cell);
 		}
+
+		console.log("double clicked sonnnn");
 	};
 	
 	/**

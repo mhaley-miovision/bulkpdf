@@ -96,25 +96,18 @@ Mioarchy.prototype =
         }
         return 1;
     },
-    // returns the # of immediate childen of the given organization (does not recurse)
-    getContributorJobs: function (organization) {
-        // loop through all orgs
-        // if the org identifies having a parent with the same name as the specified org, we add it to the list of children of that org
-
-        var children = [];
-        var orgNames = Object.keys(this.organizations);
-
-        for (var i = 0; i < orgNames.length; i++) {
-            // the current org to check for being a parent
-            var o = this.organizations[orgNames[i]];
-
-            if (o.parent) {
-                if (o.parent.toLowerCase() === organization.name.toLowerCase()) {
-                    children.push(o);
-                }
+    // returns jobs that the contributor jobs
+    getContributorJobs: function (contributorName) {
+        // find all this person's jobs
+        var contributor = this.contributors[contributorName];
+        var jobList = [];
+        for (var j in this.jobs) {
+            if (mioarchyClient.jobs[j].contributor.toLowerCase()
+                === contributor.name.toLowerCase()) {
+                jobList.push(j);
             }
         }
-        return children;
+        return jobList;
     },
     //==================================================================================================================
     // APPLICATION AND ORGANIZATION RELATIONSHIPS
