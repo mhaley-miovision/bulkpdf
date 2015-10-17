@@ -181,7 +181,9 @@
 				stateStyleBackup:null,
 
 				mouseUp: function(sender, me) {
-					mioarchyClient.handleRightPaneRefresh(mioarchyClient.graph.container, mioarchyClient.graph);
+					mioarchyClient.graph.selectedGraphObject = me.getCell();
+					mioarchyClient.editor.format.refresh();
+					//mioarchyClient.handleRightPaneRefresh(mioarchyClient.graph.container, mioarchyClient.graph);
 				},
 				mouseDown: function(sender, me) {
 
@@ -264,6 +266,9 @@
 		};
 
 		mioarchyClient.handleRightPaneRefresh = function(container, graph) {
+			console.log("mioarchyClient.handleRightPaneRefresh called");
+
+
 			var getAccountabilityRatingColor = function (accountability) {
 				var color = "#f7f7f7";
 
@@ -369,7 +374,6 @@
 			if (newOrg) {
 				mioarchyClient.targetRenderingOrg = newOrg;
 			}
-
 			mioarchyClient.renderOrganization();
 			mioarchyClient.editor.format.refresh();
 			mioarchyClient.renderHighlightedApplicationOverlays();

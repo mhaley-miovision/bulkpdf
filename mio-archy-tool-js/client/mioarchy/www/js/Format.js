@@ -288,6 +288,8 @@ Format.prototype.refresh = function() {
 	div.style.color = 'rgb(112, 112, 112)';
 	div.style.textAlign = 'left';
 	div.style.cursor = 'default';
+
+	this.editorUi.mioarchyClient.handleRightPaneRefresh( this.container, graph );
 };
 
 /**
