@@ -181,7 +181,6 @@
 				currentState:null,
 				lastHoveredCell:null,
 				stateStyleBackup:null,
-
 				lastSelectedObject:null,
 
 				mouseUp: function(sender, me) {
@@ -377,6 +376,10 @@
 			if (selectedGraphObject && selectedGraphObject.mioObject && selectedGraphObject.mioObject.type === Mioarchy.prototype.Types.Job) {
 				var job = selectedGraphObject.mioObject;
 				var accountabilities = mioarchyClient.jobAccountabilities[job.id];
+
+				// add contributor name heading
+				var contributorNameLabel = container.appendChild(mioarchyClient.createMiovisionLabel(job.contributor, '#3F403F', '#FFFFFF', true));
+
 				renderAccountabilities(accountabilities, job.accountabilityLabel + " Accountabilities", container);
 				mioarchyClient.renderHighlightedContributorOverlays();
 			} else if (selectedGraphObject && selectedGraphObject.mioObject && selectedGraphObject.mioObject.type === Mioarchy.prototype.Types.Organization) {
@@ -414,6 +417,24 @@
 			return null;
 		}
 
+		mioarchyClient.clearHighlightedApplicationOverlays = function() {
+			// first delete added cells prior to this
+			var graph = mioarchyClient.editor.editor.graph;
+			var tempCells = mioarchyClient.temporaryApplicationHightedCells;
+			if (tempCells) {
+				// highlight the jobs this person has taken on
+				graph.getModel().beginUpdate();
+				try {
+					for (var i = 0; i < tempCells.length; i++) {
+						graph.getModel().remove(tempCells[i]);
+					}
+				} finally {
+					graph.getModel().endUpdate();
+				}
+			}
+			mioarchyClient.temporaryApplicationHightedCells = [];
+		}
+
 		mioarchyClient.renderHighlightedApplicationOverlays = function () {
 			// if a contributor is selected, don't draw the global overlay view of applications
 			// don't highlight anything by default
@@ -429,21 +450,7 @@
 
 			var graph = mioarchyClient.editor.editor.graph;
 
-			// first delete added cells prior to this
-			var tempCells = mioarchyClient.temporaryApplicationHightedCells;
-			if (tempCells) {
-				// highlight the jobs this person has taken on
-				graph.getModel().beginUpdate();
-				try {
-					for (var i = 0; i < tempCells.length; i++) {
-						graph.getModel().remove(tempCells[i]);
-					}
-				} finally {
-					graph.getModel().endUpdate();
-				}
-			}
-			mioarchyClient.temporaryApplicationHightedCells = [];
-			var tempCells = mioarchyClient.temporaryApplicationHightedCells;
+			mioarchyClient.clearHighlightedApplicationOverlays();
 
 			// don't highlight anything by default
 			if (applicationName === "All Applications") {
@@ -510,6 +517,8 @@
 							var v = graph.insertVertex(parent, null, "", x, y, w, h,
 									"ellipse;whiteSpace=wrap;html=1;strokeWidth=10;plain-green;fillColor=" + appColor + ";" +
 									"strokeColor=none;shadow=0;gradientColor=none;opacity=50;");
+
+							var tempCells = mioarchyClient.temporaryApplicationHightedCells;
 							tempCells.push(v);
 							// send to back
 							graph.cellsOrdered([v], true);
@@ -583,6 +592,7 @@
 		mioarchyClient.clearHighlights = function() {
 			mioarchyClient.clearHighlightContributorJobs();
 			mioarchyClient.clearContributorAccountabilityHighlighting();
+			mioarchyClient.clearHighlightedApplicationOverlays();
 		}
 
 		mioarchyClient.clearHighlightContributorJobs = function() {
@@ -678,10 +688,11 @@
 					var appName = acc.application;
 
 					var selectedApp = mioarchyClient.getSelectedApplication();
-					console.log ( (selectedApp && (selectedApp === appName) ) );
+					if (selectedApp && (selectedApp !== appName)) {
+						continue; // skip this one, since we are filtering by the global app selector drop-down
+					}
 
 					if (mioarchyClient.isOrgWithinSelectedOrg(orgName)) {
-
 						var jobVertex = mioarchyClient.mioarchy.jobToVertex[jobId];
 						var orgVertex = mioarchyClient.mioarchy.orgToVertex[orgName];
 
