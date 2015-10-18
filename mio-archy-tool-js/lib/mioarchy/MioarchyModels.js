@@ -75,7 +75,11 @@ Mioarchy.prototype =
             console.error("Oops! Need to specify a parent to test.");
             return;
         }
-        if (testSubject.parent) {
+        if (testSubject == null) {
+            console.log("Oops! testSubject == null");
+            return;
+        }
+        if (testSubject && testSubject.parent) {
             // is this the parent we are looking for?
             if (testSubject.parent.toLowerCase() === desiredParent.name.toLowerCase()) {
                 return true; // yes, this is the parent, thus it's a descendant

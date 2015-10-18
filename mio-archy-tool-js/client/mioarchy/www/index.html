@@ -171,6 +171,8 @@
 						&& mioarchyClient.graph.selectedGraphObject.mioObject.type == Mioarchy.prototype.Types.Organization) {
 					mioarchyClient.targetRenderingOrg = mioarchyClient.graph.selectedGraphObject.mioObject.name;
 					mioarchyClient.render();
+				} else {
+					console.log("not rendering, not an org dbl clicked");
 				}
 			};
 
@@ -180,10 +182,26 @@
 				lastHoveredCell:null,
 				stateStyleBackup:null,
 
+				lastSelectedObject:null,
+
 				mouseUp: function(sender, me) {
 					mioarchyClient.graph.selectedGraphObject = me.getCell();
+					console.log(mioarchyClient.graph.selectedGraphObject);
+
+					if (this.lastSelectedObject == mioarchyClient.graph.selectedGraphObject) {
+						console.log("this.lastSelectedObject == mioarchyClient.graph.selectedGraphObject");
+						return; // performance optimization: don't redraw things every click if it's the same object
+					} else {
+						mioarchyClient.clearHighlights(); // new selection, clear the old one
+					}
+
+					// refresh format panel, and highlights
 					mioarchyClient.editor.format.refresh();
-					//mioarchyClient.handleRightPaneRefresh(mioarchyClient.graph.container, mioarchyClient.graph);
+					mioarchyClient.renderHighlightedApplicationOverlays();
+					mioarchyClient.renderHighlightedContributorOverlays();
+
+					// store which object was selected last
+					this.lastSelectedObject = mioarchyClient.graph.selectedGraphObject;
 				},
 				mouseDown: function(sender, me) {
 
@@ -197,34 +215,39 @@
 						return;
 					}
 
-					// revert the previous cell to the old state, using the backup
-					if (this.stateStyleBackup) {
-						var state = mioarchyClient.graph.view.getState(this.lastHoveredCell);
+					// only enable hovering highlighting functionality for organization objects
+					if (cell && cell.mioObject &&
+							(cell.mioObject.type == mioarchyClient.mioarchy.Types.Organization
+							|| cell.mioObject.type == mioarchyClient.mioarchy.Types.Job)) {
+						// revert the previous cell to the old state, using the backup
+						if (this.stateStyleBackup) {
+							var state = mioarchyClient.graph.view.getState(this.lastHoveredCell);
 
-						if (state) {
-							state.style = mxUtils.clone(this.stateStyleBackup);
-							//state.style[mxConstants.STYLE_FILLCOLOR] = '#ffffff'; // deep sky blue for hovering
-							state.style[mxConstants.STYLE_STROKEWIDTH] = '1';
+							if (state) {
+								state.style = mxUtils.clone(this.stateStyleBackup);
+								//state.style[mxConstants.STYLE_FILLCOLOR] = '#ffffff'; // deep sky blue for hovering
+								state.style[mxConstants.STYLE_STROKEWIDTH] = '1';
+								state.shape.apply(state);
+								state.shape.redraw();
+
+								this.stateStyleBackup = null;
+								this.lastHoveredCell = null;
+								this.currentState = null;
+							}
+						}
+						// save the previous cell information
+						var state = mioarchyClient.graph.view.getState(cell);
+						if (state != null) {
+							this.stateStyleBackup = mxUtils.clone(state.style);
+							this.lastHoveredCell = cell;
+							this.currentState = state;
+
+							// set new style to highlight the cell
+							//state.style[mxConstants.STYLE_FILLCOLOR] = '#00bfff'; // deep sky blue for hovering
+							state.style[mxConstants.STYLE_STROKEWIDTH] = 4 * 1 / mioarchyClient.graph.view.scale;
 							state.shape.apply(state);
 							state.shape.redraw();
-
-							this.stateStyleBackup = null;
-							this.lastHoveredCell = null;
-							this.currentState = null;
 						}
-					}
-					// save the previous cell information
-					var state = mioarchyClient.graph.view.getState(cell);
-					if (state != null) {
-						this.stateStyleBackup = mxUtils.clone(state.style);
-						this.lastHoveredCell = cell;
-						this.currentState = state;
-
-						// set new style to highlight the cell
-						//state.style[mxConstants.STYLE_FILLCOLOR] = '#00bfff'; // deep sky blue for hovering
-						state.style[mxConstants.STYLE_STROKEWIDTH] = 4 * 1/mioarchyClient.graph.view.scale;
-						state.shape.apply(state);
-						state.shape.redraw();
 					}
 				},
 			};
@@ -267,7 +290,6 @@
 
 		mioarchyClient.handleRightPaneRefresh = function(container, graph) {
 			console.log("mioarchyClient.handleRightPaneRefresh called");
-
 
 			var getAccountabilityRatingColor = function (accountability) {
 				var color = "#f7f7f7";
@@ -558,9 +580,13 @@
 			return jobList;
 		}
 
-		mioarchyClient.highlightContributorJobs = function(contributorName) {
-			var graph = mioarchyClient.editor.editor.graph;
+		mioarchyClient.clearHighlights = function() {
+			mioarchyClient.clearHighlightContributorJobs();
+			mioarchyClient.clearContributorAccountabilityHighlighting();
+		}
 
+		mioarchyClient.clearHighlightContributorJobs = function() {
+			var graph = mioarchyClient.editor.editor.graph;
 			// first unselect all the other selected jobs
 			if (mioarchyClient.temporaryContributorHightedCells) {
 				graph.getModel().beginUpdate();
@@ -573,6 +599,11 @@
 				}
 			}
 			mioarchyClient.temporaryContributorHightedCells = [];
+		}
+
+		mioarchyClient.highlightContributorJobs = function(contributorName) {
+			var graph = mioarchyClient.editor.editor.graph;
+			mioarchyClient.clearHighlightContributorJobs();
 
 			// find all this person's jobs
 			var jobList = mioarchyClient.mioarchy.getContributorJobs( contributorName );
@@ -605,7 +636,6 @@
 				}
 
 				// fully connect the graph with edges
-				/*
 				var numVertices = mioarchyClient.temporaryContributorHightedCells.length;
 				for (var i = 0; i < numVertices; i++) {
 					for (var j = 0; j < numVertices/2; j++) {
@@ -614,13 +644,18 @@
 							var v2 = mioarchyClient.temporaryContributorHightedCells[j];
 
 							var v = graph.insertEdge(parent, null, "", v1, v2,
+									"edgeStyle=none;dashPattern=1 4;endArrow=none;dashed=1;rounded=0;html=1;" +
+									"exitX=1;exitY=0.5;entryX=0.5;entryY=1;" +
+									"strokeWidth=5;strokeColor=gray;opacity=50");
+
+							/*var v = graph.insertEdge(parent, null, "", v1, v2,
 									"edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;html=1;" +
 									"exitX=1;exitY=0.5;entryX=0.5;entryY=1;" +
-									"strokeWidth=5;strokeColor="+highlightColor+";opacity=50");
+									"strokeWidth=5;strokeColor="+highlightColor+";opacity=50");*/
 							mioarchyClient.temporaryContributorHightedCells.push(v);
 						}
 					}
-				}*/
+				}
 
 			} finally {
 				graph.getModel().endUpdate();
@@ -642,6 +677,9 @@
 					var orgName = acc.organization;
 					var appName = acc.application;
 
+					var selectedApp = mioarchyClient.getSelectedApplication();
+					console.log ( (selectedApp && (selectedApp === appName) ) );
+
 					if (mioarchyClient.isOrgWithinSelectedOrg(orgName)) {
 
 						var jobVertex = mioarchyClient.mioarchy.jobToVertex[jobId];
@@ -650,7 +688,8 @@
 						// make the connection
 						var style = "curved=0;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;";
 
-						var appColor = mioarchyClient.mioarchy.applications[appName].color;
+						var appColor = appName ? mioarchyClient.mioarchy.applications[appName].color : "gray";
+						var parent = graph.getDefaultParent();
 
 						// also draw a link from the last containing org to this job
 						var e = graph.insertEdge(parent, null, "", jobVertex, orgVertex,
@@ -716,31 +755,33 @@
 			if (mioarchyClient.targetRenderingOrg == orgName) {
 				return true;
 			}
+
+			console.log(mioarchyClient.organizations[orgName]);
+			console.log(mioarchyClient.organizations[mioarchyClient.targetRenderingOrg]);
+
 			// it's contained because it's a descendant
-			return mioarchyClient.mioarchy.isDescendantOfOrganization(orgName, mioarchyClient.targetRenderingOrg);
+			return mioarchyClient.mioarchy.isDescendantOfOrganization(
+					mioarchyClient.organizations[orgName],
+					mioarchyClient.organizations[mioarchyClient.targetRenderingOrg]);
 		}
 
 		mioarchyClient.renderHighlightedContributorOverlays = function () {
 			// don't highlight anything by default
 			var selectedContributor = mioarchyClient.getSelectedContributor();
-			if (typeof(selectedContributor) == 'undefined' || selectedContributor == "") {
-				return;
-			}
-			// show the circles around each of the jobs taken on by this person
-			mioarchyClient.highlightContributorJobs( selectedContributor );
+			if (selectedContributor) {
+				// show the circles around each of the jobs taken on by this person
+				mioarchyClient.highlightContributorJobs(selectedContributor);
+				mioarchyClient.clearContributorAccountabilityHighlighting();
 
-			mioarchyClient.clearContributorAccountabilityHighlighting();
-
-			var jobs = mioarchyClient.mioarchy.getContributorJobs( selectedContributor );
-			for (var j in jobs) {
-				var jobId = jobs[j];
-				if (mioarchyClient.isJobWithinSelectedOrg( jobId )) {
-
-					console.log("rendering job "  + jobId);
-					mioarchyClient.highlightJobAccountabilities( jobId );
-				} else {
-					console.log("skipping job "  + jobId);
+				var jobs = mioarchyClient.mioarchy.getContributorJobs(selectedContributor);
+				for (var j in jobs) {
+					var jobId = jobs[j];
+					if (mioarchyClient.isJobWithinSelectedOrg(jobId)) {;
+						mioarchyClient.highlightJobAccountabilities(jobId);
+					}
 				}
+			} else {
+				console.log("no selected contributor detector");
 			}
 		}
 	</script>
