@@ -174,8 +174,8 @@ function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
     for (var j in this.jobsAtThisLevel) {
         var job = this.mioarchy.jobs[this.jobsAtThisLevel[j]];
 
-        var defaultStyle = "shape=ellipse;whiteSpace=wrap;gradientColor=none;editable=0;";
-        var color = this.getContributorColor(job, this.mioarchy);
+        var defaultStyle = "shape=ellipse;whiteSpace=wrap;editable=0;";
+        var colorString = this.getJobColorStyleString(job.id, this.mioarchy);
         var defaultWidth = this.CIRCLE_DIAMETER;
         var defaultHeight = this.CIRCLE_DIAMETER;
 
@@ -196,7 +196,7 @@ function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
         try {
             var parent = graph.getDefaultParent();
             var v = graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight,
-                defaultStyle + "gradientColor=" + color + ";");
+                defaultStyle + colorString);
             // attach the org info to the vertex
             v.mioObject = job;
             this.mioarchy.jobToVertex[job.id] = v;
@@ -226,30 +226,67 @@ RenderInfoOrganization.prototype =
         }
     },
 
-    getContributorColor: function (job, mioarchy) {
-        var colorString = "";
+    getJobTopApplicationAccountabilities: function(jobId, mioarchy, maxAccountabilities) {
+        var list = [];
+        var accountabilities = mioarchy.jobAccountabilities[jobId];
 
-        // by app now
-        if (job.application) {
-            colorString = mioarchy.applications[job.application].color;
-        } else {
-            // try by organization
-            if (job.organization) {
-                var org = mioarchy.organizations[job.organization];
-                if (mioarchy.isDescendantOfOrganization(org, mioarchy.organizations["Engineering"])) {
-                    colorString += "purple";
-                } else if (mioarchy.isDescendantOfOrganization(org, mioarchy.organizations["Finance"])) {
-                    colorString += "orange";
-                } else if (mioarchy.isDescendantOfOrganization(org, mioarchy.organizations["Operations"])) {
-                    colorString += "blue";
-                } else if (mioarchy.isDescendantOfOrganization(org, mioarchy.organizations["Operations"])) {
-                    colorString += "blue";
+        if (accountabilities) {
+            // count each type of accountability
+            var accountabilityCounts = [];
+            for (var i = 0; i < accountabilities.length; i++) {
+                var acc = accountabilities[i];
+                if (acc.application !== "") { // skip non-application accountabilities
+                    if (accountabilityCounts[acc.application]) {
+                        accountabilityCounts[acc.application]++;
+                    } else {
+                        accountabilityCounts[acc.application] = 1;
+                    }
                 }
-            } else {
-                colorString = "white";
+            }
+            // loop through the array picking the biggest one each time
+            var numLoops = Math.min(maxAccountabilities, Object.keys(accountabilityCounts).length);
+            if (numLoops == 2) {
+                console.log("interesting");
+            }
+            while (numLoops > 0) {
+                var largestCount = 0;
+                var largestApp = null;
+                for (var aci in accountabilityCounts) {
+                    if (largestCount < accountabilityCounts[aci]) {
+                        largestCount = accountabilityCounts[aci];
+                        largestApp = aci;
+                    }
+                }
+                // remove the largest count and add to the list to be returned
+                delete accountabilityCounts[aci];
+                list.push( aci );
+                numLoops--;
             }
         }
-        return colorString;
+        return list;
+    },
+
+    getJobColors: function (jobId, mioarchy) {
+        // determine which are the dominating accountabilities
+        var apps = this.getJobTopApplicationAccountabilities(jobId, mioarchy, 2);
+        var list = [];
+        for (var i = 0; i < apps.length; i++) {
+            var appColor = mioarchy.applications[ apps[i] ].color;
+            list.push( appColor );
+        }
+
+        if (list.length == 0) {
+            var app = mioarchy.jobs[jobId].application;
+            if (app) {
+                var color = mioarchy.applications[app].color;
+                if (color) {
+                    list.push(color);
+                    list.push("white");
+                }
+            }
+        }
+
+        return list;
     },
 
     //==============================================================================================================
@@ -366,8 +403,8 @@ RenderInfoOrganization.prototype =
             for (var j in this.jobsAtThisLevel) {
                 var job = this.mioarchy.jobs[this.jobsAtThisLevel[j]];
 
-                var defaultStyle = "shape=ellipse;whiteSpace=wrap;gradientColor=none;editable=0;";
-                var color = this.getContributorColor(job, this.mioarchy);
+                var defaultStyle = "shape=ellipse;whiteSpace=wrap;editable=0;";
+                var colorString = this.getJobColorStyleString(job.id, this.mioarchy);
                 var defaultWidth = this.CIRCLE_DIAMETER;
                 var defaultHeight = this.CIRCLE_DIAMETER;
 
@@ -388,7 +425,7 @@ RenderInfoOrganization.prototype =
                 try {
                     var parent = graph.getDefaultParent();
                     var v = graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight,
-                        defaultStyle + ";gradientColor=" + color);
+                        defaultStyle + colorString);
                     // attach the org info to the vertex
                     v.mioObject = job;
                     this.mioarchy.jobToVertex[job.id] = v;
@@ -397,6 +434,17 @@ RenderInfoOrganization.prototype =
                 }
             }
         }
+    },
+
+    getJobColorStyleString: function(jobId, mioarchy) {
+        var colors = this.getJobColors(jobId, mioarchy);
+
+        var colorString = "fillColor=" + (colors && colors.length > 0 ? colors[0] : "white");
+        colorString += ";";
+        if (colors.length > 1) {
+            colorString += "gradientColor=" + colors[1] + ";gradientDirection=east;";
+        }
+        return colorString;
     },
 
     insertOrgVertex: function (parent, org, x, y, width, height, graph) {
