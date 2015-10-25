@@ -245,9 +245,6 @@ RenderInfoOrganization.prototype =
             }
             // loop through the array picking the biggest one each time
             var numLoops = Math.min(maxAccountabilities, Object.keys(accountabilityCounts).length);
-            if (numLoops == 2) {
-                console.log("interesting");
-            }
             while (numLoops > 0) {
                 var largestCount = 0;
                 var largestApp = null;
@@ -285,7 +282,6 @@ RenderInfoOrganization.prototype =
                 }
             }
         }
-
         return list;
     },
 
