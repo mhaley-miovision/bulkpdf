@@ -8,7 +8,8 @@ var http = require("http"),
     express = require('express'),
     port = process.argv[2] || 8081,
     mio = require("./lib/mioarchy/MioarchyReader.js"),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    Promise = require("es6-promise").Promise;
 
 var app = express();
 app.use(bodyParser.json());
