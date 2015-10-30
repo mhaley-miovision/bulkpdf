@@ -86,6 +86,24 @@ Toolbar.prototype.init = function()
 		return container;
 	}
 
+	/*
+	var container = document.createElement("div");
+	container.style.float = "left";
+	container.style.margin = "2px";
+	container.style.padding = "5px";
+	var dateLabel = document.createElement("span");
+	dateLabel.innerText = "selectedDate";*/
+
+	/*
+	dateInput.name = "selectedDate";
+	dateInput.id = "selectedDate";
+	dateInput.className = "date-picker";
+*/
+
+	//this.container.appendChild(dateLabel);
+
+	//this.container.appendChild(dateInput);
+
 	var timeFrameValues = {
 		"Current" : "1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ",
 		"In 6 months" : "1sfsIsfYCbyigxLjAHzcmX4c43m4tdprJnyNK4srEOJs"

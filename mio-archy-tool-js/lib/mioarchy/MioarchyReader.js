@@ -39,7 +39,7 @@ exports.readDatabase = function (sourceSheet, onCompleteCallback) {
     // # is worksheet id - IDs start at 1 
     console.log("Reading Google Doc DB...");
     console.time("read_db");
-    var _promises = [];
+    var promises = [];
 
     var getDbInfo = new Promise( function (resolve, reject) {
         db.getInfo(function (err, sheetInfo) {
@@ -52,7 +52,7 @@ exports.readDatabase = function (sourceSheet, onCompleteCallback) {
                     if (knownTables.indexOf(titleNoSpaces) >= 0) {
                         var fn = eval("process" + titleNoSpaces);
                         var promise = fn(s);
-                        _promises.push(promise);
+                        promises.push(promise);
                     }
                 }
             } catch (e) {
@@ -64,7 +64,7 @@ exports.readDatabase = function (sourceSheet, onCompleteCallback) {
     });
 
     getDbInfo.then( function() {
-        Promise.all(_promises).then( function (values) {
+        Promise.all(promises).then( function (values) {
             exports.mioarchy = new Models.Mioarchy( jobs, organizations, contributors, applications, roles,
                 orgAccountabilities, jobAccountabilities );
 
@@ -241,6 +241,8 @@ function processOrganizationAccountabilities(src) {
                 var label = row['accountability'];
                 var rating = row['rating'];
                 var type = row['type'];
+                var start = row['startdate'];
+                var end = row['enddate'];
 
                 if (typeof(orgAccountabilities[org]) == 'undefined') {
                     orgAccountabilities[org] = [];

@@ -275,12 +275,14 @@ Mioarchy.prototype =
     }
 };
 
-function Application(id, name, parentOrg, color) {
+function Application(id, name, parentOrg, color, start, end) {
     this.type = Mioarchy.prototype.Types.Application;
     this.id = id;
     this.name = name;
     this.parentOrg = parentOrg;
     this.color = color;
+    this.start = start;
+    this.end = end;
 }
 
 function Role(id, name) {
@@ -289,23 +291,27 @@ function Role(id, name) {
     this.name = name;
 }
 
-function Organization(id, name, parent, isApplication) {
+function Organization(id, name, parent, isApplication, start, end) {
     this.type = Mioarchy.prototype.Types.Organization;
     this.id = id;
     this.name = name;
     this.parent = parent;
     this.isApplication = isApplication;
+    this.start = start;
+    this.end = end;
 }
 
-function Contributor(id, name, firstName, lastName) {
+function Contributor(id, name, firstName, lastName, start, end) {
     this.type = Mioarchy.prototype.Types.Contributor;
     this.id = id;
     this.name = name;
     this.firstName = firstName;
     this.lastName = lastName;
+    this.start = start;
+    this.end = end;
 }
 
-function Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability) {
+function Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability, start, end) {
     this.type = Mioarchy.prototype.Types.Job;
     this.id = id;
     this.organization = organization;
@@ -315,9 +321,11 @@ function Job(id, organization, application, role, accountabilityLabel, accountab
     this.accountabilityLevel = accountabilityLevel;
     this.contributor = contributor;
     this.primaryAccountability = primaryAccountability;
+    this.start = start;
+    this.end = end;
 }
 
-function Accountability(id, appId, application, label, rating, accountabilityType, organization) {
+function Accountability(id, appId, application, label, rating, accountabilityType, organization, start, end) {
     this.type = Mioarchy.prototype.Types.Accountability;
     this.id = id;
     this.appId = appId;
@@ -326,6 +334,8 @@ function Accountability(id, appId, application, label, rating, accountabilityTyp
     this.rating = rating;
     this.accountabilityType = accountabilityType;
     this.organization = organization;
+    this.start = start;
+    this.end = end;
 }
 
 // module is only define in nodejs context, if this is client side, ignore since the context is 'window'
