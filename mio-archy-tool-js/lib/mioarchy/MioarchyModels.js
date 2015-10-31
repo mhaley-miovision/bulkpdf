@@ -301,7 +301,7 @@ function Organization(id, name, parent, isApplication, start, end) {
     this.end = end;
 }
 
-function Contributor(id, name, firstName, lastName, start, end) {
+function Contributor(id, name, firstName, lastName, start, end, email) {
     this.type = Mioarchy.prototype.Types.Contributor;
     this.id = id;
     this.name = name;
@@ -309,6 +309,7 @@ function Contributor(id, name, firstName, lastName, start, end) {
     this.lastName = lastName;
     this.start = start;
     this.end = end;
+    this.email = email;
 }
 
 function Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability, start, end) {

@@ -69,11 +69,9 @@
 		mxLanguages = ['de'];
 	</script>
 
-	<!--
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
 	<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css">
-	-->
 
 	<script type="text/javascript" src="jscolor/jscolor.js"></script>
 	<script type="text/javascript" src="sanitizer/sanitizer.min.js"></script>
@@ -96,6 +94,17 @@
 	<script type="text/javascript" src="js/Dialogs.js"></script>
 </head>`
 <body class="geEditor">
+	<script src="https://apis.google.com/js/client.js?onload=checkAuth&output=embed">
+	</script>
+	<script type="text/javascript" src="js/MioarchyAuth.js"></script>
 	<script type="text/javascript" src="js/Mioarchy.js"></script>
+
+	<div id="authorize-div" style="display: none">
+		<span>Authorize access to Directory API</span>
+		<!--Button for the user to click to initiate auth sequence -->
+		<button id="authorize-button" onclick="handleAuthClick(event)">
+			Authorize
+		</button>
+	</div>
 </body>
 </html>

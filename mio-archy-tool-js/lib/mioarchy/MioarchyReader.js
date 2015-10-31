@@ -116,8 +116,11 @@ function processContributors(contribsSrc) {
                 var name = row['name'];
                 var firstName = row['firstname'];
                 var lastName = row['lastname'];
+                var start = row['startdate'];
+                var end = row['enddate'];
+                var email = row['email'];
 
-                contributors[name] = new Models.Contributor(id, name, firstName, lastName);
+                contributors[name] = new Models.Contributor(id, name, firstName, lastName, start, end, email);
             }
             console.log("read " + rows.length + " contributors.");
             resolve();
@@ -159,8 +162,10 @@ function processOrganizations(orgsSrc) {
                 if (isApplication) {
                     isApplication = isApplication.toLowerCase() == 'true';
                 }
+                var start = row['startdate'];
+                var end = row['enddate'];
 
-                organizations[name] = new Models.Organization(id, name, parent, isApplication);
+                organizations[name] = new Models.Organization(id, name, parent, isApplication, start, end);
             }
             console.log("read " + rows.length + " organizations.");
             resolve();
@@ -185,9 +190,12 @@ function processJobs(jobsSrc) {
                 var contributor = row['contributor'];
                 var primaryAccountability = row['primaryaccountability'];
                 var active = row['active'];
+                var start = row['startdate'];
+                var end = row['enddate'];
 
                 if (active && active.toLowerCase() == "true") {
-                    jobs[id] = new Models.Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability);
+                    jobs[id] = new Models.Job(id, organization, application, role, accountabilityLabel,
+                        accountabilityLevel, contributor, primaryAccountability, start, end);
                 }
             }
             console.log("read " + rows.length + " jobs.");
@@ -247,7 +255,7 @@ function processOrganizationAccountabilities(src) {
                 if (typeof(orgAccountabilities[org]) == 'undefined') {
                     orgAccountabilities[org] = [];
                 }
-                orgAccountabilities[org].push(new Models.Accountability(id, appId, app, label, rating, type));
+                orgAccountabilities[org].push(new Models.Accountability(id, appId, app, label, rating, type, start, end));
             }
             console.log("read " + rows.length + " org accountabilities.");
             resolve();

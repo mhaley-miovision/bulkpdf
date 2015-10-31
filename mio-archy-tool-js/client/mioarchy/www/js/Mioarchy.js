@@ -70,6 +70,37 @@ mioarchyClient.processLastUpdated = function( lastUpdated ) {
 // check for updates every x seconds
 setInterval( function() { mioarchyClient.getLastUpdated( mioarchyClient.processLastUpdated ) }, 5000 );
 
+mioarchyClient.createTempUserImageDiv = function(x, y) {
+    var div = document.createElement("div");
+    div.style.backgroundColor = "black";
+    div.style.position = "absolute";
+    div.style.left = x + "px";
+    div.style.top = y + "px";
+    div.style.width = "96px";
+    div.style.height = "96px";
+    div.style.zIndex = 100000;
+
+    document.body.appendChild(div);
+
+    mioarchyClient.removeTempImg();
+
+    mioarchyClient.tempUserImageDiv = div;
+
+    return div;
+};
+mioarchyClient.tempUserImageDiv = null;
+
+mioarchyClient.removeTempImg = function() {
+    if (mioarchyClient.tempUserImageDiv) {
+        try {
+            document.body.removeChild(mioarchyClient.tempUserImageDiv);
+            mioarchyClient.tempUserImageDiv = null;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+}
+
 mioarchyClient.setupClickHandling = function() {
 
     Graph.prototype.dblClick = function (evt, cell) {
@@ -126,6 +157,26 @@ mioarchyClient.setupClickHandling = function() {
             if (cell && cell.mioObject &&
                 (cell.mioObject.type == mioarchyClient.mioarchy.Types.Organization
                 || cell.mioObject.type == mioarchyClient.mioarchy.Types.Job)) {
+
+                if (cell.mioObject.type == mioarchyClient.mioarchy.Types.Job) {
+                    if (mioarchyClient.mioarchy.contributors[cell.mioObject.contributor]) {
+                        var email = mioarchyClient.mioarchy.contributors[cell.mioObject.contributor].email;
+                        if (email) {
+                            var sameEmail = false;
+                            if (mioarchyClient.lastEmailUsedForImage) {
+                                sameEmail = mioarchyClient.lastEmailUsedForImage === email;
+                            }
+                            if (!sameEmail) {
+                                mioarchyClient.lastEmailUsedForImage = email;
+                                var x = event.pageX;
+                                var y = event.pageY;
+                                mioarchyClient.tempUserImageDiv = mioarchyClient.createTempUserImageDiv(x, y);
+                                loadUserImgSrc(email, mioarchyClient.tempUserImageDiv);
+                            }
+                        }
+                    }
+                }
+
                 // revert the previous cell to the old state, using the backup
                 if (this.stateStyleBackup) {
                     var state = mioarchyClient.graph.view.getState(this.lastHoveredCell);
