@@ -71,13 +71,21 @@ mioarchyClient.processLastUpdated = function( lastUpdated ) {
 setInterval( function() { mioarchyClient.getLastUpdated( mioarchyClient.processLastUpdated ) }, 5000 );
 
 mioarchyClient.createTempUserImageDiv = function(x, y) {
+    var borderSize = 0;
+    var imgDimension = 96;
+
     var div = document.createElement("div");
-    div.style.backgroundColor = "black";
+    div.style.borderColor = "black";
+    div.style.borderRadius = 3;
+    div.style.borderStyle = "solid";
+    div.style.borderWidth = 4 + "px";
     div.style.position = "absolute";
+    div.style.background = "url('img/ajax-loader.gif') no-repeat center";
+    div.style.backgroundColor = "white";
     div.style.left = x + "px";
     div.style.top = y + "px";
-    div.style.width = "96px";
-    div.style.height = "96px";
+    div.style.height = imgDimension + borderSize * 2 + "px";
+    div.style.width = imgDimension + borderSize * 2 + "px";
     div.style.zIndex = 100000;
 
     document.body.appendChild(div);
@@ -175,6 +183,8 @@ mioarchyClient.setupClickHandling = function() {
                             }
                         }
                     }
+                } else {
+                    mioarchyClient.removeTempImg();
                 }
 
                 // revert the previous cell to the old state, using the backup
@@ -338,6 +348,21 @@ mioarchyClient.handleRightPaneRefresh = function(container, graph) {
 
         // add contributor name heading
         var contributorNameLabel = container.appendChild(mioarchyClient.createMiovisionLabel(job.contributor, '#3F403F', '#FFFFFF', true));
+
+        // add contributor image
+        if (mioarchyClient.mioarchy.contributors[job.contributor]) {
+            var email = mioarchyClient.mioarchy.contributors[job.contributor].email;
+            if (email) {
+                var div = document.createElement("div");
+                div.style.width = "auto";
+                div.style.height = "96px";
+                div.style.textAlign = "center";
+                div.style.margin.top = "3px";
+                div.style.margin.bottom = "3px";
+                container.appendChild(div);
+                loadUserImgSrc(email, div);
+            }
+        }
 
         renderAccountabilities(accountabilities, job.accountabilityLabel + " Accountabilities", container);
         mioarchyClient.renderHighlightedContributorOverlays();
