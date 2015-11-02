@@ -170,17 +170,11 @@ mioarchyClient.setupClickHandling = function() {
                     if (mioarchyClient.mioarchy.contributors[cell.mioObject.contributor]) {
                         var email = mioarchyClient.mioarchy.contributors[cell.mioObject.contributor].email;
                         if (email) {
-                            var sameEmail = false;
-                            if (mioarchyClient.lastEmailUsedForImage) {
-                                sameEmail = mioarchyClient.lastEmailUsedForImage === email;
-                            }
-                            if (!sameEmail) {
-                                mioarchyClient.lastEmailUsedForImage = email;
-                                var x = event.pageX;
-                                var y = event.pageY;
-                                mioarchyClient.tempUserImageDiv = mioarchyClient.createTempUserImageDiv(x, y);
-                                loadUserImgSrc(email, mioarchyClient.tempUserImageDiv);
-                            }
+                            mioarchyClient.lastEmailUsedForImage = email;
+                            var x = event.pageX;
+                            var y = event.pageY;
+                            mioarchyClient.tempUserImageDiv = mioarchyClient.createTempUserImageDiv(x, y);
+                            loadUserImgSrc(email, mioarchyClient.tempUserImageDiv);
                         }
                     }
                 } else {
