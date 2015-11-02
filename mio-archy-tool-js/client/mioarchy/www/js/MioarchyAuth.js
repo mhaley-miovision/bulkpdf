@@ -39,8 +39,6 @@ function directoryApiOnLoad() {
 function handleAuthResult(authResult) {
     var authorizeDiv = document.getElementById('authorize-div');
 
-    console.log(authResult);
-
     if (authResult && !authResult.error) {
         // Hide auth UI, then load client library.
         authorizeDiv.style.display = 'none';
@@ -49,6 +47,8 @@ function handleAuthResult(authResult) {
         // Show auth UI, allowing the user to initiate authorization by
         // clicking authorize button.
         authorizeDiv.style.display = 'inline';
+
+        $('#auth-modal-dlg').modal();
     }
 }
 
