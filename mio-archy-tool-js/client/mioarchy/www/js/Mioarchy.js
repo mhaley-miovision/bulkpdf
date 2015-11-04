@@ -71,27 +71,32 @@ mioarchyClient.processLastUpdated = function( lastUpdated ) {
 setInterval( function() { mioarchyClient.getLastUpdated( mioarchyClient.processLastUpdated ) }, 5000 );
 
 mioarchyClient.createTempUserImageDiv = function(x, y) {
-    var borderSize = 0;
+    var borderSize = 1;
     var imgDimension = 96;
+    var padding = 4;
 
     var div = document.createElement("div");
-    div.style.borderColor = "black";
-    div.style.borderRadius = 3;
+
+    /*
+    div.style.borderColor = "#3F403F";
+    div.style.padding = padding + "px";
+    //div.style.borderRadius = "50%";
+    div.style.borderRadius = "5px";
     div.style.borderStyle = "solid";
-    div.style.borderWidth = 4 + "px";
+    div.style.borderWidth = borderSize + "px";
+    */
+
     div.style.position = "absolute";
     div.style.background = "url('img/ajax-loader.gif') no-repeat center";
     div.style.backgroundColor = "white";
     div.style.left = x + "px";
     div.style.top = y + "px";
-    div.style.height = imgDimension + borderSize * 2 + "px";
-    div.style.width = imgDimension + borderSize * 2 + "px";
+    div.style.height = imgDimension + borderSize*2 + padding*2 + "px";
+    div.style.width = imgDimension + borderSize*2 + padding*2 + "px";
     div.style.zIndex = 100000;
 
     document.body.appendChild(div);
-
     mioarchyClient.removeTempImg();
-
     mioarchyClient.tempUserImageDiv = div;
 
     return div;
@@ -132,7 +137,7 @@ mioarchyClient.setupClickHandling = function() {
 
         mouseUp: function(sender, me) {
             mioarchyClient.graph.selectedGraphObject = me.getCell();
-            console.log(mioarchyClient.graph.selectedGraphObject);
+            //console.log(mioarchyClient.graph.selectedGraphObject);
 
             if (this.lastSelectedObject == mioarchyClient.graph.selectedGraphObject) {
                 console.log("this.lastSelectedObject == mioarchyClient.graph.selectedGraphObject");
@@ -174,7 +179,7 @@ mioarchyClient.setupClickHandling = function() {
                             var x = event.pageX;
                             var y = event.pageY;
                             mioarchyClient.tempUserImageDiv = mioarchyClient.createTempUserImageDiv(x, y);
-                            loadUserImgSrc(email, mioarchyClient.tempUserImageDiv);
+                            mioarchyClient.loadUserImgSrc(email, mioarchyClient.tempUserImageDiv);
                         }
                     }
                 } else {
@@ -251,8 +256,6 @@ mioarchyClient.createMiovisionLabel = function(textContent, backgroundColor, tex
 };
 
 mioarchyClient.handleRightPaneRefresh = function(container, graph) {
-    console.log("mioarchyClient.handleRightPaneRefresh called");
-
     var getAccountabilityRatingColor = function (accountability) {
         var color = "#f7f7f7";
 
@@ -341,20 +344,22 @@ mioarchyClient.handleRightPaneRefresh = function(container, graph) {
         var accountabilities = mioarchyClient.jobAccountabilities[job.id];
 
         // add contributor name heading
-        var contributorNameLabel = container.appendChild(mioarchyClient.createMiovisionLabel(job.contributor, '#3F403F', '#FFFFFF', true));
+        container.appendChild(mioarchyClient.createMiovisionLabel(job.contributor, '#3F403F', '#FFFFFF', true));
 
         // add contributor image
         if (mioarchyClient.mioarchy.contributors[job.contributor]) {
             var email = mioarchyClient.mioarchy.contributors[job.contributor].email;
             if (email) {
                 var div = document.createElement("div");
+                //div.style.width = "100%";
                 div.style.width = "auto";
+                //div.style.backgroundColor = "rgb(63,63,63)";
                 div.style.height = "96px";
                 div.style.textAlign = "center";
-                div.style.margin.top = "3px";
-                div.style.margin.bottom = "3px";
+                div.style.padding.top = "3px";
+                div.style.padding.bottom = "3px";
                 container.appendChild(div);
-                loadUserImgSrc(email, div);
+                mioarchyClient.loadUserImgSrc(email, div);
             }
         }
 
@@ -413,12 +418,30 @@ mioarchyClient.clearHighlightedApplicationOverlays = function() {
     mioarchyClient.temporaryApplicationHightedCells = [];
 }
 
+mioarchyClient.loadUserImgSrc = function(email, targetContainer) {
+    mioarchyClient.getUserPhotoUrl(email, function(response) {
+        var img = document.createElement("img");
+        img.src = response;
+        img.width = 96;
+        img.height = 96;
+        img.style.borderColor = "#3F403F";
+        img.style.padding = "3px";
+        //img.style.borderRadius = "50%";
+        img.style.borderRadius = "5px";
+        img.style.borderStyle = "solid";
+        img.style.borderWidth = "1px";
+        //img.style.borderRadius = "50%";
+        //img.style.borderRadius = "5px";
+        targetContainer.appendChild(img);
+    })
+}
+
 mioarchyClient.renderHighlightedApplicationOverlays = function () {
     // if a contributor is selected, don't draw the global overlay view of applications
     // don't highlight anything by default
     var selectedContributor = mioarchyClient.getSelectedContributor();
     if (selectedContributor) {
-        console.log("renderHighlightedApplicationOverlays: contributor is currently selected, not rendering.");
+        //console.log("renderHighlightedApplicationOverlays: contributor is currently selected, not rendering.");
         return;
     }
     var applicationName = mioarchyClient.selectedApplicationName;
@@ -427,7 +450,6 @@ mioarchyClient.renderHighlightedApplicationOverlays = function () {
     }
 
     var graph = mioarchyClient.editor.editor.graph;
-
     mioarchyClient.clearHighlightedApplicationOverlays();
 
     // don't highlight anything by default
@@ -745,9 +767,6 @@ mioarchyClient.isOrgWithinSelectedOrg = function(orgName) {
         return true;
     }
 
-    console.log(mioarchyClient.organizations[orgName]);
-    console.log(mioarchyClient.organizations[mioarchyClient.targetRenderingOrg]);
-
     // it's contained because it's a descendant
     return mioarchyClient.mioarchy.isDescendantOfOrganization(
         mioarchyClient.organizations[orgName],
@@ -770,6 +789,6 @@ mioarchyClient.renderHighlightedContributorOverlays = function () {
             }
         }
     } else {
-        console.log("no selected contributor detector");
+        //console.log("no selected contributor detector");
     }
 }

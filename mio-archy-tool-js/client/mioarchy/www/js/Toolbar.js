@@ -127,6 +127,8 @@ Toolbar.prototype.init = function()
 	var elts = this.addItems(['actualSize', 'zoomIn', 'zoomOut', '-']);
 	elts[0].setAttribute('title', mxResources.get('actualSize') + ' (Ctrl+0)');
 	elts[1].setAttribute('title', mxResources.get('zoomIn') + ' (Ctrl + / Alt+Scroll)');
+
+	this.addSeparator();
 };
 
 /**

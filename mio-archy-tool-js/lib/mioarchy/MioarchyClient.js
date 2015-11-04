@@ -57,6 +57,9 @@ MioarchyClient.prototype =
 	updateSourceSheet: function (sheetId, updateSourceSheetCallback) {
 		this.postJson("/updateSourceSheet", { sheetId: sheetId }, updateSourceSheetCallback, this.notifyError);
 	},
+	getUserPhotoUrl: function (email, callback) {
+		this.getJSON("/userPhotoUrl/" + encodeURIComponent(email), callback, this.notifyError);
+	},
 	getJSON: function (url, successHandler, errorHandler) {
 		self = this;
 		return new Promise( function(resolve, reject) {

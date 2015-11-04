@@ -1085,6 +1085,7 @@ BaseFormatPanel.prototype.addLabel = function(div, title, right, width)
 	label.style.width = width + 'px';
 	label.style.marginTop = '6px';
 	label.style.textAlign = 'center';
+	label.style.textAlign = 'center';
 	div.appendChild(label);
 };
 

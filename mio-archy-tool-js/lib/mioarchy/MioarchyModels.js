@@ -188,7 +188,7 @@ Mioarchy.prototype =
                 var ln = contributor.lastName;
                 var fi = fn.substring(0, 1);
                 if (numLetters > ln.length) {
-                    console.log("ERROR: Contributor name collision coux`ld not be resolved!!!");
+                    console.log("ERROR: Contributor name collision could not be resolved!!!");
                     error = true;
                 }
                 var li = ln.substring(0, numLetters);

@@ -9,13 +9,17 @@ var http = require("http"),
     port = process.argv[2] || 8080,
     mio = require("./lib/mioarchy/MioarchyReader.js"),
     bodyParser = require('body-parser'),
-    Promise = require("es6-promise").Promise;
+    Promise = require("es6-promise").Promise,
+    googleAuth = require("./lib/google/auth.js"),
+    googleAdmin = require("./lib/google/admin.js");
 
 var app = express();
 app.use(bodyParser.json());
 
 var dbReady = false;
 var lastUpdated;
+
+var googleUsers = null;
 
 var sheetId ='1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ'; // current, production
 
@@ -121,6 +125,17 @@ app.get('/lastUpdated', function(req, res){
   res.send(JSON.stringify( lastUpdated ));
 });
 
+app.get('/userPhotoUrl/:userEmail', function(req, res) {
+    res.setHeader('Content-Type', 'application/json');
+    var email = req.params.userEmail;
+
+    if (googleUsers && googleUsers[email] && googleUsers[email].thumbnailPhotoUrl) {
+        res.send(JSON.stringify(googleUsers[email].thumbnailPhotoUrl));
+    } else {
+        res.send(JSON.stringify("img/unknown-user.jpg"));
+    }
+});
+
 app.post('/updateSourceSheet', function(req, res) {
   if (req.body.sheetId) {
       sheetId = req.body.sheetId;
@@ -132,6 +147,30 @@ app.post('/updateSourceSheet', function(req, res) {
   res.send(JSON.stringify({}));
 });
 
-app.listen(port);
+readUsersFromGoogleAdminAPI();
+setInterval(readUsersFromGoogleAdminAPI, 3600000);
 
+function readUsersFromGoogleAdminAPI() {
+  console.log("Retrieving users from Google Admin API...")
+  googleAuth.loadDefaultCredentials().then(function (auth) {
+    googleAuth.authorize(auth).then(function (authClient) {
+      googleAdmin.listUsers(authClient).then(function (users) {
+        googleUsers = [];
+        for (var i = 0; i < users.length; i++) {
+          var u = users[i];
+          googleUsers[u.primaryEmail] = u;
+        }
+        console.log(users.length + " users read from Google Admin API.");
+      }, function (err) {
+        console.log(err);
+      });
+    }, function (err) {
+      console.log(err);
+    })
+  }, function (err) {
+    console.log(err);
+  });
+}
+
+app.listen(port);
 console.log('Listening on port ' + port + '...');
