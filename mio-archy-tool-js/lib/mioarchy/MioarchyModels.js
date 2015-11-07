@@ -106,7 +106,7 @@ Mioarchy.prototype =
         var contributor = this.contributors[contributorName];
         var jobList = [];
         for (var j in this.jobs) {
-            if (mioarchyClient.jobs[j].contributor.toLowerCase()
+            if (mioarchyClient.mioarchy.jobs[j].contributor.toLowerCase()
                 === contributor.name.toLowerCase()) {
                 jobList.push(j);
             }
@@ -272,6 +272,46 @@ Mioarchy.prototype =
                     obj.accountabilityLevel, obj.accountabilityLabel, obj.contributor, obj.primaryAccountability);
             }
         }
+    },
+    /* Creates a filtered version of the objects in the hierarchy
+        @startDate - nothing prior to this date will be returned
+        @endDate - nothing beyond this date will be returned
+     */
+    createFilteredMioarchy: function(filterParams) {
+        var startDate = filterParams.startDate;
+        var endDate = filterParams.endDate;
+
+        // utility function to filter a map of object which may or may not have start and end time fields
+        var deepCopyMap = function(src, startTime, endTime) {
+            var newMap = [];
+            var keys = Object.keys(src);
+            for (var i = 0; i < keys.length; i++) {
+                var k = keys[i];
+                var o = src[k];
+
+                // filter if needed
+                var include = true;
+                if (startTime && o.startTime && o.startTime < startTime) {
+                    include = false;
+                }
+                if (endTime && o.endTime && o.endTime > endTime) {
+                    include = false;
+                }
+                if (include) {
+                    newMap[k] = o;
+                }
+            }
+            return newMap;
+        };
+
+        var newMioArchy = {};
+        newMioArchy.contributors = deepCopyMap(this.contributors);
+        newMioArchy.roles = deepCopyMap(this.roles);
+        newMioArchy.jobAccountabilities = deepCopyMap(this.jobAccountabilities);
+        newMioArchy.orgAccountabilities = deepCopyMap(this.orgAccountabilities);
+        newMioArchy.organizations = deepCopyMap(this.organizations);
+        newMioArchy.jobs = deepCopyMap(this.jobs);
+        return newMioArchy;
     }
 };
 
@@ -301,7 +341,7 @@ function Organization(id, name, parent, isApplication, start, end) {
     this.end = end;
 }
 
-function Contributor(id, name, firstName, lastName, start, end, email) {
+function Contributor(id, name, firstName, lastName, start, end, email, org) {
     this.type = Mioarchy.prototype.Types.Contributor;
     this.id = id;
     this.name = name;
@@ -310,6 +350,7 @@ function Contributor(id, name, firstName, lastName, start, end, email) {
     this.start = start;
     this.end = end;
     this.email = email;
+    this.org = org;
 }
 
 function Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability, start, end) {

@@ -27,59 +27,47 @@ function Sidebar(editorUi, container)
 
 	var ui = this.editorUi;
 
+	// list the orgs
+	this.renderOrganizationTree();
+};
+
+/* Renders the organization list in a tree viw in the side panel, and clears it if there is already one there
+   (i.e. can be called multiple times to update the view
+ */
+Sidebar.prototype.renderOrganizationTree = function() {
+	if (this.organizationTree) {
+		this.container.removeChild(this.organizationTree);
+	}
+	this.organizationTree = this.createOrganizationTree();
+	this.container.appendChild(this.organizationTree);
+}
+
+/* Creates the tree view DOM elements for nested organizations
+ */
+Sidebar.prototype.createOrganizationTree = function() {
 	var div = document.createElement('div');
 	div.style.whiteSpace = 'nowrap';
 	div.style.color = 'rgb(112, 112, 112)';
 	div.style.textAlign = 'left';
 	div.style.cursor = 'default';
 
-	d = new dTree('d');
-
-
-	var organizations = this.editorUi.mioarchyClient.organizations;
+	var d = new dTree('d');
+	window.d = d; // attach to the window, or else the control doesn't work
+	var organizations = this.editorUi.mioarchyClient.mioarchy.organizations;
 	div.appendChild(mioarchyClient.createMiovisionLabel("Organizations", "#5885AA", "#FFFFFF", true));
-
 	for (var o in organizations) {
 		var org = organizations[o];
-
 		var id = Number(org.id) - 1;
 		var parent = org.parent ? Number(organizations[org.parent].id) - 1 : -1;
-
 		d.add(id, parent, org.name, "javascript:mioarchyClient.render('"+org.name+"');", org.name, '', 'images/mio-swirl-48px.png');
 		//d.add(id, parent, org.name, org.name, org.name, '', 'images/mio-swirl-48px.png');
 	}
-
-	this.container.appendChild(div);
-
-
 	var div2 = document.createElement('div');
 	div.appendChild(div2);
-
-
 	div2.innerHTML = d;
 
-	//div.innerHtml = d;
-
-	//this.container.appendChild(d);
-
-	/*	s
-	this.container.appendChild(div);
-	var organizations = this.editorUi.mioarchyClient.organizations;
-	div.appendChild(mioarchyClient.createMiovisionLabel("Organizations", "#5885AA", "#FFFFFF", true));
-
-	for (var o in organizations) {
-		var label = mioarchyClient.createMiovisionLabel( organizations[o].name, "#e2e2e2", "#3F403F", false);
-		div.appendChild(label);
-
-		mxEvent.addListener(label, 'click', mxUtils.bind(this, function(evt)
-		{
-			console.log(evt);
-			var src = mxEvent.getSource(evt);
-			this.editorUi.mioarchyClient.targetRenderingOrg = src.innerText;
-			this.editorUi.mioarchyClient.renderOrganization();
-		}));
-	}*/
-};
+	return div;
+}
 
 
 /**

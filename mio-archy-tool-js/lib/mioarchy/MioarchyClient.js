@@ -9,15 +9,7 @@ MioarchyClient.prototype =
 	init: function () {
 		this.isReady = false;
 		this.isError = false;
-		this.doneFlags = 0;
 		this.mioarchy = {};
-		this.applications = {};
-		this.organizations = {};
-		this.contributors = {};
-		this.roles = {};
-		this.jobs = {};
-		this.orgAccountabilities = {};
-		this.jobAccountabilities = {};
 	},
 	notifyComplete: function () {
 		this.isReady = true;
@@ -26,29 +18,32 @@ MioarchyClient.prototype =
 	},
 	readDB: function (readyStateCallback) {
 		var self = this;
-
 		self.init(); // clear tables
-
 		self.readyStateCallback = readyStateCallback;
 
+		// individual object lists to be populated
+		this.applications = {};
+		this.organizations = {};
+		this.contributors = {};
+		this.roles = {};
+		this.jobs = {};
+		this.orgAccountabilities = {};
+		this.jobAccountabilities = {};
+
 		Promise.all([
-			self.getJSON("/applications").then( function(value) { self.applications = value; }),
-			self.getJSON("/organizations").then ( function(value) { self.organizations = value; }),
-			self.getJSON("/contributors").then( function(value) { self.contributors = value; }),
-			self.getJSON("/roles").then( function (value) { self.roles = value; }),
-			self.getJSON("/jobs").then( function (value) { self.jobs = value; }),
-			self.getJSON("/orgAccountabilities").then( function (value) { self.orgAccountabilities = value; }),
-			self.getJSON("/jobAccountabilities").then( function (value) { self.jobAccountabilities = value; })
-		]).then( function() {
+			self.getJSON("/jobs"), self.getJSON("/organizations"), self.getJSON("/contributors"),
+			self.getJSON("/applications"), self.getJSON("/roles"), self.getJSON("/orgAccountabilities"),
+			self.getJSON("/jobAccountabilities")
+		]).then( function(results) {
 			console.log("All promised resolved!");
 
 			// create the mioarchy object
-			self.mioarchy = new Mioarchy(self.jobs, self.organizations, self.contributors, self.applications, self.roles,
-				self.orgAccountabilities, self.jobAccountabilities);
+			self.mioarchy = new Mioarchy(results[0], results[1], results[2],
+				results[3], results[4], results[5], results[6]);
 
 			self.notifyComplete();
 		}, function() {
-			this.isError = true;
+			self.isError = true;
 		});
 	},
 	getLastUpdated: function (updateCheckCallback) {

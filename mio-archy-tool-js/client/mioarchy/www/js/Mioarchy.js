@@ -1,6 +1,9 @@
+console.log("mioarchyClient");
+
+
 // read from the backend
 var mioarchyClient = new MioarchyClient();
-mioarchyClient.readDB( onDBReadCompleted );
+mioarchyClient.readDB(onDBReadCompleted);
 mioarchyClient.targetRenderingOrg = "Miovision";
 
 // stores the graph object
@@ -20,8 +23,7 @@ function onDBReadCompleted()
             this.actions.get('export').setEnabled(false);
         };
     })();
-
-    new EditorUi( mioarchyClient, mioarchyClient.onEditorUIInitCompleted, new Editor(urlParams['chrome'] == '0') );
+    new EditorUi (mioarchyClient, mioarchyClient.onEditorUIInitCompleted, new Editor(urlParams['chrome'] == '0'));
 }
 
 // called when editor UI has been fully initialized (to render the org)
@@ -39,8 +41,8 @@ mioarchyClient.renderOrganization = function() {
         mioarchyClient.graph.removeCells(
             mioarchyClient.graph.getChildVertices( mioarchyClient.graph.getDefaultParent() ) );
 
-        // then get the mioarchy client object
-        var mioarchy = mioarchyClient.mioarchy;
+        // then get the mioarchy client object (apply transformed version if available)
+        var mioarchy = mioarchyClient.transformedMioarchy ? mioarchyClient.transformedMioarchy : mioarchyClient.mioarchy;
         var ri = new RenderInfoOrganization( mioarchy.organizations[mioarchyClient.targetRenderingOrg], mioarchy );
 
         ri.render( 0, 0, mioarchyClient.graph );
@@ -67,6 +69,16 @@ mioarchyClient.processLastUpdated = function( lastUpdated ) {
     } else {
     }
 }
+
+// applied the transormation parameters to the client side copy of the hierarchy, to prepare for rendering
+mioarchyClient.applyActiveTransform = function() {
+    if (mioarchyClient.activeTransform) {
+        // time-bound transofmrations
+        if (mioarchyClient.activeTransform.startTime || mioarchyClient.activeTransform.endTime)
+        mioarchyClient.transformedMioarchy = mioarchyClient.mioarchy.createFilteredMioarchy(mioarchyClient.activeTransform);
+    }
+}
+
 // check for updates every x seconds
 setInterval( function() { mioarchyClient.getLastUpdated( mioarchyClient.processLastUpdated ) }, 5000 );
 
@@ -76,16 +88,6 @@ mioarchyClient.createTempUserImageDiv = function(x, y) {
     var padding = 4;
 
     var div = document.createElement("div");
-
-    /*
-    div.style.borderColor = "#3F403F";
-    div.style.padding = padding + "px";
-    //div.style.borderRadius = "50%";
-    div.style.borderRadius = "5px";
-    div.style.borderStyle = "solid";
-    div.style.borderWidth = borderSize + "px";
-    */
-
     div.style.position = "absolute";
     div.style.background = "url('img/ajax-loader.gif') no-repeat center";
     div.style.backgroundColor = "white";
@@ -341,7 +343,7 @@ mioarchyClient.handleRightPaneRefresh = function(container, graph) {
 
     if (selectedGraphObject && selectedGraphObject.mioObject && selectedGraphObject.mioObject.type === Mioarchy.prototype.Types.Job) {
         var job = selectedGraphObject.mioObject;
-        var accountabilities = mioarchyClient.jobAccountabilities[job.id];
+        var accountabilities = mioarchyClient.mioarchy.jobAccountabilities[job.id];
 
         // add contributor name heading
         container.appendChild(mioarchyClient.createMiovisionLabel(job.contributor, '#3F403F', '#FFFFFF', true));
@@ -367,7 +369,7 @@ mioarchyClient.handleRightPaneRefresh = function(container, graph) {
         mioarchyClient.renderHighlightedContributorOverlays();
     } else if (selectedGraphObject && selectedGraphObject.mioObject && selectedGraphObject.mioObject.type === Mioarchy.prototype.Types.Organization) {
         var organizationName = selectedGraphObject.mioObject.name;
-        var accountabilities = mioarchyClient.orgAccountabilities[organizationName];
+        var accountabilities = mioarchyClient.mioarchy.orgAccountabilities[organizationName];
         renderAccountabilities(accountabilities, organizationName + " Accountabilities", container);
     }
 }
@@ -525,7 +527,7 @@ mioarchyClient.renderHighlightedApplicationOverlays = function () {
 
                     // check which orgs are connected, and link them
                     var jobId = jobVertex.mioObject.id;
-                    var accountabilities = mioarchyClient.jobAccountabilities[jobId];
+                    var accountabilities = mioarchyClient.mioarchy.jobAccountabilities[jobId];
                     for (var j = 0; j < accountabilities.length; j++) {
                         var a = accountabilities[j];
 
@@ -578,10 +580,10 @@ mioarchyClient.renderHighlightedApplicationOverlays = function () {
 
 mioarchyClient.getContributorJobs = function(contributorName) {
     // find all this person's jobs
-    var contributor = mioarchyClient.contributors[contributorName];
+    var contributor = mioarchyClient.mioarchy.contributors[contributorName];
     var jobList = [];
-    for (j in mioarchyClient.jobs) {
-        if (mioarchyClient.jobs[j].contributor.toLowerCase()
+    for (j in mioarchyClient.mioarchy.jobs) {
+        if (mioarchyClient.mioarchy.jobs[j].contributor.toLowerCase()
             === contributor.name.toLowerCase()) {
             jobList.push(j);
         }
@@ -680,7 +682,7 @@ mioarchyClient.highlightJobAccountabilities = function(jobId) {
 
     // get the list of accountabilities first
     graph.getModel().beginUpdate();
-    var accountabilities = mioarchyClient.jobAccountabilities[jobId];
+    var accountabilities = mioarchyClient.mioarchy.jobAccountabilities[jobId];
     try {
         for (var a in accountabilities) {
             var acc = accountabilities[a];
@@ -769,8 +771,8 @@ mioarchyClient.isOrgWithinSelectedOrg = function(orgName) {
 
     // it's contained because it's a descendant
     return mioarchyClient.mioarchy.isDescendantOfOrganization(
-        mioarchyClient.organizations[orgName],
-        mioarchyClient.organizations[mioarchyClient.targetRenderingOrg]);
+        mioarchyClient.mioarchy.organizations[orgName],
+        mioarchyClient.mioarchy.organizations[mioarchyClient.targetRenderingOrg]);
 }
 
 mioarchyClient.renderHighlightedContributorOverlays = function () {
