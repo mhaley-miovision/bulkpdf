@@ -386,8 +386,8 @@ mioarchyClient.render = function(newOrg) {
     }
     mioarchyClient.renderOrganization();
     mioarchyClient.editor.format.refresh();
+    mioarchyClient.editor.sidebar.renderOrganizationTree();
     mioarchyClient.renderHighlightedApplicationOverlays();
-    //mioarchyClient.renderHighlightedContributorOverlays();
 }
 
 mioarchyClient.getSelectedContributor = function() {
