@@ -21,15 +21,6 @@ MioarchyClient.prototype =
 		self.init(); // clear tables
 		self.readyStateCallback = readyStateCallback;
 
-		// individual object lists to be populated
-		this.applications = {};
-		this.organizations = {};
-		this.contributors = {};
-		this.roles = {};
-		this.jobs = {};
-		this.orgAccountabilities = {};
-		this.jobAccountabilities = {};
-
 		Promise.all([
 			self.getJSON("/jobs"), self.getJSON("/organizations"), self.getJSON("/contributors"),
 			self.getJSON("/applications"), self.getJSON("/roles"), self.getJSON("/orgAccountabilities"),
@@ -38,9 +29,9 @@ MioarchyClient.prototype =
 			console.log("All promised resolved!");
 
 			// create the mioarchy object
-			self.mioarchy = new Mioarchy(results[0], results[1], results[2],
+			self.mioarchyCachedModel = new Mioarchy(results[0], results[1], results[2],
 				results[3], results[4], results[5], results[6]);
-
+			self.applyActiveTransformation();
 			self.notifyComplete();
 		}, function() {
 			self.isError = true;

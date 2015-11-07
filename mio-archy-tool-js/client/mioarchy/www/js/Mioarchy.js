@@ -42,7 +42,7 @@ mioarchyClient.renderOrganization = function() {
             mioarchyClient.graph.getChildVertices( mioarchyClient.graph.getDefaultParent() ) );
 
         // then get the mioarchy client object (apply transformed version if available)
-        var mioarchy = mioarchyClient.transformedMioarchy ? mioarchyClient.transformedMioarchy : mioarchyClient.mioarchy;
+        var mioarchy = mioarchyClient.mioarchy;
         var ri = new RenderInfoOrganization( mioarchy.organizations[mioarchyClient.targetRenderingOrg], mioarchy );
 
         ri.render( 0, 0, mioarchyClient.graph );
@@ -71,11 +71,15 @@ mioarchyClient.processLastUpdated = function( lastUpdated ) {
 }
 
 // applied the transormation parameters to the client side copy of the hierarchy, to prepare for rendering
-mioarchyClient.applyActiveTransform = function() {
-    if (mioarchyClient.activeTransform) {
-        // time-bound transofmrations
-        if (mioarchyClient.activeTransform.startTime || mioarchyClient.activeTransform.endTime)
-        mioarchyClient.transformedMioarchy = mioarchyClient.mioarchy.createFilteredMioarchy(mioarchyClient.activeTransform);
+mioarchyClient.applyActiveTransformation = function() {
+    // start with the cached model
+    mioarchyClient.mioarchy = mioarchyClient.mioarchyCachedModel;
+
+    // if a transormation is active, apply it
+    if (mioarchyClient.activeTransformation) {
+        // time-bound transformations
+        if (mioarchyClient.activeTransformation.startTime || mioarchyClient.activeTransformation.endTime)
+        mioarchyClient.mioarchy = mioarchyClient.mioarchy.createFilteredMioarchy(mioarchyClient.activeTransformation);
     }
 }
 
@@ -263,7 +267,7 @@ mioarchyClient.handleRightPaneRefresh = function(container, graph) {
 
         if (mioarchyClient.accountabilityMode == 1) {
             if (accountability.application) {
-                var app = mioarchyClient.applications[accountability.application];
+                var app = mioarchyClient.mioarchy.applications[accountability.application];
                 color = app.color;
             }
         } else {

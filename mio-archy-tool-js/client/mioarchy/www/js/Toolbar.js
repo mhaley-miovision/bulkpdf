@@ -116,7 +116,7 @@ Toolbar.prototype.init = function()
 	this.addSeparator();
 
 	var applicationValues = {"All Applications" : "All Applications"};
-	var applicationList = Object.keys(this.editorUi.mioarchyClient.applications);
+	var applicationList = Object.keys(this.editorUi.mioarchyClient.mioarchy.applications);
 	for (var i = 0; i < applicationList.length; i++) {
 		applicationValues[applicationList[i]] = applicationList[i];
 	}
