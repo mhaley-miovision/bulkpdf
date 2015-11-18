@@ -31,7 +31,6 @@ MioarchyClient.prototype =
 			// create the mioarchy object
 			self.mioarchyCachedModel = new Mioarchy(results[0], results[1], results[2],
 				results[3], results[4], results[5], results[6]);
-			self.applyActiveTransformation();
 			self.notifyComplete();
 		}, function() {
 			self.isError = true;

@@ -32,6 +32,8 @@ mioarchyClient.onEditorUIInitCompleted = function( graph, editor ) {
     mioarchyClient.editor = editor;
     mioarchyClient.setupClickHandling(); // only once
     mioarchyClient.render();
+
+    mioarchyClient.initializeToolbar();
 }
 
 // renders the organization (first clears the graph)
@@ -42,7 +44,9 @@ mioarchyClient.renderOrganization = function() {
             mioarchyClient.graph.getChildVertices( mioarchyClient.graph.getDefaultParent() ) );
 
         // then get the mioarchy client object (apply transformed version if available)
+        mioarchyClient.applyActiveTransformation();
         var mioarchy = mioarchyClient.mioarchy;
+
         var ri = new RenderInfoOrganization( mioarchy.organizations[mioarchyClient.targetRenderingOrg], mioarchy );
 
         ri.render( 0, 0, mioarchyClient.graph );
@@ -78,7 +82,7 @@ mioarchyClient.applyActiveTransformation = function() {
     // if a transormation is active, apply it
     if (mioarchyClient.activeTransformation) {
         // time-bound transformations
-        if (mioarchyClient.activeTransformation.startTime || mioarchyClient.activeTransformation.endTime)
+        if (mioarchyClient.activeTransformation.startDate || mioarchyClient.activeTransformation.endDate)
         mioarchyClient.mioarchy = mioarchyClient.mioarchy.createFilteredMioarchy(mioarchyClient.activeTransformation);
     }
 }
@@ -127,8 +131,36 @@ mioarchyClient.setupClickHandling = function() {
 
         if (cell && mioarchyClient.graph.selectedGraphObject.mioObject
             && mioarchyClient.graph.selectedGraphObject.mioObject.type == Mioarchy.prototype.Types.Organization) {
+
+            //graphComponent.zoomTo(scale, mioarchyClient.graph.isCenterZoom());
+
+            /*
+            console.log(evt);
+
+            var x = evt.screenX;
+            var y = evt.screenY;
+            var w = 100;
+            var h = 100;
+            */
+
+            /*
+            var x = cell.geometry.x;
+            var y = cell.geometry.y;
+            var h = cell.geometry.width;
+            var w = cell.geometry.height;
+            */
+
+            /*
+            var rect = new mxRectangle(x, y, w, h);
+            var graph = mioarchyClient.graph;
+
+            graph.zoomToRect(rect);*/
+            s
+            graph.zoomTo();
+
             mioarchyClient.targetRenderingOrg = mioarchyClient.graph.selectedGraphObject.mioObject.name;
             mioarchyClient.render();
+
         } else {
             console.log("not rendering, not an org dbl clicked");
         }
@@ -223,6 +255,17 @@ mioarchyClient.setupClickHandling = function() {
                 }
             }
         },
+        mouseWheelMoved: function(sender, me)
+        {
+            if (e.getWheelRotation() < 0)
+            {
+                mioarchyClient.graph.component().zoomIn();
+            }
+            else
+            {
+                mioarchyClient.graph.component().zoomOut();
+            }
+        }
     };
     mioarchyClient.graph.addMouseListener(mouseListener);
 }
@@ -796,5 +839,53 @@ mioarchyClient.renderHighlightedContributorOverlays = function () {
         }
     } else {
         //console.log("no selected contributor detector");
+    }
+}
+
+mioarchyClient.initializeToolbar = function() {
+    if (typeof(mioarchyClient.toolbarInitialized) == 'undefined') {
+
+        var appListElt = document.getElementById("mioarchy-application-list");
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.href = "#";
+        a.innerText = "All Applications";
+        a.onclick = function() {
+            mioarchyClient.handleApplicationFilterSelectionChange(this.innerText);
+        }
+        li.appendChild(a);
+        appListElt.appendChild(li);
+        li = document.createElement("li");
+        li.role = "separator";
+        li.class = "divider";
+        appListElt.appendChild(li);
+        var applicationList = Object.keys(mioarchyClient.mioarchy.applications);
+        for (var i = 0; i < applicationList.length; i++) {
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+            a.href = "#";
+            a.innerText = applicationList[i];
+            a.onclick = function() {
+                mioarchyClient.handleApplicationFilterSelectionChange(this.innerText);
+            }
+            li.appendChild(a);
+            appListElt.appendChild(li);
+        }
+
+        /*
+         var elts = this.addItems(['actualSize', 'zoomIn', 'zoomOut', '-']);
+         elts[0].setAttribute('title', mxResources.get('actualSize') + ' (Ctrl+0)');
+         elts[1].setAttribute('title', mxResources.get('zoomIn') + ' (Ctrl + / Alt+Scroll)');
+         this.addSeparator();
+         */
+
+        $('#selectedDatePicker').datepicker({ autoclose:true  });
+        document.getElementById('selectedDatePicker').onchange = function(evt) {
+            var date = evt.target.value;
+            mioarchyClient.activeTransformation = { startDate:date, endDate:date };
+            mioarchyClient.renderOrganization();
+        }
+
+        mioarchyClient.toolbarInitialized = true;
     }
 }

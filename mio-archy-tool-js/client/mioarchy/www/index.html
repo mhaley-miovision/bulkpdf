@@ -69,17 +69,16 @@
 		mxLanguages = ['de'];
 	</script>
 
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
-
-	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
-	<!-- Optional theme -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
-	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
 
+    <link rel="stylesheet" href="styles/Mioarchy.css">
 	<script type="text/javascript" src="jscolor/jscolor.js"></script>
 	<script type="text/javascript" src="sanitizer/sanitizer.min.js"></script>
 	<script type="text/javascript" src="../../src/js/mxClient.js"></script>
@@ -99,16 +98,71 @@
 	<script type="text/javascript" src="js/Format.js"></script>
 	<script type="text/javascript" src="js/Toolbar.js"></script>
 	<script type="text/javascript" src="js/Dialogs.js"></script>
-</head>`
-<body class="geEditor">
-	<script src="https://apis.google.com/js/client.js?onload=checkAuth&output=embed">
-	</script>
-	<script type="text/javascript" src="js/MioarchyAuth.js"></script>
-	<script type="text/javascript" src="js/Mioarchy.js"></script>
+</head>
+<body>
+    <div class="spinner-loader" style="position: absolute; top: 50%; left: 50%">
+        Loading…
+    </div>
+    <link rel="stylesheet" href="http://css-spinners.com/css/spinner/spinner.css" type="text/css">
 
+    <nav class="navbar navbar-default mioarchy-toolbar">
+        <div class="container-fluid">
+            <form class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Select Date" id="selectedDatePicker">
+                </div>
+            </form>
+
+            <ul class="nav navbar-nav left">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Select Application <span class="caret"></span></a>
+                    <ul class="dropdown-menu" id="mioarchy-application-list">
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Help</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Do something</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Sign out</a></li>
+                    </ul>
+                </li>
+            </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+    <!--
+
+    <nav class="navbar navbar-default" id="mioarchy-toolbar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <div class="nav navbar-nav" id="applicationList">
+                </div>
+            </div>
+            <form class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Start Date" id="startDatePicker">
+                </div>
+            </form>
+        </div>
+
+    </nav>
+    -->
+
+    <div class="geEditor">
+        <script src="https://apis.google.com/js/client.js?onload=checkAuth&output=embed">
+        </script>
+        <script type="text/javascript" src="js/MioarchyAuth.js"></script>
+        <script type="text/javascript" src="js/Mioarchy.js"></script>
+
+	<!--
 	<div id="authorize-div" style="display: none">
 		<span>Authorize access to Directory API</span>
-		<!--Button for the user to click to initiate auth sequence -->
 		<button id="authorize-button" onclick="handleAuthClick(event)">
 			Authorize
 		</button>
@@ -118,7 +172,6 @@
 		<div class="modal-dialog modal-sm">
 			<div class="modal-content">
 				<span>Authorize access to Directory API</span>
-				<!--Button for the user to click to initiate auth sequence -->
 				<button id="authorize-button2" onclick="handleAuthClick(event)">
 					Authorize
 				</button>
@@ -144,5 +197,47 @@
 			</div>
 		</div>
 	</div>
+	-->
+
+    </div>
+
+
+<div class="modal fade" id="datepicker-dlg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Google Authorization</h4>
+            </div>
+            <div class="modal-body">
+                <input id="datePickerTest" type="text" value="Select Date">
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="handleAuthClick(event)">Authorize</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="about-dlg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">About</h4>
+            </div>
+            <div class="modal-body">
+                <h1>Miovision Organizational Design Tool Help</h1>
+                <p>For questions on how to use this tool for now please email <a href="mailto:vleipnik@miovision.com">Victor Leipnik</a>.
+                </p>
+                <img width="151" src="images/logomain.png" style="border: 0px;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

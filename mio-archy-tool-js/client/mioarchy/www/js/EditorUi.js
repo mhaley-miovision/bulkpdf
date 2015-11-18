@@ -1668,7 +1668,14 @@ EditorUi.prototype.refresh = function()
 	var effHsplitPosition = Math.max(0, Math.min(this.hsplitPosition, w - this.splitSize - 20));
 
 	var tmp = 0;
-	
+
+	// vic- hack
+
+	this.menubarHeight = 0;
+	this.toolbarHeight = 52;
+	tmp += this.toolbarHeight;
+
+	/*
 	if (this.menubar != null)
 	{
 		this.menubarContainer.style.height = this.menubarHeight + 'px';
@@ -1681,6 +1688,7 @@ EditorUi.prototype.refresh = function()
 		this.toolbarContainer.style.height = this.toolbarHeight + 'px';
 		tmp += this.toolbarHeight;
 	}
+	*/
 	
 	if (tmp > 0 && !mxClient.IS_QUIRKS)
 	{
@@ -1796,6 +1804,7 @@ EditorUi.prototype.createSidebarFooterContainer = function()
  */
 EditorUi.prototype.createUi = function()
 {
+	/*
 	// Creates menubar
 	this.menubar = (this.editor.chromeless) ? null : this.menus.createMenubar(this.createDiv('geMenubar'));
 	
@@ -1820,7 +1829,7 @@ EditorUi.prototype.createUi = function()
 		
 		// Inserts into DOM
 		this.container.appendChild(this.menubarContainer);
-	}
+	}*/
 
 	// Creates the sidebar
 	this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer);
@@ -1839,29 +1848,28 @@ EditorUi.prototype.createUi = function()
 	}
 	
 	// Creates the footer
+	/*
 	var footer = (this.editor.chromeless) ? null : this.createFooter();
-	
 	if (footer != null)
 	{
 		this.footerContainer.appendChild(footer);
 		this.container.appendChild(this.footerContainer);
 	}
-
 	if (this.sidebar != null && this.sidebarFooterContainer)
 	{
 		this.container.appendChild(this.sidebarFooterContainer);		
-	}
+	}*/
 
 	this.container.appendChild(this.diagramContainer);
 
 	// Creates toolbar
+	/*
 	this.toolbar = (this.editor.chromeless) ? null : this.createToolbar(this.createDiv('geToolbar'));
-	
 	if (this.toolbar != null)
 	{
 		this.toolbarContainer.appendChild(this.toolbar.container);
 		this.container.appendChild(this.toolbarContainer);
-	}
+	}*/
 
 	// HSplit
 	if (this.sidebar != null)

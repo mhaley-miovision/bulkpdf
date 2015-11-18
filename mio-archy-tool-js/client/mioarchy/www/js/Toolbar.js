@@ -2,7 +2,7 @@
  * Copyright (c) 2006-2012, JGraph Ltd
  */
 /**
- * Construcs a new toolbar for the given editor.
+ * Constructs a new toolbar for the given editor.
  */
 function Toolbar(editorUi, container)
 {
@@ -32,77 +32,22 @@ Toolbar.prototype.unselectedBackground = 'none';
  */
 Toolbar.prototype.init = function()
 {
-	/*
 	var createSelectElt = function(id, labelText, valuesToLabelsMap, onChangedFn) {
 		var container = document.createElement("div");
-
 		container.style.float = "left";
 		container.style.margin = "2px";
 		container.style.padding = "5px";
-
 		var label = document.createElement("span");
 		label.innerText = labelText;
 		container.appendChild(label);
-
-		var input = document.createElement("input");
-		input.type = "text";
-		input.name = id + "Value";
-		input.value = Object.keys(valuesToLabelsMap)[0];
-		input.setAttribute("list", id);
-		input.onchange = function(evt) { alert(input.value); };
-		container.appendChild(input);
-
-		var combo = document.createElement("datalist");
-		combo.id = id;
-		container.appendChild(combo);
-
-		for (var val in valuesToLabelsMap) {
-			combo.innerHTML += "<option value='" + valuesToLabelsMap[val] + "'>" + val + "</option>";
-		}
-
-		return container;
-	}*/
-
-	var createSelectElt = function(id, labelText, valuesToLabelsMap, onChangedFn) {
-		var container = document.createElement("div");
-
-		container.style.float = "left";
-		container.style.margin = "2px";
-		container.style.padding = "5px";
-
-		var label = document.createElement("span");
-		label.innerText = labelText;
-		container.appendChild(label);
-
 		var combo = document.createElement("select");
 		container.appendChild(combo);
-
 		combo.onchange = function(evt) { onChangedFn(combo.value); };
-
 		for (var val in valuesToLabelsMap) {
 			combo.innerHTML += "<option value='" + valuesToLabelsMap[val] + "'>" + val + "</option>";
 		}
-
 		return container;
 	}
-
-	/*
-	var container = document.createElement("div");
-	container.style.float = "left";
-	container.style.margin = "2px";
-	container.style.padding = "5px";
-	var dateLabel = document.createElement("span");
-	dateLabel.innerText = "selectedDate";*/
-
-	/*
-	dateInput.name = "selectedDate";
-	dateInput.id = "selectedDate";
-	dateInput.className = "date-picker";
-*/
-
-	//this.container.appendChild(dateLabel);
-
-	//this.container.appendChild(dateInput);
 
 	var timeFrameValues = {
 		"Current" : "1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ",
@@ -129,6 +74,11 @@ Toolbar.prototype.init = function()
 	elts[1].setAttribute('title', mxResources.get('zoomIn') + ' (Ctrl + / Alt+Scroll)');
 
 	this.addSeparator();
+
+	var pickerInput = document.createElement("input");
+	pickerInput.onmousedown = function() { $('#datepicker-dlg').modal(); };
+	this.container.appendChild(pickerInput);
+	//datepickr(pickerInput);
 };
 
 /**

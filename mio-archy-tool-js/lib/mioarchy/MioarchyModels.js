@@ -282,7 +282,7 @@ Mioarchy.prototype =
         var endDate = filterParams.endDate;
 
         // utility function to filter a map of object which may or may not have start and end time fields
-        var deepCopyMap = function(src, startTime, endTime) {
+        var deepCopyMap = function(src, startDate, endDate) {
             var newMap = [];
             var keys = Object.keys(src);
             for (var i = 0; i < keys.length; i++) {
@@ -291,11 +291,19 @@ Mioarchy.prototype =
 
                 // filter if needed
                 var include = true;
-                if (startTime && o.startTime && o.startTime < startTime) {
-                    include = false;
+                if (startDate && o.startDate) {
+                    var sd = Date.parse(startDate);
+                    var osd = Date.parse(o.startDate);
+                    if (osd > sd) {
+                        include = false;
+                    }
                 }
-                if (endTime && o.endTime && o.endTime > endTime) {
-                    include = false;
+                if (endDate && o.endDate) {
+                    var ed = Date.parse(endDate);
+                    var oed = Date.parse(o.endDate);
+                    if (oed < ed) {
+                        include = false;
+                    }
                 }
                 if (include) {
                     newMap[k] = o;
@@ -304,25 +312,29 @@ Mioarchy.prototype =
             return newMap;
         };
 
-        var newMioArchy = {};
-        newMioArchy.contributors = deepCopyMap(this.contributors);
-        newMioArchy.roles = deepCopyMap(this.roles);
-        newMioArchy.jobAccountabilities = deepCopyMap(this.jobAccountabilities);
-        newMioArchy.orgAccountabilities = deepCopyMap(this.orgAccountabilities);
-        newMioArchy.organizations = deepCopyMap(this.organizations);
-        newMioArchy.jobs = deepCopyMap(this.jobs);
+        var contributors = deepCopyMap(this.contributors, startDate, endDate);
+        var roles = deepCopyMap(this.roles, startDate, endDate);
+        var applications = deepCopyMap(this.applications, startDate, endDate);
+        var jobAccountabilities = deepCopyMap(this.jobAccountabilities, startDate, endDate);
+        var orgAccountabilities = deepCopyMap(this.orgAccountabilities, startDate, endDate);
+        var organizations = deepCopyMap(this.organizations, startDate, endDate);
+        var jobs = deepCopyMap(this.jobs, startDate, endDate);
+
+        var newMioArchy = new Mioarchy(jobs, organizations, contributors, applications,
+            roles, jobAccountabilities, orgAccountabilities, organizations);
+
         return newMioArchy;
     }
 };
 
-function Application(id, name, parentOrg, color, start, end) {
+function Application(id, name, parentOrg, color, startDate, endDate) {
     this.type = Mioarchy.prototype.Types.Application;
     this.id = id;
     this.name = name;
     this.parentOrg = parentOrg;
     this.color = color;
-    this.start = start;
-    this.end = end;
+    this.startDate = startDate;
+    this.endDate = endDate;
 }
 
 function Role(id, name) {
@@ -331,29 +343,29 @@ function Role(id, name) {
     this.name = name;
 }
 
-function Organization(id, name, parent, isApplication, start, end) {
+function Organization(id, name, parent, isApplication, startDate, endDate) {
     this.type = Mioarchy.prototype.Types.Organization;
     this.id = id;
     this.name = name;
     this.parent = parent;
     this.isApplication = isApplication;
-    this.start = start;
-    this.end = end;
+    this.startDate = startDate;
+    this.endDate = endDate;
 }
 
-function Contributor(id, name, firstName, lastName, start, end, email, org) {
+function Contributor(id, name, firstName, lastName, startDate, endDate, email, org) {
     this.type = Mioarchy.prototype.Types.Contributor;
     this.id = id;
     this.name = name;
     this.firstName = firstName;
     this.lastName = lastName;
-    this.start = start;
-    this.end = end;
+    this.startDate = startDate;
+    this.endDate = endDate;
     this.email = email;
     this.org = org;
 }
 
-function Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability, start, end) {
+function Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability, startDate, endDate) {
     this.type = Mioarchy.prototype.Types.Job;
     this.id = id;
     this.organization = organization;
@@ -363,11 +375,11 @@ function Job(id, organization, application, role, accountabilityLabel, accountab
     this.accountabilityLevel = accountabilityLevel;
     this.contributor = contributor;
     this.primaryAccountability = primaryAccountability;
-    this.start = start;
-    this.end = end;
+    this.startDate = startDate;
+    this.endDate = endDate;
 }
 
-function Accountability(id, appId, application, label, rating, accountabilityType, organization, start, end) {
+function Accountability(id, appId, application, label, rating, accountabilityType, organization, startDate, endDate) {
     this.type = Mioarchy.prototype.Types.Accountability;
     this.id = id;
     this.appId = appId;
@@ -376,8 +388,8 @@ function Accountability(id, appId, application, label, rating, accountabilityTyp
     this.rating = rating;
     this.accountabilityType = accountabilityType;
     this.organization = organization;
-    this.start = start;
-    this.end = end;
+    this.startDate = startDate;
+    this.endDate = endDate;
 }
 
 // module is only define in nodejs context, if this is client side, ignore since the context is 'window'
