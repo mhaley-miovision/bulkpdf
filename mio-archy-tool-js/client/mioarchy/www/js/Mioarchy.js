@@ -31,7 +31,25 @@ mioarchyClient.onEditorUIInitCompleted = function( graph, editor ) {
     mioarchyClient.graph = graph;
     mioarchyClient.editor = editor;
     mioarchyClient.setupClickHandling(); // only once
-    mioarchyClient.render();
+
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+
+    var yyyy = today.getFullYear();
+    if(dd<10){
+        dd='0'+dd
+    }
+    if(mm<10){
+        mm='0'+mm
+    }
+    var date = dd+'/'+mm+'/'+yyyy;
+
+    mioarchyClient.activeTransformation = { startDate:date, endDate:date };
+    mioarchyClient.applyActiveTransformation();
+
+    mioarchyClient.currentKeyFrameIndex = mioarchyClient.getKeyIndexClosestToToday();
+    mioarchyClient.updateAfterKeyFrameJump();
 
     mioarchyClient.initializeToolbar();
 }
@@ -155,8 +173,6 @@ mioarchyClient.setupClickHandling = function() {
             var graph = mioarchyClient.graph;
 
             graph.zoomToRect(rect);*/
-            s
-            graph.zoomTo();
 
             mioarchyClient.targetRenderingOrg = mioarchyClient.graph.selectedGraphObject.mioObject.name;
             mioarchyClient.render();
@@ -255,17 +271,6 @@ mioarchyClient.setupClickHandling = function() {
                 }
             }
         },
-        mouseWheelMoved: function(sender, me)
-        {
-            if (e.getWheelRotation() < 0)
-            {
-                mioarchyClient.graph.component().zoomIn();
-            }
-            else
-            {
-                mioarchyClient.graph.component().zoomOut();
-            }
-        }
     };
     mioarchyClient.graph.addMouseListener(mouseListener);
 }
@@ -278,8 +283,6 @@ mioarchyClient.createMiovisionLabel = function(textContent, backgroundColor, tex
         label.style.borderBottomColor = "#3F403F";
         label.style.borderBottomWidth = "2px";
     }
-    //label.style.borderWidth = '0px 0px 1px 0px';
-    //label.style.textAlign = isHeading ? 'center' : 'left';
     label.style.fontWeight = isHeading ? 'bold' : 'normal';
     label.style.overflow = 'hidden';
     label.style.fontSize = 'hidden';
@@ -885,7 +888,55 @@ mioarchyClient.initializeToolbar = function() {
             mioarchyClient.activeTransformation = { startDate:date, endDate:date };
             mioarchyClient.renderOrganization();
         }
+        $("#nextKeyFrameButton").click(function() {
+            mioarchyClient.incrementKeyFrameIndexBy(1);
+        });
+        $("#prevKeyFrameButton").click(function() {
+            mioarchyClient.incrementKeyFrameIndexBy(-1);
+        });
 
         mioarchyClient.toolbarInitialized = true;
     }
+}
+
+mioarchyClient.updateAfterKeyFrameJump = function() {
+    var date = mioarchyClient.getFilterDateFromCurrentKeyFrameIndex();
+    document.getElementById('selectedDatePicker').value = date;
+    mioarchyClient.activeTransformation = { startDate:date, endDate:date };
+    mioarchyClient.render();
+}
+
+mioarchyClient.incrementKeyFrameIndexBy = function(x) {
+    var keys = Object.keys(mioarchyClient.mioarchy.timelineEventIndex);
+    mioarchyClient.currentKeyFrameIndex += x;
+    if (mioarchyClient.currentKeyFrameIndex < 0) {
+        mioarchyClient.currentKeyFrameIndex = 0;
+    } else if (mioarchyClient.currentKeyFrameIndex > keys.length - 1) {
+        mioarchyClient.currentKeyFrameIndex = keys.length - 1;
+    }
+    // ** re-render **
+    mioarchyClient.updateAfterKeyFrameJump();
+}
+
+mioarchyClient.currentKeyFrameIndex = 0;
+
+mioarchyClient.getFilterDateFromCurrentKeyFrameIndex = function() {
+    return Object.keys( mioarchyClient.mioarchy.timelineEventIndex ) [ mioarchyClient.currentKeyFrameIndex];
+}
+
+/* gets the closes keyframe before today's date
+ * precondition: keyframes are sorted */
+mioarchyClient.getKeyIndexClosestToToday = function() {
+    var today = Date.now();
+    var keys = Object.keys(mioarchyClient.mioarchy.timelineEventIndex);
+    var k = 0;
+    var candidateKeyDate = keys[k];
+    var closestKeyDate;
+    var closestKeyIndex;
+    while (new Date(candidateKeyDate) < today) {
+        closestKeyDate = candidateKeyDate;
+        closestKeyIndex = k;
+        candidateKeyDate = keys[++k];
+    }
+    return closestKeyIndex;
 }

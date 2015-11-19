@@ -162,6 +162,7 @@ function readUsersFromGoogleAdminAPI() {
         }
         console.log(users.length + " users read from Google Admin API.");
       }, function (err) {
+      }, function (err) {
         console.log(err);
       });
     }, function (err) {

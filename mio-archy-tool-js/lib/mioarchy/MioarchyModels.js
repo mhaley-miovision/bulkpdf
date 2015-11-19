@@ -9,6 +9,7 @@ function Mioarchy(jobs, orgs, contribs, apps, roles, orgAccountabilites, jobAcco
     this.orgAccountabilities = orgAccountabilites;
     this.jobAccountabilities = jobAccountabilities;
     this.namesToShortNames = this.buildCollisionFreeShortNameMap();
+    this.timelineEventIndex = this.buildTimelineEventIndex();
 
     // post-rendering populated objects (this is a big of a kludge :( should be a separate resulting object out of the
     // rendering in order to have proper separation of concerns
@@ -324,8 +325,76 @@ Mioarchy.prototype =
             roles, jobAccountabilities, orgAccountabilities, organizations);
 
         return newMioArchy;
+    },
+    /* Builds a cache of key frames, which essentially identifies interesting dates where the organization changes
+       Currently, this is simply a list of unique dates which just amounts to going through all the objects and
+       sorts all start and end dates in the same list
+     */
+    buildTimelineEventIndex: function() {
+        try {
+            var getEventList = function (objectList) {
+                var dateList = [];
+                for (var k in objectList) {
+                    var o = objectList[k];
+                    if (o.startDate) {
+                        if (typeof(dateList[o.startDate]) == 'undefined') {
+                            dateList[o.startDate] = [];
+                        }
+                        dateList[o.startDate].push(new MioarchyEvent(o.startDate, MioarchyEvent.EventTypes.Started, o));
+                    }
+                    if (o.endDate) {
+                        if (typeof(dateList[o.endDate]) == 'undefined') {
+                            dateList[o.endDate] = [];
+                        }
+                        dateList[o.endDate].push(new MioarchyEvent(o.endDate, MioarchyEvent.EventTypes.Ended, o));
+                    }
+                }
+                return dateList;
+            }
+            var concatEventLists = function (l1, l2) {
+                var combined = [];
+                for (var k in l1) {
+                    combined[k] = l1[k];
+                }
+                for (var j in l2) {
+                    if (typeof(combined[j]) == 'undefined') {
+                        combined[j] = [];
+                    }
+                    combined[j] = combined[j].concat(l2[j]);
+                }
+                return combined;
+            }
+
+            // first, add all dates from all objects
+            var dateList = [];
+            dateList = concatEventLists(dateList, getEventList(this.applications));
+            dateList = concatEventLists(dateList, getEventList(this.organizations));
+            dateList = concatEventLists(dateList, getEventList(this.contributors));
+            dateList = concatEventLists(dateList, getEventList(this.jobs));
+            dateList = concatEventLists(dateList, getEventList(this.jobAccountabilities));
+            dateList = concatEventLists(dateList, getEventList(this.orgAccountabilities));
+
+            // then sort the giant list
+            var sortedList = dateList.sort(function (a, b) {
+                var d1 = new Date(a.date);
+                var d2 = new Date(b.date);
+                return d1 > d2; // todo: check that this is ascending
+            });
+
+            return sortedList;
+        } catch (e) {
+            console.log(e);
+        }
     }
+
 };
+
+function MioarchyEvent(date, eventType, obj) {
+    this.date = date;
+    this.eventType = eventType;
+    this.obj = obj;
+}
+MioarchyEvent.EventTypes = { Started:1, Ended:2 };
 
 function Application(id, name, parentOrg, color, startDate, endDate) {
     this.type = Mioarchy.prototype.Types.Application;

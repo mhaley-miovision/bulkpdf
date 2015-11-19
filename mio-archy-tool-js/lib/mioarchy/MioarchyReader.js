@@ -122,7 +122,6 @@ function processContributors(contribsSrc) {
                 var org = row['organization'];
 
                 contributors[name] = new Models.Contributor(id, name, firstName, lastName, start, end, email, org);
-                console.log(contributors)
             }
             console.log("read " + rows.length + " contributors.");
             resolve();

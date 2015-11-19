@@ -1672,7 +1672,7 @@ EditorUi.prototype.refresh = function()
 	// vic- hack
 
 	this.menubarHeight = 0;
-	this.toolbarHeight = 52;
+	this.toolbarHeight = 62;
 	tmp += this.toolbarHeight;
 
 	/*
