@@ -17,8 +17,7 @@ function Mioarchy(jobs, orgs, contribs, apps, roles, orgAccountabilites, jobAcco
     this.jobToVertex = []; // jobName -> vertex
 };
 
-Mioarchy.prototype =
-{
+Mioarchy.prototype = {
     Types: {Job: 0, Application: 1, Contributor: 2, Role: 3, Organization: 4, Accountability: 5},
 
     //==================================================================================================================
@@ -322,7 +321,7 @@ Mioarchy.prototype =
         var jobs = deepCopyMap(this.jobs, startDate, endDate);
 
         var newMioArchy = new Mioarchy(jobs, organizations, contributors, applications,
-            roles, jobAccountabilities, orgAccountabilities, organizations);
+            roles, orgAccountabilities, jobAccountabilities, organizations);
 
         return newMioArchy;
     },
@@ -331,6 +330,7 @@ Mioarchy.prototype =
        sorts all start and end dates in the same list
      */
     buildTimelineEventIndex: function() {
+        console.log("buildTimelineEventIndex");
         try {
             var getEventList = function (objectList) {
                 var dateList = [];
@@ -381,6 +381,8 @@ Mioarchy.prototype =
                 return d1 > d2; // todo: check that this is ascending
             });
 
+
+            console.log(sortedList);
             return sortedList;
         } catch (e) {
             console.log(e);

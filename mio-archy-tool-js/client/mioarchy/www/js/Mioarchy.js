@@ -907,7 +907,7 @@ mioarchyClient.updateAfterKeyFrameJump = function() {
 }
 
 mioarchyClient.incrementKeyFrameIndexBy = function(x) {
-    var keys = Object.keys(mioarchyClient.mioarchy.timelineEventIndex);
+    var keys = Object.keys(mioarchyClient.mioarchyCachedModel.timelineEventIndex);
     mioarchyClient.currentKeyFrameIndex += x;
     if (mioarchyClient.currentKeyFrameIndex < 0) {
         mioarchyClient.currentKeyFrameIndex = 0;
@@ -921,14 +921,14 @@ mioarchyClient.incrementKeyFrameIndexBy = function(x) {
 mioarchyClient.currentKeyFrameIndex = 0;
 
 mioarchyClient.getFilterDateFromCurrentKeyFrameIndex = function() {
-    return Object.keys( mioarchyClient.mioarchy.timelineEventIndex ) [ mioarchyClient.currentKeyFrameIndex];
+    return Object.keys( mioarchyClient.mioarchyCachedModel.timelineEventIndex ) [ mioarchyClient.currentKeyFrameIndex];
 }
 
 /* gets the closes keyframe before today's date
  * precondition: keyframes are sorted */
 mioarchyClient.getKeyIndexClosestToToday = function() {
     var today = Date.now();
-    var keys = Object.keys(mioarchyClient.mioarchy.timelineEventIndex);
+    var keys = Object.keys(mioarchyClient.mioarchyCachedModel.timelineEventIndex);
     var k = 0;
     var candidateKeyDate = keys[k];
     var closestKeyDate;
