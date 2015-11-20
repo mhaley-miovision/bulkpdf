@@ -10,6 +10,7 @@ function Mioarchy(jobs, orgs, contribs, apps, roles, orgAccountabilites, jobAcco
     this.jobAccountabilities = jobAccountabilities;
     this.namesToShortNames = this.buildCollisionFreeShortNameMap();
     this.timelineEventIndex = this.buildTimelineEventIndex();
+    this.orgHeadCount = this.buildOrgHeadCount();
 
     // post-rendering populated objects (this is a big of a kludge :( should be a separate resulting object out of the
     // rendering in order to have proper separation of concerns
@@ -387,8 +388,34 @@ Mioarchy.prototype = {
         } catch (e) {
             console.log(e);
         }
-    }
+    },
+    buildOrgHeadCount: function() {
+        var orgHeadCount = [];
+        var self = this;
 
+        var getOrgHeadCount = function(org) {
+            var children = self.getOrganizationChildren(org);
+            var count = 0;
+            // children counts
+            if (children.length > 0) {
+                for (var i = 0; i < children.length; i++)
+                count += getOrgHeadCount(children[i]);
+            }
+            // personal counts
+            for (var ci in self.contributors) {
+                var c = self.contributors[ci];
+                if (c.physicalTeam && (c.physicalTeam.toLowerCase() === org.name.toLowerCase())) {
+                    count++;
+                }
+            }
+            return count;
+        }
+        for (var o in this.organizations) {
+            var hc = getOrgHeadCount(self.organizations[o]);
+            orgHeadCount[o] = hc;
+        }
+        return orgHeadCount;
+    }
 };
 
 function MioarchyEvent(date, eventType, obj) {
@@ -424,7 +451,7 @@ function Organization(id, name, parent, isApplication, startDate, endDate) {
     this.endDate = endDate;
 }
 
-function Contributor(id, name, firstName, lastName, startDate, endDate, email, org) {
+function Contributor(id, name, firstName, lastName, startDate, endDate, email, org, physicalTeam) {
     this.type = Mioarchy.prototype.Types.Contributor;
     this.id = id;
     this.name = name;
@@ -434,6 +461,7 @@ function Contributor(id, name, firstName, lastName, startDate, endDate, email, o
     this.endDate = endDate;
     this.email = email;
     this.org = org;
+    this.physicalTeam = physicalTeam;
 }
 
 function Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability, startDate, endDate) {

@@ -34,16 +34,16 @@ mioarchyClient.onEditorUIInitCompleted = function( graph, editor ) {
 
     var today = new Date();
     var dd = today.getDate();
-    var mm = today.getMonth()+1; //January is 0!
+    var mm = today.getMonth() + 1; //January is 0!
 
     var yyyy = today.getFullYear();
-    if(dd<10){
-        dd='0'+dd
+    if (dd < 10) {
+        dd = '0' + dd;
     }
-    if(mm<10){
-        mm='0'+mm
+    if (mm < 10) {
+        mm = '0' + mm;
     }
-    var date = dd+'/'+mm+'/'+yyyy;
+    var date = dd + '/' + mm + '/' + yyyy;
 
     mioarchyClient.activeTransformation = { startDate:date, endDate:date };
     mioarchyClient.applyActiveTransformation();
@@ -92,7 +92,7 @@ mioarchyClient.processLastUpdated = function( lastUpdated ) {
     }
 }
 
-// applied the transormation parameters to the client side copy of the hierarchy, to prepare for rendering
+// applied the transformation parameters to the client side copy of the hierarchy, to prepare for rendering
 mioarchyClient.applyActiveTransformation = function() {
     // start with the cached model
     mioarchyClient.mioarchy = mioarchyClient.mioarchyCachedModel;
@@ -812,8 +812,6 @@ mioarchyClient.isJobWithinSelectedOrg = function(jobId) {
 mioarchyClient.isOrgWithinSelectedOrg = function(orgName) {
     // see what organization is selected, and make sure this job is a child of that
     // otherwise when zoomed in to one org, we render highlights for other organizations
-    var jobIsWithinThisOrg = false;
-    var selectedOrgName = mioarchyClient.targetRenderingOrg;
     // it's contained since it's the same
     if (mioarchyClient.targetRenderingOrg == orgName) {
         return true;

@@ -57,9 +57,11 @@ Sidebar.prototype.createOrganizationTree = function() {
 	div.appendChild(mioarchyClient.createMiovisionLabel("Organizations", "#5885AA", "#FFFFFF", true));
 	for (var o in organizations) {
 		var org = organizations[o];
+		var headCount = mioarchyClient.mioarchy.orgHeadCount[org.name];
 		var id = Number(org.id) - 1;
 		var parent = org.parent ? Number(organizations[org.parent].id) - 1 : -1;
-		d.add(id, parent, org.name, "javascript:mioarchyClient.render('"+org.name+"');", org.name, '', 'images/mio-swirl-48px.png');
+		var name = headCount > 0 ? org.name + " [" + headCount + "]" : org.name;
+		d.add(id, parent, name, "javascript:mioarchyClient.render('"+org.name+"');", org.name, '', 'images/mio-swirl-48px.png');
 		//d.add(id, parent, org.name, org.name, org.name, '', 'images/mio-swirl-48px.png');
 	}
 	var div2 = document.createElement('div');
