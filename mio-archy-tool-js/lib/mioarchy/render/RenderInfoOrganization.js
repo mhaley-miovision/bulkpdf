@@ -440,6 +440,14 @@ RenderInfoOrganization.prototype =
         if (colors.length > 1) {
             colorString += "gradientColor=" + colors[1] + ";gradientDirection=east;";
         }
+
+        // temp jobs are shown as dashed (if it's not a full time contributor)
+        if (mioarchy.jobs[jobId].contributor && mioarchy.contributors[mioarchy.jobs[jobId].contributor]
+            && mioarchy.contributors[mioarchy.jobs[jobId].contributor].employeeStatus
+            && mioarchy.contributors[mioarchy.jobs[jobId].contributor].employeeStatus.toLowerCase() !== 'full time') {
+            colorString += "dashed=1;";
+        }
+
         return colorString;
     },
 

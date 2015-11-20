@@ -403,7 +403,11 @@ Mioarchy.prototype = {
             // personal counts
             for (var ci in self.contributors) {
                 var c = self.contributors[ci];
-                if (c.physicalTeam && (c.physicalTeam.toLowerCase() === org.name.toLowerCase())) {
+
+                var isFullTime = c.employeeStatus && c.employeeStatus.toLowerCase() === 'full time';
+
+                if (c.physicalTeam && (c.physicalTeam.toLowerCase() === org.name.toLowerCase()) &&
+                    isFullTime) {
                     count++;
                 }
             }
@@ -450,7 +454,7 @@ function Organization(id, name, parent, isApplication, startDate, endDate) {
     this.endDate = endDate;
 }
 
-function Contributor(id, name, firstName, lastName, startDate, endDate, email, org, physicalTeam) {
+function Contributor(id, name, firstName, lastName, startDate, endDate, email, org, physicalTeam, employeStatus) {
     this.type = Mioarchy.prototype.Types.Contributor;
     this.id = id;
     this.name = name;
@@ -461,6 +465,7 @@ function Contributor(id, name, firstName, lastName, startDate, endDate, email, o
     this.email = email;
     this.org = org;
     this.physicalTeam = physicalTeam;
+    this.employeeStatus = employeStatus;
 }
 
 function Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability, startDate, endDate) {
