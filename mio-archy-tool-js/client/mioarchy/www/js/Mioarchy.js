@@ -884,7 +884,7 @@ mioarchyClient.initializeToolbar = function() {
         document.getElementById('selectedDatePicker').onchange = function(evt) {
             var date = evt.target.value;
             mioarchyClient.activeTransformation = { startDate:date, endDate:date };
-            mioarchyClient.renderOrganization();
+            mioarchyClient.render();
         }
         $("#nextKeyFrameButton").click(function() {
             mioarchyClient.incrementKeyFrameIndexBy(1);
@@ -900,7 +900,7 @@ mioarchyClient.initializeToolbar = function() {
 mioarchyClient.updateAfterKeyFrameJump = function() {
     var date = mioarchyClient.getFilterDateFromCurrentKeyFrameIndex();
     document.getElementById('selectedDatePicker').value = date;
-    mioarchyClient.activeTransformation = { startDate:date, endDate:date };
+    mioarchyClient.activeTransformation = {startDate: date, endDate: date};
     mioarchyClient.render();
 }
 

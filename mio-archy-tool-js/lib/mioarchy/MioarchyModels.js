@@ -367,24 +367,23 @@ Mioarchy.prototype = {
             }
 
             // first, add all dates from all objects
-            var dateList = [];
-            dateList = concatEventLists(dateList, getEventList(this.applications));
-            dateList = concatEventLists(dateList, getEventList(this.organizations));
-            dateList = concatEventLists(dateList, getEventList(this.contributors));
-            dateList = concatEventLists(dateList, getEventList(this.jobs));
-            dateList = concatEventLists(dateList, getEventList(this.jobAccountabilities));
-            dateList = concatEventLists(dateList, getEventList(this.orgAccountabilities));
+            var eventLists = [];
+            eventLists = concatEventLists(eventLists, getEventList(this.applications));
+            eventLists = concatEventLists(eventLists, getEventList(this.organizations));
+            eventLists = concatEventLists(eventLists, getEventList(this.contributors));
+            eventLists = concatEventLists(eventLists, getEventList(this.jobs));
+            eventLists = concatEventLists(eventLists, getEventList(this.jobAccountabilities));
+            eventLists = concatEventLists(eventLists, getEventList(this.orgAccountabilities));
 
-            // then sort the giant list
-            var sortedList = dateList.sort(function (a, b) {
-                var d1 = new Date(a.date);
-                var d2 = new Date(b.date);
-                return d1 > d2; // todo: check that this is ascending
-            });
-
-
-            console.log(sortedList);
-            return sortedList;
+            // then sort the date list
+            var sortedDateList = Object.keys(eventLists).sort();
+            // now write a new, ordered dictionary
+            var orderedEventList = [];
+            for (var i = 0; i < sortedDateList.length; i++) {
+                var d = sortedDateList[i];
+                orderedEventList[d] = eventLists[d];
+            }
+            return orderedEventList;
         } catch (e) {
             console.log(e);
         }

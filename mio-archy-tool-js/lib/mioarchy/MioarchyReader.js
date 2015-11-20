@@ -126,8 +126,9 @@ function processContributors(contribsSrc) {
                     var email = row['email'];
                     var org = row['organization'];
                     var physicalTeam = row['physicalteam'];
+                    var employeeStatus = row['employeestatus'];
 
-                    contributors[name] = new Models.Contributor(id, name, firstName, lastName, start, end, email, org, physicalTeam);
+                    contributors[name] = new Models.Contributor(id, name, firstName, lastName, start, end, email, org, physicalTeam, employeeStatus);
                 }
                 console.log("read " + rows.length + " contributors.");
                 resolve();
