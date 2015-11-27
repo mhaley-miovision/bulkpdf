@@ -21,11 +21,15 @@ var lastUpdated;
 
 var googleUsers = null;
 
-var sheetId ='1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ'; // current, production
+var sheetId = '1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ'; // current, production
 
 mio.readDatabase(sheetId, function(err) {
-  dbReady = true;
-  lastUpdated = new Date();
+  if (err) {
+    console.error(err);
+  } else {
+    dbReady = true;
+    lastUpdated = new Date();
+  }
 });
 
 var intervalID = setInterval( function() {
@@ -33,9 +37,13 @@ var intervalID = setInterval( function() {
     console.log("Detected changes: " + changed);
 
     if (changed) {
-      mio.readDatabase(sheetId, function(err) {
-        dbReady = true;
-        lastUpdated = new Date();
+      mio.readDatabase(sheetId, function (err) {
+        if (err) {
+          console.error(err);
+        } else {
+          dbReady = true;
+          lastUpdated = new Date();
+        }
       });
     }
   })}, 5000);

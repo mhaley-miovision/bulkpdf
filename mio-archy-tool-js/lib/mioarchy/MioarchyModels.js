@@ -18,6 +18,10 @@ function Mioarchy(jobs, orgs, contribs, apps, roles, orgAccountabilites, jobAcco
     this.jobToVertex = []; // jobName -> vertex
 };
 
+//======================================================================================================================
+// Mioarchy class
+// TODO: this is definitely a bit of a God-object, and needs to be split out in terms of single responsibility objects
+//
 Mioarchy.prototype = {
     Types: {Job: 0, Application: 1, Contributor: 2, Role: 3, Organization: 4, Accountability: 5},
 
@@ -25,6 +29,7 @@ Mioarchy.prototype = {
     // ORGANIZATION TREE PROPERTIES AND TRAVERSAL
     //==================================================================================================================
     // returns the # of immediate childen of the given organization (does not recurse)
+    // 
     getOrganizationChildren: function (organization) {
         // loop through all orgs
         // if the org identifies having a parent with the same name as the specified org, we add it to the list of children of that org
@@ -101,6 +106,9 @@ Mioarchy.prototype = {
         }
         return 1;
     },
+    //==================================================================================================================
+    // CONTRIBUTOR QUERY METHODS
+    //==================================================================================================================
     // returns jobs that the contributor jobs
     getContributorJobs: function (contributorName) {
         // find all this person's jobs
@@ -177,7 +185,7 @@ Mioarchy.prototype = {
         return false;
     },
     //==================================================================================================================
-    // UTILITIES
+    // QUERY CACHE CALCULATION FUNCTIONS
     //==================================================================================================================
     buildCollisionFreeShortNameMap: function() {
         var buildMapping = function(contributorSubset, numLetters) {
@@ -258,22 +266,6 @@ Mioarchy.prototype = {
         }
         return finalMap;
     },
-    loadFromObject: function (obj) {
-        if (obj.type) {
-            if (obj.type === Mioarchy.prototype.Types.Application) {
-                return new Application(obj.id, obj.name, obj.parent);
-            } else if (obj.type === Mioarchy.prototype.Types.Role) {
-                return new Role(obj.id, obj.name);
-            } else if (obj.type === Mioarchy.prototype.Types.Organization) {
-                return new Organization(obj.id, obj.name, obj.parent);
-            } else if (obj.type === Mioarchy.prototype.Types.Contributor) {
-                return new Contributor(obj.id, obj.name, obj.firstName, obj.lastName);
-            } else if (obj.type === Mioarchy.prototype.Types.Job) {
-                return new Job(obj.id, obj.organization, obj.application, obj.role,
-                    obj.accountabilityLevel, obj.accountabilityLabel, obj.contributor, obj.primaryAccountability);
-            }
-        }
-    },
     /* Creates a filtered version of the objects in the hierarchy
         @startDate - nothing prior to this date will be returned
         @endDate - nothing beyond this date will be returned
@@ -331,8 +323,8 @@ Mioarchy.prototype = {
        sorts all start and end dates in the same list
      */
     buildTimelineEventIndex: function() {
-        console.log("buildTimelineEventIndex");
         try {
+            console.log("buildTimelineEventIndex ENTER")
             var getEventList = function (objectList) {
                 var dateList = [];
                 for (var k in objectList) {
@@ -376,7 +368,11 @@ Mioarchy.prototype = {
             eventLists = concatEventLists(eventLists, getEventList(this.orgAccountabilities));
 
             // then sort the date list
-            var sortedDateList = Object.keys(eventLists).sort();
+            var sortedDateList = Object.keys(eventLists).sort(function(a,b) {
+                var d1 = new Date(a);
+                var d2 = new Date(b);
+                return d1 > d2;
+            });
             // now write a new, ordered dictionary
             var orderedEventList = [];
             for (var i = 0; i < sortedDateList.length; i++) {
@@ -385,9 +381,11 @@ Mioarchy.prototype = {
             }
             return orderedEventList;
         } catch (e) {
-            console.log(e);
+            console.error(e);
         }
     },
+    /* Calculates the organizations' head counts based on actual number of contributors assigned to that org
+     */
     buildOrgHeadCount: function() {
         var orgHeadCount = [];
         var self = this;
@@ -421,13 +419,17 @@ Mioarchy.prototype = {
     }
 };
 
+//======================================================================================================================
+// Core objects
+//======================================================================================================================
+// MioarchyEvent 'class'
 function MioarchyEvent(date, eventType, obj) {
     this.date = date;
     this.eventType = eventType;
     this.obj = obj;
 }
 MioarchyEvent.EventTypes = { Started:1, Ended:2 };
-
+// Application 'class'
 function Application(id, name, parentOrg, color, startDate, endDate) {
     this.type = Mioarchy.prototype.Types.Application;
     this.id = id;
@@ -437,13 +439,13 @@ function Application(id, name, parentOrg, color, startDate, endDate) {
     this.startDate = startDate;
     this.endDate = endDate;
 }
-
+// Role 'class'
 function Role(id, name) {
     this.type = Mioarchy.prototype.Types.Role;
     this.id = id;
     this.name = name;
 }
-
+// Organization 'class'
 function Organization(id, name, parent, isApplication, startDate, endDate) {
     this.type = Mioarchy.prototype.Types.Organization;
     this.id = id;
@@ -453,7 +455,7 @@ function Organization(id, name, parent, isApplication, startDate, endDate) {
     this.startDate = startDate;
     this.endDate = endDate;
 }
-
+// Contributor 'class'
 function Contributor(id, name, firstName, lastName, startDate, endDate, email, org, physicalTeam, employeStatus) {
     this.type = Mioarchy.prototype.Types.Contributor;
     this.id = id;
@@ -467,7 +469,7 @@ function Contributor(id, name, firstName, lastName, startDate, endDate, email, o
     this.physicalTeam = physicalTeam;
     this.employeeStatus = employeStatus;
 }
-
+// Job 'class'
 function Job(id, organization, application, role, accountabilityLabel, accountabilityLevel, contributor, primaryAccountability, startDate, endDate) {
     this.type = Mioarchy.prototype.Types.Job;
     this.id = id;
@@ -481,7 +483,7 @@ function Job(id, organization, application, role, accountabilityLabel, accountab
     this.startDate = startDate;
     this.endDate = endDate;
 }
-
+// Accountablity 'class'
 function Accountability(id, appId, application, label, rating, accountabilityType, organization, startDate, endDate) {
     this.type = Mioarchy.prototype.Types.Accountability;
     this.id = id;
