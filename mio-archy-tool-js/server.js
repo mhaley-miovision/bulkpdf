@@ -11,7 +11,7 @@ var http = require("http"),
     bodyParser = require('body-parser'),
     Promise = require("es6-promise").Promise,
     googleAuth = require("./lib/google/auth.js"),
-    googleAdmin = require("./lib/google/admin.js");
+    googleAdmin = require("./lib/google/admin.js"),
 
 var app = express();
 app.use(bodyParser.json());
@@ -180,6 +180,8 @@ function readUsersFromGoogleAdminAPI() {
     console.log(err);
   });
 }
+
+
 
 app.listen(port);
 console.log('Listening on port ' + port + '...');
