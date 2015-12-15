@@ -1,0 +1,43 @@
+.delete {
+    float: right;
+}
+
+li.checked {
+    color: #888;
+}
+
+li.checked label {
+    text-decoration: line-through;
+}
+
+
+.loginHeader {
+    /*
+    width: 100%;
+    text-align: right;
+    background-color: #eee;
+    border-bottom: 3px solid #505559;
+    */
+    padding-right: 10px;
+}
+
+
+
+.parallax{
+    position:static!important;
+}
+
+.parallax-container {
+    height: 500px;
+}
+
+.welcome {
+    margin-top: 50px;
+}
+
+.centeredCard {
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
