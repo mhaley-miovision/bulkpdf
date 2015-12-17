@@ -21,8 +21,6 @@ li.checked label {
     padding-right: 10px;
 }
 
-
-
 .parallax{
     position:static!important;
 }
@@ -40,4 +38,31 @@ li.checked label {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.graphContainer {
+    position:relative;
+    overflow:hidden;
+    width:621px;
+    height:441px;
+    cursor:default;
+}
+
+.graphEditorRoot {
+    width:1000px;
+    border: 1px solid #505559;
+}
+
+.enpsIcon {
+    padding: 3px;
+    background-color: white;
+    max-width:100%;
+}
+.enpsIcon:hover {
+    background-color: teal;
+}
+
+.enpsIcon-selected {
+    padding: 3px;
+    background-color: teal;
 }

@@ -33,3 +33,10 @@ FlowRouter.route( '/organization', {
 		ReactLayout.render( App, { yield: <OrganizationComponent /> } );
 	}
 });
+
+FlowRouter.route( '/enps', {
+	name: 'task',
+	action() {
+		ReactLayout.render( App, { yield: <ENPSComponent /> } );
+	}
+});

@@ -10,6 +10,9 @@ App = React.createClass({
                 <div className="container">
                     {this.props.yield}
                 </div>
+
+                <br/>
+
                 <footer>
 
                 </footer>

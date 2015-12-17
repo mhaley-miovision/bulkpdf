@@ -9,6 +9,7 @@ NavbarComponent = React.createClass({
 						<li><a href="/team">Team</a></li>
 						<li><a href="/organization">Organization</a></li>
 						<li><a href="/profile">Profile</a></li>
+						<li><a href="/enps">ENPS</a></li>
 					</ul>
 
 					<span className="right">

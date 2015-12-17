@@ -6,7 +6,7 @@ Meteor.methods({
 			throw new Meteor.Error("not-authorized");
 		}
 
-		Tasks.insert({
+		TasksCollection.insert({
 			text: text,
 			createdAt: new Date(),
 			owner: Meteor.user()._id,
@@ -15,21 +15,21 @@ Meteor.methods({
 	},
 
 	removeTask(taskId) {
-		Tasks.remove(taskId);
+		TasksCollection.remove(taskId);
 	},
 
 	setChecked(taskId, setChecked) {
-		Tasks.update(taskId, {$set: {checked: setChecked}});
+		TasksCollection.update(taskId, {$set: {checked: setChecked}});
 	},
 
 	setPrivate(taskId, setToPrivate) {
-		const task = Tasks.findOne(taskId);
+		const task = TasksCollection.findOne(taskId);
 
 		// Make sure only the task owner can make a task private
 		if (task.owner !== Meteor.user().profile._id) {
 			throw new Meteor.Error("not-authorized");
 		}
 
-		Tasks.update(taskId, {$set: {private: setToPrivate}});
+		TasksCollection.update(taskId, {$set: {private: setToPrivate}});
 	}
 });

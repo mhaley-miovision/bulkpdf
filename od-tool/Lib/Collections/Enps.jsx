@@ -1,0 +1,1 @@
+EnpsCollection = new Mongo.Collection("enps");

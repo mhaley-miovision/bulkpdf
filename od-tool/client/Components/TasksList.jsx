@@ -12,8 +12,8 @@ TaskListComponent = React.createClass({
 		}
 
 		return {
-			tasks: Tasks.find(query, {sort: {createdAt: -1}}).fetch(),
-			incompleteCount: Tasks.find({checked: {$ne: true}}).count(),
+			tasks: TasksCollection.find(query, {sort: {createdAt: -1}}).fetch(),
+			incompleteCount: TasksCollection.find({checked: {$ne: true}}).count(),
 			currentUser: Meteor.user()
 		};
 	},
@@ -71,7 +71,7 @@ TaskListComponent = React.createClass({
 					readOnly={true}
 					checked={this.state.hideCompleted}
 					onClick={this.toggleHideCompleted} />
-			Hide Completed Tasks
+				Hide Completed Tasks
 			</label>
 
 			{ this.data.currentUser ?
