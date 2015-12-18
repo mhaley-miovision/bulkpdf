@@ -3,32 +3,34 @@ ENPSComponent = React.createClass({
 		return {
 			enps: null,
 			enpsReason: "",
-			submitted: false
+			recentlySubmitted: false
 		};
 	},
 
-	handleChange: function(event) {
-		this.setState({enpsReason: event.target.value});
-	},
-	setHappy() {
-		this.setState({enps: 1});
-	},
-	setNeutral() {
-		this.setState({enps: 0});
-	},
-	setSad() {
-		this.setState({enps: -1});
+	onEnpsReasonChanged: function(event) {
+		this.setState({ enpsReason: event.target.value });
 	},
 
-	handleSubmit: function(event) {
+	onEnpsChanged: function(e) {
+		this.setState({	enps: e.currentTarget.value });
+		this.refs.enpsReason.focus();
+	},
+
+	onSubmitForm: function(event) {
+		console.log(this.state);
+
 		if (event) {
 			event.preventDefault();
 		}
 
-		if (this.state.enps != null && !this.state.submitted) {
-			Meteor.call("submitNew", this.state.enps, this.state.enpsReason);
-			this.state.submitted = true;
-			$('#thanksModal').openModal();
+		if (this.state.enps != null && !this.state.recentlySubmitted) {
+			Meteor.call("submitEnps", this.state.enps, this.state.enpsReason);
+			this.state.recentlySubmitted = true;
+			// prevent accidental repeated submission
+			var self = this;
+			setTimeout( function() { console.log("turning off"); self.setState({recentlySubmitted: false}); }, 3000);
+
+			Materialize.toast("Thank you for your feedback. Keep letting us know how we're doing!", 3000);
 		}
 	},
 
@@ -38,49 +40,56 @@ ENPSComponent = React.createClass({
 
 	render() {
 		return (
-			<div className="row centeredCard center">
+			<div className="row centeredCard">
 				<div className="col s12 m6">
 					<div className="card white darken-1">
-						<div className="card-content teal-text">
-							Let us know how you're feeling today!
-						</div>
+						<div className="card-content center-align">
+							<span className="card-title teal-text">Let us know how you're feeling today.</span>
 
-						<br/>
+							<br />
+							<br />
 
-						<div className="row">
-							<div className="col s4"><a href="#" onClick={this.setHappy}>
-								<img className={this.setIconClass(1)} src="img/enps-icons/happy.png" alt="Happy"/></a></div>
-							<div className="col s4"><a href="#" onClick={this.setNeutral}>
-								<img className={this.setIconClass(0)} src="img/enps-icons/neutral.png" alt="Neutral"/></a></div>
-							<div className="col s4"><a href="#" onClick={this.setSad}>
-								<img className={this.setIconClass(-1)} src="img/enps-icons/sad.png" alt="Sad"/></a></div>
-						</div>
+							<form onSubmit={this.onSubmitForm}>
 
-						<div className="container">
-							<div className="row">
-								<div className="input-field col s12">
-									<form onSubmit={this.handleSubmit}>
-										<input placeholder="(Optional) I feel this way because..." id="enps_reason" ref="enpsReason" type="text"
-											   className="validate" onChange={this.handleChange}/>
-									</form>
+								<div className="row centeredItem">
+									<div className="col s">
+										<label>
+											<input className="validate required" type="radio" name="enps_value" value="1"
+												onChange={this.onEnpsChanged}/>
+											<img className={this.setIconClass("1")} src="img/enps-icons/happy.png" />
+										</label>
+									</div>
+									<div className="col s3">
+										<label>
+											<input className="validate required" type="radio" name="enps_value" value="0"
+												   onChange={this.onEnpsChanged}/>
+											<img className={this.setIconClass("0")} src="img/enps-icons/neutral.png" />
+										</label>
+									</div>
+									<div className="col s3">
+										<label>
+											<input className="validate required" type="radio" name="enps_value" value="-1"
+												   onChange={this.onEnpsChanged}/>
+											<img className={this.setIconClass("-1")} src="img/enps-icons/sad.png" />
+										</label>
+									</div>
 								</div>
-							</div>
-						</div>
 
-						<div className="card-action">
-							<a href="#" onClick={this.handleSubmit}>Give Feedback</a>
-							<a href="/">Return Home</a>
-						</div>
-					</div>
-				</div>
+								<div className="row centeredItem">
+									<div className="col s8">
+										<input placeholder="(Optional) I feel this way because..." id="enps_reason" ref="enpsReason" type="text"
+										   className="validate required" onChange={this.handleChange}/>
+									</div>
+								</div>
 
-				<div id="thanksModal" className="modal">
-					<div className="modal-content">
-						<h4>Thank you</h4>
-						<p>Your feedback is valued and appreciated. Keep lettings us know how we're doing!</p>
-					</div>
-					<div className="modal-footer">
-						<a href="#!" className=" modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+								<div className="row centeredItem">
+									<div className="modal-footer">
+										<a href="#" className=" modal-action modal-close waves-effect waves-green btn"
+											onClick={this.onSubmitForm}>Submit</a>
+									</div>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>

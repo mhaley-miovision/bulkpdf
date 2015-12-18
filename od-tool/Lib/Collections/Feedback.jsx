@@ -1,0 +1,1 @@
+FeedbackCollection = new Mongo.Collection("feedback");

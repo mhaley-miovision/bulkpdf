@@ -1,4 +1,9 @@
 NavbarComponent = React.createClass({
+	handleFeedbackClick() {
+		console.log(this.refs);
+		this.refs.enps.showDialog();
+	},
+
 	render() {
 		return (
 			<nav className="navBar">
@@ -9,15 +14,12 @@ NavbarComponent = React.createClass({
 						<li><a href="/team">Team</a></li>
 						<li><a href="/organization">Organization</a></li>
 						<li><a href="/profile">Profile</a></li>
-						<li><a href="/enps">ENPS</a></li>
+						<li><a href="/enps">myENPS</a></li>
 					</ul>
-
 					<span className="right">
 						<AccountsUIWrapperComponent />
-						/*<a href="#" className="brand-logo right">Logo</a>*/
 					</span>
 				</div>
-
 			</nav>
 		);
 	}

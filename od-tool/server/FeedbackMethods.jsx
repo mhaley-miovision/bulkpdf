@@ -1,14 +1,12 @@
-
 Meteor.methods({
-	submitEnps(enpsValue, enpsReason) {
+	submitFeedback(feedback) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
 
-		EnpsCollection.insert({
-			enpsValue: enpsValue,
-			enpsReason: enpsReason,
+		FeedbackCollection.insert({
+			feedback: feedback,
 			createdAt: new Date(),
 			userId: Meteor.user()._id,
 			userName: Meteor.user().profile.name,

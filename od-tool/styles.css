@@ -1,3 +1,13 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
 .delete {
     float: right;
 }
@@ -35,6 +45,11 @@ li.checked label {
 
 .centeredCard {
     margin-top: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.centeredItem {
     display: flex;
     align-items: center;
     justify-content: center;
