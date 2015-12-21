@@ -1,12 +1,12 @@
 FlowRouter.route( '/', {
-	name: 'welcome',
+	name: 'home',
 	action() {
 		ReactLayout.render(App, {yield: <WelcomeComponent />});
 	}
 });
 
 FlowRouter.route( '/tasks', {
-	name: 'task',
+	name: 'tasks',
 	action() {
 		ReactLayout.render( App, { yield: <TaskListComponent /> } );
 	}
@@ -20,33 +20,33 @@ FlowRouter.route( '/login', {
 });
 
 FlowRouter.route( '/profile', {
-	name: 'task',
+	name: 'profile',
 	action() {
 		ReactLayout.render( App, { yield: <ProfileComponent /> } );
 	}
 });
 
 FlowRouter.route( '/team', {
-	name: 'task',
+	name: 'team',
 	action() {
 		ReactLayout.render( App, { yield: <TeamComponent /> } );
 	}
 });
 
 FlowRouter.route( '/organization', {
-	name: 'task',
+	name: 'organization',
 	action() {
 		ReactLayout.render( App, { yield: <OrganizationComponent /> } );
 	}
 });
 
 FlowRouter.route( '/enps', {
-	name: 'task',
+	name: 'enps',
 	action() {
 		ReactLayout.render( App, { yield: <ENPSComponent /> } );
 	}
 });
 
 Accounts.onLogin( () => {
-	
+
 });

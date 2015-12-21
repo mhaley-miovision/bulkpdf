@@ -15,12 +15,12 @@ NavbarComponent = React.createClass({
 	renderPrivate() {
 		return (
 			<ul id="nav-mobile" className="left hide-on-med-and-down">
-				<li><a href="/">Home</a></li>
-				<li><a href="/tasks">Tasks</a></li>
-				<li><a href="/team">Team</a></li>
-				<li><a href="/organization">Organization</a></li>
-				<li><a href="/profile">Profile</a></li>
-				<li><a href="/enps">myENPS</a></li>
+				<li className={FlowHelpers.currentRoute("home")}><a href="/">Home</a></li>
+				<li className={FlowHelpers.currentRoute("tasks")}><a href="/tasks">Tasks</a></li>
+				<li className={FlowHelpers.currentRoute("team")}><a href="/team">Team</a></li>
+				<li className={FlowHelpers.currentRoute("organization")}><a href="/organization">Organization</a></li>
+				<li className={FlowHelpers.currentRoute("profile")}><a href="/profile">Profile</a></li>
+				<li className={FlowHelpers.currentRoute("enps")}><a href="/enps">myENPS</a></li>
 			</ul>
 		);
 	},
