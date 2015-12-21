@@ -1,7 +1,47 @@
+.background-main1 {
+     background-color: #558C89;
+ }
+.background-main2 {
+    background-color: #74AFAD;
+}
+.background-main3 {
+    background-color: #D9853B;
+}
+.background-main4 {
+    background-color: #ECECEA;
+}
+.text-main1 {
+    color: #558C89;
+}
+.text-main2 {
+    color: #74AFAD;
+}
+.text-main3 {
+    color: #D9853B;
+}
+.text-main4 {
+    color: #ECECEA;
+}
+.main-image {
+    max-width: 500px;
+}
+#login-buttons .login-button, .accounts-dialog .login-button{
+    background-color: #558C89;
+    text-transform: uppercase;
+    border-style:none;
+}
+
+#login-buttons:hover .login-button:hover, .accounts-dialog:hover .login-button:hover {
+    background-color: teal;
+    text-transform: uppercase;
+    border-style:none;
+}
+
 body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
+    background-image: url('img/wallpaper.jpg');
 }
 
 main {
@@ -22,12 +62,6 @@ li.checked label {
 
 
 .loginHeader {
-    /*
-    width: 100%;
-    text-align: right;
-    background-color: #eee;
-    border-bottom: 3px solid #505559;
-    */
     padding-right: 10px;
 }
 
@@ -69,15 +103,21 @@ li.checked label {
 }
 
 .enpsIcon {
+    max-width: 100%;
+    height: auto;
     padding: 3px;
     background-color: white;
-    max-width:100%;
 }
 .enpsIcon:hover {
+    max-width: 100%;
+    height: auto;
+    padding: 3px;
     background-color: teal;
 }
 
 .enpsIcon-selected {
+    max-width: 100%;
+    height: auto;
     padding: 3px;
     background-color: teal;
 }

@@ -8,6 +8,9 @@ FeedbackComponent = React.createClass({
 
 	showDialog() {
 		$('#' + this.props.modalId).openModal();
+		if (this.refs && this.refs.feedback) {
+			this.refs.feedback.focus();
+		}
 	},
 
 	handleChange(event) {

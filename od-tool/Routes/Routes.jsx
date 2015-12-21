@@ -1,8 +1,7 @@
-
 FlowRouter.route( '/', {
 	name: 'welcome',
 	action() {
-		ReactLayout.render( App, { yield: <WelcomeComponent /> } );
+		ReactLayout.render(App, {yield: <WelcomeComponent />});
 	}
 });
 
@@ -10,6 +9,13 @@ FlowRouter.route( '/tasks', {
 	name: 'task',
 	action() {
 		ReactLayout.render( App, { yield: <TaskListComponent /> } );
+	}
+});
+
+FlowRouter.route( '/login', {
+	name: 'login',
+	action() {
+		ReactLayout.render( App, { yield: <LoginComponent /> } );
 	}
 });
 
@@ -39,4 +45,8 @@ FlowRouter.route( '/enps', {
 	action() {
 		ReactLayout.render( App, { yield: <ENPSComponent /> } );
 	}
+});
+
+Accounts.onLogin( () => {
+	
 });

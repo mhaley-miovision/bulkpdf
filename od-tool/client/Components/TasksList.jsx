@@ -30,9 +30,6 @@ TaskListComponent = React.createClass({
 			const currentUserId = this.data.currentUser && this.data.currentUser.profile._id;
 			const showPrivateButton = task.owner === currentUserId;
 
-			console.log(task.owner);
-			console.log(this.data.currentUser.profile);
-
 			return <TaskComponent
 				key={task._id}
 				task={task}
@@ -62,7 +59,7 @@ TaskListComponent = React.createClass({
 		return (
 		<div>
 			<header>
-				<h3 className="center header">My Task List ({this.data.incompleteCount})</h3>
+				<h3 className="center header text-main1">My Tasks</h3>
 			</header>
 
 			<label className="btn-small">

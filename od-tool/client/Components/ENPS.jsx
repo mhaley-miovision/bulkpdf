@@ -17,8 +17,6 @@ ENPSComponent = React.createClass({
 	},
 
 	onSubmitForm: function(event) {
-		console.log(this.state);
-
 		if (event) {
 			event.preventDefault();
 		}
@@ -28,7 +26,7 @@ ENPSComponent = React.createClass({
 			this.state.recentlySubmitted = true;
 			// prevent accidental repeated submission
 			var self = this;
-			setTimeout( function() { console.log("turning off"); self.setState({recentlySubmitted: false}); }, 3000);
+			setTimeout( function() { self.setState({recentlySubmitted: false}); }, 3000);
 
 			Materialize.toast("Thank you for your feedback. Keep letting us know how we're doing!", 3000);
 		}
@@ -44,7 +42,7 @@ ENPSComponent = React.createClass({
 				<div className="col s12 m6">
 					<div className="card white darken-1">
 						<div className="card-content center-align">
-							<span className="card-title teal-text">Let us know how you're feeling today.</span>
+							<span className="card-title text-main1">Let us know how you're feeling today.</span>
 
 							<br />
 							<br />
@@ -52,25 +50,25 @@ ENPSComponent = React.createClass({
 							<form onSubmit={this.onSubmitForm}>
 
 								<div className="row centeredItem">
-									<div className="col s">
+									<div className="col s3">
 										<label>
 											<input className="validate required" type="radio" name="enps_value" value="1"
 												onChange={this.onEnpsChanged}/>
-											<img className={this.setIconClass("1")} src="img/enps-icons/happy.png" />
+											<img className={this.setIconClass("1")} src="img/enps-icons/happy.jpg" />
 										</label>
 									</div>
 									<div className="col s3">
 										<label>
 											<input className="validate required" type="radio" name="enps_value" value="0"
 												   onChange={this.onEnpsChanged}/>
-											<img className={this.setIconClass("0")} src="img/enps-icons/neutral.png" />
+											<img className={this.setIconClass("0")} src="img/enps-icons/neutral.jpg" />
 										</label>
 									</div>
 									<div className="col s3">
 										<label>
 											<input className="validate required" type="radio" name="enps_value" value="-1"
 												   onChange={this.onEnpsChanged}/>
-											<img className={this.setIconClass("-1")} src="img/enps-icons/sad.png" />
+											<img className={this.setIconClass("-1")} src="img/enps-icons/sad.jpg" />
 										</label>
 									</div>
 								</div>
@@ -84,7 +82,7 @@ ENPSComponent = React.createClass({
 
 								<div className="row centeredItem">
 									<div className="modal-footer">
-										<a href="#" className=" modal-action modal-close waves-effect waves-green btn"
+										<a href="#" className=" modal-action modal-close waves-effect waves-green btn background-main3"
 											onClick={this.onSubmitForm}>Submit</a>
 									</div>
 								</div>
