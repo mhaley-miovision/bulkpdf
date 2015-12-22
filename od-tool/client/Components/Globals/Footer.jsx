@@ -6,23 +6,24 @@ FooterComponent = React.createClass({
 	renderContent() {
 		if (this.props.hasUser) {
 			return (
-				<div className="container">
-					<FeedbackComponent modalId="feedbackModal" ref="feedback"/>
-					<div className="row">
-						<div className="col s9">
-							<h5 className="white-text">Help us develop this software</h5>
-							<p className="grey-text text-lighten-4">"Your feedback can help us build this software
-								to serve our organization as we scale. Please assist us by reporting bugs,
-								suggesting features, or just letting us know how we're doing" - Vic</p>
+				<div className="container ">
+					<br />
 
-						</div>
-						<div className="col s3">
-							<br />
-							<button className="btn waves-effect waves-light lighten-3 center background-main1"
-									onClick={this.handleFeedbackClick}>Provide Feedback
-							</button>
-						</div>
+					<FeedbackComponent modalId="feedbackModal" ref="feedback"/>
+
+					<div className="col l6 s12">
+						<h5 className="white-text">Help us develop this software</h5>
+						<p className="grey-text text-lighten-4">"Your feedback can help us build this software
+							to serve our organization as we scale. Please assist us by reporting bugs,
+							suggesting features, or just letting us know how we're doing" - Vic</p>
 					</div>
+					<div className="col l4 offset-l2 s12">
+						<button className="btn waves-effect waves-light lighten-3 center background-main1"
+								onClick={this.handleFeedbackClick}>Provide Feedback
+						</button>
+					</div>
+
+					<br />
 				</div>
 			);
 		} else {
