@@ -20,7 +20,6 @@ function importHelper_transformRoleLabel(rl) {
 	return rl;
 }
 
-
 Meteor.methods({
 
 	v1ImportDatabase() {
@@ -30,8 +29,6 @@ Meteor.methods({
 		}
 
 		var v1BaseURL = "http://ec2-54-152-211-94.compute-1.amazonaws.com/";
-
-		console.log("Calling get...");
 
 		// drop all existing data (!)
 		ApplicationsCollection.remove({});
@@ -71,7 +68,5 @@ Meteor.methods({
 		for (var rl in roleLabels.data) {
 			ContributorsCollection.insert(importHelper_transformRoleLabel(roleLabels.data[rl]));
 		}
-
-		console.log("Done!");
 	}
 });
