@@ -40,6 +40,13 @@ FlowRouter.route( '/organization', {
 	}
 });
 
+FlowRouter.route( '/admin', {
+	name: 'admin',
+	action() {
+		ReactLayout.render( App, { yield: <AdminComponent /> } );
+	}
+});
+
 FlowRouter.route( '/enps', {
 	name: 'enps',
 	action() {

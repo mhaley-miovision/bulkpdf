@@ -1,0 +1,1 @@
+RoleLabelsCollection = new Mongo.Collection("role_labels");

@@ -35,6 +35,7 @@ NavbarComponent = React.createClass({
 					<li className={FlowHelpers.currentRoute("team")}><a href="/team">Team</a></li>
 					<li className={FlowHelpers.currentRoute("organization")}><a href="/organization">Organization</a></li>
 					<li className={FlowHelpers.currentRoute("profile")}><a href="/profile">Profile</a></li>
+					<li className={FlowHelpers.currentRoute("admin")}><a href="/admin">Admin</a></li>
 					<li className={FlowHelpers.currentRoute("enps")}><a href="/enps">myENPS</a></li>
 				</ul>
 				<ul id="slide-out" className="side-nav">
@@ -43,6 +44,7 @@ NavbarComponent = React.createClass({
 					<li className={FlowHelpers.currentRoute("team")}><a href="/team">Team</a></li>
 					<li className={FlowHelpers.currentRoute("organization")}><a href="/organization">Organization</a></li>
 					<li className={FlowHelpers.currentRoute("profile")}><a href="/profile">Profile</a></li>
+					<li className={FlowHelpers.currentRoute("admin")}><a href="/admin">Admin</a></li>
 					<li className={FlowHelpers.currentRoute("enps")}><a href="/enps">myENPS</a></li>
 				</ul>
 				<a href="#" data-activates="slide-out" className="button-collapse"><i className="mdi-navigation-menu"></i></a>
