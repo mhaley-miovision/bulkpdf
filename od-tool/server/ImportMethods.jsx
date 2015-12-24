@@ -17,6 +17,8 @@ function importHelper_transformContributor(c) {
 	return c;
 }
 function importHelper_transformRoleLabel(rl) {
+	rl.createdAt = new Date();
+	rl.createdBy = Meteor.userId;
 	return rl;
 }
 

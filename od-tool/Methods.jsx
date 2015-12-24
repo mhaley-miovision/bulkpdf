@@ -1,6 +1,7 @@
 if (Meteor.isClient) {
 	// This code is executed on the client only
 	Meteor.subscribe("tasks");
+	Meteor.subscribe("role_labels");
 }
 
 if (Meteor.isServer) {
@@ -12,5 +13,9 @@ if (Meteor.isServer) {
 				{ owner: this.userId }
 			]
 		});
+	});
+	// Publish all roles
+	Meteor.publish("role_labels", function () {
+		return RoleLabelsCollection.find({});
 	});
 }

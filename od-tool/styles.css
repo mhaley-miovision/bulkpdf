@@ -79,6 +79,7 @@ li.checked label {
 
 .centeredCard {
     margin-top: 50px;
+    margin-bottom: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -120,4 +121,9 @@ li.checked label {
     height: auto;
     padding: 3px;
     background-color: teal;
+}
+
+.itemEditingIcons {
+    font-size: 17px;
+    cursor: hand;
 }

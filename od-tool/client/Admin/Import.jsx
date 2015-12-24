@@ -1,4 +1,4 @@
-AdminComponent = React.createClass({
+ImportComponent = React.createClass({
 	getInitialState() {
 		return {
 			loading: false,

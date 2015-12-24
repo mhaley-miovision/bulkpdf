@@ -40,10 +40,17 @@ FlowRouter.route( '/organization', {
 	}
 });
 
-FlowRouter.route( '/admin', {
+FlowRouter.route( '/admin/import', {
 	name: 'admin',
 	action() {
-		ReactLayout.render( App, { yield: <AdminComponent /> } );
+		ReactLayout.render( App, { yield: <ImportComponent /> } );
+	}
+});
+
+FlowRouter.route( '/admin/roleLabels', {
+	name: 'admin',
+	action() {
+		ReactLayout.render( App, { yield: <RoleLabelsComponent /> } );
 	}
 });
 
