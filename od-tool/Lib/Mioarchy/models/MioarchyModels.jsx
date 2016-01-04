@@ -1,21 +1,25 @@
 'use strict';
 
-function Mioarchy(roles, orgs, contribs, apps, roleLabels, orgAccountabilites, roleAccountabilities) {
-    this.roles = roles;
-    this.applications = apps;
-    this.contributors = contribs;
-    this.roleLabels = roleLabels;
-    this.organizations = orgs;
-    this.orgAccountabilities = orgAccountabilites;
-    this.roleAccountabilities = roleAccountabilities;
-    this.namesToShortNames = this.buildCollisionFreeShortNameMap();
-    this.timelineEventIndex = this.buildTimelineEventIndex();
-    this.orgHeadCount = this.buildOrgHeadCount();
+class Mioarchy {
+    constructor(roles, orgs, contribs, apps, roleLabels, orgAccountabilites, roleAccountabilities) {
+        this.roles = roles;
+        this.applications = apps;
+        this.contributors = contribs;
+        this.roleLabels = roleLabels;
+        this.organizations = orgs;
+        this.orgAccountabilities = orgAccountabilites;
+        this.roleAccountabilities = roleAccountabilities;
+        this.namesToShortNames = this.buildCollisionFreeShortNameMap();
+        this.timelineEventIndex = this.buildTimelineEventIndex();
+        this.orgHeadCount = this.buildOrgHeadCount();
 
-    // post-rendering populated objects (this is a big of a kludge :( should be a separate resulting object out of the
-    // rendering in order to have proper separation of concerns
-    this.orgToVertex = []; // orgName -> vertex
-    this.roleToVertex = []; // roleName -> vertex
+        // post-rendering populated objects (this is a big of a kludge :( should be a separate resulting object out of the
+        // rendering in order to have proper separation of concerns
+        this.orgToVertex = []; // orgName -> vertex
+        this.roleToVertex = []; // roleName -> vertex
+
+        console.log("3");
+    }
 };
 
 //======================================================================================================================
@@ -86,7 +90,7 @@ Mioarchy.prototype = {
             return;
         }
         if (testSubject && testSubject.parent) {
-            // is this the parent we are looking for?
+            // is this the parent we are looking for?oø
             if (testSubject.parent.toLowerCase() === desiredParent.name.toLowerCase()) {
                 return true; // yes, this is the parent, thus it's a descendant
             } else {

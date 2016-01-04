@@ -18,9 +18,9 @@ function RenderInfoOrganization(org, mioarchy)
     // a leaf org is rendered differently than a parent org
     this.isLeaf = this.childOrgs.length == 0;
 
-    // get list of jobs
-    this.jobsAtThisLevel = mioarchy.getOrganizationJobs( org, false );
-    this.jobsAtThisLevelPosition = { x: 0, y: 0 };
+    // get list of roles
+    this.rolesAtThisLevel = mioarchy.getOrganizationJobs( org, false );
+    this.rolesAtThisLevelPosition = { x: 0, y: 0 };
 
     // yes, and populate child org infos
     for (var o in this.childOrgs) {
@@ -31,13 +31,13 @@ function RenderInfoOrganization(org, mioarchy)
     // actual org boundaries, so essentially they will be accounted for as a circle in the rendering calculations
     // but will not have a circle drawn around them
     var useMiddle = this.childOrgs.length > 0;
-    this.circleForContributorsAtThisOrgLevel = new RenderInfoCircles(this.jobsAtThisLevel.length,
+    this.circleForContributorsAtThisOrgLevel = new RenderInfoCircles(this.rolesAtThisLevel.length,
         this.MIN_DISTANCE_BETWEEN_CIRCLES, this.CIRCLE_DIAMETER, useMiddle); // orgs with children use middle
 
     determineMaximumSubOrgDimensions.call(this);
 
     // include the org without a circle as a fake org
-    this.numSubOrgCircles = this.jobsAtThisLevel.length == 0 ? this.childOrgs.length : this.childOrgs.length + 1;
+    this.numSubOrgCircles = this.rolesAtThisLevel.length == 0 ? this.childOrgs.length : this.childOrgs.length + 1;
 
     if (this.orgLevel > 2 && !this.org.isApplication) {
         processCircularSubOrgRendering.call(this);
@@ -92,7 +92,7 @@ function processRectangularOrgRendering()
         }
     }
     // also include the contributor org in the set of apps
-    if (this.jobsAtThisLevel.length > 0) {
+    if (this.rolesAtThisLevel.length > 0) {
         applicationOrgInfos.height = Math.max(applicationOrgInfos.height, this.circleForContributorsAtThisOrgLevel.height);
     }
 
@@ -101,13 +101,13 @@ function processRectangularOrgRendering()
     this.height = applicationOrgInfos.height + normalOrgInfos.height + this.MIN_DISTANCE_BETWEEN_CIRCLES * 4 + paddingForLabel;
 
     // add the contributor circles first in the set of apps if it exists
-    if (this.jobsAtThisLevel.length > 0) {
+    if (this.rolesAtThisLevel.length > 0) {
         // org must be corrected to 0,0 (TODO: this really should be circle org rendering's responsibility!)
         var dx = this.circleForContributorsAtThisOrgLevel.width/2;
         var dy = this.circleForContributorsAtThisOrgLevel.height/2;
 
         applicationOrgInfos.cy = paddingForLabel + this.MIN_DISTANCE_BETWEEN_CIRCLES + (applicationOrgInfos.height-this.circleForContributorsAtThisOrgLevel.height)/2
-        this.jobsAtThisLevelPosition = {x: applicationOrgInfos.cx + dx, y: applicationOrgInfos.cy + dy };
+        this.rolesAtThisLevelPosition = {x: applicationOrgInfos.cx + dx, y: applicationOrgInfos.cy + dy };
         applicationOrgInfos.cx += this.circleForContributorsAtThisOrgLevel.width + this.MIN_DISTANCE_BETWEEN_CIRCLES;
         applicationOrgInfos.width = applicationOrgInfos.cx;
     }
@@ -142,7 +142,7 @@ function processRectangularOrgRendering()
         normalOrgInfos.positions = RenderingUtilities.translatePoints(normalOrgInfos.positions, dx, 0);
     }
     // move the contributor circle over
-    this.jobsAtThisLevelPosition.x += (this.width - applicationOrgInfos.width) / 2;
+    this.rolesAtThisLevelPosition.x += (this.width - applicationOrgInfos.width) / 2;
     // also, normal orgs always get rendered underneath the apps
     var dy = applicationOrgInfos.height + this.MIN_DISTANCE_BETWEEN_CIRCLES * 2;
     normalOrgInfos.positions = RenderingUtilities.translatePoints(normalOrgInfos.positions, 0, dy);
@@ -170,12 +170,12 @@ function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
     // now move all the circle locations as needed
     var circleLocations = RenderingUtilities.translatePoints(this.circleForContributorsAtThisOrgLevel.circleCenters, dx, dy);
 
-    // render jobs (circles)
-    for (var j in this.jobsAtThisLevel) {
-        var job = this.mioarchy.jobs[this.jobsAtThisLevel[j]];
+    // render roles (circles)
+    for (var j in this.rolesAtThisLevel) {
+        var role = this.mioarchy.roles[this.rolesAtThisLevel[j]];
 
         var defaultStyle = "shape=ellipse;whiteSpace=wrap;editable=0;";
-        var colorString = this.getJobColorStyleString(job.id, this.mioarchy);
+        var colorString = this.getJobColorStyleString(role.id, this.mioarchy);
         var defaultWidth = this.CIRCLE_DIAMETER;
         var defaultHeight = this.CIRCLE_DIAMETER;
 
@@ -185,8 +185,8 @@ function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
         var cy = y + circleLocations[j].y - this.CIRCLE_DIAMETER / 2;
 
         var label;
-        if (job.contributor && this.mioarchy.contributors[job.contributor]) {
-            label = this.mioarchy.namesToShortNames[job.contributor].shortName;
+        if (role.contributor && this.mioarchy.contributors[role.contributor]) {
+            label = this.mioarchy.namesToShortNames[role.contributor].shortName;
         } else {
             label = "NEW"; // not yet hired
         }
@@ -198,8 +198,8 @@ function renderJobsAtThisOrgLevel(x, y, dx, dy, graph) {
             var v = graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight,
                 defaultStyle + colorString);
             // attach the org info to the vertex
-            v.mioObject = job;
-            this.mioarchy.jobToVertex[job.id] = v;
+            v.mioObject = role;
+            this.mioarchy.roleToVertex[role.id] = v;
         } finally {
             graph.getModel().endUpdate();
         }
@@ -226,9 +226,9 @@ RenderInfoOrganization.prototype =
         }
     },
 
-    getJobTopApplicationAccountabilities: function(jobId, mioarchy, maxAccountabilities) {
+    getJobTopApplicationAccountabilities: function(roleId, mioarchy, maxAccountabilities) {
         var list = [];
-        var accountabilities = mioarchy.jobAccountabilities[jobId];
+        var accountabilities = mioarchy.roleAccountabilities[roleId];
 
         if (accountabilities) {
             // count each type of accountability
@@ -263,9 +263,9 @@ RenderInfoOrganization.prototype =
         return list;
     },
 
-    getJobColors: function (jobId, mioarchy) {
+    getJobColors: function (roleId, mioarchy) {
         // determine which are the dominating accountabilities
-        var apps = this.getJobTopApplicationAccountabilities(jobId, mioarchy, 2);
+        var apps = this.getJobTopApplicationAccountabilities(roleId, mioarchy, 2);
         var list = [];
         for (var i = 0; i < apps.length; i++) {
             var appColor = mioarchy.applications[ apps[i] ].color;
@@ -273,7 +273,7 @@ RenderInfoOrganization.prototype =
         }
 
         if (list.length == 0) {
-            var app = mioarchy.jobs[jobId].application;
+            var app = mioarchy.roles[roleId].application;
             if (app) {
                 var color = mioarchy.applications[app].color;
                 if (color) {
@@ -288,12 +288,12 @@ RenderInfoOrganization.prototype =
     //==============================================================================================================
     // TOP LEVEL ORGANIZATIONS
     renderRectangularOrg: function (x, y, graph) {
-        // if there are jobs, render them
-        if (this.jobsAtThisLevel.length > 0) {
+        // if there are roles, render them
+        if (this.rolesAtThisLevel.length > 0) {
             if (this.subOrgPositions) {
                 var cx, cy;
-                cx = x + this.jobsAtThisLevelPosition.x;
-                cy = y + this.jobsAtThisLevelPosition.y;
+                cx = x + this.rolesAtThisLevelPosition.x;
+                cy = y + this.rolesAtThisLevelPosition.y;
                 renderJobsAtThisOrgLevel.call(this, cx, cy, 0, 0, graph);
             }
         }
@@ -367,7 +367,7 @@ RenderInfoOrganization.prototype =
         var dy = 0;
         // only draw the containing circle if this is a leaf
         if (this.isLeaf) {
-            // first we will draw the circle that will contain our job circles
+            // first we will draw the circle that will contain our role circles
             graph.getModel().beginUpdate();
             try {
                 var vertex = this.insertOrgVertex (graph.getDefaultParent(), this.org, x, y, this.width, this.height, graph);
@@ -384,23 +384,23 @@ RenderInfoOrganization.prototype =
             dy = this.height / 2;
         } else {
             // this is the last "virtual" circle in the calculate rendering infos for this org, which contains the
-            // jobs at this level
+            // roles at this level
             var lastCircle = this.subOrgCircles.circleCenters[this.subOrgCircles.circleCenters.length - 1];
             dx = lastCircle.x + this.width / 2;
             dy = lastCircle.y + this.width / 2;
         }
         //==========================================================================================================
         // JOBS AT THIS SUB ORGANIZATION LEVEL
-        if (this.jobsAtThisLevel.length > 0) {
+        if (this.rolesAtThisLevel.length > 0) {
             // now move all the circle locations as needed
             var circleLocations = RenderingUtilities.translatePoints(this.circleForContributorsAtThisOrgLevel.circleCenters, dx, dy);
 
-            // render jobs (circles)
-            for (var j in this.jobsAtThisLevel) {
-                var job = this.mioarchy.jobs[this.jobsAtThisLevel[j]];
+            // render roles (circles)
+            for (var j in this.rolesAtThisLevel) {
+                var role = this.mioarchy.roles[this.rolesAtThisLevel[j]];
 
                 var defaultStyle = "shape=ellipse;whiteSpace=wrap;editable=0;";
-                var colorString = this.getJobColorStyleString(job.id, this.mioarchy);
+                var colorString = this.getJobColorStyleString(role.id, this.mioarchy);
                 var defaultWidth = this.CIRCLE_DIAMETER;
                 var defaultHeight = this.CIRCLE_DIAMETER;
 
@@ -410,8 +410,8 @@ RenderInfoOrganization.prototype =
                 var cy = y + circleLocations[j].y - this.CIRCLE_DIAMETER / 2;
 
                 var label;
-                if (job.contributor && this.mioarchy.contributors[job.contributor]) {
-                    label = this.mioarchy.namesToShortNames[job.contributor].shortName;
+                if (role.contributor && this.mioarchy.contributors[role.contributor]) {
+                    label = this.mioarchy.namesToShortNames[role.contributor].shortName;
                 } else {
                     label = "NEW"; // not yet hired
                 }
@@ -423,8 +423,8 @@ RenderInfoOrganization.prototype =
                     var v = graph.insertVertex(parent, null, label, cx, cy, defaultWidth, defaultHeight,
                         defaultStyle + colorString);
                     // attach the org info to the vertex
-                    v.mioObject = job;
-                    this.mioarchy.jobToVertex[job.id] = v;
+                    v.mioObject = role;
+                    this.mioarchy.roleToVertex[role.id] = v;
                 } finally {
                     graph.getModel().endUpdate();
                 }
@@ -432,8 +432,8 @@ RenderInfoOrganization.prototype =
         }
     },
 
-    getJobColorStyleString: function(jobId, mioarchy) {
-        var colors = this.getJobColors(jobId, mioarchy);
+    getJobColorStyleString: function(roleId, mioarchy) {
+        var colors = this.getJobColors(roleId, mioarchy);
 
         var colorString = "fillColor=" + (colors && colors.length > 0 ? colors[0] : "white");
         colorString += ";";
@@ -441,10 +441,10 @@ RenderInfoOrganization.prototype =
             colorString += "gradientColor=" + colors[1] + ";gradientDirection=east;";
         }
 
-        // temp jobs are shown as dashed (if it's not a full time contributor)
-        if (mioarchy.jobs[jobId].contributor && mioarchy.contributors[mioarchy.jobs[jobId].contributor]
-            && mioarchy.contributors[mioarchy.jobs[jobId].contributor].employeeStatus
-            && mioarchy.contributors[mioarchy.jobs[jobId].contributor].employeeStatus.toLowerCase() !== 'full time') {
+        // temp roles are shown as dashed (if it's not a full time contributor)
+        if (mioarchy.roles[roleId].contributor && mioarchy.contributors[mioarchy.roles[roleId].contributor]
+            && mioarchy.contributors[mioarchy.roles[roleId].contributor].employeeStatus
+            && mioarchy.contributors[mioarchy.roles[roleId].contributor].employeeStatus.toLowerCase() !== 'full time') {
             colorString += "dashed=1;";
         }
 
@@ -456,7 +456,7 @@ RenderInfoOrganization.prototype =
         var style = "labelPosition=center;align=center;verticalAlign=top;editable=0;whiteSpace=wrap;fillColor=none;";
 
         if (org.isApplication) {
-            // highlight the jobs this person has taken on
+            // highlight the roles this person has taken on
             var appColor = this.mioarchy.applications[org.name].color;
             var stroke = "strokeWidth=10;strokeColor=" + appColor + ";opacity=100;";
             style += stroke + "shape=process;";
