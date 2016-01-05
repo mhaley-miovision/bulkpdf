@@ -37,12 +37,13 @@
     border-style:none;
 }
 
+/*
 body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
     background-image: url('img/wallpaper.jpg');
-}
+}*/
 
 main {
     flex: 1 0 auto;
@@ -60,6 +61,11 @@ li.checked label {
     text-decoration: line-through;
 }
 
+.clear-block {
+    clear: both;
+    display: block;
+    visibility: hidden;
+}
 
 .loginHeader {
     padding-right: 10px;
@@ -126,4 +132,272 @@ li.checked label {
 .itemEditingIcons {
     font-size: 17px;
     cursor: hand;
+}
+
+/* ***************************************************************************** */
+
+#org-chart {
+    margin: 10px 0;
+    width: 800px;
+    position: relative;
+}
+#chart-legend {
+    float: right;
+    position: relative;
+    display: inline-block;
+    padding: 6px 4px 6px 6px;
+    width: 115px;
+    margin: 2px 0px 0px -135px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    z-index: 100;
+}
+#chart-legend ul {
+    list-style-type: square;
+}
+.key-label {
+    font-size: 13px;
+    display: inline-block;
+    cursor: default;
+}
+.key-color {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    background: #fff;
+    border: 1px solid #fff;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+.key-color.filled {
+    background: #90B344;
+    border-color: #90B344;
+}
+.key-color.unfilled {
+    border-color: #999;
+}
+.key-color.core-role {
+    background: #6EBBCE;
+    border-color: #6EBBCE;
+}
+.key-color.alert {
+    background: #DB2929;
+    border-color: #DB2929;
+}
+
+#js-chart-container{
+    display: inline-block;
+    font: 300 36px "Helvetica Neue";
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    height: 800px;
+    margin: 0px;
+    float:left;
+    overflow: hidden;
+    position: relative;
+    width: 800px;
+    border: 1px solid #eee;
+}
+
+#js-chart-container .loading {
+    z-index: 150;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #FFF url("../images/spinner.gif") no-repeat 50% 50%;
+    width: 100%;
+    height: 100%;
+    font-size: 1.7em;
+    font-weight: bolder;
+    color: #666;
+    text-align: center;
+    filter: alpha(opacity=80);
+    opacity: .75;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+#js-role-details {
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    height: 530px;
+    width: 530px;
+    top: 132px;
+    left: 132px;
+    position: absolute;
+    z-index: 100;
+    display: none;
+    padding-right: 10px;
+}
+
+#js-chart-container > svg {
+    position:relative;
+    z-index: 50;
+}
+text {
+    font-size: 12px;
+    pointer-events: none;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+a text.label, a text.role.unfilled, a.role.unfilled, .role-details.unfilled a {
+    fill: #3F9BB2;
+    color: #3F9BB2;
+}
+a text.label:hover, a text.role.unfilled:hover, a.role.unfilled:hover, .role-details.unfilled a:hover {
+    fill: #6EBBCE;
+    color: #6EBBCE;
+    cursor: pointer;
+}
+a.role.core-role.filled, a.role.filled, a.role.alert,
+a text.role.core-role.filled, a text.role.filled, a text.role.alert,
+.role-details.filled a, .role-details.alert a, .role-details.core-role.filled a {
+    fill: #eee;
+    color: #eee;
+}
+a.role.core-role.filled:hover, a.role.filled:hover, a.role.alert:hover,
+a text.role.structural.filled:hover, a text.role.filled:hover, a text.role.alert:hover,
+.role-details.filled a:hover, .role-details.alert a:hover, .role-details.core-role.filled a:hover {
+    fill: #fff;
+    color: #fff;
+}
+
+circle {
+    fill: #ccc;
+    stroke: #999;
+    stroke-width: 2;
+    pointer-events: all;
+}
+
+circle.role.core-role {
+    fill: #6EBBCE;
+}
+
+circle.role.unfilled, circle.role.structural.unfilled {
+    fill: transparent;
+}
+
+circle.role.alert {
+    fill: #DB2929 !important;
+}
+
+circle.role {
+    fill: #90B344;
+    stroke-width: 1.5;
+}
+
+circle.parent.container, circle.child.label {
+    fill: transparent;
+    fill-opacity: 0;
+    stroke: transparent;
+}
+
+text.child.label {
+    font-size: 13px;
+    font-weight: bold;
+    opacity: 0.5;
+}
+
+circle.parent {
+    fill: #FFF;
+    stroke: #D2D2D2;
+}
+
+circle.parent:hover, circle.role:hover {
+    stroke: #FFA500;
+}
+circle.container, circle.label {
+    pointer-events: none;
+}
+
+.foreign-object {
+    pointer-events: none;
+}
+
+.foreign-object body, .foreign-object .card {
+    pointer-events: inherit;
+}
+
+.d3label {
+    width: 100%;
+    height: 100%;
+}
+.d3label .title {
+    text-align: center;
+    font-size: 15px;
+    margin: 0 0 6px 0;
+    vertical-align: middle;
+}
+.label .title a {
+    background-color: rgba(255, 255, 255, 0.5);
+    text-overflow: ellipsis;
+    pointer-events: all;
+}
+.d3label .aim {
+    text-align: left;
+    font-size: 16px;
+}
+.d3label .aim a {
+    pointer-events: all;
+}
+
+.tipsy-arrow, .role-details .add-policy, .role-details .policy-num {
+    display: none;
+}
+.role-details .role-title {
+    font-size: 32px;
+    text-align: center;
+    margin: 0 0 0 9px;
+    letter-spacing: -.5px;
+}
+
+.role-details .role-body {
+    position: absolute;
+    width: 100%;
+    overflow-y: auto;
+}
+.role-details .first h1:first-of-type {
+    margin-top: 0;
+}
+.role-details .role-icons {
+    float: right;
+    text-align: center;
+    margin: 4px 7px;
+}
+.role-details .filled-by {
+    text-align: center;
+}
+.role-details .filled-by a {
+    display: block;
+}
+.role-details .filled-by a .gravatar-icon{
+    padding: 0;
+    margin: 0 0 4px 0;
+    width: 64px;
+    height: 64px;
+}
+.role-details .role-notes a {
+    font-size: 27px;
+}
+.role-details .role-notes {
+    text-align: center;
+}
+.scrollable:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.scroll-content-item {
+    padding-right: 0;
+}
+
+.role-details .scroll-bar-wrap .ui-slider-handle {
+    background: #ccc !important;
+    border: 1px solid #ccc;
+}
+
+.role-details .scrollable:hover .ui-slider-handle {
+    background: #d3d3d3 !important;
+    border: 1px solid #d3d3d3;
+}
+
+.role-details .scroll-bar-wrap {
+    background-color: rgba(255, 255, 255, 0.2) !important;
 }
