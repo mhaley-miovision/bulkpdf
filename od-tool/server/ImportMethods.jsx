@@ -89,7 +89,7 @@ Meteor.methods({
 			RolesCollection.insert(importHelper_transformRole(roles.data[x]));
 		}
 		for (var x in roleLabels.data) {
-			RolesCollection.insert(importHelper_transformRoleLabel(roleLabels.data[x]));
+			RoleLabelsCollection.insert(importHelper_transformRoleLabel(roleLabels.data[x]));
 		}
 	}
 });
