@@ -1,8 +1,8 @@
 var Chart = (function () {
 	var root_2 = Math.sqrt(2),
-		w = 800,
-		h = 800,
-		r = 750,
+		w = 700,
+		h = 700,
+		r = 650,
 		x = d3.scale.linear().range([0, r]),
 		y = d3.scale.linear().range([0, r]),
 		node,
@@ -22,7 +22,8 @@ var Chart = (function () {
 		classes.push(d.children ? "parent" : "child");
 		classes.push(d.type);
 		if (d.type === 'role') {
-			classes.push(d.filled ? "filled" : "unfilled");
+			classes.push( "filled" );
+			//classes.push(d.filled ? "filled" : "unfilled");
 		}
 		if (d.structural_role) {
 			classes.push("structural");
@@ -266,19 +267,19 @@ var Chart = (function () {
 		},
 
 		loadData: function (data) {
-			console.log(JSON.stringify(data));
+			console.log(data);
 
 			pack = d3.layout.pack()
 				.size([r, r])
 				.sort(Chart.comparator)
 				.value(function (d) {
-					//return 5;
-					return 5 + Math.random() * 95;
+					return 3;
+					//return 5 + Math.random() * 95;
 				})
 				.padding(0.2);
 
-			$("#js-chart-container").empty();
-			vis = d3.select("#js-chart-container").insert("svg:svg", "h2")
+			$(".chartContainer").empty();
+			vis = d3.select(".chartContainer").insert("svg:svg", "h2")
 				.attr("width", w)
 				.attr("height", h)
 				.append("svg:g")
@@ -295,7 +296,6 @@ var Chart = (function () {
 			// don't add lables for organizations, since we have added them as child objects
 			var foreignObjects = vis.selectAll(".foreign-object")
 				.data(nodes.filter(function (d) {
-					console.log(d.type);
 					return d.type !== 'organization';
 				}))
 				.enter();
@@ -339,10 +339,11 @@ OrganizationComponent = React.createClass({
 
 		if (!data.isLoading) {
 			let orgName = "Miovision";
+			//let orgName = "Computer Vision";
 			let org = OrganizationsCollection.findOne({ name: orgName });
 			if (org) {
-				// helper to build tree
-				getOrgChildren = function (o) {
+				// for building an org tree
+				let getOrgChildren = function (o) {
 					var c = [];
 					var query = OrganizationsCollection.find({parent: o});
 					if (query.count() > 0) {
@@ -356,14 +357,34 @@ OrganizationComponent = React.createClass({
 					}
 					return [];
 				}
+				// for adding roles as children
+				let attachOrgRoles = function (o)  {
+					if (typeof(o.children) == 'undefined') {
+						o.children = [];
+					}
+					for (var c in o.children) {
+						attachOrgRoles(o.children[c]);
+					}
 
-				// append label children
-				attachLabelChildren = function(n) {
+					// get all immediate roles attached to this org
+					let q = RolesCollection.find({organization: o.name});
+					if (q.count() > 0) {
+						var r = q.fetch();
+						for (var x in r) {
+							o.children.push(r[x]);
+						}
+					}
+				}
+				// for appending a label as a child
+				let attachOrgLabels = function(n) {
+					if (n.type !== 'organization') {
+						return;
+					}
 					if (typeof(n.children) == 'undefined') {
 						n.children = [];
 					}
 					for (var c in n.children) {
-						attachLabelChildren(n.children[c]);
+						attachOrgLabels(n.children[c]);
 					}
 					n.children.push({
 						type: 'label',
@@ -371,9 +392,10 @@ OrganizationComponent = React.createClass({
 					});
 				}
 
+				// build order matters!
 				org.children = getOrgChildren(org.name);
-
-				attachLabelChildren(org);
+				attachOrgRoles(org);
+				attachOrgLabels(org);
 
 				data.organization = org;
 			} else {
@@ -397,23 +419,46 @@ OrganizationComponent = React.createClass({
 		};
 	},
 
-	render() {
+	getChartClasses() {
+		let classes = "chartContainer";
+		if (this.data.isLoading) {
+			classes += " loading";
+		}
+		return classes;
+	},
+
+	renderLoading() {
 		if (this.data.isLoading) {
 			return (
 				<div className="container">
-					<div className="progress">
-						<div className="indeterminate"></div>
+					<br/>
+					<br/>
+					<div className="row centeredCard">
+						<div className="col s12 m6">
+							<div className="card white">
+								<div className="card-content teal-text">
+									<span className="card-title">Loading...</span>
+									<div className="progress">
+										<div className="indeterminate"></div>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			);
-		} else {
-			return (
-				<div className="container">
-					<div ref="js-chart-container" id="js-chart-container"></div>
-					<div className="clear-block"></div>
-				</div>
-			);
 		}
+	},
+
+	render() {
+		return (
+			<div className="container">
+				<div className={this.getChartClasses()}>
+					{this.renderLoading()}
+				</div>
+				<div className="clear-block"/>
+			</div>
+		);
 	}
 });
 
