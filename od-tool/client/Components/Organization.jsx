@@ -291,9 +291,8 @@ var Chart = (function () {
 			var nodes = pack.nodes(root);
 
 			var circles = vis.selectAll("organization").data(nodes).enter().append("svg:circle");
-			//var circles = vis.selectAll("circle").data(nodes).enter().append("svg:circle");
 			initCircles(circles);
-			// only add labels to roles
+			// don't add lables for organizations, since we have added them as child objects
 			var foreignObjects = vis.selectAll(".foreign-object")
 				.data(nodes.filter(function (d) {
 					console.log(d.type);
@@ -341,8 +340,6 @@ OrganizationComponent = React.createClass({
 		if (!data.isLoading) {
 			let orgName = "Miovision";
 			let org = OrganizationsCollection.findOne({ name: orgName });
-			let o = { name: org.name, id: org.id, type: 'organization' };
-
 			if (org) {
 				// helper to build tree
 				getOrgChildren = function (o) {
@@ -353,13 +350,7 @@ OrganizationComponent = React.createClass({
 
 						for (var x in r) {
 							r[x].children = getOrgChildren(r[x].name); // add the children of the child
-
-							c.push({
-								name: r[x].name,
-								id: r[x].id
-							});
-
-							//c.push(r[x]); // add the child
+							c.push(r[x]); // add the child
 						}
 						return c;
 					}
@@ -380,11 +371,11 @@ OrganizationComponent = React.createClass({
 					});
 				}
 
-				o.children = getOrgChildren(o.name);
+				org.children = getOrgChildren(org.name);
 
-				attachLabelChildren(o);
+				attachLabelChildren(org);
 
-				data.organization = o;
+				data.organization = org;
 			} else {
 				Materialize.toast("Could not find organization: " + orgName);
 				return {};
