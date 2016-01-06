@@ -1,5 +1,5 @@
 Meteor.methods({
-	addRole(name, organizationId, contributorId, startDate, endDate) {
+	addRoleLabel(name) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -18,11 +18,25 @@ Meteor.methods({
 		});
 	},
 
-	removeRole(roleId) {
+	removeRoleLabel(roleId) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
 		RoleLabelsCollection.remove(roleId);
 	},
+
+	renameRoleLabel(roleId, name) {
+		// Make sure the user is logged in before inserting a task
+		if (!Meteor.userId()) {
+			throw new Meteor.Error("not-authorized");
+		}
+
+		// first check if there is another conflicting role
+		var existing = RoleLabelsCollection.findOne({name: name});
+		if (existing) {
+			throw new Meteor.Error("duplicate");
+		}
+		RoleLabelsCollection.update(roleId, {$set: {name: name}});
+	}
 });

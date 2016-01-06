@@ -17,8 +17,6 @@ class Mioarchy {
         // rendering in order to have proper separation of concerns
         this.orgToVertex = []; // orgName -> vertex
         this.roleToVertex = []; // roleName -> vertex
-
-        console.log("3");
     }
 };
 
@@ -187,24 +185,29 @@ Mioarchy.prototype = {
     //==================================================================================================================
     buildCollisionFreeShortNameMap: function() {
         var buildMapping = function(contributorSubset, numLetters) {
-            var map = [];
-            var error = false;
-            for (var name in contributorSubset) {
-                var contributor = contributorSubset[name];
-                var fn = contributor.firstName;
-                var ln = contributor.lastName;
-                var fi = fn.substring(0, 1);
-                if (numLetters > ln.length) {
-                    console.log("ERROR: Contributor name collision could not be resolved!!!");
-                    error = true;
+            try {
+                var map = [];
+                var error = false;
+                for (var name in contributorSubset) {
+                    var contributor = contributorSubset[name];
+                    var fn = contributor.firstName;
+                    var ln = contributor.lastName;
+
+                    var fi = fn.substring(0, 1);
+                    if (numLetters > ln.length) {
+                        console.log("ERROR: Contributor name collision could not be resolved!!!");
+                        error = true;
+                    }
+                    var li = ln.substring(0, numLetters);
+                    map[contributor.name] = {
+                        shortName: (fi + li).toLowerCase(),
+                        firstName: fn,
+                        lastName: ln,
+                        name: contributor.name
+                    };
                 }
-                var li = ln.substring(0, numLetters);
-                map[contributor.name] = {
-                    shortName: (fi + li).toLowerCase(),
-                    firstName: fn,
-                    lastName: ln,
-                    name: contributor.name
-                };
+            } catch (ex) {
+                console.error(ex);
             }
             return { map:map, error:error };
         };
@@ -322,7 +325,6 @@ Mioarchy.prototype = {
      */
     buildTimelineEventIndex: function() {
         try {
-            console.log("buildTimelineEventIndex ENTER")
             var getEventList = function (objectList) {
                 var dateList = [];
                 for (var k in objectList) {
@@ -494,3 +496,5 @@ function Accountability(id, appId, application, label, rating, accountabilityTyp
     this.startDate = startDate;
     this.endDate = endDate;
 }
+
+Meteor.Mioarchy = Mioarchy;

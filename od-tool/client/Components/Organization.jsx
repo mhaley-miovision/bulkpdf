@@ -37,6 +37,7 @@ var Chart = (function () {
 	}
 
 	function foreignObjectHtml(d) {
+		d.url = "#";
 		var content = '<div class="d3label"><div class="title"><a href="' + d.url + '" class="' + classesForNode(d) + '">' + _.escape(d.name) + '</a></div>';
 		return content + '</div>';
 	}
@@ -138,10 +139,6 @@ var Chart = (function () {
 			return 750
 		},
 
-		load: function () {
-			d3.json("/testData.json", Chart.loadData);
-		},
-
 		zoomFunctions: function (k) {
 			return {
 				foreignObjSize: function(d) {
@@ -153,7 +150,6 @@ var Chart = (function () {
 					});
 				},
 				makeFontSizer: function(factor) {
-					console.log("makeFontSizer");
 					return function (d) {
 						return parseInt(Math.min(Math.max(10, Chart.zoomFunctions(k).foreignObjSize(d) / factor), 32)) + 'px';
 					}
@@ -171,7 +167,6 @@ var Chart = (function () {
 				},
 				labelWidth: function(d) {
 					var s =  Chart.zoomFunctions(k).foreignObjSize(d) * 3;
-					console.log("'" + d.name + "'=" + s)
 					return s;
 				}
 			}
@@ -262,20 +257,23 @@ var Chart = (function () {
 				return 1
 			} else if (b.type == 'label') {
 				return -1
-			} else if (a.type == 'circle' && b.type == 'role') {
+			} else if (a.type == 'organization' && b.type == 'role') {
 				return 1
-			} else if (b.type == 'circle' && a.type == 'role') {
+			} else if (b.type == 'organization' && a.type == 'role') {
 				return -1
 			}
 			return 0
 		},
 
 		loadData: function (data) {
+			console.log(JSON.stringify(data));
+
 			pack = d3.layout.pack()
 				.size([r, r])
 				.sort(Chart.comparator)
 				.value(function (d) {
-					return d.size;
+					//return 5;
+					return 5 + Math.random() * 95;
 				})
 				.padding(0.2);
 
@@ -291,11 +289,15 @@ var Chart = (function () {
 			$roleDetails = $('#js-role-details');
 
 			var nodes = pack.nodes(root);
-			var circles = vis.selectAll("circle").data(nodes).enter().append("svg:circle");
+
+			var circles = vis.selectAll("organization").data(nodes).enter().append("svg:circle");
+			//var circles = vis.selectAll("circle").data(nodes).enter().append("svg:circle");
 			initCircles(circles);
+			// only add labels to roles
 			var foreignObjects = vis.selectAll(".foreign-object")
 				.data(nodes.filter(function (d) {
-					return d.type !== 'circle';
+					console.log(d.type);
+					return d.type !== 'organization';
 				}))
 				.enter();
 
@@ -304,29 +306,7 @@ var Chart = (function () {
 					var zoomTo = node === d ? root : d;
 
 					function loadRoleDetails(id) {
-						$.ajax({
-							success: function (request) {
-								$roleDetails.html(request);
-								vis.selectAll('.title').style('opacity', '0');
-								$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
-								/*
-								$roleDetails.find('.filled-by a, .role-notes a').tipsy({
-									live: true,
-									opacity: 1.0,
-									fade: false,
-									gravity: 'w'
-								});
-								*/
-								loaded = true;
-								Chart.setRoleDetailHeight();
-							},
-							error: function (request, status, error) {
-								$roleDetails.html(request.responseText);
-							},
-							type: 'get',
-
-							url: document.location.protocol + '//' + document.location.host + '/roles/' + id + '/chart_details'
-						});
+						// do something!
 					}
 
 					if (zoomTo.type == 'role') {
@@ -337,50 +317,112 @@ var Chart = (function () {
 				addForeignObjects(foreignObjects);
 
 				Chart.zoom(root);
-
-				/*
-				$('circle').tipsy({live: true, opacity: 1.0, fade: false, gravity: 'se', trigger: 'hover'});
-				*/
-
 			} else {
 				circles.on("click", Chart.clickIe);
 				addIeLinks(foreignObjects);
-				$('#notice').html(util.unsupportedBrowserMessage());
+				Materialize.toast("You are using an unsupported browsers! Please use Chrome or FireFox.");
 			}
 		}
 	};
 })();
 
 OrganizationComponent = React.createClass({
+	mixins: [ReactMeteorData],
+
+	getMeteorData() {
+		var handle1 = Meteor.subscribe("organizations");
+		var handle2 = Meteor.subscribe("roles");
+		var handle3 = Meteor.subscribe("contributors");
+		var handle4 = Meteor.subscribe("job_accountabilities");
+		var handle5 = Meteor.subscribe("org_accountabilities");
+
+		var data = { isLoading: !handle1.ready() && !handle2.ready() && !handle3.ready() && !handle4.ready() && !handle5.ready() };
+
+		if (!data.isLoading) {
+			let orgName = "Miovision";
+			let org = OrganizationsCollection.findOne({ name: orgName });
+			let o = { name: org.name, id: org.id, type: 'organization' };
+
+			if (org) {
+				// helper to build tree
+				getOrgChildren = function (o) {
+					var c = [];
+					var query = OrganizationsCollection.find({parent: o});
+					if (query.count() > 0) {
+						var r = query.fetch();
+
+						for (var x in r) {
+							r[x].children = getOrgChildren(r[x].name); // add the children of the child
+
+							c.push({
+								name: r[x].name,
+								id: r[x].id
+							});
+
+							//c.push(r[x]); // add the child
+						}
+						return c;
+					}
+					return [];
+				}
+
+				// append label children
+				attachLabelChildren = function(n) {
+					if (typeof(n.children) == 'undefined') {
+						n.children = [];
+					}
+					for (var c in n.children) {
+						attachLabelChildren(n.children[c]);
+					}
+					n.children.push({
+						type: 'label',
+						name: n.name
+					});
+				}
+
+				o.children = getOrgChildren(o.name);
+
+				attachLabelChildren(o);
+
+				data.organization = o;
+			} else {
+				Materialize.toast("Could not find organization: " + orgName);
+				return {};
+			}
+		};
+		return data;
+	},
 
 	componentDidMount() {
-		/*
-		this.refs.zoomInButton.onclick = this.handleZoomIn;
-		this.refs.zoomOutButton.onclick = this.handleZoomOut;
-		*/
-
-		if ($('#js-chart-container'	).length === 1) {
-			Chart.load();
-		} else {
-			console.log("not good");
-		}
 	},
 
-	handleZoomIn() {
-		this.graph.zoomIn();
-	},
+	componentWillUpdate(nextProps, nextState) {
+		if (!this.data.isLoading) {
+			var org = this.data.organization;
 
-	handleZoomOut() {
-		this.graph.zoomOut();
+			// this is super FUCKED
+			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
+			setTimeout(function(){ Chart.loadData(org); }, 0);
+		};
 	},
 
 	render() {
-		return (
-			<div className="container">
-				<div ref="js-chart-container" id="js-chart-container"></div>
-				<div className="clear-block"></div>
-			</div>
-		);
+		if (this.data.isLoading) {
+			return (
+				<div className="container">
+					<div className="progress">
+						<div className="indeterminate"></div>
+					</div>
+				</div>
+			);
+		} else {
+			return (
+				<div className="container">
+					<div ref="js-chart-container" id="js-chart-container"></div>
+					<div className="clear-block"></div>
+				</div>
+			);
+		}
 	}
 });
 

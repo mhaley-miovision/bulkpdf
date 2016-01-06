@@ -1,29 +1,50 @@
-function importHelper_transformApplication(a) {
-	return a;
+function importHelper_transformApplication(x) {
+	x.type = 'application';
+	x.createdAt = new Date();
+	x.createdBy = Meteor.userId;
+	return x;
 }
-function importHelper_transformOrganization(o) {
-	return o;
+function importHelper_transformOrganization(x) {
+	x.type = "organization";
+	x.name = x.name.trim();
+	x.createdAt = new Date();
+	x.createdBy = Meteor.userId;
+	return x;
 }
-function importHelper_transformJob(j) {
-	return j;
+function importHelper_transformRole(x) {
+	x.type = 'role';
+	x.createdAt = new Date();
+	x.createdBy = Meteor.userId;
+	return x;
 }
-function importHelper_transformOrgAccountability(oa) {
-	return oa;
+function importHelper_transformOrgAccountability(x) {
+	x.type = 'org_accountability';
+	x.createdAt = new Date();
+	x.createdBy = Meteor.userId;
+	return x;
 }
-function importHelper_transformJobAccountability(jl) {
-	return jl;
+function importHelper_transformJobAccountability(x) {
+	x.type = 'role_accountability';
+	x.createdAt = new Date();
+	x.createdBy = Meteor.userId;
+	return x;
 }
-function importHelper_transformContributor(c) {
-	return c;
+function importHelper_transformContributor(x) {
+	x.type = 'contributor';
+	x.name = x.name.trim();
+	x.createdAt = new Date();
+	x.createdBy = Meteor.userId;
+	return x;
 }
-function importHelper_transformRoleLabel(rl) {
-	rl.createdAt = new Date();
-	rl.createdBy = Meteor.userId;
-	return rl;
+function importHelper_transformRoleLabel(x) {
+	x.type = 'role_label';
+	x.name = x.name.trim();
+	x.createdAt = new Date();
+	x.createdBy = Meteor.userId;
+	return x;
 }
 
 Meteor.methods({
-
 	v1ImportDatabase() {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
@@ -35,8 +56,8 @@ Meteor.methods({
 		// drop all existing data (!)
 		ApplicationsCollection.remove({});
 		ContributorsCollection.remove({});
-		OrgAccountabilitiesCollection.remove({});
 		OrganizationsCollection.remove({});
+		OrgAccountabilitiesCollection.remove({});
 		RoleAccountabilitiesCollection.remove({});
 		RolesCollection.remove({});
 		RoleLabelsCollection.remove({});
@@ -47,28 +68,28 @@ Meteor.methods({
 		var jobAccountabilities = Meteor.http.call("GET", v1BaseURL + "jobAccountabilities");
 		var organizations = Meteor.http.call("GET", v1BaseURL + "organizations");
 		var orgAccountabilities = Meteor.http.call("GET", v1BaseURL + "orgAccountabilities");
-		var jobs = Meteor.http.call("GET", v1BaseURL + "jobs");
+		var roles = Meteor.http.call("GET", v1BaseURL + "jobs");
 
-		for (var c in contributors.data) {
-			ContributorsCollection.insert(importHelper_transformContributor(contributors.data[c]));
+		for (var x in applications.data) {
+			ApplicationsCollection.insert(importHelper_transformApplication(applications.data[x]));
 		}
-		for (var o in organizations.data) {
-			OrganizationsCollection.insert(importHelper_transformOrganization(organizations.data[o]));
+		for (var x in contributors.data) {
+			ContributorsCollection.insert(importHelper_transformContributor(contributors.data[x]));
 		}
-		for (var rl in roleLabels.data) {
-			RoleLabelsCollection.insert(importHelper_transformRoleLabel(roleLabels.data[rl]));
+		for (var x in organizations.data) {
+			OrganizationsCollection.insert(importHelper_transformOrganization(organizations.data[x]));
 		}
-		for (var a in applications.data) {
-			ApplicationsCollection.insert(importHelper_transformApplication(applications.data[a]));
+		for (var x in orgAccountabilities.data) {
+			OrgAccountabilitiesCollection.insert(importHelper_transformOrgAccountability(orgAccountabilities.data[x]));
 		}
-		for (var oa in orgAccountabilities.data) {
-			ContributorsCollection.insert(importHelper_transformOrgAccountability(orgAccountabilities.data[oa]));
+		for (var x in jobAccountabilities.data) {
+			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[x]));
 		}
-		for (var ja in jobAccountabilities.data) {
-			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[ja]));
+		for (var x in roles.data) {
+			RolesCollection.insert(importHelper_transformRole(roles.data[x]));
 		}
-		for (var rl in roleLabels.data) {
-			ContributorsCollection.insert(importHelper_transformRoleLabel(roleLabels.data[rl]));
+		for (var x in roleLabels.data) {
+			RolesCollection.insert(importHelper_transformRoleLabel(roleLabels.data[x]));
 		}
 	}
 });

@@ -1,4 +1,3 @@
-
 Meteor.methods({
 	submitEnps(enpsValue, enpsReason) {
 		// Make sure the user is logged in before inserting a task
@@ -12,6 +11,6 @@ Meteor.methods({
 			createdAt: new Date(),
 			userId: Meteor.user()._id,
 			userName: Meteor.user().profile.name,
-		});
+		});a
 	}
 });
