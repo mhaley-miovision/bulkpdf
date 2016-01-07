@@ -34,17 +34,21 @@ var Chart = (function () {
 		if (d.role_alert) {
 			classes.push("alert");
 		}
+		if (d.type === 'label') {
+			classes.push("text-main1");
+		}
 		return classes.join(" ");
 	}
 
 	function foreignObjectHtml(d) {
 		d.url = "#";
-		var content = '<div class="d3label"><div class="title"><a href="' + d.url + '" class="' + classesForNode(d) + '">' + _.escape(d.name) + '</a></div>';
+		var content = '<div class="d3label"><div class="title"><a href="' + d.url + '" class="' + classesForNode(d) + '">'
+			+ _.escape(d.name ? d.name : d.contributor) + '</a></div>';
 		return content + '</div>';
 	}
 
 	function showTitle(d, scalingFactor) {
-		return scalingFactor * d.r > 20;
+		return true; //scalingFactor * d.r > 20;
 	}
 
 	function showRoleDetails(d, scalingFactor) {
@@ -152,7 +156,9 @@ var Chart = (function () {
 				},
 				makeFontSizer: function(factor) {
 					return function (d) {
-						return parseInt(Math.min(Math.max(10, Chart.zoomFunctions(k).foreignObjSize(d) / factor), 32)) + 'px';
+						//return parseInt(Math.min(Math.max(10, Chart.zoomFunctions(k).foreignObjSize(d) / factor), 32)) + 'px';
+						return parseInt(Chart.zoomFunctions(k).foreignObjSize(d) / factor) + 'px';
+
 					}
 				},
 				makeXYAdjuster: function(fn, key, factor) {
@@ -202,6 +208,7 @@ var Chart = (function () {
 				Chart.setRoleDetailHeight();
 			});
 			zoomCircles(t, k);
+
 			var fos = t.selectAll(".foreign-object");
 			var labelFos = t.selectAll('.foreign-object.label');
 			zoomFos(labelFos, zf, 3, 2.5, zf.labelWidth);
@@ -266,36 +273,51 @@ var Chart = (function () {
 			return 0
 		},
 
-		loadData: function (data) {
-			console.log(data);
+		/* TODO: To make this callable upon update, I should split this out into the initialization and update function,
+			which calls enter/update/exit and transitions in between to make for a smooth switch when properties are
+			updated :)
 
+			Note that this is an additive only method - I need to modify this to remove nodes as well
+		* */
+		loadData: function (data) {
+			// use the circle packing layout
 			pack = d3.layout.pack()
 				.size([r, r])
 				.sort(Chart.comparator)
 				.value(function (d) {
-					return 3;
+					if (d.type == 'label') {
+						return d.depth;
+					}
 					//return 5 + Math.random() * 95;
+					return 1;
 				})
+				//.padding(6);
 				.padding(0.2);
 
+			// clear the canvas
 			$(".chartContainer").empty();
+
+			// prepare the canvas
 			vis = d3.select(".chartContainer").insert("svg:svg", "h2")
 				.attr("width", w)
 				.attr("height", h)
 				.append("svg:g")
 				.attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")");
 
+			// node initialization
 			node = root = data;
-
 			$roleDetails = $('#js-role-details');
-
 			var nodes = pack.nodes(root);
+			console.log(nodes);
 
+			// add the circles
 			var circles = vis.selectAll("organization").data(nodes).enter().append("svg:circle");
 			initCircles(circles);
-			// don't add lables for organizations, since we have added them as child objects
+
+			// only add foreign objects (labels in this case) to organizations
 			var foreignObjects = vis.selectAll(".foreign-object")
 				.data(nodes.filter(function (d) {
+					console.log(d.type);
 					return d.type !== 'organization';
 				}))
 				.enter();
@@ -305,7 +327,10 @@ var Chart = (function () {
 					var zoomTo = node === d ? root : d;
 
 					function loadRoleDetails(id) {
-						// do something!
+						$roleDetails.html("<b>This is a test</b>");
+						vis.selectAll('.title').style('opacity', '0');
+						$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
+						Chart.setRoleDetailHeight();
 					}
 
 					if (zoomTo.type == 'role') {
@@ -314,12 +339,13 @@ var Chart = (function () {
 					var t = Chart.zoom(zoomTo);
 				});
 				addForeignObjects(foreignObjects);
+				console.log(foreignObjects);
 
 				Chart.zoom(root);
 			} else {
 				circles.on("click", Chart.clickIe);
 				addIeLinks(foreignObjects);
-				Materialize.toast("You are using an unsupported browsers! Please use Chrome or FireFox.");
+				Materialize.toast("You are using an unsupported browser! Please use Chrome or FireFox.");
 			}
 		}
 	};
@@ -339,23 +365,23 @@ OrganizationComponent = React.createClass({
 
 		if (!data.isLoading) {
 			let orgName = "Miovision";
+
 			//let orgName = "Computer Vision";
 			let org = OrganizationsCollection.findOne({ name: orgName });
 			if (org) {
 				// for building an org tree
-				let getOrgChildren = function (o) {
-					var c = [];
-					var query = OrganizationsCollection.find({parent: o});
+				let populateOrgChildren = function (o) {
+					o.children = [];
+					var query = OrganizationsCollection.find({parent: o.name}); // find the children
 					if (query.count() > 0) {
 						var r = query.fetch();
 
 						for (var x in r) {
-							r[x].children = getOrgChildren(r[x].name); // add the children of the child
-							c.push(r[x]); // add the child
+							o.children.push(r[x]); // add the child
+							r[x].level = o.level ? o.level+1 : 1; // attach a level
+							populateOrgChildren(r[x]); // recurse for each child
 						}
-						return c;
 					}
-					return [];
 				}
 				// for adding roles as children
 				let attachOrgRoles = function (o)  {
@@ -392,8 +418,9 @@ OrganizationComponent = React.createClass({
 					});
 				}
 
-				// build order matters!
-				org.children = getOrgChildren(org.name);
+				// build the view-centric object tree from the models
+				org.level = 0;
+				populateOrgChildren(org);
 				attachOrgRoles(org);
 				attachOrgLabels(org);
 
