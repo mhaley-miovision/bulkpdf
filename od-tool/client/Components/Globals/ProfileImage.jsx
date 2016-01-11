@@ -18,7 +18,9 @@ ProfileImage = React.createClass({
 	},
 
 	render() {
-		// Just render a placeholder container that will be filled in
+		if (!Meteor.userId()) {
+			return "";
+		}
 		return (
 			<img className="profileImg" src={this.data.profilePhotoUrl}/>
 		);
