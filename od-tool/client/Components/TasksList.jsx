@@ -13,14 +13,10 @@ TaskList = React.createClass({
 			query = {checked: {$ne: true}};
 		}
 
-		if (query.ready()) {
-			return {
-				tasks: TasksCollection.find(query, {sort: {createdAt: -1}}).fetch(),
-				incompleteCount: TasksCollection.find({checked: {$ne: true}}).count(),
-				currentUser: Meteor.user()
-			}
-		} else {
-			return {};
+		return {
+			tasks: TasksCollection.find(query, {sort: {createdAt: -1}}).fetch(),
+			incompleteCount: TasksCollection.find({checked: {$ne: true}}).count(),
+			currentUser: Meteor.user()
 		}
 	},
 
@@ -36,7 +32,7 @@ TaskList = React.createClass({
 			const currentUserId = this.data.currentUser && this.data.currentUser.profile._id;
 			const showPrivateButton = task.owner === currentUserId;
 
-			return <TaskComponent
+			return <Task
 				key={task._id}
 				task={task}
 				showPrivateButton={showPrivateButton}/>;
