@@ -22,8 +22,7 @@ var Chart = (function () {
 		classes.push(d.children ? "parent" : "child");
 		classes.push(d.type);
 		if (d.type === 'role') {
-			classes.push( "filled" );
-			//classes.push(d.filled ? "filled" : "unfilled");
+			classes.push(d.contributor ? "filled" : "unfilled");
 		}
 		if (d.structural_role) {
 			classes.push("structural");
@@ -308,7 +307,6 @@ var Chart = (function () {
 			node = root = data;
 			$roleDetails = $('#js-role-details');
 			var nodes = pack.nodes(root);
-			console.log(nodes);
 
 			// add the circles
 			var circles = vis.selectAll("organization").data(nodes).enter().append("svg:circle");
@@ -317,7 +315,6 @@ var Chart = (function () {
 			// only add foreign objects (labels in this case) to organizations
 			var foreignObjects = vis.selectAll(".foreign-object")
 				.data(nodes.filter(function (d) {
-					console.log(d.type);
 					return d.type !== 'organization';
 				}))
 				.enter();
@@ -339,7 +336,6 @@ var Chart = (function () {
 					var t = Chart.zoom(zoomTo);
 				});
 				addForeignObjects(foreignObjects);
-				console.log(foreignObjects);
 
 				Chart.zoom(root);
 			} else {
@@ -351,17 +347,27 @@ var Chart = (function () {
 	};
 })();
 
-OrganizationComponent = React.createClass({
+Organization = React.createClass({
 	mixins: [ReactMeteorData],
 
 	getMeteorData() {
+
 		var handle1 = Meteor.subscribe("organizations");
 		var handle2 = Meteor.subscribe("roles");
 		var handle3 = Meteor.subscribe("contributors");
 		var handle4 = Meteor.subscribe("job_accountabilities");
 		var handle5 = Meteor.subscribe("org_accountabilities");
 
+		console.log(handle1.ready());
+		console.log(handle2.ready());
+		console.log(handle3.ready());
+		console.log(handle4.ready());
+		console.log(handle5.ready());
+
+
 		var data = { isLoading: !handle1.ready() && !handle2.ready() && !handle3.ready() && !handle4.ready() && !handle5.ready() };
+
+		console.log("getMeteorData, isLoading=", data.isLoading);
 
 		if (!data.isLoading) {
 			let orgName = "Miovision";
@@ -458,7 +464,7 @@ OrganizationComponent = React.createClass({
 		if (this.data.isLoading) {
 			return (
 				<div className="container">
-					<br/>
+
 					<br/>
 					<div className="row centeredCard">
 						<div className="col s12 m6">
@@ -480,6 +486,9 @@ OrganizationComponent = React.createClass({
 	render() {
 		return (
 			<div className="container">
+
+
+
 				<div className={this.getChartClasses()}>
 					{this.renderLoading()}
 				</div>

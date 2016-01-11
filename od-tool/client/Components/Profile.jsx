@@ -1,4 +1,4 @@
-ProfileComponent = React.createClass({
+Profile = React.createClass({
 	render() {
 		return (
 			<div className="row centeredCard">

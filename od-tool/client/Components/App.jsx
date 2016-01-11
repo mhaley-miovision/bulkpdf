@@ -21,16 +21,16 @@ App = React.createClass({
 		return <div className="loading"></div>;
 	},
 	getView() {
-		return this.data.canView() ? this.props.yield : <LoginComponent />;
+		return this.data.canView() ? this.props.yield : <Login />;
 	},
 
     render() {
 		return <div className="app-root">
-			<NavbarComponent hasUser={this.data.hasUser}/>
+			<Navbar hasUser={this.data.hasUser}/>
 			<div className="container">
 				{this.data.loggingIn ? this.loading() : this.getView()}
 			</div>
-			<FooterComponent hasUser={this.data.hasUser}/>
+			<Footer hasUser={this.data.hasUser}/>
 		</div>;
     }
 });

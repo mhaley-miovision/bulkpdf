@@ -1,4 +1,4 @@
-LoginComponent = React.createClass({
+Login = React.createClass({
 	render() {
 		return (
 			<div className="welcome-public">
@@ -10,7 +10,7 @@ LoginComponent = React.createClass({
 								<span className="card-title text-main1">Organizational Design Tool</span>
 							</div>
 							<div className="card-content">
-								<AccountsUIWrapperComponent />
+								<AccountsUIWrapper />
 							</div>
 							<br /><br />
 						</div>

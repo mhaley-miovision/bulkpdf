@@ -1,9 +1,11 @@
-TaskListComponent = React.createClass({
+TaskList = React.createClass({
 	// This mixin makes the getMeteorData method work
 	mixins: [ReactMeteorData],
 
 	// Loads items from the Tasks collection and puts them on this.data.tasks
 	getMeteorData() {
+		Meteor.subscribe("tasks");
+
 		let query = {};
 
 		if (this.state.hideCompleted) {
@@ -11,11 +13,15 @@ TaskListComponent = React.createClass({
 			query = {checked: {$ne: true}};
 		}
 
-		return {
-			tasks: TasksCollection.find(query, {sort: {createdAt: -1}}).fetch(),
-			incompleteCount: TasksCollection.find({checked: {$ne: true}}).count(),
-			currentUser: Meteor.user()
-		};
+		if (query.ready()) {
+			return {
+				tasks: TasksCollection.find(query, {sort: {createdAt: -1}}).fetch(),
+				incompleteCount: TasksCollection.find({checked: {$ne: true}}).count(),
+				currentUser: Meteor.user()
+			}
+		} else {
+			return {};
+		}
 	},
 
 	getInitialState() {

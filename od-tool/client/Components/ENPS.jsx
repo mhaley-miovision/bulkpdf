@@ -1,4 +1,4 @@
-ENPSComponent = React.createClass({
+ENPS = React.createClass({
 	getInitialState() {
 		return {
 			enps: null,

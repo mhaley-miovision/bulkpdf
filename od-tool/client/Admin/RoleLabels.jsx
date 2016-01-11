@@ -1,4 +1,4 @@
-RoleLabelsComponent = React.createClass({
+RoleLabels = React.createClass({
 	// This mixin makes the getMeteorData method work
 	mixins: [ReactMeteorData],
 
@@ -20,7 +20,7 @@ RoleLabelsComponent = React.createClass({
 		return this.data.roleLabels.map((roleLabel) => {
 			const currentUserId = this.data.currentUser && this.data.currentUser.profile._id;
 
-			return <RoleLabelComponent
+			return <RoleLabel
 				key={roleLabel._id}
 				roleLabel={roleLabel} />;
 		});

@@ -1,4 +1,4 @@
-TeamComponent = React.createClass({
+Team = React.createClass({
 	render() {
 		return (
 			<div className="row centeredCard">

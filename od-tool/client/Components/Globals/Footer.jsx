@@ -1,4 +1,4 @@
-FooterComponent = React.createClass({
+Footer = React.createClass({
 	handleFeedbackClick() {
 		this.refs.feedback.showDialog();
 	},

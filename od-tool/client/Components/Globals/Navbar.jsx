@@ -1,4 +1,4 @@
-NavbarComponent = React.createClass({
+Navbar = React.createClass({
 	handleFeedbackClick() {
 		console.log(this.refs);
 		this.refs.enps.showDialog();
@@ -21,7 +21,7 @@ NavbarComponent = React.createClass({
 
 				</ul>
 				<span className="right">
-					<AccountsUIWrapperComponent />
+					<AccountsUIWrapper />
 				</span>
 			</div>
 		);
@@ -54,7 +54,7 @@ NavbarComponent = React.createClass({
 				</ul>
 				<a href="#" data-activates="slide-out" className="button-collapse"><i className="mdi-navigation-menu"></i></a>
 				<span className="right">
-					<AccountsUIWrapperComponent />
+					<AccountsUIWrapper />
 				</span>
 		</div>
 		);

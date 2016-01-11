@@ -1,4 +1,4 @@
-ImportComponent = React.createClass({
+Import = React.createClass({
 	getInitialState() {
 		return {
 			loading: false,
