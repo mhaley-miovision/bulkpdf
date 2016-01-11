@@ -53,9 +53,12 @@ Navbar = React.createClass({
 					<li><a href="/admin/roleLabels">Edit Roles</a></li>
 				</ul>
 				<a href="#" data-activates="slide-out" className="button-collapse"><i className="mdi-navigation-menu"></i></a>
-				<span className="right">
+				<div className="right">
 					<AccountsUIWrapper />
-				</span>
+				</div>
+				<div className="right">
+					<ProfileImage />
+				</div>
 		</div>
 		);
 	},

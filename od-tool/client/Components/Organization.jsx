@@ -351,7 +351,6 @@ Organization = React.createClass({
 	mixins: [ReactMeteorData],
 
 	getMeteorData() {
-
 		var handle1 = Meteor.subscribe("organizations");
 		var handle2 = Meteor.subscribe("roles");
 		var handle3 = Meteor.subscribe("contributors");
@@ -363,7 +362,6 @@ Organization = React.createClass({
 		console.log(handle3.ready());
 		console.log(handle4.ready());
 		console.log(handle5.ready());
-
 
 		var data = { isLoading: !handle1.ready() && !handle2.ready() && !handle3.ready() && !handle4.ready() && !handle5.ready() };
 
@@ -443,6 +441,7 @@ Organization = React.createClass({
 	},
 
 	componentWillUpdate(nextProps, nextState) {
+		console.log("componentWillUpdate[organization]");
 		if (!this.data.isLoading) {
 			var org = this.data.organization;
 

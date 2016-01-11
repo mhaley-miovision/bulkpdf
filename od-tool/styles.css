@@ -37,6 +37,16 @@
     border-style:none;
 }
 
+.profileImg {
+    max-width: 32px;
+    max-height: 32px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 15px;
+    -webkit-filter: opacity(50%); /*sepia, hue-rotate, invert....*/
+
+}
+
 /*
 body {
     display: flex;

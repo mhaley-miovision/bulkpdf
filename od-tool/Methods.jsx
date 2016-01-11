@@ -1,4 +1,3 @@
-
 // if these are removed from here it causes weirdness as partial subscriptions are loaded on the client
 if (Meteor.isClient) {
 	// This code is executed on the client only
@@ -12,6 +11,5 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
-
 
 }
