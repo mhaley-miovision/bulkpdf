@@ -24,14 +24,18 @@ OrganizationSelector = React.createClass({
 		this.setState( { showList: show } );
 	},
 
-	selectOrg(o) {
-		console.log(o);
+	selectOrg(evt) {
+		evt.preventDefault();
+		console.log(evt);
+		if (evt.target && evt.target.id) {
+			Materialize.toast(evt.target.id, 1000);
+		}
 		this.toggleDropdown(false);
 	},
 
 	onBlur() {
 		var _this = this;
-		setTimeout(function() { _this.toggleDropdown(false); }, 100); // TODO HACK: to facilitate clicking first
+		setTimeout(function() { _this.toggleDropdown(false); }, 150); // TODO HACK: to facilitate clicking first
 	},
 
 	onSelected() {
@@ -43,7 +47,7 @@ OrganizationSelector = React.createClass({
 		if (this.state.searchResults && this.state.searchResults.length > 0) {
 			var collection = [];
 			this.state.searchResults.map(function(o, i) {
-				collection.push(<a href="#!" className="collection-item" onClick={_this.selectOrg} key={i} object={o}>{o.name}</a>);
+				collection.push(<a href="#!" className="collection-item" onFocus={_this.selectOrg} key={i} id={i} object={o}>{o.name}</a>);
 			});
 			return collection;
 		} else {
