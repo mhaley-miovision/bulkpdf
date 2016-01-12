@@ -186,7 +186,22 @@ var Chart = (function () {
 			}
 		},
 
+		zoomToOrg: function (zoomToOrg) {
+			if (zoomToOrg) {
+				if (this.orgNameToNode[zoomToOrg]) {
+					this.zoom(this.orgNameToNode[zoomToOrg]);
+				} else {
+					console.log("this.orgNameToNode[zoomToOrg] is undefined");
+				}
+			} else {
+				console.log("zoomToOrg is undefined");
+			}
+		},
+
 		zoom: function (zoomTo, i) {
+			console.log("zoomTo: ");
+			console.log(zoomTo);
+
 			zoomed = false;
 			loaded = false;
 			if (zoomedToRole) {
@@ -280,7 +295,7 @@ var Chart = (function () {
 
 			Note that this is an additive only method - I need to modify this to remove nodes as well
 		* */
-		loadData: function (data) {
+		loadData: function (data, zoomToOrg) {
 			// use the circle packing layout
 			pack = d3.layout.pack()
 				.size([r, r])
@@ -314,6 +329,10 @@ var Chart = (function () {
 			var circles = vis.selectAll("organization").data(nodes).enter().append("svg:circle");
 			initCircles(circles);
 
+			// create map of orgName -> node
+			this.orgNameToNode = [];
+			nodes.filter(n => n.type == "organization").forEach(n => this.orgNameToNode[n.name] = n);
+
 			// only add foreign objects (labels in this case) to organizations
 			var foreignObjects = vis.selectAll(".foreign-object")
 				.data(nodes.filter(function (d) {
@@ -339,7 +358,12 @@ var Chart = (function () {
 				});
 				addForeignObjects(foreignObjects);
 
-				Chart.zoom(root);
+				if (zoomToOrg && this.orgNameToNode[zoomToOrg])
+				{
+					Chart.zoom(this.orgNameToNode[zoomToOrg]);
+				} else {
+					Chart.zoom(root);
+				}
 			} else {
 				circles.on("click", Chart.clickIe);
 				addIeLinks(foreignObjects);
@@ -362,10 +386,7 @@ Organization = React.createClass({
 		var data = { isLoading: !handle1.ready() && !handle2.ready() && !handle3.ready() && !handle4.ready() && !handle5.ready() };
 
 		if (!data.isLoading) {
-			let orgName = "Miovision";
-
-			//let orgName = "Computer Vision";
-			let org = OrganizationsCollection.findOne({ name: orgName });
+			let org = OrganizationsCollection.findOne({ name: this.props.org });
 			if (org) {
 				// for building an org tree
 				let populateOrgChildren = function (o) {
@@ -431,17 +452,30 @@ Organization = React.createClass({
 		return data;
 	},
 
+	zoomToOrg(orgName) {
+		Chart.zoomToOrg(orgName);
+	},
+
 	componentDidMount() {
 	},
 
 	componentWillUpdate(nextProps, nextState) {
 		if (!this.data.isLoading) {
-			var org = this.data.organization;
+			var org = this.data.organization; // as loaded from the db
+			var zoomToOrg = this.state && this.state.zoomToOrg ? this.state.zoomToOrg : "";
+
+			console.log("componentWillUpdate called!");
 
 			// this is super FUCKED
 			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
-			setTimeout(function(){ Chart.loadData(org); }, 0);
+			setTimeout(function(){ Chart.loadData(org, zoomToOrg); }, 0);
 		};
+	},
+
+	shouldComponentUpdate: function(nextProps, nextState) {
+		console.log(nextProps);
+		console.log(nextState);
+		return true;
 	},
 
 	getChartClasses() {
@@ -456,7 +490,6 @@ Organization = React.createClass({
 		if (this.data.isLoading) {
 			return (
 				<div className="container">
-
 					<br/>
 					<div className="row centeredCard">
 						<div className="col s12 m6">
@@ -478,15 +511,6 @@ Organization = React.createClass({
 	render() {
 		return (
 			<div className="container">
-
-				<div className="row">
-					<div className="col s12">
-						<span className="flow-text">
-							<OrganizationSelector />
-						</span>
-					</div>
-				</div>
-
 				<div className={this.getChartClasses()}>
 					{this.renderLoading()}
 				</div>

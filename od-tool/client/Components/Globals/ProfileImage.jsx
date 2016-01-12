@@ -7,8 +7,6 @@ ProfileImage = React.createClass({
 		var handle = Meteor.subscribe("users");
 		var data = { profilePhotoUrl: "" }; //"img/user_avatar_blank.jpg" };
 		if (handle.ready()) {
-			console.log(Meteor.user()._id);
-
 			var usr = Meteor.users.findOne({ _id : Meteor.user()._id });
 			if (usr) {
 				data.profilePhotoUrl = usr.services.google.picture;

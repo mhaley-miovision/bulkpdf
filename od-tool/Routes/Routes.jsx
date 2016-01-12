@@ -36,7 +36,7 @@ FlowRouter.route( '/team', {
 FlowRouter.route( '/organization', {
 	name: 'organization',
 	action() {
-		ReactLayout.render( App, { yield: <Organization /> } );
+		ReactLayout.render( App, { yield: <MyOrganization /> } );
 	}
 });
 

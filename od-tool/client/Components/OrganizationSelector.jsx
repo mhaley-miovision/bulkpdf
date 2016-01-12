@@ -42,8 +42,10 @@ OrganizationSelector = React.createClass({
 		this.toggleDropdown(true);
 	},
 
-	onWheel(e) {
-		console.log(e);
+	handleClick: function(o) {
+		if (this.props.onClick) {
+			this.props.onClick(o);
+		}
 	},
 
 	renderDropdownItems() {
@@ -51,8 +53,10 @@ OrganizationSelector = React.createClass({
 		if (this.state.searchResults && this.state.searchResults.length > 0) {
 			var collection = [];
 			this.state.searchResults.map(function(o, i) {
-				collection.push(<a href="#!" className="collection-item" onFocus={_this.selectOrg} key={i} id={i} object={o}>{o.name}</a>);
-			});
+				collection.push(
+					<a href="#!" className="collection-item" key={i} id={i} object={o}
+					   onClick={this.handleClick.bind(this, o)}>{o.name}</a>);
+			}, this);
 			return collection;
 		} else {
 			return <a href="#!" className="collection-item" onClick={_this.onBlur}>No matching organizations found.</a>
