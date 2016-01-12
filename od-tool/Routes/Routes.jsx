@@ -22,14 +22,14 @@ FlowRouter.route( '/login', {
 FlowRouter.route( '/profile', {
 	name: 'profile',
 	action() {
-		ReactLayout.render( App, { yield: <Profile /> } );
+		ReactLayout.render( App, { yield: <MyProfile /> } );
 	}
 });
 
 FlowRouter.route( '/team', {
 	name: 'team',
 	action() {
-		ReactLayout.render( App, { yield: <Team /> } );
+		ReactLayout.render( App, { yield: <MyTeam /> } );
 	}
 });
 

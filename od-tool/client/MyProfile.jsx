@@ -1,4 +1,4 @@
-Team = React.createClass({
+MyProfile = React.createClass({
 	render() {
 		return (
 			<div className="row centeredCard">
@@ -6,7 +6,7 @@ Team = React.createClass({
 					<div className="card blue-grey darken-1">
 						<div className="card-content white-text">
 							<span className="card-title">Stay Tuned</span>
-							<p>Team will be shown here, but isn't done yet.</p>
+							<p>Profile will be shown here, but isn't done yet.</p>
 						</div>
 						<div className="card-action">
 							<a href="/">Take me home!</a>
@@ -14,5 +14,5 @@ Team = React.createClass({
 					</div>
 				</div>
 			</div>
-			);
+		);
 	}});
