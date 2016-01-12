@@ -3,7 +3,7 @@ Meteor.methods({
 		const adminProfile = Meteor.users.findOne({
 			'profile.name' : 'Victor Leipnik'
 		});
-		console.log(adminProfile);
+		//console.log(adminProfile);
 
 		var options = {
 			customer: 'my_customer',
@@ -22,7 +22,7 @@ Meteor.methods({
 		const myUserProfile = Meteor.users.findOne({
 			'_id' : this.userId,
 		});
-		console.log(myUserProfile.services.google.picture);
+		//console.log(myUserProfile.services.google.picture);
 		return myUserProfile.services.google.picture;
 	}
 });
@@ -31,27 +31,25 @@ Meteor.methods({
 Meteor.publish("users", function () {
 	//return Meteor.users.find({});
 
-	var d=  Meteor.users.find({},
-		{ 'fields': {
-			'user': 1,
-			'services.google.email': 1,
-			'services.google.name': 1,
-			'services.google.given_name': 1,
-			'services.google.family_name': 1,
-			'services.google.picture': 1,
-			'services.google.gender': 1
-		}});
-	console.log(d);
-	return d;
+	return Meteor.users.find({},
+	{ 'fields': {
+		'user': 1,
+		'services.google.email': 1,
+		'services.google.name': 1,
+		'services.google.given_name': 1,
+		'services.google.family_name': 1,
+		'services.google.picture': 1,
+		'services.google.gender': 1
+	}});
 });
 
 
 // On server startup, if the database is empty, create some initial data.
 Meteor.startup(function () {
 
-	console.log("server");
+	//console.log("server");
 	Meteor.call("getUsers", function (err, resp) {
-		console.log(err);
-		console.log(resp);
+		//console.log(err);
+		//console.log(resp);
 	});
 });

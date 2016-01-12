@@ -47,6 +47,30 @@
 
 }
 
+.item
+{ cursor: pointer }
+
+.item.selected
+{ background-color: grey}
+
+.widget
+{ position: relative }
+
+.popover
+{ background-color: white;
+  position: absolute;
+  left: 0;
+  border: 2px solid grey
+}
+
+.searchDropdown {
+    position:absolute;
+    z-index: 9999999;
+    font-size: 14px;
+    margin: 3px;
+    overflow-y: scroll;
+}
+
 /*
 body {
     display: flex;

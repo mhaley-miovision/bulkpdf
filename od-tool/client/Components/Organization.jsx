@@ -357,15 +357,7 @@ Organization = React.createClass({
 		var handle4 = Meteor.subscribe("job_accountabilities");
 		var handle5 = Meteor.subscribe("org_accountabilities");
 
-		console.log(handle1.ready());
-		console.log(handle2.ready());
-		console.log(handle3.ready());
-		console.log(handle4.ready());
-		console.log(handle5.ready());
-
 		var data = { isLoading: !handle1.ready() && !handle2.ready() && !handle3.ready() && !handle4.ready() && !handle5.ready() };
-
-		console.log("getMeteorData, isLoading=", data.isLoading);
 
 		if (!data.isLoading) {
 			let orgName = "Miovision";
@@ -441,7 +433,6 @@ Organization = React.createClass({
 	},
 
 	componentWillUpdate(nextProps, nextState) {
-		console.log("componentWillUpdate[organization]");
 		if (!this.data.isLoading) {
 			var org = this.data.organization;
 
@@ -486,7 +477,13 @@ Organization = React.createClass({
 		return (
 			<div className="container">
 
-
+				<div className="row">
+					<div className="col s12">
+						<span className="flow-text">
+							<OrganizationSelector />
+						</span>
+					</div>
+				</div>
 
 				<div className={this.getChartClasses()}>
 					{this.renderLoading()}

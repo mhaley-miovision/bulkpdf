@@ -49,7 +49,6 @@ Meteor.methods({
 				return immediateChildren.length;
 			}
 			var ret = getOrgChildren(existing.id);
-			console.log(ret);
 			return ret;
 
 		} else {
@@ -70,5 +69,18 @@ Meteor.methods({
 		}
 
 		OrganizationsCollection.update(organizationId, {$set: {name: name}});
+	},
+
+	orgSearch: function(query) {
+		if (query && query !== '') {
+			find = {name: {$regex: '.*' + query + '.*'}};
+		} else {
+			find = {}
+		}
+
+		// TODO: nosql injection risk here!?
+		return OrganizationsCollection.find(
+			find,
+			{fields: {name: 1, _id: 1, id: 1}}).fetch();
 	}
 });
