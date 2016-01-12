@@ -47,11 +47,14 @@ var Chart = (function () {
 	}
 
 	function showTitle(d, scalingFactor) {
-		return true; //scalingFactor * d.r > 20;
+		if (d.type == 'role')
+			return scalingFactor * d.r > 20;
+		else
+			return true;
 	}
 
 	function showRoleDetails(d, scalingFactor) {
-		return d.type === 'role' ? scalingFactor * d.r >= r / 2 : showTitle(d, scalingFactor);
+		return d.type === 'role' ? scalingFactor * d.r >= r / 2 : (scalingFactor * d.r > 20);
 	}
 
 	function innerSquareSize(d) {
@@ -155,8 +158,7 @@ var Chart = (function () {
 				},
 				makeFontSizer: function(factor) {
 					return function (d) {
-						//return parseInt(Math.min(Math.max(10, Chart.zoomFunctions(k).foreignObjSize(d) / factor), 32)) + 'px';
-						return parseInt(Chart.zoomFunctions(k).foreignObjSize(d) / factor) + 'px';
+						return parseInt(Math.min(Math.max(10, Chart.zoomFunctions(k).foreignObjSize(d) / factor), 18)) + 'px';
 
 					}
 				},

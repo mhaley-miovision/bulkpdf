@@ -42,6 +42,10 @@ OrganizationSelector = React.createClass({
 		this.toggleDropdown(true);
 	},
 
+	onWheel(e) {
+		console.log(e);
+	},
+
 	renderDropdownItems() {
 		var _this = this;
 		if (this.state.searchResults && this.state.searchResults.length > 0) {
