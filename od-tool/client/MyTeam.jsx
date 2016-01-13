@@ -16,10 +16,11 @@ MyTeam = React.createClass({
 			isLoading: !handle.ready(),
 			org: organization
 		};
-
-		console.log(data);
-
 		return data;
+	},
+
+	componentDidMount() {
+		this.forceUpdate();
 	},
 
 	render() {

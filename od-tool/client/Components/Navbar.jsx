@@ -36,7 +36,7 @@ Navbar = React.createClass({
 					<li className={FlowHelpers.currentRoute("team")}><a href="/team">Team</a></li>
 					<li className={FlowHelpers.currentRoute("organization")}><a href="/organization">Organization</a></li>
 					<li className={FlowHelpers.currentRoute("profile")}><a href="/profile">Profile</a></li>
-					<li><a className="dropdown-button" href="#!" data-activates="dropdown1">Admin<i className="material-icons right">arrow_drop_down</i></a></li>
+					<li><a className="dropdown-button" href="#!" data-activates="adminRouteDropdown">Admin<i className="material-icons right">arrow_drop_down</i></a></li>
 					<li className={FlowHelpers.currentRoute("enps")}><a href="/enps">myENPS</a></li>
 				</ul>
 				<ul id="slide-out" className="side-nav">
@@ -47,7 +47,7 @@ Navbar = React.createClass({
 					<li className={FlowHelpers.currentRoute("profile")}><a href="/profile">Profile</a></li>
 					<li className={FlowHelpers.currentRoute("enps")}><a href="/enps">myENPS</a></li>
 				</ul>
-				<ul id="dropdown1" className="dropdown-content">
+				<ul id="adminRouteDropdown" className="dropdown-content">
 					<li><a href="/admin/import">Import from V1</a></li>
 					<li className="divider"></li>
 					<li><a href="/admin/roleLabels">Edit Roles</a></li>

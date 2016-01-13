@@ -60,7 +60,3 @@ FlowRouter.route( '/enps', {
 		ReactLayout.render( App, { yield: <ENPS /> } );
 	}
 });
-
-Accounts.onLogin( () => {
-
-});

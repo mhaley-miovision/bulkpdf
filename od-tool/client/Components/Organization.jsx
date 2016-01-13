@@ -456,9 +456,6 @@ Organization = React.createClass({
 		Chart.zoomToOrg(orgName);
 	},
 
-	componentDidMount() {
-	},
-
 	componentWillUpdate(nextProps, nextState) {
 		if (!this.data.isLoading) {
 			var org = this.data.organization; // as loaded from the db

@@ -39,6 +39,8 @@ if (Meteor.isClient) {
     $(document).ready(function(){
         $('.parallax').parallax();
     });
+
+	Meteor.startup(function(){
+		Hooks.init();
+	});
 }
-
-
