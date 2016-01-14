@@ -4,8 +4,13 @@ MyOrganization = React.createClass({
 		return { org: "Miovision" };
 	},
 
+		/*
 	handleOrgChanged(o) {
 		this.setState({ org: o.name });
+	},*/
+
+	handleOrgChanged(o) {
+		this.refs.org.zoomToOrg(o.name);
 	},
 
 	render() {

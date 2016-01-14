@@ -40,8 +40,6 @@ var Chart = (function () {
 	}
 
 	function foreignObjectHtml(d) {
-		console.log("foreignObjectHtml: " + d.type);
-
 		d.url = "#";
 		var content = '<div class="d3label"><div class="title"><a href="' + d.url + '" class="' + classesForNode(d) + '">'
 			+ _.escape(d.name ? d.name : d.contributor) + '</a></div>';
@@ -182,7 +180,9 @@ var Chart = (function () {
 		zoomToOrg: function (zoomToOrg) {
 			if (zoomToOrg) {
 				if (this.orgNameToNode[zoomToOrg]) {
-					this.zoom(this.orgNameToNode[zoomToOrg]);
+					console.log("*** zooming to: ");
+					console.log( this.orgNameToNode[zoomToOrg]);
+					this.zoom(this.orgNameToNode[zoomToOrg], true);
 				} else {
 					console.log("this.orgNameToNode[zoomToOrg] is undefined");
 				}
@@ -191,8 +191,8 @@ var Chart = (function () {
 			}
 		},
 
-		zoom: function (zoomTo, i) {
-			console.log("zoomTo: ");
+		zoom: function (zoomTo, shouldAnimate = false) {
+			console.log("zoomTo FUNCTION: ");
 			console.log(zoomTo);
 
 			zoomed = false;
@@ -207,7 +207,7 @@ var Chart = (function () {
 
 			var zf = Chart.zoomFunctions(k);
 			var t = vis.transition()
-				.duration(d3.event ? (d3.event.altKey ? 3.5 * Chart.transitionDuration() : Chart.transitionDuration()) : 0);
+				.duration(shouldAnimate ? Chart.transitionDuration() : 0) ; //d3.event ? (d3.event.altKey ? 3.5 * Chart.transitionDuration() : Chart.transitionDuration()) : 0);
 
 			t.each("end", function () {
 				if (zoomTo.type == 'role') {
@@ -345,6 +345,9 @@ var Chart = (function () {
 			circles.on("click", function (d) {
 				var zoomTo = node === d ? root : d;
 
+				console.log("*** CIRCLE CLICK ZOOM***");
+				console.log(zoomTo);
+
 				function loadRoleDetails(id) {
 					$roleDetails.html("<b>This is a test</b>");
 					vis.selectAll('.title').style('opacity', '0');
@@ -355,7 +358,7 @@ var Chart = (function () {
 				if (zoomTo.type == 'role') {
 					loadRoleDetails(zoomTo.id);
 				}
-				Chart.zoom(zoomTo);
+				Chart.zoom(zoomTo, true);
 			});
 
 			d3.select(".chartContainer").on("click", function (d) {
@@ -366,7 +369,7 @@ var Chart = (function () {
 			{
 				Chart.zoom(this.orgNameToNode[zoomToOrg]);
 			} else {
-				Chart.zoom(root);
+				Chart.zoom(root, false);
 			}
 		}
 	};
@@ -470,9 +473,8 @@ Organization = React.createClass({
 	},
 
 	shouldComponentUpdate: function(nextProps, nextState) {
-		console.log(nextProps);
-		console.log(nextState);
-		return true;
+		// let d3 do the updating!
+		return false;
 	},
 
 	getChartClasses() {
