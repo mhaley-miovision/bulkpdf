@@ -11,7 +11,11 @@ var Chart = (function () {
 		zoomedToRole,
 		$roleDetails,
 		zoomed,
-		loaded;
+		loaded,
+		color = d3.scale.linear()
+			.domain([-1, 18])
+			.range(["hsl(0,0%,100%)", "hsl(228,30%,40%)"])
+			.interpolate(d3.interpolateHcl);
 
 	function browserSupportsForeignObjects() {
 		return typeof SVGForeignObjectElement !== 'undefined';
@@ -131,6 +135,13 @@ var Chart = (function () {
 	function initCircles(circles) {
 		circles
 			.attr("class", classesForNode)
+			.style("fill", function(d) {
+				if (d['color']) {
+					return d.color;
+				} else {
+					return d.children ? color(d.depth) : '';
+				}
+			})
 			.attr("cx", dx)
 			.attr("cy", dy)
 			.attr("r", function (d) {
@@ -138,7 +149,7 @@ var Chart = (function () {
 			})
 			.attr("title", function (d) {
 				return _.unescape(d.name);
-			})
+			});
 	}
 
 	return {
@@ -288,6 +299,7 @@ var Chart = (function () {
 			}
 			return 0
 		},
+
 
 		/* TODO: To make this callable upon update, I should split this out into the initialization and update function,
 			which calls enter/update/exit and transitions in between to make for a smooth switch when properties are
