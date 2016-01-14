@@ -73,7 +73,7 @@ Meteor.methods({
 
 	orgSearch: function(query) {
 		if (query && query !== '') {
-			find = {name: {$regex: '.*' + query + '.*'}};
+			find = {name: {$regex: new RegExp('.*' + query + '.*', "i")}};
 		} else {
 			find = {}
 		}
