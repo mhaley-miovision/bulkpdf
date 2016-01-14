@@ -17,10 +17,6 @@ var Chart = (function () {
 			.range(["hsl(0,0%,100%)", "hsl(228,30%,40%)"])
 			.interpolate(d3.interpolateHcl);
 
-	function browserSupportsForeignObjects() {
-		return typeof SVGForeignObjectElement !== 'undefined';
-	}
-
 	function classesForNode(d) {
 		var classes = [];
 		classes.push(d.children ? "parent" : "child");
@@ -44,6 +40,8 @@ var Chart = (function () {
 	}
 
 	function foreignObjectHtml(d) {
+		console.log("foreignObjectHtml: " + d.type);
+
 		d.url = "#";
 		var content = '<div class="d3label"><div class="title"><a href="' + d.url + '" class="' + classesForNode(d) + '">'
 			+ _.escape(d.name ? d.name : d.contributor) + '</a></div>';
@@ -54,7 +52,7 @@ var Chart = (function () {
 		if (d.type == 'role')
 			return scalingFactor * d.r > 20;
 		else
-			return true;
+			return true;//return scalingFactor * d.r > 30;
 	}
 
 	function showRoleDetails(d, scalingFactor) {
@@ -71,26 +69,6 @@ var Chart = (function () {
 
 	function dy(d) {
 		return d.y;
-	}
-
-	function addIeLinks(foreignObjects) {
-		foreignObjects.append("svg:a")
-			.attr("xlink:href", function (d) {
-				return d.url;
-			})
-			.append("svg:text")
-			.attr("class", classesForNode)
-			.attr("x", dx)
-			.attr("y", dy)
-			.attr("dy", ".35em")
-			.attr("text-anchor", "middle")
-			.style("opacity", function (d) {
-				return showTitle(d, 1) ? 1 : 0;
-			})
-			.text(function (d) {
-				return _.escape(d.name);
-			})
-			.call(d3.wrap, 40);
 	}
 
 	function addForeignObjects(foreignObjects) {
@@ -160,7 +138,11 @@ var Chart = (function () {
 		zoomFunctions: function (k) {
 			return {
 				foreignObjSize: function(d) {
-					return d.r * k * 2 / root_2;
+					if (d.type === 'role') {
+						return d.r * k * 2 / root_2;
+					} else {
+						return d.r * k * 2;
+					}
 				},
 				setOpacity: function(fos) {
 					fos.style("opacity", function (d) {
@@ -237,6 +219,11 @@ var Chart = (function () {
 			zoomCircles(t, k);
 
 			var fos = t.selectAll(".foreign-object");
+			zoomFos(fos, zf, 1, 6, zf.foreignObjSize);
+			zf.setOpacity(fos);
+
+			/*
+			var fos = t.selectAll(".foreign-object");
 			var labelFos = t.selectAll('.foreign-object.label');
 			zoomFos(labelFos, zf, 3, 2.5, zf.labelWidth);
 			zf.setOpacity(labelFos);
@@ -244,7 +231,7 @@ var Chart = (function () {
 			var fos = t.selectAll(".foreign-object");
 			var roleFos = t.selectAll('.foreign-object.role');
 			zoomFos(roleFos, zf, 1, 6, zf.foreignObjSize);
-			zf.setOpacity(roleFos);
+			zf.setOpacity(roleFos);*/
 
 			node = zoomTo;
 			d3.event && d3.event.stopPropagation();
@@ -345,41 +332,41 @@ var Chart = (function () {
 			this.orgNameToNode = [];
 			nodes.filter(n => n.type == "organization").forEach(n => this.orgNameToNode[n.name] = n);
 
-			// only add foreign objects (labels in this case) to organizations
+			// don't add these object to organizations, since we use the label object instead for them, as a circle
 			var foreignObjects = vis.selectAll(".foreign-object")
-				.data(nodes.filter(function (d) {
+				.data(nodes
+					.filter(function (d) {
 					return d.type !== 'organization';
-				}))
+					})
+				)
 				.enter();
+			addForeignObjects(foreignObjects);
 
-			if (browserSupportsForeignObjects()) {
-				circles.on("click", function (d) {
-					var zoomTo = node === d ? root : d;
+			circles.on("click", function (d) {
+				var zoomTo = node === d ? root : d;
 
-					function loadRoleDetails(id) {
-						$roleDetails.html("<b>This is a test</b>");
-						vis.selectAll('.title').style('opacity', '0');
-						$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
-						Chart.setRoleDetailHeight();
-					}
-
-					if (zoomTo.type == 'role') {
-						loadRoleDetails(zoomTo.id);
-					}
-					var t = Chart.zoom(zoomTo);
-				});
-				addForeignObjects(foreignObjects);
-
-				if (zoomToOrg && this.orgNameToNode[zoomToOrg])
-				{
-					Chart.zoom(this.orgNameToNode[zoomToOrg]);
-				} else {
-					Chart.zoom(root);
+				function loadRoleDetails(id) {
+					$roleDetails.html("<b>This is a test</b>");
+					vis.selectAll('.title').style('opacity', '0');
+					$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
+					Chart.setRoleDetailHeight();
 				}
+
+				if (zoomTo.type == 'role') {
+					loadRoleDetails(zoomTo.id);
+				}
+				Chart.zoom(zoomTo);
+			});
+
+			d3.select(".chartContainer").on("click", function (d) {
+				Chart.zoom(root);
+			})
+
+			if (zoomToOrg && this.orgNameToNode[zoomToOrg])
+			{
+				Chart.zoom(this.orgNameToNode[zoomToOrg]);
 			} else {
-				circles.on("click", Chart.clickIe);
-				addIeLinks(foreignObjects);
-				Materialize.toast("You are using an unsupported browser! Please use Chrome or FireFox.");
+				Chart.zoom(root);
 			}
 		}
 	};
@@ -432,6 +419,7 @@ Organization = React.createClass({
 						}
 					}
 				}
+
 				// for appending a label as a child
 				let attachOrgLabels = function(n) {
 					if (n.type !== 'organization') {

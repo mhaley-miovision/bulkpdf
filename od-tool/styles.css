@@ -288,7 +288,7 @@ circle.role.core-role {
 }
 
 circle.role.unfilled, circle.role.structural.unfilled {
-    fill: transparent;
+    fill: white;
 }
 
 circle.role.alert {
