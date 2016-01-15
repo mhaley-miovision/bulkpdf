@@ -241,7 +241,7 @@ var Chart = (function () {
 		leaveRole: function () {
 			$roleDetails.empty();
 			$roleDetails.hide();
-			vis.selectAll('.title').style('opacity', '1');
+			//vis.selectAll('.title').style('opacity', '1');
 			zoomedToRole = null;
 		},
 
@@ -345,7 +345,7 @@ var Chart = (function () {
 
 				function loadRoleDetails(id) {
 					$roleDetails.html("<b>This is a test</b>");
-					vis.selectAll('.title').style('opacity', '0');
+					//vis.selectAll('.title').style('opacity', '0');
 					$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
 					Chart.setRoleDetailHeight();
 				}
@@ -384,6 +384,13 @@ Organization = React.createClass({
 		}
 	},
 
+	getInitialState() {
+		return {
+			initialLoad: true,
+		}
+	},
+
+	// TODO: move some of this log into server-side methods
 	getMeteorData() {
 		var handle1 = Meteor.subscribe("organizations");
 		var handle2 = Meteor.subscribe("roles");
@@ -505,6 +512,10 @@ Organization = React.createClass({
 		if (!this.data.isLoading) {
 			var org = this.data.organization; // as loaded from the db
 			var zoomToOrg = this.state && this.state.zoomToOrg ? this.state.zoomToOrg : "";
+
+			if (nextProps.roleMode != this.props.roleMode) {
+				// detected role mode change!
+			}
 
 			console.log("componentWillUpdate called!");
 

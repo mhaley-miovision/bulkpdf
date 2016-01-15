@@ -1,4 +1,25 @@
 Welcome = React.createClass({
+	getInitialState() {
+		return {
+			animationIndex: 0
+		}
+	},
+
+	componentDidMount() {
+		var _this = this;
+		console.log(ReactDOM.findDOMNode(this.refs.titlePrefix));
+
+		setTimeout (function() {
+			ReactDOM.findDOMNode(_this.refs.titlePrefix).className += " productTitlePrefixTextAnimate";
+		}, 500);
+		setTimeout (function() {
+			ReactDOM.findDOMNode(_this.refs.title).className += " productTitleTextAnimate";
+		}, 1000);
+		setTimeout (function() {
+			ReactDOM.findDOMNode(_this.refs.subtitle).className += " productSubtitleAnimate";
+		}, 2000);
+	},
+
 	render() {
 		return (
 			<div className="welcome">
@@ -6,10 +27,14 @@ Welcome = React.createClass({
 					<div className="col s12 m7">
 						<div className="card">
 							<div className="card-content">
-								<span className="card-title activator text-main1">Organizational Design Tool<i className="material-icons right">more_vert</i></span>
+								<span className="card-title activator text-main5">Welcome to <span ref="titlePrefix" className="productTitlePrefixText">Miovision</span>.
+									<span ref="title" className="productTitleText">Teal</span>
+									<i className="material-icons right">more_vert</i></span>
+								<br/>
+								<span ref="subtitle" className="productSubtitle">Organizational Management Software</span>
 							</div>
 							<div className="card-action">
-								<p><a href="#" className="activator">Click here for a tour.</a></p>
+								<p><a href="#" className="activator grey-text">Click here for a tour.</a></p>
 							</div>
 							<div className="card-reveal">
 								<span className="card-title grey-text text-darken-4">Getting Started<i className="material-icons right">close</i></span>

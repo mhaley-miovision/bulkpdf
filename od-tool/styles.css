@@ -22,6 +22,73 @@
 .text-main4 {
     color: #ECECEA;
 }
+.text-main5 {
+    color: #999999;
+}
+.text-main6 {
+    color: #d4d4d4;
+}
+
+.productTitleText {
+    text-decoration: none;
+    color: #999999;
+    text-shadow: none;
+
+    -webkit-transition: all 2s ease;
+    -moz-transition: all 2s ease;
+    -ms-transition: all 2s ease;
+    -o-transition: all 2s ease;
+    transition: all 2s ease;
+
+    outline: 0 none;
+}
+.productTitleTextAnimate {
+    color: #558C89;
+    text-shadow: -1px 1px 8px #ffc, 1px -1px 8px #fff;
+}
+
+.productTitleTextAnimate2 {
+    color: #999999;
+    text-shadow: -1px 1px 8px #ffc, 1px -1px 8px #fff;
+}
+
+.productTitlePrefixText {
+    text-decoration: none;
+    color: #999999;
+    text-shadow: none;
+
+    -webkit-transition: all 2s ease;
+    -moz-transition: all 2s ease;
+    -ms-transition: all 2s ease;
+    -o-transition: all 2s ease;
+    transition: all 2s ease;
+
+    outline: 0 none;
+}
+
+.productTitlePrefixTextAnimate {
+    color: #D9853B;
+    text-shadow: -1px 1px 8px #ffc, 1px -1px 8px #fff;
+}
+
+.productSubtitle {
+    -webkit-opacity: 0.25;
+    -moz-opacity: 0.25;
+    opacity: 0;
+    color: #d4d4d4;
+}
+.productSubtitleAnimate {
+    color: #d4d4d4;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+    opacity: 1;
+    -webkit-transition: all 3s ease;
+    -moz-transition: all 3s ease;
+    -ms-transition: all 3s ease;
+    -o-transition: all 3s ease;
+    transition: all 3s ease;
+}
+
 .main-image {
     max-width: 500px;
 }
