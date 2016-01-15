@@ -1,6 +1,4 @@
 var Chart = (function () {
-	console.log(screen.width);
-
 	var root_2 = Math.sqrt(2),
 		w = screen.width < 700 ? 330 : 700,
 		h = screen.width < 700 ? 330 : 700,
@@ -22,9 +20,9 @@ var Chart = (function () {
 	function classesForNode(d) {
 		var classes = [];
 		classes.push(d.children ? "parent" : "child");
-		classes.push(d.type);
-		if (d.type === 'role') {
-			classes.push(d.contributor ? "filled" : "unfilled");
+		classes.push(d.type === "contributor" ? "role" : d.type);
+		if (d.type === 'role' || d.type === 'contributor') {
+			classes.push(d.contributor || d.type == "contributor" ? "filled" : "unfilled");
 		}
 		if (d.structural_role) {
 			classes.push("structural");
@@ -49,14 +47,14 @@ var Chart = (function () {
 	}
 
 	function showTitle(d, scalingFactor) {
-		if (d.type == 'role')
+		if (d.type === 'role' || d.type === 'contributor')
 			return scalingFactor * d.r > 20;
 		else
 			return true;//return scalingFactor * d.r > 30;
 	}
 
 	function showRoleDetails(d, scalingFactor) {
-		return d.type === 'role' ? scalingFactor * d.r >= r / 2 : (scalingFactor * d.r > 20);
+		return d.type === 'role' || d.type === 'contributor' ? scalingFactor * d.r >= r / 2 : (scalingFactor * d.r > 20);
 	}
 
 	function innerSquareSize(d) {
@@ -138,7 +136,7 @@ var Chart = (function () {
 		zoomFunctions: function (k) {
 			return {
 				foreignObjSize: function(d) {
-					if (d.type === 'role') {
+					if (d.type === 'role' || d.type === 'contributor') {
 						return d.r * k * 2 / root_2;
 					} else {
 						return d.r * k * 2;
@@ -182,8 +180,6 @@ var Chart = (function () {
 		zoomToOrg: function (zoomToOrg) {
 			if (zoomToOrg) {
 				if (this.orgNameToNode[zoomToOrg]) {
-					console.log("*** zooming to: ");
-					console.log( this.orgNameToNode[zoomToOrg]);
 					this.zoom(this.orgNameToNode[zoomToOrg], true);
 				} else {
 					console.log("this.orgNameToNode[zoomToOrg] is undefined");
@@ -194,9 +190,6 @@ var Chart = (function () {
 		},
 
 		zoom: function (zoomTo, shouldAnimate = false) {
-			console.log("zoomTo FUNCTION: ");
-			console.log(zoomTo);
-
 			zoomed = false;
 			loaded = false;
 			if (zoomedToRole) {
@@ -212,7 +205,7 @@ var Chart = (function () {
 				.duration(shouldAnimate ? Chart.transitionDuration() : 0) ; //d3.event ? (d3.event.altKey ? 3.5 * Chart.transitionDuration() : Chart.transitionDuration()) : 0);
 
 			t.each("end", function () {
-				if (zoomTo.type == 'role') {
+				if (zoomTo.type === 'role' || zoomTo.type === 'contributor') {
 					Chart.enterRole(zoomTo);
 				}
 				zoomed = true;
@@ -277,13 +270,13 @@ var Chart = (function () {
 		},
 
 		comparator: function (a, b) {
-			if (a.type == 'label') {
+			if (a.type === 'label') {
 				return 1
-			} else if (b.type == 'label') {
+			} else if (b.type === 'label') {
 				return -1
-			} else if (a.type == 'organization' && b.type == 'role') {
+			} else if (a.type === 'organization' && b.type === 'role' && b.type === 'contributor') {
 				return 1
-			} else if (b.type == 'organization' && a.type == 'role') {
+			} else if (b.type === 'organization' && a.type === 'role' && b.type === 'contributor') {
 				return -1
 			}
 			return 0
@@ -380,6 +373,17 @@ var Chart = (function () {
 Organization = React.createClass({
 	mixins: [ReactMeteorData],
 
+	propTypes: {
+		org : React.PropTypes.string.isRequired,
+		roleMode : React.PropTypes.bool,
+	},
+
+	getDefaultProperties() {
+		return {
+			roleMode: true
+		}
+	},
+
 	getMeteorData() {
 		var handle1 = Meteor.subscribe("organizations");
 		var handle2 = Meteor.subscribe("roles");
@@ -390,6 +394,9 @@ Organization = React.createClass({
 		var data = { isLoading: !handle1.ready() && !handle2.ready() && !handle3.ready() && !handle4.ready() && !handle5.ready() };
 
 		if (!data.isLoading) {
+
+			// TODO: SHOULD OPTIMIZE THESE QUERIES TO USE THE DB MORE RATHER THAN DO THIS CLIENT-SIDE
+
 			let org = OrganizationsCollection.findOne({ name: this.props.org });
 			if (org) {
 				// for building an org tree
@@ -408,7 +415,7 @@ Organization = React.createClass({
 				}
 				// for adding roles as children
 				let attachOrgRoles = function (o)  {
-					if (typeof(o.children) == 'undefined') {
+					if (typeof(o.children) === 'undefined') {
 						o.children = [];
 					}
 					for (var c in o.children) {
@@ -417,6 +424,20 @@ Organization = React.createClass({
 
 					// get all immediate roles attached to this org
 					let q = RolesCollection.find({organization: o.name});
+					if (q.count() > 0) {
+						var r = q.fetch();
+						for (var x in r) {
+							o.children.push(r[x]);
+						}
+					}
+				}
+
+				let attachOrgContributors = function (o) {
+					if (typeof(o.children) === 'undefined') {
+						o.children = [];
+					}
+					o.children.forEach(c => attachOrgContributors(c));
+					let q = ContributorsCollection.find({physicalTeam: o.name});
 					if (q.count() > 0) {
 						var r = q.fetch();
 						for (var x in r) {
@@ -442,10 +463,28 @@ Organization = React.createClass({
 					});
 				}
 
+				let removeEmptyOrgs = function(o) {
+					function isEmptyOrg(o) {
+						return o.children ? o.children.findIndex(c => c.type === 'role ' || c.type === 'contributor') < 0 : false;
+					}
+					if (o.children)
+					{
+						// remove the empty ones
+						o.children = o.children.filter(c => !isEmptyOrg(c) );
+						// and repeat for the non-empty children
+						o.children.forEach(c => removeEmptyOrgs(c));
+					}
+				}
+
 				// build the view-centric object tree from the models
 				org.level = 0;
 				populateOrgChildren(org);
-				attachOrgRoles(org);
+				if (this.props.roleMode) {
+					attachOrgRoles(org);
+				} else {
+					attachOrgContributors(org);
+					removeEmptyOrgs(org);
+				}
 				attachOrgLabels(org);
 
 				data.organization = org;
@@ -478,6 +517,12 @@ Organization = React.createClass({
 	shouldComponentUpdate(nextProps, nextState) {
 		// let d3 do the updating!
 		console.log("shouldComponentUpdate called for component with root: " + this.props.org);
+
+		if (this.props.roleMode != nextProps.roleMode) {
+			// update the role vs ic mode
+			console.log("detected switch of role vs IC mode!");
+		}
+
 		return true;
 	},
 

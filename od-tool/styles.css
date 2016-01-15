@@ -261,6 +261,7 @@ a text.label:hover, a text.role.unfilled:hover, a.role.unfilled:hover, .role-det
     color: #6EBBCE;
     cursor: pointer;
 }
+
 a.role.core-role.filled, a.role.filled, a.role.alert,
 a text.role.core-role.filled, a text.role.filled, a text.role.alert,
 .role-details.filled a, .role-details.alert a, .role-details.core-role.filled a {
