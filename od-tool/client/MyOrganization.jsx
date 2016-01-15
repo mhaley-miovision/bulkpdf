@@ -10,8 +10,7 @@ MyOrganization = React.createClass({
 	handleOrgChanged(o) {
 		this.refs.org.zoomToOrg(o);
 	},
-
-
+	
 	handleRoleModeChanged(event) {
 		console.log(this.refs.roleMode.checked);
 		this.setState( {roleMode: !this.refs.roleMode.checked });

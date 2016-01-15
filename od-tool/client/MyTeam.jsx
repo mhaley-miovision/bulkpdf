@@ -1,6 +1,10 @@
 MyTeam = React.createClass({
 	mixins: [ReactMeteorData],
 
+	getInitialState() {
+		return { roleMode: true };
+	},
+
 	getMeteorData() {
 		var handle = Meteor.subscribe("contributors");
 
@@ -23,13 +27,31 @@ MyTeam = React.createClass({
 		this.forceUpdate();
 	},
 
+	handleRoleModeChanged(event) {
+		console.log(this.refs.roleMode.checked);
+		this.setState( {roleMode: !this.refs.roleMode.checked });
+	},
+
 	render() {
 		if (this.data.isLoading) {
 			return <Loading/>;
 		} else if (this.data.org) {
 			return (
 				<div className="container">
-					<Organization org={this.data.org}/>
+					<div className="section center">
+						<div className="switch">
+							<label>
+								Role
+								<input type="checkbox"
+									   checked={!this.state.roleMode} ref="roleMode"
+									   onChange={this.handleRoleModeChanged}/><span className="lever"></span>
+								Individual
+							</label>
+						</div>
+					</div>
+					<div>
+						<Organization org={this.data.org} roleMode={this.state.roleMode}/>
+					</div>
 				</div>
 			);
 		} else {
