@@ -37,7 +37,7 @@ MyTeam = React.createClass({
 			return <Loading/>;
 		} else if (this.data.org) {
 			return (
-				<div className="container">
+				<div>
 					<div className="section center">
 						<div className="switch">
 							<label>

@@ -10,7 +10,7 @@ MyOrganization = React.createClass({
 	handleOrgChanged(o) {
 		this.refs.org.zoomToOrg(o);
 	},
-	
+
 	handleRoleModeChanged(event) {
 		console.log(this.refs.roleMode.checked);
 		this.setState( {roleMode: !this.refs.roleMode.checked });
@@ -21,7 +21,7 @@ MyOrganization = React.createClass({
 
 	render() {
 		return (
-			<div className="container">
+			<div>
 				<div className="section center">
 					<a className="waves-effect waves-light btn disabled">Accountabilities</a>
 					<a className="waves-effect waves-light btn">Team Composition</a>
