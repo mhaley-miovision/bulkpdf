@@ -224,12 +224,10 @@ li.checked label {
     display: inline-block;
     font: 300 36px "Helvetica Neue";
     font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
-    height: 700px;
     margin: 0px;
     float:left;
     overflow: hidden;
     position: relative;
-    width: 700px;
     border: 1px solid #eee;
 }
 

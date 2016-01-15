@@ -14,6 +14,12 @@ OrganizationSelector = React.createClass({
 		};
 	},
 
+	getDefaultProperties() {
+		return {
+			width: screen.width < 700 ? 330 : "100%"
+		};
+	},
+
 	getDropdownClasses() {
 		var classes = "collection searchDropdown small";
 		if (!this.state.showList) classes += " hide";
@@ -43,8 +49,9 @@ OrganizationSelector = React.createClass({
 	},
 
 	handleClick: function(o) {
+		o.preventDefault();
 		if (this.props.onClick) {
-			this.props.onClick(o);
+			this.props.onClick(o.target.text);
 		}
 	},
 
@@ -55,8 +62,8 @@ OrganizationSelector = React.createClass({
 			this.state.searchResults.map(function(o, i) {
 				collection.push(
 					<a href="#!" className="collection-item" key={i} id={i} object={o}
-					   onClick={this.handleClick.bind(this, o)}>{o.name}</a>);
-			}, this);
+					   onClick={  this.handleClick }>{o.name}</a>);;
+			}, this)
 			return collection;
 		} else {
 			return <a href="#!" className="collection-item" onClick={_this.onBlur}>No matching organizations found.</a>
@@ -78,18 +85,14 @@ OrganizationSelector = React.createClass({
 
 	render: function() {
 		return (
-			<div className="container">
-				<div className="row">
-					<div className="col s12">
-						<input className="button" type="text" id="orgSelection" ref="textInput"
-							   onChange={this.onInputChange} placeholder="Click here to search for an organization"
-								onBlur={this.onBlur} onSelect={this.onSelected}/>
-						<label htmlFor="orgSelection"/>
+			<div style={{width:this.props.width}}>
+				<input className="button" type="text" id="orgSelection" ref="textInput"
+					   onChange={this.onInputChange} placeholder="Click here to search for an organization"
+						onBlur={this.onBlur} onSelect={this.onSelected}/>
+				<label htmlFor="orgSelection"/>
 
-						<div id='dropdown1' className={this.getDropdownClasses()}>
-							{this.renderDropdownItems()}
-						</div>
-					</div>
+				<div id='dropdown1' className={this.getDropdownClasses()}>
+					{this.renderDropdownItems()}
 				</div>
 			</div>
 		);

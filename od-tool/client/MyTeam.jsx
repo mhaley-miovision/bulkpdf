@@ -27,7 +27,11 @@ MyTeam = React.createClass({
 		if (this.data.isLoading) {
 			return <Loading/>;
 		} else if (this.data.org) {
-			return <Organization org={this.data.org}/>;
+			return (
+				<div className="container">
+					<Organization org={this.data.org}/>
+				</div>
+			);
 		} else {
 			return (
 				<div className="row centeredCard">

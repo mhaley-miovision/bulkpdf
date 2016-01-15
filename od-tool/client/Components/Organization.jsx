@@ -1,8 +1,10 @@
 var Chart = (function () {
+	console.log(screen.width);
+
 	var root_2 = Math.sqrt(2),
-		w = 700,
-		h = 700,
-		r = 650,
+		w = screen.width < 700 ? 330 : 700,
+		h = screen.width < 700 ? 330 : 700,
+		r = screen.width < 700 ? 300 : 650,
 		x = d3.scale.linear().range([0, r]),
 		y = d3.scale.linear().range([0, r]),
 		node,
@@ -361,8 +363,8 @@ var Chart = (function () {
 				Chart.zoom(zoomTo, true);
 			});
 
-			d3.select(".chartContainer").on("click", function (d) {
-				Chart.zoom(root);
+			d3.select(".chartContainer").on("click", function () {
+				Chart.zoom(root, true);
 			})
 
 			if (zoomToOrg && this.orgNameToNode[zoomToOrg])
@@ -456,6 +458,7 @@ Organization = React.createClass({
 	},
 
 	zoomToOrg(orgName) {
+		console.log(orgName);
 		Chart.zoomToOrg(orgName);
 	},
 
@@ -472,17 +475,14 @@ Organization = React.createClass({
 		};
 	},
 
-	shouldComponentUpdate: function(nextProps, nextState) {
+	shouldComponentUpdate(nextProps, nextState) {
 		// let d3 do the updating!
-		return false;
+		console.log("shouldComponentUpdate called for component with root: " + this.props.org);
+		return true;
 	},
 
-	getChartClasses() {
-		let classes = "chartContainer";
-		if (this.data.isLoading) {
-			classes += " loading";
-		}
-		return classes;
+	componentDidMount() {
+		console.log("org component mounted");
 	},
 
 	renderLoading() {
@@ -493,8 +493,8 @@ Organization = React.createClass({
 
 	render() {
 		return (
-			<div className="container">
-				<div className={this.getChartClasses()}>
+			<div>
+				<div className="chartContainer">
 					{this.renderLoading()}
 				</div>
 				<div className="clear-block"/>

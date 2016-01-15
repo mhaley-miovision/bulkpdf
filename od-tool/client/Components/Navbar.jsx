@@ -74,9 +74,7 @@ Navbar = React.createClass({
 	render() {
 		return (
 			<nav className="navBar">
-				<div className="nav-wrapper background-main2">
-					{this.renderNavContent()}
-				</div>
+				{this.renderNavContent()}
 			</nav>
 		);
 	}
