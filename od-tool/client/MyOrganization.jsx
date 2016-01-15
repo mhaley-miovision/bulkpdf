@@ -21,7 +21,7 @@ MyOrganization = React.createClass({
 
 	render() {
 		return (
-			<div>
+			<div className="container">
 				<div className="section center">
 					<a className="waves-effect waves-light btn disabled">Accountabilities</a>
 					<a className="waves-effect waves-light btn">Team Composition</a>

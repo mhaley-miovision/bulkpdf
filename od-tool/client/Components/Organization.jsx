@@ -1,8 +1,8 @@
 var Chart = (function () {
 	var root_2 = Math.sqrt(2),
-		w = screen.width < 700 ? 330 : 700,
-		h = screen.width < 700 ? 330 : 700,
-		r = screen.width < 700 ? 300 : 650,
+		w = screen.width < 700 ? 303 : 700,
+		h = screen.width < 700 ? 303 : 700,
+		r = screen.width < 700 ? 270 : 650,
 		x = d3.scale.linear().range([0, r]),
 		y = d3.scale.linear().range([0, r]),
 		node,
