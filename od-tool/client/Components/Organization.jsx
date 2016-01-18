@@ -496,7 +496,7 @@ Organization = React.createClass({
 
 				data.organization = org;
 			} else {
-				Materialize.toast("Could not find organization: " + this.props.org);
+				Materialize.toast("Could not find organization: " + this.props.org, 3000);
 				return {};
 			}
 		};

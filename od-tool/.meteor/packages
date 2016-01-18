@@ -30,3 +30,5 @@ reactive-dict
 check
 ejson
 differential:event-hooks
+email
+cunneen:mailgun

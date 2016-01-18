@@ -10,13 +10,19 @@ Welcome = React.createClass({
 		console.log(ReactDOM.findDOMNode(this.refs.titlePrefix));
 
 		setTimeout (function() {
-			ReactDOM.findDOMNode(_this.refs.titlePrefix).className += " productTitlePrefixTextAnimate";
+			if (_this.refs.titlePrefix) {
+				ReactDOM.findDOMNode(_this.refs.titlePrefix).className += " productTitlePrefixTextAnimate";
+			}
 		}, 500);
 		setTimeout (function() {
-			ReactDOM.findDOMNode(_this.refs.title).className += " productTitleTextAnimate";
+			if (_this.refs.title) {
+				ReactDOM.findDOMNode(_this.refs.title).className += " productTitleTextAnimate";
+			}
 		}, 1000);
 		setTimeout (function() {
-			ReactDOM.findDOMNode(_this.refs.subtitle).className += " productSubtitleAnimate";
+			if (_this.refs.subtitle) {
+				ReactDOM.findDOMNode(_this.refs.subtitle).className += " productSubtitleAnimate";
+			}
 		}, 2000);
 	},
 

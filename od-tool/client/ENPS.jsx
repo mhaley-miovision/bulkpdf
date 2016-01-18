@@ -1,7 +1,7 @@
 ENPS = React.createClass({
 	getInitialState() {
 		return {
-			enps: null,
+			enpsRating: null,
 			enpsReason: "",
 			recentlySubmitted: false
 		};
@@ -12,7 +12,7 @@ ENPS = React.createClass({
 	},
 
 	onEnpsChanged: function(e) {
-		this.setState({	enps: e.currentTarget.value });
+		this.setState({	enpsRating: e.currentTarget.value });
 		this.refs.enpsReason.focus();
 	},
 
@@ -21,19 +21,21 @@ ENPS = React.createClass({
 			event.preventDefault();
 		}
 
-		if (this.state.enps != null && !this.state.recentlySubmitted) {
-			Meteor.call("submitEnps", this.state.enps, this.state.enpsReason);
+		if (this.state.enpsRating != null && !this.state.recentlySubmitted) {
+			Meteor.call("submitEnps", this.state.enpsRating, this.state.enpsReason);
 			this.state.recentlySubmitted = true;
 			// prevent accidental repeated submission
 			var self = this;
 			setTimeout( function() { self.setState({recentlySubmitted: false}); }, 3000);
 
 			Materialize.toast("Thank you for your feedback. Keep letting us know how we're doing!", 3000);
+		} else {
+			Materialize.toast("Please provide a rating prior to submission.", 2000);
 		}
 	},
 
 	setIconClass: function(testEnpsValue) {
-		return this.state.enps == testEnpsValue ? "enpsIcon-selected" : "enpsIcon";
+		return this.state.enpsRating == testEnpsValue ? "enpsIcon-selected" : "enpsIcon";
 	},
 
 	render() {
@@ -76,7 +78,7 @@ ENPS = React.createClass({
 								<div className="row centeredItem">
 									<div className="col s8">
 										<input placeholder="(Optional) I feel this way because..." id="enps_reason" ref="enpsReason" type="text"
-										   className="validate required" onChange={this.handleChange}/>
+										   className="validate required" onChange={this.onEnpsReasonChanged}/>
 									</div>
 								</div>
 
