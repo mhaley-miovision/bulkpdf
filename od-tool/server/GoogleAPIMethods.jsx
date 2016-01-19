@@ -1,21 +1,23 @@
 Meteor.methods({
-	getUsers() {
+	getGoogleUsers() {
 		const adminProfile = Meteor.users.findOne({
 			'profile.name' : 'Victor Leipnik'
 		});
 		//console.log(adminProfile);
+		//console.log (adminProfile.services.google.accessToken);
 
 		var options = {
 			customer: 'my_customer',
 			maxResults: 500,
 			orderBy: 'email',
-			viewType: 'domain_public'
+			viewType: 'domain_public',
+			user: adminProfile,
+			//access_token: adminProfile.services.google.accessToken,
 		};
 
-		//var response = HTTP.call("GET","https://www.googleapis.com/admin/directory/v1/users", options);
+		var accessToken = adminProfile.services.google.accessToken;
 
-		//console.log(response.statusCode);
-		return adminProfile.services.google.picture;
+		return true;
 	},
 
 	getMyProfilePhoto() {
@@ -48,8 +50,9 @@ Meteor.publish("users", function () {
 Meteor.startup(function () {
 
 	//console.log("server");
-	Meteor.call("getUsers", function (err, resp) {
+	Meteor.call("getGoogleUsers", function (err, resp) {
 		//console.log(err);
 		//console.log(resp);
 	});
 });
+

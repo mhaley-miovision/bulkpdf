@@ -40,10 +40,10 @@ ENPS = React.createClass({
 
 	render() {
 		return (
-			<div className="row centeredCard">
-				<div className="col s12 m6">
-					<div className="card white darken-1">
-						<div className="card-content center-align">
+			<div className="row">
+				<div className="col s12 m6 offset-m3">
+					<div className="card white darken-1 centeredCard">
+						<div className="card-content center">
 							<span className="card-title text-main1">Let us know how you're feeling today.</span>
 
 							<br />
@@ -51,22 +51,22 @@ ENPS = React.createClass({
 
 							<form onSubmit={this.onSubmitForm}>
 
-								<div className="row centeredItem">
-									<div className="col s3">
+								<div className="row">
+									<div className="col s2 offset-s3">
 										<label>
 											<input className="validate required" type="radio" name="enps_value" value="1"
 												onChange={this.onEnpsChanged}/>
 											<img className={this.setIconClass("1")} src="img/enps-icons/happy.jpg" />
 										</label>
 									</div>
-									<div className="col s3">
+									<div className="col s2">
 										<label>
 											<input className="validate required" type="radio" name="enps_value" value="0"
 												   onChange={this.onEnpsChanged}/>
 											<img className={this.setIconClass("0")} src="img/enps-icons/neutral.jpg" />
 										</label>
 									</div>
-									<div className="col s3">
+									<div className="col s2">
 										<label>
 											<input className="validate required" type="radio" name="enps_value" value="-1"
 												   onChange={this.onEnpsChanged}/>
@@ -75,8 +75,8 @@ ENPS = React.createClass({
 									</div>
 								</div>
 
-								<div className="row centeredItem">
-									<div className="col s8">
+								<div className="row">
+									<div className="col s10 offset-s1">
 										<input placeholder="(Optional) I feel this way because..." id="enps_reason" ref="enpsReason" type="text"
 										   className="validate required" onChange={this.onEnpsReasonChanged}/>
 									</div>

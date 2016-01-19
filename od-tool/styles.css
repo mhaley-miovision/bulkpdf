@@ -110,8 +110,7 @@
     border-radius: 50%;
     vertical-align: middle;
     margin: 15px;
-    -webkit-filter: opacity(50%); /*sepia, hue-rotate, invert....*/
-
+    -webkit-filter: opacity(70%); /*sepia, hue-rotate, invert....*/
 }
 
 .item
@@ -185,11 +184,17 @@ li.checked label {
 }
 
 .centeredCard {
+
+    /*text-align:center;*/
+
     margin-top: 50px;
     margin-bottom: 50px;
+
+    /*
     display: flex;
     align-items: center;
     justify-content: center;
+    */
 }
 .centeredItem {
     display: flex;
@@ -211,20 +216,20 @@ li.checked label {
 }
 
 .enpsIcon {
-    max-width: 100%;
+    max-width: 64px;
     height: auto;
     padding: 3px;
     background-color: white;
 }
 .enpsIcon:hover {
-    max-width: 100%;
+    max-width: 64px;
     height: auto;
     padding: 3px;
     background-color: teal;
 }
 
 .enpsIcon-selected {
-    max-width: 100%;
+    max-width: 64px;
     height: auto;
     padding: 3px;
     background-color: teal;

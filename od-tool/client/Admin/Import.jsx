@@ -69,7 +69,7 @@ Import = React.createClass({
 				</div>
 
 
-				<div className="col s12 m6">
+				<div className="col s12">
 					<div className="card white darken-1">
 						<div className="card-content center-align">
 							<span className="card-title text-main1">Import From V1 Utility</span>
