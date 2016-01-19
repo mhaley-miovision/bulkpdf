@@ -3,15 +3,10 @@ FeedbackCollection = new Mongo.Collection("feedback");
 if (Meteor.isServer) {
 	Meteor.methods({
 		submitFeedback(feedback) {
-			console.log("##################");
-			console.log("meteor collections");
-
-
 			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
 			}
-
 			let o = {
 				feedback: feedback,
 				createdAt: new Date(),

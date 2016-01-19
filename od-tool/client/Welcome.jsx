@@ -1,14 +1,8 @@
 Welcome = React.createClass({
-	getInitialState() {
-		return {
-			animationIndex: 0
-		}
-	},
-
 	componentDidMount() {
-		var _this = this;
-		console.log(ReactDOM.findDOMNode(this.refs.titlePrefix));
+		console.log(Meteor.user());
 
+		var _this = this;
 		setTimeout (function() {
 			if (_this.refs.titlePrefix) {
 				ReactDOM.findDOMNode(_this.refs.titlePrefix).className += " productTitlePrefixTextAnimate";
@@ -44,9 +38,7 @@ Welcome = React.createClass({
 							</div>
 							<div className="card-reveal">
 								<span className="card-title grey-text text-darken-4">Getting Started<i className="material-icons right">close</i></span>
-								<p>To get started, please select one of the top menu items. If you would like you see
-									a tutorial on how to use the tool, please email
-									<a href="mailto:vleipnik@miovision.com"> Victor Leipnik</a></p>
+								<p>To get started, please select one of the top menu items.</p>
 							</div>
 						</div>
 					</div>

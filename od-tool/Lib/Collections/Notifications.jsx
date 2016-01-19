@@ -30,7 +30,7 @@ if (Meteor.isServer) {
 						});
 					break;
 				case 'user.logged_in':
-					if (n.payload.userId === 'Jme3kwvLM7MDgKeJx') {
+					if (n.userName === 'Victor Leipnik') {
 						console.log("Vic logged in, skipping email notification.");
 					} else {
 						Meteor.call("sendEmail",
@@ -55,8 +55,8 @@ if (Meteor.isServer) {
 	function insertNotification(n) {
 		// first, save the record along with pertinent metadata
 		n.createdAt = new Date();
-		n.userId = Meteor.user()._id;
-		n.userName = Meteor.user().profile.name;
+		n.userId = Meteor.user() ? Meteor.user()._id : null;
+		n.userName = Meteor.user() ? Meteor.user().profile.name : null;
 		NotificationsCollection.insert(n);
 	}
 

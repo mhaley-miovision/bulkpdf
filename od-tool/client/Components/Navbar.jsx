@@ -1,6 +1,7 @@
 Navbar = React.createClass({
+
+
 	handleFeedbackClick() {
-		console.log(this.refs);
 		this.refs.enps.showDialog();
 	},
 
