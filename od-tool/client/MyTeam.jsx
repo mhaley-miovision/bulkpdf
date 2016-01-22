@@ -38,19 +38,8 @@ MyTeam = React.createClass({
 		} else if (this.data.org) {
 			return (
 				<div className="container">
-					<div className="section center">
-						<div className="switch">
-							<label>
-								Role
-								<input type="checkbox"
-									   checked={!this.state.roleMode} ref="roleMode"
-									   onChange={this.handleRoleModeChanged}/><span className="lever"></span>
-								Individual
-							</label>
-						</div>
-					</div>
 					<div>
-						<Organization org={this.data.org} roleMode={this.state.roleMode}/>
+						<Organization org={this.data.org} roleMode={this.state.roleMode} roleModeVisible={true} searchVisible={false}/>
 					</div>
 				</div>
 			);

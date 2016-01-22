@@ -3,45 +3,66 @@ MyOrganization = React.createClass({
 	getInitialState() {
 		return {
 			org: "Miovision",
-			roleMode: true,
+			mode: 'acc',
 		};
 	},
 
 	handleOrgChanged(o) {
-		this.refs.org.zoomToOrg(o);
-	},
-
-	handleRoleModeChanged(event) {
-		console.log(this.refs.roleMode.checked);
-		this.setState( {roleMode: !this.refs.roleMode.checked });
+		if (this.refs.org) {
+			this.refs.org.zoomToOrg(o);
+		} else {
+			this.refs.tree.zoomToOrg(o);
+		}
 	},
 
 	componentDidMount: function() {
+	},
+
+	renderOrganization() {
+		return <Organization ref="org" org={this.state.org} roleMode={true} roleModeVisible={true} searchVisible={true}/>;
+	},
+
+	renderAccountabilities() {
+		return <Tree ref="tree" org={this.state.org} roleMode={this.state.roleMode}/>;
+	},
+
+	handleAccClicked() {
+		console.log("handleAccClicked")
+		this.setState({ mode: 'acc'});
+		this.forceUpdate();
+	},
+
+	handleCompClicked() {
+		console.log("handleCompClicked")
+		this.setState({ mode: 'comp'});
+		this.forceUpdate();
+	},
+
+	getClasses(isDisabled) {
+		return "waves-effect waves-light btn" + (isDisabled ? " disabled" : "");
+	},
+
+	renderBody() {
+		if (this.state.mode === 'acc') {
+			return this.renderAccountabilities();
+		} else {
+			return this.renderOrganization();
+		}
+	},
+
+	handleSearch(o) {
+		TreeView.zoomToNodeByName(o);
 	},
 
 	render() {
 		return (
 			<div className="container">
 				<div className="section center">
-					<a className="waves-effect waves-light btn disabled">Accountabilities</a>
-					<a className="waves-effect waves-light btn">Team Composition</a>
-				</div>
-				<div className="section center">
-					<div className="switch">
-						<label>
-							Role
-							<input type="checkbox"
-								   checked={!this.state.roleMode} ref="roleMode"
-								   onChange={this.handleRoleModeChanged}/><span className="lever"></span>
-							Individual
-						</label>
-					</div>
+					<a className={this.getClasses(this.state.mode != 'acc')} onClick={this.handleAccClicked}>Accountabilities</a>
+					<a className={this.getClasses(this.state.mode != 'comp')} onClick={this.handleCompClicked}>Team Composition</a>
 				</div>
 				<div>
-					<OrganizationSelector onClick={this.handleOrgChanged} />
-				</div>
-				<div>
-					<Organization ref="org" org={this.state.org} roleMode={this.state.roleMode}/>
+					{this.renderBody()}
 				</div>
 			</div>
 		);

@@ -376,18 +376,28 @@ Organization = React.createClass({
 	propTypes: {
 		org : React.PropTypes.string.isRequired,
 		roleMode : React.PropTypes.bool,
+		roleModeVisible : React.PropTypes.bool,
+		searchVisible : React.PropTypes.bool,
 	},
-
-	getDefaultProperties() {
+	getDefaultProps() {
 		return {
-			roleMode: true
+			roleMode: true,
+			roleModeVisible: true,
+			searchVisible: true,
 		}
 	},
-
 	getInitialState() {
 		return {
 			initialLoad: true,
+			roleMode : this.props.roleMode,
 		}
+	},
+	handleRoleModeChanged(event) {
+		this.setState( {roleMode: !this.refs.roleMode.checked });
+	},
+
+	handleSearch(o) {
+		Chart.zoomToOrg(o);
 	},
 
 	// TODO: move some of this log into server-side methods
@@ -486,7 +496,7 @@ Organization = React.createClass({
 				// build the view-centric object tree from the models
 				org.level = 0;
 				populateOrgChildren(org);
-				if (this.props.roleMode) {
+				if (this.state.roleMode) {
 					attachOrgRoles(org);
 				} else {
 					attachOrgContributors(org);
@@ -503,55 +513,88 @@ Organization = React.createClass({
 		return data;
 	},
 
-	zoomToOrg(orgName) {
-		console.log(orgName);
-		Chart.zoomToOrg(orgName);
-	},
-
-	componentWillUpdate(nextProps, nextState) {
+	updateOrganizationGraph() {
 		if (!this.data.isLoading) {
 			var org = this.data.organization; // as loaded from the db
 			var zoomToOrg = this.state && this.state.zoomToOrg ? this.state.zoomToOrg : "";
 
-			if (nextProps.roleMode != this.props.roleMode) {
-				// detected role mode change!
-			}
-
-			console.log("componentWillUpdate called!");
-
 			// this is super FUCKED
 			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
-			setTimeout(function(){ Chart.loadData(org, zoomToOrg); }, 0);
-		};
+			setTimeout(function () {
+				Chart.loadData(org, zoomToOrg);
+			}, 0);
+		}
+	},
+
+	componentWillUpdate(nextProps, nextState) {
+		if (nextProps.roleMode != this.props.roleMode) {
+			// detected role mode change!
+		}
+		console.log("componentWillUpdate called!");
+
+		this.updateOrganizationGraph();
 	},
 
 	shouldComponentUpdate(nextProps, nextState) {
 		// let d3 do the updating!
 		console.log("shouldComponentUpdate called for component with root: " + this.props.org);
 
-		if (this.props.roleMode != nextProps.roleMode) {
+		if (this.state.roleMode != nextState.roleMode) {
 			// update the role vs ic mode
 			console.log("detected switch of role vs IC mode!");
 		}
-
 		return true;
 	},
 
 	componentDidMount() {
 		console.log("org component mounted");
+		this.updateOrganizationGraph();
 	},
 
 	renderLoading() {
 		if (this.data.isLoading) {
-			return <Loading/>;
+			return (
+				<div className="centeredItem">
+					<Loading/>
+				</div>
+			);
+		}
+	},
+
+	renderRoleModeSwitch() {
+		if (this.props.roleModeVisible) {
+			return (
+				<div className="section center">
+					<div className="switch">
+						<label>
+							Role
+							<input type="checkbox" checked={!this.state.roleMode} ref="roleMode" onChange={this.handleRoleModeChanged}/>
+							<span className="lever" />
+							Individual
+						</label>
+					</div>
+				</div>
+			);
+		}
+	},
+
+	renderSearch() {
+		if (this.props.searchVisible) {
+			return (
+				<div>
+					<OrganizationSelector onClick={this.handleSearch} />
+				</div>
+			);
 		}
 	},
 
 	render() {
 		return (
 			<div>
+				{this.renderRoleModeSwitch()}
+				{this.renderSearch()}
+				{this.renderLoading()}
 				<div className="chartContainer">
-					{this.renderLoading()}
 				</div>
 				<div className="clear-block"/>
 			</div>
