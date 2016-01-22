@@ -17,9 +17,6 @@ es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
 materialize:materialize
-kadira:react-layout
-react
-kadira:flow-router
 accounts-google
 accounts-ui
 service-configuration
@@ -33,6 +30,10 @@ differential:event-hooks
 email
 cunneen:mailgun
 meteorhacks:npm
-
-
 npm-container
+jsx
+react-meteor-data
+react-runtime@=0.14.3
+react-template-helper@=0.2.4
+kadira:flow-router
+kadira:react-layout

@@ -229,10 +229,15 @@ var TreeView = (function() {
 })();
 */
 
+var chartHeight = 700;
+var chartHeightMobile = 303;
+var chartWidth = 700;
+var chartWidthMobile = 303;
+
 // Left to right node view
 var TreeView = (function() {
-	var width = screen.width < 700 ? 303 : 700;
-	var height = screen.width < 700 ? 303 : 700;
+	var width = screen.width < 700 ? chartWidthMobile : chartWidth;
+	var height = screen.width < 700 ? chartHeightMobile : chartHeight;
 	// Calculate total nodes, max label length
 	var totalNodes = 0;
 	var maxLabelLength = 0;
@@ -919,7 +924,6 @@ Tree = React.createClass({
 	updateTreeView() {
 		if (!this.data.isLoading) {
 			var org = this.data.organization; // as loaded from the db
-			var zoomToOrg = this.state && this.state.zoomToOrg ? this.state.zoomToOrg : "";
 			// this is super FUCKED
 			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
 			setTimeout(function () {
@@ -972,11 +976,15 @@ Tree = React.createClass({
 	},
 
 	render() {
+		var divStyle = {
+			height: h = screen.width < 700 ? chartHeightMobile : chartHeight,
+		};
+
 		return (
 			<div>
 				{this.renderSearch()}
 				{this.renderLoading()}
-				<div className="chartContainer">
+				<div className="chartContainer" style={divStyle}>
 				</div>
 				<div className="clear-block"/>
 			</div>

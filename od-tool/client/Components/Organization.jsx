@@ -1,8 +1,13 @@
+var chartHeight = 700;
+var chartHeightMobile = 303;
+var chartWidth = 700;
+var chartWidthMobile = 303;
+
 var Chart = (function () {
 	var root_2 = Math.sqrt(2),
-		w = screen.width < 700 ? 303 : 700,
-		h = screen.width < 700 ? 303 : 700,
-		r = screen.width < 700 ? 270 : 650,
+		w = screen.width < 700 ? chartWidthMobile : chartWidth,
+		h = screen.width < 700 ? chartHeightMobile : chartHeight,
+		r = screen.width < 700 ? chartHeightMobile - 30 : chartHeight - 50,
 		x = d3.scale.linear().range([0, r]),
 		y = d3.scale.linear().range([0, r]),
 		node,
@@ -190,6 +195,9 @@ var Chart = (function () {
 		},
 
 		zoom: function (zoomTo, shouldAnimate = false) {
+			this.zoomedOrg = zoomTo;
+			console.log(this.zoomedOrg.depth);
+
 			zoomed = false;
 			loaded = false;
 			if (zoomedToRole) {
@@ -396,6 +404,7 @@ Organization = React.createClass({
 		this.setState( {roleMode: !this.refs.roleMode.checked });
 	},
 
+
 	handleSearch(o) {
 		Chart.zoomToOrg(o);
 	},
@@ -589,12 +598,16 @@ Organization = React.createClass({
 	},
 
 	render() {
+		var divStyle = {
+			height: h = screen.width < 700 ? chartHeightMobile : chartHeight,
+		};
+
 		return (
 			<div>
 				{this.renderRoleModeSwitch()}
 				{this.renderSearch()}
 				{this.renderLoading()}
-				<div className="chartContainer">
+				<div className="chartContainer" style={divStyle}>
 				</div>
 				<div className="clear-block"/>
 			</div>
