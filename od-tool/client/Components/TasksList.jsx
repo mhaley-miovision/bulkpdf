@@ -60,6 +60,8 @@ TaskList = React.createClass({
 	render() {
 		return (
 		<div>
+
+			<br/>
 			<header>
 				<h3 className="center header text-main1">My Tasks</h3>
 			</header>
