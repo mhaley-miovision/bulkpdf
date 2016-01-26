@@ -17,10 +17,22 @@ var Chart = (function () {
 		$roleDetails,
 		zoomed,
 		loaded,
+		zoomedToObject,
 		color = d3.scale.linear()
 			.domain([-1, 18])
 			.range(["hsl(0,0%,100%)", "hsl(228,30%,40%)"])
 			.interpolate(d3.interpolateHcl);
+
+	function getChildCount(d) {
+		if (d) {
+			if (d.children) {
+				var count = 1;
+				d.children.forEach(c => count += getChildCount(c));
+				return count;
+			}
+			return 0;
+		}
+	}
 
 	function classesForNode(d) {
 		var classes = [];
@@ -45,15 +57,30 @@ var Chart = (function () {
 	}
 
 	function foreignObjectHtml(d) {
+		console.log(d);
+
+		var html = '';
+		if (d.type === 'role') {
+			//TODO: brutal hack here to remove the team from the role
+			var l = d.accountabilityLabel.split(",")[0];
+			html = "<div><strong>"+_.escape(l)+"</strong></div>";
+			html += "<div class='text-main1'>"+_.escape(d.contributor)+"</div>";
+		} else if (d. type === 'contributor') {
+			html += "<div>"+_.escape(d.name)+"</div>";
+		} else {
+			html = _.escape(d.name);
+		}
+
 		d.url = "#";
-		var content = '<div class="d3label"><div class="title"><a href="' + d.url + '" class="' + classesForNode(d) + '">'
-			+ _.escape(d.name ? d.name : d.contributor) + '</a></div>';
+		var content =
+			'<div class="d3label"><div class="title"><a href="' + d.url + '" class="' + classesForNode(d) + '">'
+			+ html + '</a></div>';
 		return content + '</div>';
 	}
 
 	function showTitle(d, scalingFactor) {
 		if (d.type === 'role' || d.type === 'contributor')
-			return scalingFactor * d.r > 20;
+			return scalingFactor * d.r > 30;
 		else
 			return true;//return scalingFactor * d.r > 30;
 	}
@@ -72,6 +99,22 @@ var Chart = (function () {
 
 	function dy(d) {
 		return d.y;
+	}
+
+	function isObjectTooDeepToShow(o) {
+		if (zoomedToObject) {
+			if (o.depth) {
+				var depthThreshold = 2;
+				// only show currently zoomed to level + 1
+				return (o.depth - zoomedToObject.depth > depthThreshold);
+			} else {
+				// does not belong in depth tree
+				return false;
+			}
+		} else {
+			// no object zoomed to
+			return false;
+		}
 	}
 
 	function addForeignObjects(foreignObjects) {
@@ -149,11 +192,27 @@ var Chart = (function () {
 				},
 				setOpacity: function(fos) {
 					fos.style("opacity", function (d) {
-						return showTitle(d, k) ? 1 : 0;
+						return showTitle(d, k) && !isObjectTooDeepToShow(d) ? 1 : 0;
 					});
 				},
 				makeFontSizer: function(factor) {
 					return function (d) {
+
+						if (d.type !== 'role' && d.parent) {
+							var cc = getChildCount(d.parent);
+							if (d.depth < 3) {
+								if (cc < 5) {
+									return "12px";
+								} else if (cc < 10) {
+									return "16px";
+								} else if (cc > 50) {
+									return "36px";
+								} else {
+									return "24px";
+								}
+							}
+						}
+
 						return parseInt(Math.min(Math.max(10, Chart.zoomFunctions(k).foreignObjSize(d) / factor), 18)) + 'px';
 
 					}
@@ -195,9 +254,7 @@ var Chart = (function () {
 		},
 
 		zoom: function (zoomTo, shouldAnimate = false) {
-			this.zoomedOrg = zoomTo;
-			console.log(this.zoomedOrg.depth);
-
+			zoomedToObject = zoomTo;
 			zoomed = false;
 			loaded = false;
 			if (zoomedToRole) {

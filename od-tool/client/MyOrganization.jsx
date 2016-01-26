@@ -3,7 +3,7 @@ MyOrganization = React.createClass({
 	getInitialState() {
 		return {
 			org: "Miovision",
-			mode: 'acc',
+			mode: 'comp',
 		};
 	},
 
