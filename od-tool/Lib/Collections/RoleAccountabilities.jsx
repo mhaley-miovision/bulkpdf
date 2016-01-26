@@ -1,1 +1,0 @@
-RoleAccountabilitiesCollection = new Mongo.Collection("role_accountabilities");

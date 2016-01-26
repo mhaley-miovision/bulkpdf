@@ -1,4 +1,3 @@
-
 Meteor.publish("applications", function () {
 	return ApplicationsCollection.find({});
 });

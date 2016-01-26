@@ -1,5 +1,3 @@
-EnpsCollection = new Mongo.Collection("enps");
-
 if (Meteor.isServer) {
 	Meteor.methods({
 		submitEnps(enpsValue, enpsReason) {

@@ -1,5 +1,3 @@
-NotificationsCollection = new Mongo.Collection("notifications");
-
 // TODO: when people want to subscribe to certain notifications, I will need to break this up into events and
 // look up the list of subscribers to these events to be sent to
 

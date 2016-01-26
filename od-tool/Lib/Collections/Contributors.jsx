@@ -1,1 +1,0 @@
-ContributorsCollection = new Mongo.Collection("contributors");

@@ -1,5 +1,3 @@
-FeedbackCollection = new Mongo.Collection("feedback");
-
 if (Meteor.isServer) {
 	Meteor.methods({
 		submitFeedback(feedback) {

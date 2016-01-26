@@ -1,1 +1,0 @@
-ApplicationsCollection = new Mongo.Collection("applications");

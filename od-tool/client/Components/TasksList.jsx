@@ -43,7 +43,7 @@ TaskList = React.createClass({
 		event.preventDefault();
 
 		// Find the text field via the React ref
-		var text = React.findDOMNode(this.refs.textInput).value.trim();
+		var text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
 
 		Meteor.call("addTask", text);
 

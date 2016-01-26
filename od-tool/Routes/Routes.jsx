@@ -5,6 +5,13 @@ FlowRouter.route( '/', {
 	}
 });
 
+FlowRouter.route( '/goals', {
+	name: 'goals',
+	action() {
+		ReactLayout.render( App, { yield: <GoalList /> } );
+	}
+});
+
 FlowRouter.route( '/tasks', {
 	name: 'tasks',
 	action() {
@@ -40,17 +47,10 @@ FlowRouter.route( '/organization', {
 	}
 });
 
-FlowRouter.route( '/admin/import', {
+FlowRouter.route( '/admin', {
 	name: 'admin',
 	action() {
-		ReactLayout.render( App, { yield: <Import /> } );
-	}
-});
-
-FlowRouter.route( '/admin/roleLabels', {
-	name: 'admin',
-	action() {
-		ReactLayout.render( App, { yield: <RoleLabels /> } );
+		ReactLayout.render( App, { yield: <Admin /> } );
 	}
 });
 
