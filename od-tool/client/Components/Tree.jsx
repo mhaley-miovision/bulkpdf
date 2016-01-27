@@ -285,7 +285,7 @@ var TreeView = (function() {
 	// sort the tree according to the node names
 	function sortTree() {
 		tree.sort(function(a, b) {
-			return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
+			//return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
 		});
 	}
 
@@ -433,7 +433,7 @@ var TreeView = (function() {
 				}
 				// Make sure that the node being added to is expanded so user can see added node is correctly moved
 				expand(selectedNode);
-				sortTree();
+				//sortTree();
 				endDrag();
 			} else {
 				endDrag();
@@ -804,111 +804,42 @@ Tree = React.createClass({
 
 	// TODO: move some of this log into server-side methods
 	getMeteorData() {
-		var handle1 = Meteor.subscribe("organizations");
-		var handle2 = Meteor.subscribe("roles");
-		var handle3 = Meteor.subscribe("contributors");
-		var handle4 = Meteor.subscribe("job_accountabilities");
-		var handle5 = Meteor.subscribe("org_accountabilities");
+		var handle = Meteor.subscribe("goals");
 
-		var data = {isLoading: !handle1.ready() && !handle2.ready() && !handle3.ready() && !handle4.ready() && !handle5.ready()};
+		var data = {isLoading: !handle.ready()};
 
 		if (!data.isLoading) {
 
 			// TODO: SHOULD OPTIMIZE THESE QUERIES TO USE THE DB MORE RATHER THAN DO THIS CLIENT-SIDE
 
-			let org = OrganizationsCollection.findOne({name: this.props.org});
-			if (org) {
-				// for building an org tree
-				let populateOrgChildren = function (o) {
-					o.children = [];
-					var query = OrganizationsCollection.find({parent: o.name}); // find the children
-					if (query.count() > 0) {
-						var r = query.fetch();
+			let populateGoalChildren = function (o) {
+				o.children = [];
+				var query = GoalsCollection.find({parent: o._id}); // find the children
+				if (query.count() > 0) {
+					var r = query.fetch();
 
-						for (var x in r) {
-							o.children.push(r[x]); // add the child
-							r[x].level = o.level ? o.level + 1 : 1; // attach a level
-							populateOrgChildren(r[x]); // recurse for each child
-						}
+					for (var x in r) {
+						o.children.push(r[x]); // add the child
+						populateGoalChildren(r[x]); // recurse for each child
 					}
 				}
-				// for adding roles as children
-				let attachOrgRoles = function (o) {
-					if (typeof(o.children) === 'undefined') {
-						o.children = [];
-					}
-					for (var c in o.children) {
-						attachOrgRoles(o.children[c]);
-					}
+			}
 
-					// get all immediate roles attached to this org
-					let q = RolesCollection.find({organization: o.name});
-					if (q.count() > 0) {
-						var r = q.fetch();
-						for (var x in r) {
-							o.children.push(r[x]);
-						}
-					}
-				}
+			// find the root goal
+			let rootGoals = GoalsCollection.find({parent: null}).fetch();
 
-				let attachOrgContributors = function (o) {
-					if (typeof(o.children) === 'undefined') {
-						o.children = [];
-					}
-					o.children.forEach(c => attachOrgContributors(c));
-					let q = ContributorsCollection.find({physicalTeam: o.name});
-					if (q.count() > 0) {
-						var r = q.fetch();
-						for (var x in r) {
-							o.children.push(r[x]);
-						}
-					}
-				}
+			// create a root goal
+			let mvRoot = { name: "Miovision Goals", children: [] };
 
-				// for appending a label as a child
-				let attachOrgLabels = function (n) {
-					if (n.type !== 'organization') {
-						return;
-					}
-					if (typeof(n.children) == 'undefined') {
-						n.children = [];
-					}
-					for (var c in n.children) {
-						attachOrgLabels(n.children[c]);
-					}
-					n.children.push({
-						type: 'label',
-						name: n.name
-					});
-				}
+			for (idx in rootGoals) {
+				var g = rootGoals[idx];
+				mvRoot.children.push(g);
+				g.parent = mvRoot;
+				populateGoalChildren(g)
+			}
 
-				let removeEmptyOrgs = function (o) {
-					function isEmptyOrg(o) {
-						return o.children ? o.children.findIndex(c => c.type === 'role ' || c.type === 'contributor') < 0 : false;
-					}
-
-					if (o.children) {
-						// remove the empty ones
-						o.children = o.children.filter(c => !isEmptyOrg(c));
-						// and repeat for the non-empty children
-						o.children.forEach(c => removeEmptyOrgs(c));
-					}
-				}
-
-				// build the view-centric object tree from the models
-				org.level = 0;
-				populateOrgChildren(org);
-
-				/*
-				if (this.props.roleMode) {
-					attachOrgRoles(org);
-				} else {
-					attachOrgContributors(org);
-					removeEmptyOrgs(org);
-				}
-				attachOrgLabels(org);*/
-
-				data.organization = org;
+			if (mvRoot) {
+				data.goals = mvRoot;
 			} else {
 				Materialize.toast("Could not find organization: " + this.props.org, 3000);
 				return {};
@@ -923,11 +854,11 @@ Tree = React.createClass({
 
 	updateTreeView() {
 		if (!this.data.isLoading) {
-			var org = this.data.organization; // as loaded from the db
+			var goals = this.data.goals; // as loaded from the db
 			// this is super FUCKED
 			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
 			setTimeout(function () {
-				TreeView.loadData(org);
+				TreeView.loadData(goals);
 			}, 0);
 		}
 	},

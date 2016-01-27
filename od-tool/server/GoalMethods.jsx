@@ -6,12 +6,14 @@ Meteor.methods({
 			throw new Meteor.Error("not-authorized");
 		}
 
-		GoalsCollection.insert({
-			text: text,
+		var goal = GoalsCollection.insert({
+			description: text,
 			createdAt: new Date(),
 			owner: Meteor.user()._id,
 			username: Meteor.user().profile.name
 		});
+
+		return goal; // to retrieve the ID
 	},
 
 	removeGoal(goalId) {

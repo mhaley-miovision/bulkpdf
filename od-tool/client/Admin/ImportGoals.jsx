@@ -11,7 +11,7 @@ ImportGoals = React.createClass({
 			event.preventDefault();
 		}
 
-		$("#doImportModal").openModal();
+		$("#ImportGoalsModal").openModal();
 	},
 
 	doImport() {
@@ -24,7 +24,7 @@ ImportGoals = React.createClass({
 			if (err) {
 				Materialize.toast("Import failed!", 3000);
 			} else {
-				Materialize.toast("Import completed successfully!", 3000);
+				Materialize.toast("Imported " + data + " goals successfully!", 3000);
 			}
 		});
 	},
@@ -52,7 +52,7 @@ ImportGoals = React.createClass({
 			<div className="card white darken-1">
 				<div className="card-content center-align">
 
-					<div id="doImportModal" className="modal">
+					<div id="ImportGoalsModal" className="modal">
 						<div className="modal-content">
 							<h4>Are you sure?</h4>
 							<p>Importing from Spreadsheet <strong className="red-text">will delete all existing goal data!</strong></p>

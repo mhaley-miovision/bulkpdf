@@ -11,7 +11,7 @@ ImportOD = React.createClass({
 			event.preventDefault();
 		}
 
-		$("#doImportModal").openModal();
+		$("#ImportODModal").openModal();
 	},
 
 	doImport() {
@@ -51,7 +51,7 @@ ImportOD = React.createClass({
 		return (
 			<div className="card white darken-1">
 				<div className="card-content center-align">
-					<div id="doImportModal" className="modal">
+					<div id="ImportODModal" className="modal">
 						<div className="modal-content">
 							<h4>Are you sure?</h4>
 							<p>Importing from V1 <strong className="red-text">will delete all existing OD data!</strong></p>
