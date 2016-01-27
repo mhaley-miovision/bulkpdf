@@ -14,7 +14,7 @@ function processGoalsJson(json) {
 	//return res;
 	c = res;
 
-	var startRow = 5;
+	var startRow = 69; // ignore last year's goals for now
 	var blankRowCount = 0;
 	var r = startRow;
 
@@ -56,11 +56,18 @@ function processGoalsJson(json) {
 		"Phil" : "pguerrin@moivision.com",
 		"Lynda" : "lchau@moivision.com",
 		"Vic" : "vleipnik@miovision.com",
+		"Lauren" : "lgreig@miovision.com",
 	};
 
 	function processOwners(o) {
 		var s = [];
 		if (o) {
+			// ughhhh
+			if (o.indexOf("(") > 0 && o.indexOf(")") > 0) {
+				o = o.replace("(", ",");
+				o = o.replace(")", "");
+			}
+
 			if (o.indexOf(",") < 0) {
 				s = o.split("/");
 			} else {

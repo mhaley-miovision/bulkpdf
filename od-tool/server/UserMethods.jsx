@@ -7,9 +7,6 @@ if (Meteor.isServer) {
 			}
 
 			var myUserName = Meteor.user().profile.name;
-
-			console.log(Meteor.user().profile.name);
-
 			var contributor = ContributorsCollection.findOne ({ name: myUserName });
 
 			if (contributor) {
@@ -22,7 +19,16 @@ if (Meteor.isServer) {
 		}
 	});
 
-	Meteor.publish("contributors", function () {
-		return ContributorsCollection.find({});
+	Meteor.methods({
+		getMyEmail() {
+			// Make sure the user is logged in before inserting a task
+			if (!Meteor.userId()) {
+				throw new Meteor.Error("not-authorized");
+			}
+
+			console.log(Meteor.user().services.google.email);
+
+			return Meteor.user().services.google.email;
+		}
 	});
 }

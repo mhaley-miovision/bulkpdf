@@ -29,23 +29,6 @@ Meteor.methods({
 	}
 });
 
-// Only publish users if the client is an admin
-Meteor.publish("users", function () {
-	//return Meteor.users.find({});
-
-	return Meteor.users.find({},
-	{ 'fields': {
-		'user': 1,
-		'services.google.email': 1,
-		'services.google.name': 1,
-		'services.google.given_name': 1,
-		'services.google.family_name': 1,
-		'services.google.picture': 1,
-		'services.google.gender': 1
-	}});
-});
-
-
 // On server startup, if the database is empty, create some initial data.
 Meteor.startup(function () {
 

@@ -1,5 +1,10 @@
+var chartHeight = 700;
+var chartHeightMobile = 303;
+var chartWidth = 700;
+var chartWidthMobile = 303;
+
 // Topdown card view
-/*
+
 var TreeView = (function() {
 	var width = screen.width < 700 ? 303 : 700;
 	var height = screen.width < 700 ? 303 : 700;
@@ -21,7 +26,7 @@ var TreeView = (function() {
 	}
 
 	var i = 0,
-		duration = 750,
+		duration = 250,
 		rectW = 120,
 		rectH = 40,
 		nodeMargin = 10;
@@ -227,12 +232,8 @@ var TreeView = (function() {
 		}
 	}
 })();
-*/
 
-var chartHeight = 700;
-var chartHeightMobile = 303;
-var chartWidth = 700;
-var chartWidthMobile = 303;
+/*
 
 // Left to right node view
 var TreeView = (function() {
@@ -769,10 +770,20 @@ var TreeView = (function() {
 			root.x0 = viewerHeight / 2;
 			root.y0 = 0;
 
+			// collapse all but top 2 levels
+			root.children.forEach(c => {
+				console.log("c=" + c.name);
+				c.children.forEach(d => {
+					console.log("collapsing: " + d.name);
+					collapse(d);
+				});
+			});
+
 			// Layout the tree initially and center on the root node.
-			//root.children.forEach(collapse);
 			update(root);
 			centerNode(root);
+
+			console.log(root);
 		},
 
 		zoomToNodeByName: function (nodeName) {
@@ -786,6 +797,7 @@ var TreeView = (function() {
 		}
 	};
 })();
+*/
 
 Tree = React.createClass({
 	mixins: [ReactMeteorData],

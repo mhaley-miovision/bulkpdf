@@ -48,15 +48,18 @@ Meteor.methods({
 			throw new Meteor.Error("not-authorized");
 		}
 		GoalsCollection.update(goalId, {$set: {name: name}});
-	}
-});
+	},
 
-// Only publish goals that are public or belong to the current user
-Meteor.publish("goals", function () {
-	return GoalsCollection.find({
-		$or: [
-			{ private: {$ne: true} },
-			{ owner: this.userId }
-		]
-	});
+	getMyGoals() {
+		// Make sure the user is logged in before inserting a task
+		if (!Meteor.userId()) {
+			throw new Meteor.Error("not-authorized");
+		}
+
+		var email = Meteor.call("getMyEmail");
+
+		console.log(email);
+
+		GoalsCollection.find({owners:email});
+	}
 });

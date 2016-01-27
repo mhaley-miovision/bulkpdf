@@ -9,7 +9,7 @@ Goal = React.createClass({
 	getInitialState() {
 		return {
 			isEditing: false,
-			newGoalName: this.props.roleLabel.name,
+			newGoalName: this.props.goal.name,
 		};
 	},
 
