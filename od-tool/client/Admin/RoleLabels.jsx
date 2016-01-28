@@ -45,13 +45,12 @@ RoleLabels = React.createClass({
 	render() {
 		return (
 		<div className="container">
-			<br/>
-
 			<header>
-				<h3 className="center header text-main1">Edit Role Labels</h3>
+				<h3 className="center header text-main1">Role Labels</h3>
 			</header>
 
-			{ this.data.currentUser ?
+			{
+				this.data.currentUser ?
 				<form className="new-task" onSubmit={this.handleSubmit} >
 					<input
 						type="text"

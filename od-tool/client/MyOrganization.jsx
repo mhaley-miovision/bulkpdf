@@ -56,7 +56,7 @@ MyOrganization = React.createClass({
 
 	render() {
 		return (
-			<div className="container">
+			<div>
 				<div className="section center">
 					<a className={this.getClasses(this.state.mode != 'acc')} onClick={this.handleAccClicked}>Accountabilities</a>
 					<a className={this.getClasses(this.state.mode != 'comp')} onClick={this.handleCompClicked}>Team Composition</a>

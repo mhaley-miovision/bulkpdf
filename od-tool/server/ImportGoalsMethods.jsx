@@ -30,7 +30,7 @@ function processGoalsJson(json) {
 
 	lookup = {
 		"Tony" : "tbrijpaul@miovision.com",
-		"Kurtis" : "kmcbridge@miovision.com",
+		"Kurtis" : "kmcbride@miovision.com",
 		"Bryan" : "bpeters@miovision.com",
 		"Jamie" : "jreeve@miovision.com",
 		"Bobbi" : "bholte@miovision.com",
@@ -103,7 +103,7 @@ function processGoalsJson(json) {
 				name: c["B"+r],
 				// TODO: haxxor on the date
 				estimatedCompletedOn: r < 65 ? Date.parse("Dec 31, 2015") : Date.parse("Dec 31, 2016"),
-				owners: "Miovision", // Kurtis???
+				owners: ["kmcbride@miovision.com"], // Kurtis???
 			};
 			goals.push(lastGoal);
 		}

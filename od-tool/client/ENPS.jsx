@@ -40,55 +40,58 @@ ENPS = React.createClass({
 
 	render() {
 		return (
-			<div className="row">
-				<div className="col s12 m6 offset-m3">
-					<div className="card white darken-1 centeredCard">
-						<div className="card-content center">
-							<span className="card-title text-main1">Let us know how you're feeling today.</span>
+			<div className="container">
+				<br/>
+				<div className="row center">
+					<div className="col s12 m8 offset-m2">
+						<div className="card white darken-1">
+							<div className="card-content center-align">
+								<span className="card-title text-main1">Let us know how you're feeling today.</span>
 
-							<br />
-							<br />
+								<br />
+								<br />
 
-							<form onSubmit={this.onSubmitForm}>
+								<form onSubmit={this.onSubmitForm}>
 
-								<div className="row">
-									<div className="col s2 offset-s3">
-										<label>
-											<input className="validate required" type="radio" name="enps_value" value="1"
-												onChange={this.onEnpsChanged}/>
-											<img className={this.setIconClass("1")} src="img/enps-icons/happy.jpg" />
-										</label>
+									<div className="row">
+										<div className="col s4">
+											<label>
+												<input className="validate required" type="radio" name="enps_value" value="1"
+													   onChange={this.onEnpsChanged}/>
+												<img className={this.setIconClass("1")} src="img/enps-icons/happy.jpg" />
+											</label>
+										</div>
+										<div className="col s4">
+											<label>
+												<input className="validate required" type="radio" name="enps_value" value="0"
+													   onChange={this.onEnpsChanged}/>
+												<img className={this.setIconClass("0")} src="img/enps-icons/neutral.jpg" />
+											</label>
+										</div>
+										<div className="col s4">
+											<label>
+												<input className="validate required" type="radio" name="enps_value" value="-1"
+													   onChange={this.onEnpsChanged}/>
+												<img className={this.setIconClass("-1")} src="img/enps-icons/sad.jpg" />
+											</label>
+										</div>
 									</div>
-									<div className="col s2">
-										<label>
-											<input className="validate required" type="radio" name="enps_value" value="0"
-												   onChange={this.onEnpsChanged}/>
-											<img className={this.setIconClass("0")} src="img/enps-icons/neutral.jpg" />
-										</label>
-									</div>
-									<div className="col s2">
-										<label>
-											<input className="validate required" type="radio" name="enps_value" value="-1"
-												   onChange={this.onEnpsChanged}/>
-											<img className={this.setIconClass("-1")} src="img/enps-icons/sad.jpg" />
-										</label>
-									</div>
-								</div>
 
-								<div className="row">
-									<div className="col s10 offset-s1">
-										<input placeholder="(Optional) I feel this way because..." id="enps_reason" ref="enpsReason" type="text"
-										   className="validate required" onChange={this.onEnpsReasonChanged}/>
+									<div className="row">
+										<div className="col s12 center">
+											<input placeholder="(Optional) I feel this way because..." id="enps_reason" ref="enpsReason" type="text"
+												   className="validate required" onChange={this.onEnpsReasonChanged}/>
+										</div>
 									</div>
-								</div>
 
-								<div className="row centeredItem">
-									<div className="modal-footer">
-										<a href="#" className=" modal-action modal-close waves-effect waves-green btn background-main3"
-											onClick={this.onSubmitForm}>Submit</a>
+									<div className="row centeredItem">
+										<div className="modal-footer">
+											<a href="#" className=" modal-action modal-close waves-effect waves-green btn background-main3"
+											   onClick={this.onSubmitForm}>Submit</a>
+										</div>
 									</div>
-								</div>
-							</form>
+								</form>
+							</div>
 						</div>
 					</div>
 				</div>

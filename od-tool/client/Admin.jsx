@@ -41,8 +41,20 @@ Admin = React.createClass({
 				<div>
 					<br />
 					<div className="container">
-						<ImportOD />
-						<ImportGoals />
+						<header>
+							<h3 className="center header text-main1">Data Import</h3>
+						</header>
+						<div className="row">
+							<div className="col s12 m4">
+								<ImportPanel id="importODPanel" label="Import OD info" method="v1ImportDatabase"/>
+							</div>
+							<div className="col s12 m4">
+								<ImportPanel id="importGoalsPanel" label="Import company goals" method="importGoals"/>
+							</div>
+							<div className="col s12 m4">
+								<ImportPanel id="userPhotosPanel" label="Import user photo info" method="importUserPhotoInfo"/>
+							</div>
+						</div>
 					</div>
 					<br />
 					<RoleLabels />
