@@ -2,16 +2,17 @@ var chartHeight = 700;
 var chartHeightMobile = 303;
 var chartWidth = 700;
 var chartWidthMobile = 303;
+var donutChartRadius = 16;
+var duration = 250;
+var rectW = 200;
+var rectH = 80;
+var nodeMargin = 10;
 
 // Topdown card view
 
 var TreeView = (function() {
 	var width = screen.width < 700 ? chartWidthMobile : chartWidth;
 	var height = screen.width < 700 ? chartHeightMobile : chartHeight;
-	var duration = 250;
-	var rectW = 120;
-	var rectH = 80;
-	var nodeMargin = 10;
 	var zoomAnchorX = width / 2 - rectW / 2;
 	var zoomAnchorY = 20;
 	var zoomedNode = null;
@@ -100,6 +101,7 @@ var TreeView = (function() {
 			.attr("width", rectW)
 			.attr("height", rectH)
 			.attr("stroke", "black")
+			.style("box-shadow", "10px 10px 5px #888888")
 			.attr("stroke-width", 1);
 
 		nodeEnter.append("foreignObject")
@@ -109,6 +111,95 @@ var TreeView = (function() {
 			.attr("height", rectH)
 			.append("xhtml:body") 
 			.html(htmlForTreeNode);
+
+		//=========================== drop shadows for the boxes //===========================//========================
+
+		// filters go in defs element
+		var defs = svg.append("defs");
+
+		// create filter with id #drop-shadow
+		// height=130% so that the shadow is not clipped
+		var filter = defs.append("filter")
+			.attr("id", "drop-shadow")
+			.attr("height", "130%");
+
+		// SourceAlpha refers to opacity of graphic that this filter will be applied to
+		// convolve that with a Gaussian with standard deviation 3 and store result
+		// in blur
+		filter.append("feGaussianBlur")
+			.attr("in", "SourceAlpha")
+			.attr("stdDeviation", 5)
+			.attr("result", "blur");
+
+		// translate output of Gaussian blur to the right and downwards with 2px
+		// store result in offsetBlur
+		filter.append("feOffset")
+			.attr("in", "blur")
+			.attr("dx", 5)
+			.attr("dy", 5)
+			.attr("result", "offsetBlur");
+
+		// overlay original SourceGraphic over translated blurred opacity by using
+		// feMerge filter. Order of specifying inputs is important!
+		var feMerge = filter.append("feMerge");
+
+		feMerge.append("feMergeNode")
+			.attr("in", "offsetBlur")
+		feMerge.append("feMergeNode")
+			.attr("in", "SourceGraphic");
+
+		//=========================== donut chart //===========================//===========================
+
+		var color = function(i) {
+			if (i == 0) {
+				return "#33cc33";
+			} else if (i == 1) {
+				return "#ffe166";
+			} else if (i == 2) {
+				return "#ff6666";
+			}
+			return "#888888";
+		}
+
+		var pie = d3.layout.pie()
+			.sort(null);
+
+		var arc = d3.svg.arc()
+			.innerRadius(donutChartRadius - 10)
+			.outerRadius(donutChartRadius - 5);
+
+		var g1 = nodeEnter.append("g")
+			.attr("class", "goalTreeDonutChart")
+			.attr("width", donutChartRadius*2)
+			.attr("height", donutChartRadius*2)
+			.attr("transform", function (d) {
+				return "translate(" + rectW/2 + "," + (rectH + donutChartRadius + 3) + ")";
+				//return "translate(" + rectW/2 + "," + rectH + donutChartRadius + 5 + ")";
+			});
+		/*
+			.append("circle")
+				.attr("r", donutChartRadius-5)
+				.attr("stroke", "black")
+				.attr("fill", "none")
+				.attr("stroke-width", 1);*/
+
+		//var xx = 0;
+		nodeEnter.each(function(d) {
+			//console.log("nodeenter" + xx++);
+
+			//var yy = 0;
+			var p = g1.selectAll("path")
+				.data(function(d) {
+					//console.log("data" + yy++);
+					//console.log("data being called for d=" + d.name);
+					return pie([d.stats.completed, d.stats.inProgress, d.stats.notStarted])
+				})
+				.enter().append("path")
+				.attr("fill", function(d, i) { return color(i); })
+				.attr("d", arc);
+		});
+
+		//===========================//===========================//===========================//===========
 
 		// Transition nodes to their new position.
 		var nodeUpdate = node.transition()
@@ -122,6 +213,7 @@ var TreeView = (function() {
 			.attr("height", rectH)
 			.attr("stroke", "black")
 			.attr("stroke-width", 1)
+			.style("filter", "url(#drop-shadow)")
 			.style("fill", function (d) {
 				return d._children ? "#74AFAD" : "#fff";
 			});
@@ -293,9 +385,7 @@ Tree = React.createClass({
 	// TODO: move some of this log into server-side methods
 	getMeteorData() {
 		var handle = Meteor.subscribe("goals");
-		var handle2 = Meteor.subscribe("contributors");
-		console.log(handle.ready());
-		console.log(handle2.ready());
+		var handle2 = Meteor.subscribe("contributors")
 
 		var data = {isLoading: !handle.ready() || !handle2.ready()};
 
@@ -360,9 +450,9 @@ Tree = React.createClass({
 				var g = rootGoals[idx];
 				mvRoot.children.push(g);
 				g.parent = mvRoot;
-				populateGoalChildren(g)
-				populateStats(g);
+				populateGoalChildren(g);
 			}
+			populateStats(mvRoot);
 
 			if (mvRoot) {
 				data.goals = mvRoot;

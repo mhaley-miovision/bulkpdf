@@ -14,7 +14,7 @@ function processGoalsJson(json) {
 	//return res;
 	c = res;
 
-	var startRow = 69; // ignore last year's goals for now
+	var startRow = 5;//69; // ignore last year's goals for now
 	var blankRowCount = 0;
 	var r = startRow;
 
