@@ -302,27 +302,50 @@ Tree = React.createClass({
 		if (!data.isLoading) {
 
 			// TODO: SHOULD OPTIMIZE THESE QUERIES TO USE THE DB MORE RATHER THAN DO THIS CLIENT-SIDE
-			let populateGoalChildren = function (o) {
-				o.children = [];
+			let populateGoalChildren = function (n) {
+				n.children = [];
 
 				// populate photo urls
-				for (var i = 0; i < o.owners.length; i++) {
+				for (var i = 0; i < n.owners.length; i++) {
 					// TODO: make this more optimal
-					var email = o.owners[i];
+					var email = n.owners[i];
 					var c = ContributorsCollection.findOne({email: email});
 					var url = (c && c.photo) ? c.photo : "img/user_avatar_blank.jpg";
-					o.owners[i] = { email: email, photo: url };
+					n.owners[i] = { email: email, photo: url };
 				}
 
-				var query = GoalsCollection.find({parent: o._id}); // find the children
+				var query = GoalsCollection.find({parent: n._id}); // find the children
 				if (query.count() > 0) {
 					var r = query.fetch();
 
 					for (var x in r) {
-
-						o.children.push(r[x]); // add the child
+						n.children.push(r[x]); // add the child
 						populateGoalChildren(r[x]); // recurse for each child
 					}
+				}
+			}
+			let populateStats = function(n) {
+				if (n.children.length == 0) {
+					if (n.status.toLowerCase() === 'completed') {
+						n.stats = { completed:1, inProgress:0, notStarted:0 };
+					} else if (n.status.toLowerCase() === 'in progress') {
+						n.stats = { completed:0, inProgress:1, notStarted:0 };
+					} else if (n.status.toLowerCase() === 'not started') {
+						n.stats = { completed:0, inProgress:0, notStarted:1 };
+					} else {
+						console.log("leaf goal node " + n.name + " has undefined status");
+						n.stats = { completed:0, inProgress:0, notStarted:0 };
+					}
+				} else {
+					n.stats = { completed:0, inProgress:0, notStarted:0 };
+					n.children.forEach(c => populateStats(c));
+
+					n.children.forEach(c => {
+							n.stats.completed += c.stats.completed;
+							n.stats.inProgress += c.stats.inProgress;
+							n.stats.notStarted += c.stats.notStarted;
+						}
+					);
 				}
 			}
 
@@ -332,11 +355,13 @@ Tree = React.createClass({
 			// create a root goal
 			let mvRoot = { name: "Miovision Goals", children: [] };
 
-			for (idx in rootGoals) {
+			// populate the children
+			for (var idx in rootGoals) {
 				var g = rootGoals[idx];
 				mvRoot.children.push(g);
 				g.parent = mvRoot;
 				populateGoalChildren(g)
+				populateStats(g);
 			}
 
 			if (mvRoot) {
