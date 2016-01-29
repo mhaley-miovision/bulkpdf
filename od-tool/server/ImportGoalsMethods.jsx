@@ -40,7 +40,9 @@ function processGoalsJson(json) {
 		"Dave" : "dbullock@miovision.com",
 		"Brian W." : "bward@miovision.com",
 		"Brian W" : "bward@miovision.com",
-		"Paul" : "prunsfleld@miovision.com",
+		"Brian" : "bward@miovision.com",
+		"Paul" : "prunstedler@miovision.com",
+		"Paul R" : "prunstedler@miovision.com",
 		"Dale" : "dhammil@miovision.com",
 		"Ben" : "bmitchell@miovision.com",
 		"Justin" : "jeichel@miovision.com",
@@ -48,40 +50,83 @@ function processGoalsJson(json) {
 		"James" : "jbarr@miovision.com",
 		"Corey" : "cmartella@miovision.com",
 		"Erin" : "eskimson@miovision.com",
-		"James" : "jbarr@miovision.com",
 		"Matt M" : "mmarcucci@moivision.com",
 		"Kyle" : "kothmer@moivision.com",
 		"JamesL" : "jelegue@moivision.com",
+		"JL" : "jelegue@moivision.com",
+		"James L" : "jelegue@moivision.com",
 		"Lynda" : "lchau@moivision.com",
 		"Phil" : "pguerrin@moivision.com",
 		"Lynda" : "lchau@moivision.com",
 		"Vic" : "vleipnik@miovision.com",
+		"Natalie" : "ndumond@miovision.com",
+		"Natalie [S" : "ndumond@miovision.com",
 		"Lauren" : "lgreig@miovision.com",
-	};
+		"Mohan" : "mthomas@miovision.com",
+		"Bullock" : "dbullock@miovision.com",
+		"Kashif" : "kumer@miovision.com",
+		"Kate" : "klaber@miovision.com",
+		"Mike" : "mmartin@miovision.com",
+		"Matt I" : "mignor@miovision.com",
+		"Matt" : "mignor@miovision.com",
+		"Matt Ignor" : "mignor@miovision.com",
+		"Jason" : "jchan@miovision.com",
+		"Jan" : "jbergstrom@miovision.com",
+		"Karen" : "knordby-wadel@miovision.com",
+		"Lisa" : "lwilhelm@miovision.com",
+		"Chelsea" : "ctam@miovision.com",
+	}
 
 	function processOwners(o) {
-		var s = [];
+		//console.log("input: " + o)
+		var s = []; var s2 = [];
 		if (o) {
-			// ughhhh
+			// ughhhh #1
 			if (o.indexOf("(") > 0 && o.indexOf(")") > 0) {
 				o = o.replace("(", ",");
 				o = o.replace(")", "");
 			}
-
-			if (o.indexOf(",") < 0) {
-				s = o.split("/");
-			} else {
-				s = o.split(",");
+			// ughhhh #2 - clear stuff between brackets
+			while (o.indexOf("[") > 0 && o.indexOf("]") > 0) {
+				var i1 = o.indexOf("[");
+				var i2 = o.indexOf("]")
+				var ss2 = o.substring(i2 + 1, o.length - 1);
+				var ss1 = o.substring(0, i1 - 1);
+				o = ss1 + ss2;
 			}
+
+			if (o.indexOf("\n") > 0) {
+				o = o.replace(/\n/g, ",");
+			}
+
+			if (o.indexOf("/") > 0) {
+				o = o.replace(/\//g, ",");
+			}
+
+			// multiple names?
+			if (o.indexOf(",") > 0) {
+				s = o.split(",");
+			} else {
+				s = [ o ];
+			}
+
 			for (i in s) {
-				x = lookup[s[i]];
+				var l = s[i].trim();
+				x = lookup[l];
 				if (x) {
 					s[i] = x;
+				} else {
+					console.log("unmatched: '" + l + "'");
+					s2.push(l);
 				}
 			}
 		}
-		return s;
+		var result = { matched: s, unmatched: s2 };
+		//console.log(result);
+		return result;
 	}
+
+	var unmatchedOwners = [];
 
 	while (r++ < 2000) {
 		if (r == 64 || r == 65 || r == 66 || r == 67 || r == 68 || r == 69) { // HOLY FUCK LORD HELP ME LOL, I NEED TO NUKE THE SHIT OUT OF THIS WHOLE SCRIPT VERY FAST
@@ -111,10 +156,12 @@ function processGoalsJson(json) {
 		// find projects
 		var p = c["C"+r];
 		if (p && (lastProject == null || p != lastProject.name)) {
+			var result = processOwners(c["D"+r]);
+			unmatchedOwners = unmatchedOwners.concat(result.unmatched);
 			lastProject = {
 				parent: lastGoal,
 				name: p,
-				owners: processOwners(c["D"+r]),
+				owners: result.matched,
 			};
 			projects.push(lastProject);
 
@@ -144,7 +191,9 @@ function processGoalsJson(json) {
 			if (typeof(c["E" + r]) !== 'undefined') {
 				lastKeyObjectiveOwnersRaw = c["E" + r];
 			}
-			objective.owners = processOwners(lastKeyObjectiveOwnersRaw);
+			var result = processOwners(lastKeyObjectiveOwnersRaw);
+			objective.owners = result.matched;
+			unmatchedOwners = unmatchedOwners.concat(result.unmatched);
 
 			objectives.push(objective);
 			lastKeyObjective = objective;
@@ -153,11 +202,13 @@ function processGoalsJson(json) {
 		// get the task
 		var t = c["L"+r];
 		if (typeof(o) !== 'undefined') {
+			var result = processOwners(c["N"+r]);
+			unmatchedOwners = unmatchedOwners.concat(result.unmatched);
 			var task = {
 				parent: lastKeyObjective,
 				name: t,
 				status: c["M"+r],
-				owners: processOwners(c["N"+r]),
+				owners: result.matched,
 				estimatedCompletedOn: c["O"+r],
 				links: c["P"+r],
 			};
@@ -165,15 +216,16 @@ function processGoalsJson(json) {
 		}
 	}
 	// merge results
-	return goals.concat(projects).concat(objectives).concat(tasks);
+	return { matched: goals.concat(projects).concat(objectives).concat(tasks), unmatched: unmatchedOwners };
 }
 
 Meteor.methods({
 	importGoals() {
 		var response = HTTP.call( 'GET', cellsFeed);
-		var goals = processGoalsJson(response.data);
+		var result = processGoalsJson(response.data);
+		var goals = result.matched;
 
-		// drop the entire table (!!!)
+			// drop the entire table (!!!)
 		GoalsCollection.remove({});
 
 		// insert the raw goals, and update objects with ids
@@ -190,6 +242,18 @@ Meteor.methods({
 
 			GoalsCollection.update(g._id, g);
 		});
+
+		// email about unmatched
+		var s = "Imported " + goals.length + " goals successfully.\n\n";
+		s += "Unmatched owner strings:\n" + result.unmatched.join(",");
+		console.log(s);
+		/*
+		Email.send({
+			from:"teal@mioviosion.com",
+			to:"vleipnik@miovision.com",
+			subject:"Imported company goals",
+			text:s
+		});*/
 		return goals.length;
 	}
 });

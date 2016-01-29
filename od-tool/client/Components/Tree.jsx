@@ -1,6 +1,6 @@
 var chartHeight = 700;
-var chartHeightMobile = 303;
-var chartWidth = 700;
+var chartHeightMobile = 700;
+var chartWidth = 1024;
 var chartWidthMobile = 303;
 var donutChartRadius = 16;
 var duration = 250;
@@ -443,15 +443,16 @@ Tree = React.createClass({
 			let rootGoals = GoalsCollection.find({parent: null}).fetch();
 
 			// create a root goal
-			let mvRoot = { name: "Miovision Goals", children: [] };
+			let mvRoot = { name: "Miovision Goals", children: [], owners: [ "kmcbride@miovision.com" ] 	};
 
 			// populate the children
 			for (var idx in rootGoals) {
 				var g = rootGoals[idx];
 				mvRoot.children.push(g);
 				g.parent = mvRoot;
-				populateGoalChildren(g);
 			}
+
+			populateGoalChildren(mvRoot);
 			populateStats(mvRoot);
 
 			if (mvRoot) {
@@ -529,7 +530,7 @@ Tree = React.createClass({
 		};
 
 		return (
-			<div className="container">
+			<div>
 				{this.renderSearch()}
 				{this.renderLoading()}
 				<div className="chartContainer" style={divStyle}>

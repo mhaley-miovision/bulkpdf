@@ -37,7 +37,7 @@ MyTeam = React.createClass({
 			return <Loading/>;
 		} else if (this.data.org) {
 			return (
-				<div className="container">
+				<div className="section center">
 					<div>
 						<Organization org={this.data.org} roleMode={this.state.roleMode} roleModeVisible={true} searchVisible={false}/>
 					</div>

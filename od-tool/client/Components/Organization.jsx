@@ -1,6 +1,6 @@
 var chartHeight = 700;
 var chartHeightMobile = 303;
-var chartWidth = 700;
+var chartWidth = 1024;
 var chartWidthMobile = 303;
 
 var Chart = (function () {
@@ -660,7 +660,7 @@ Organization = React.createClass({
 		};
 
 		return (
-			<div>
+			<div className="center">
 				{this.renderRoleModeSwitch()}
 				{this.renderSearch()}
 				{this.renderLoading()}

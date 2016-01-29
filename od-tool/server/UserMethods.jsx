@@ -39,7 +39,9 @@ if (Meteor.isServer) {
 
 			// update contributors photos
 			var notFoundString = "";
+			var noPhotoString = "";
 			var updatedCount = 0;
+			var notFoundCount = 0;
 			for (var x in myjson) {
 				var o = myjson[x];
 				var c = ContributorsCollection.findOne({email: x});
@@ -48,15 +50,21 @@ if (Meteor.isServer) {
 					ContributorsCollection.update(c._id, c);
 					updatedCount++;
 				} else {
-					notFoundString += x + ", " + o.name + (o.photo ? o.photo : "") + "\n";
+					if (c) {
+						noPhotoString += x + ", " + o.name + (o.photo ? o.photo : "") + "\n";
+						notFoundCount++;
+					} else {
+						notFoundString += x + ", " + o.name + (o.photo ? o.photo : "") + "\n";
+					}
 				}
 			}
 
-			var email = "Updated " + updatedCount + " photo urls.\n\n\nUnknown contributors:\n\n" + notFoundString;
+			var email = "Updated " + updatedCount + " photo urls.\n\n\nUnknown contributors:\n\n" + notFoundString
+				+ "Contributors without a photo:\n\n" + noPhotoString;
 			Email.send({
 				from:"teal@miovision.com",
 				to:"vleipnik@miovision.com",
-				subject:"User photos imported",
+				subject:"User photos imported, " + notFoundCount + " unknown",
 				text:email
 			})
 
