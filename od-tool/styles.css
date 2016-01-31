@@ -235,11 +235,6 @@ li.checked label {
     background-color: teal;
 }
 
-.itemEditingIcons {
-    font-size: 17px;
-    cursor: hand;
-}
-
 /* ***************************************************************************** */
 
 #org-chart {
@@ -525,9 +520,6 @@ circle.container, circle.label {
 /*******************************************************************************************************************/
 
 .goalTreeNode {
-    fill: #ccc;
-    stroke: #999;
-    stroke-width: 2;
     pointer-events: all;
     background-color: #74AFAD;
     color: white;
@@ -536,9 +528,11 @@ circle.container, circle.label {
     overflow: hidden;
     text-align: center;
     text-overflow: ellipsis;
+    /*border: solid 2px #558C89;*/
 }
+
 .goalTreeNode:hover {
-    stroke: #FFA500;
+    /*border: solid 2px #D9853B;*/
 }
 
 .d3treelabel {
@@ -558,12 +552,34 @@ circle.container, circle.label {
     border-radius: 50%;
     vertical-align: middle;
     margin: 15px;
+    border: solid 2px white;
 }
 
-/*
+.treeItemProfilePhoto:hover {
+    border: solid 2px #D9853B;
+}
+
+.goalItemPhoto {
     max-width: 32px;
     max-height: 32px;
     border-radius: 50%;
     vertical-align: middle;
-    margin: 15px;
-    -webkit-filter: opacity(70%);*/
+    margin: 5px;
+    border: solid 2px white;
+}
+
+.goalItemPhoto:hover {
+    border: solid 2px #D9853B;
+}
+
+.listItemIcon {
+    font-size: 1rem !important;
+    margin: 0px !important;
+    cursor: hand;
+}
+
+.listItemGoalTitle {
+    display:block;
+    width:150px;
+    word-wrap:break-word;
+}

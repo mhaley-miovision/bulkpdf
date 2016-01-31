@@ -37,18 +37,6 @@ RoleLabel = React.createClass({
 		this.setState({isEditing:false});
 	},
 
-	handleOnEdit() {
-		this.setState({isEditing:true});
-	},
-
-	handleOnEdit() {
-		this.setState({isEditing:true});
-	},
-
-	handleOnEdit() {
-		this.setState({isEditing:true});
-	},
-
 	handleOnChange() {
 		this.state.newLabel = this.refs.newLabel.value;
 	},

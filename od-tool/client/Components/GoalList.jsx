@@ -1,64 +1,57 @@
 GoalList = React.createClass({
 	// This mixin makes the getMeteorData method work
-	mixins: [ReactMeteorData],
+	//mixins: [ReactMeteorData],
+
+	getInitialState() {
+		return { doneLoading: false }
+	},
 
 	getInitialProps() {
 		return { addingGoalsEnabled: false }
 	},
 
-	// Loads items from the Goals collection and puts them on this.data.goals
-	getMeteorData() {
-		var handle1 = Meteor.subscribe("goals");
-		var handle2 = Meteor.subscribe("users");
-		var isLoading = !(handle1.ready() && handle2.ready());
-		var goals = {};
+	componentDidMount() {
+		var _this = this;
+		Meteor.call("loadGoalTreeForContributor", function (err, data) {
+			console.log(data);
 
-		if (!isLoading) {
-			var myUser = Meteor.users.findOne({_id: Meteor.userId()});
-			var myEmail = myUser.services.google.email;
-			goals = GoalsCollection.find({owners: myEmail}).fetch();
-		}
-		return {
-			isLoading: isLoading,
-			goals: goals,
-			currentUser: Meteor.user()
-		};
+			if (err) {
+				console.error(err);
+			} else {
+				_this.setState({doneLoading: true, goals: data});
+			}
+		});
+
+		$(document).ready(function(){
+			$('.collapsible').collapsible({
+				accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+			});
+		});
 	},
 
-	getInitialState() {
-		return {
+	shouldComponentUpdate(nextProps, nextState) {
+		if (nextState.goals) {
+			if (typeof(this.state) === 'undefined' || typeof(this.state.goals) === 'undefined'
+				|| this.state.goals._id != nextState.goals._id) {
+				console.log("shouldComponentUpdate YES");
+				return true;
+			}
 		}
+		console.log("shouldComponentUpdate NO");
+		return false;
 	},
 
 	renderGoals() {
-		if (!this.data.isLoading) {
-			return this.data.goals.map((goal) => {
+		if (this.state.doneLoading) {
+			console.log(this.state.goals);
+
+			return this.state.goals.children.map(goal => {
 				return <Goal
 					key={goal._id}
 					goal={goal}/>;
 			});
 		}
 	},
-
-	handleSubmit(event) {
-		event.preventDefault();
-
-		// Find the text field via the React ref
-		var text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
-
-		Meteor.call("addGoal", text, function(err, data) {
-
-			console.error(err);
-			/*
-			if (err && err.error == "duplicate") {
-				Materialize.toast("That label already exists, item was not added.", 3000);
-			}*/
-		});
-
-		// Clear form
-		ReactDOM.findDOMNode(this.refs.textInput).value = "";
-	},
-
 	render() {
 		return (
 			<div>
@@ -70,16 +63,7 @@ GoalList = React.createClass({
 
 				<br />
 
-				{ this.data.currentUser && this.props.addingGoalsEnabled ?
-					<form className="new-goal" onSubmit={this.handleSubmit} >
-						<input
-							type="text"
-							ref="textInput"
-							placeholder="Type to add new goal" />
-					</form> : ''
-				}
-
-				<ul className="collection">
+				<ul className="collapsible" data-collapsible="accordion">
 					{this.renderGoals()}
 				</ul>
 

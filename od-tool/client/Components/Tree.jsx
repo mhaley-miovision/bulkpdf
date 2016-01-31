@@ -98,10 +98,11 @@ var TreeView = (function() {
 			.on("click", click);
 
 		nodeEnter.append("rect")
+			.attr("class", "goalTreeNodeRect")
 			.attr("width", rectW)
 			.attr("height", rectH)
 			.attr("stroke", "black")
-			.style("box-shadow", "10px 10px 5px #888888")
+			.style("box-shadow", "5px 5px 3px #888888")
 			.attr("stroke-width", 1);
 
 		nodeEnter.append("foreignObject")
@@ -384,87 +385,15 @@ Tree = React.createClass({
 
 	// TODO: move some of this log into server-side methods
 	getMeteorData() {
-		var handle = Meteor.subscribe("goals");
-		var handle2 = Meteor.subscribe("contributors")
+		_this = this;
 
-		var data = {isLoading: !handle.ready() || !handle2.ready()};
+		Meteor.call("loadGoalTree", function (err, data) {
+			_this.data.goals = data;
+			_this.data.doneLoading = true;
+			_this.updateTreeView();
+		});
 
-		if (!data.isLoading) {
-
-			// TODO: SHOULD OPTIMIZE THESE QUERIES TO USE THE DB MORE RATHER THAN DO THIS CLIENT-SIDE
-			let populateGoalChildren = function (n) {
-				n.children = [];
-
-				// populate photo urls
-				for (var i = 0; i < n.owners.length; i++) {
-					// TODO: make this more optimal
-					var email = n.owners[i];
-					var c = ContributorsCollection.findOne({email: email});
-					var url = (c && c.photo) ? c.photo : "img/user_avatar_blank.jpg";
-					n.owners[i] = { email: email, photo: url };
-				}
-
-				var query = GoalsCollection.find({parent: n._id}); // find the children
-				if (query.count() > 0) {
-					var r = query.fetch();
-
-					for (var x in r) {
-						n.children.push(r[x]); // add the child
-						populateGoalChildren(r[x]); // recurse for each child
-					}
-				}
-			}
-			let populateStats = function(n) {
-				if (n.children.length == 0) {
-					if (n.status.toLowerCase() === 'completed') {
-						n.stats = { completed:1, inProgress:0, notStarted:0 };
-					} else if (n.status.toLowerCase() === 'in progress') {
-						n.stats = { completed:0, inProgress:1, notStarted:0 };
-					} else if (n.status.toLowerCase() === 'not started') {
-						n.stats = { completed:0, inProgress:0, notStarted:1 };
-					} else {
-						console.log("leaf goal node " + n.name + " has undefined status");
-						n.stats = { completed:0, inProgress:0, notStarted:0 };
-					}
-				} else {
-					n.stats = { completed:0, inProgress:0, notStarted:0 };
-					n.children.forEach(c => populateStats(c));
-
-					n.children.forEach(c => {
-							n.stats.completed += c.stats.completed;
-							n.stats.inProgress += c.stats.inProgress;
-							n.stats.notStarted += c.stats.notStarted;
-						}
-					);
-				}
-			}
-
-			// find the root goal
-			let rootGoals = GoalsCollection.find({parent: null}).fetch();
-
-			// create a root goal
-			let mvRoot = { name: "Miovision Goals", children: [], owners: [ "kmcbride@miovision.com" ] 	};
-
-			// populate the children
-			for (var idx in rootGoals) {
-				var g = rootGoals[idx];
-				mvRoot.children.push(g);
-				g.parent = mvRoot;
-			}
-
-			populateGoalChildren(mvRoot);
-			populateStats(mvRoot);
-
-			if (mvRoot) {
-				data.goals = mvRoot;
-				console.log("Tree: ");
-				console.log(data.goals);
-			} else {
-				Materialize.toast("Could not find organization: " + this.props.org, 3000);
-				return {};
-			}
-		}
-		return data;
+		return this.data ? this.data : {};
 	},
 
 	handleSearch(orgName) {
@@ -472,13 +401,17 @@ Tree = React.createClass({
 	},
 
 	updateTreeView() {
-		if (!this.data.isLoading) {
+		console.log("updating tree view!");
+		if (this.data.doneLoading) {
+			console.log("data is loaded, rendering tree");
 			var goals = this.data.goals; // as loaded from the db
 			// this is super FUCKED
 			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
 			setTimeout(function () {
 				TreeView.loadData(goals);
 			}, 0);
+		} else {
+			console.log("data isn't loaded yet");
 		}
 	},
 
