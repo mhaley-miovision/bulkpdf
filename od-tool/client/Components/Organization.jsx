@@ -243,10 +243,10 @@ var Chart = (function () {
 
 		zoomToOrg: function (zoomToOrg) {
 			if (zoomToOrg) {
-				if (this.orgNameToNode[zoomToOrg]) {
-					this.zoom(this.orgNameToNode[zoomToOrg], true);
+				if (this.objectNameToNode[zoomToOrg]) {
+					this.zoom(this.objectNameToNode[zoomToOrg], true);
 				} else {
-					console.log("this.orgNameToNode[zoomToOrg] is undefined");
+					console.log("this.objectNameToNode[zoomToOrg] is undefined");
 				}
 			} else {
 				console.log("zoomToOrg is undefined");
@@ -388,9 +388,16 @@ var Chart = (function () {
 			var circles = vis.selectAll("organization").data(nodes).enter().append("svg:circle");
 			initCircles(circles);
 
-			// create map of orgName -> node
-			this.orgNameToNode = [];
-			nodes.filter(n => n.type == "organization").forEach(n => this.orgNameToNode[n.name] = n);
+			// create map of orgname and contributorname -> node
+			this.objectNameToNode = [];
+			nodes.filter(n => n.type == "organization").forEach(n => this.objectNameToNode[n.name] = n);
+
+			// this will fail for multiple matches!
+			// TODO: make this work for multiple matches
+			nodes.filter(n => n.type == "role").forEach(n => this.objectNameToNode[n.contributor] = n);
+
+			// contributors
+			nodes.filter(n => n.type == "contributor").forEach(n => this.objectNameToNode[n.name] = n);
 
 			// don't add these object to organizations, since we use the label object instead for them, as a circle
 			var foreignObjects = vis.selectAll(".foreign-object")
@@ -425,9 +432,9 @@ var Chart = (function () {
 				Chart.zoom(root, true);
 			})
 
-			if (zoomToOrg && this.orgNameToNode[zoomToOrg])
+			if (zoomToOrg && this.objectNameToNode[zoomToOrg])
 			{
-				Chart.zoom(this.orgNameToNode[zoomToOrg]);
+				Chart.zoom(this.objectNameToNode[zoomToOrg]);
 			} else {
 				Chart.zoom(root, false);
 			}
@@ -648,7 +655,7 @@ Organization = React.createClass({
 		if (this.props.searchVisible) {
 			return (
 				<div>
-					<OrganizationSelector onClick={this.handleSearch} />
+					<ObjectSearch onClick={this.handleSearch} />
 				</div>
 			);
 		}

@@ -451,7 +451,7 @@ Tree = React.createClass({
 		if (this.props.searchVisible) {
 			return (
 				<div>
-					<OrganizationSelector onClick={this.handleSearch} />
+					<ObjectSearch onClick={this.handleSearch} />
 				</div>
 			);
 		}
