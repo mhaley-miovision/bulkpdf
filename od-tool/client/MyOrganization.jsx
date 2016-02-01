@@ -2,7 +2,8 @@ MyOrganization = React.createClass({
 
 	getInitialState() {
 		return {
-			org: "Miovision",
+			objectName: "Miovision",
+			objectType: "organization",
 			mode: 'acc',
 		};
 	},
@@ -11,7 +12,7 @@ MyOrganization = React.createClass({
 	},
 
 	renderOrganization() {
-		return <Organization ref="org" objectName={this.state.org} objectType="organization" roleMode={true} roleModeVisible={true} searchVisible={true}/>;
+		return <Organization ref="org" objectName={this.state.objectName} objectType="organization" roleMode={true} roleModeVisible={true} searchVisible={true}/>;
 	},
 
 	renderAccountabilities() {

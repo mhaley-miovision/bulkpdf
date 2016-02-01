@@ -57,8 +57,6 @@ var Chart = (function () {
 	}
 
 	function foreignObjectHtml(d) {
-		console.log(d);
-
 		var html = '';
 		if (d.type === 'role') {
 			//TODO: brutal hack here to remove the team from the role
@@ -246,7 +244,15 @@ var Chart = (function () {
 				if (this.objectNameToNode[zoomToOrg]) {
 					this.zoom(this.objectNameToNode[zoomToOrg], true);
 				} else {
-					console.log("this.objectNameToNode[zoomToOrg] is undefined");
+					// TODO: hack - try finding as a contributor if an email was specified
+					var c = ContributorsCollection.findOne({email: zoomToOrg});
+					if (c) {
+						if (this.objectNameToNode[c.name]) {
+							this.zoom(this.objectNameToNode[c.name], true);
+						}
+					} else {
+						console.log("this.objectNameToNode[zoomToOrg] is undefined");
+					}
 				}
 			} else {
 				console.log("zoomToOrg is undefined");
@@ -446,7 +452,7 @@ Organization = React.createClass({
 	mixins: [ReactMeteorData],
 
 	propTypes: {
-		org : React.PropTypes.string.isRequired,
+		objectName : React.PropTypes.string.isRequired,
 		roleMode : React.PropTypes.bool,
 		roleModeVisible : React.PropTypes.bool,
 		searchVisible : React.PropTypes.bool,
@@ -487,7 +493,7 @@ Organization = React.createClass({
 
 			// TODO: SHOULD OPTIMIZE THESE QUERIES TO USE THE DB MORE RATHER THAN DO THIS CLIENT-SIDE
 
-			let org = OrganizationsCollection.findOne({ name: this.props.org });
+			let org = OrganizationsCollection.findOne({ name: this.props.objectName });
 			if (org) {
 				// for building an org tree
 				let populateOrgChildren = function (o) {
@@ -579,7 +585,7 @@ Organization = React.createClass({
 
 				data.organization = org;
 			} else {
-				Materialize.toast("Could not find organization: " + this.props.org, 3000);
+				Materialize.toast("Could not find organization: " + this.props.objectName, 3000);
 				return {};
 			}
 		};
@@ -610,7 +616,7 @@ Organization = React.createClass({
 
 	shouldComponentUpdate(nextProps, nextState) {
 		// let d3 do the updating!
-		console.log("shouldComponentUpdate called for component with root: " + this.props.org);
+		console.log("shouldComponentUpdate called for component with root: " + this.props.objectName);
 
 		if (this.state.roleMode != nextState.roleMode) {
 			// update the role vs ic mode

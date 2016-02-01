@@ -39,7 +39,7 @@ MyTeam = React.createClass({
 			return (
 				<div className="section center">
 					<div>
-						<Organization org={this.data.org} roleMode={this.state.roleMode} roleModeVisible={true} searchVisible={false}/>
+						<Organization objectName={this.data.org} roleMode={this.state.roleMode} roleModeVisible={true} searchVisible={false}/>
 					</div>
 				</div>
 			);
