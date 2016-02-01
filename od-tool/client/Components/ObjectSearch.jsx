@@ -72,7 +72,6 @@ ObjectSearch = React.createClass({
 	handleContributorClick: function(e) {
 		e.preventDefault();
 		if (this.props.onClick) {
-			console.log("'" + e.target.id + "'")
 			this.props.onClick(e.target.id, 'contributor');
 		}
 	},

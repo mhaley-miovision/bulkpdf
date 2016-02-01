@@ -577,6 +577,9 @@ circle.container, circle.label {
     margin: 0px !important;
     cursor: hand;
 }
+.listItemIcon:hover {
+    color: #D9853B !important;;
+}
 
 .listItemGoalTitle {
     display:block;

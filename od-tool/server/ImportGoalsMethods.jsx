@@ -50,14 +50,14 @@ function processGoalsJson(json) {
 		"James" : "jbarr@miovision.com",
 		"Corey" : "cmartella@miovision.com",
 		"Erin" : "eskimson@miovision.com",
-		"Matt M" : "mmarcucci@moivision.com",
-		"Kyle" : "kothmer@moivision.com",
-		"JamesL" : "jelegue@moivision.com",
-		"JL" : "jelegue@moivision.com",
-		"James L" : "jelegue@moivision.com",
-		"Lynda" : "lchau@moivision.com",
-		"Phil" : "pguerrin@moivision.com",
-		"Lynda" : "lchau@moivision.com",
+		"Matt M" : "mmarcucci@miovision.com",
+		"Kyle" : "kothmer@miovision.com",
+		"JamesL" : "jlegue@miovision.com",
+		"JL" : "jlegue@miovision.com",
+		"James L" : "jlegue@miovision.com",
+		"Lynda" : "lchau@miovision.com",
+		"Phil" : "pguerin@miovision.com",
+		"Lynda" : "lchau@miovision.com",
 		"Vic" : "vleipnik@miovision.com",
 		"Natalie" : "ndumond@miovision.com",
 		"Natalie [S" : "ndumond@miovision.com",
@@ -190,8 +190,7 @@ function processGoalsJson(json) {
 			// if no owners defined, check if last was set (merged column OR it will be pulled from manager owner, so this has to be reset)
 			if (typeof(c["E" + r]) !== 'undefined') {
 				lastKeyObjectiveOwnersRaw = c["E" + r];
-			}
-			var result = processOwners(lastKeyObjectiveOwnersRaw);
+			}			var result = processOwners(lastKeyObjectiveOwnersRaw);
 			objective.owners = result.matched;
 			unmatchedOwners = unmatchedOwners.concat(result.unmatched);
 

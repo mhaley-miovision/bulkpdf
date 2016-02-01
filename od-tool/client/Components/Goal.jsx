@@ -127,10 +127,13 @@ Goal = React.createClass({
 				<li>
 					<div className="collapsible-header">
 						{this.props.goal.name}
-						<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
-						   onClick={this.handleOnEdit}>edit</i>
 
-						<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text" onClick={this.deleteThisRoleLabel}>delete</i>
+						<i className="listItemIcon tiny material-icons right grey-text"
+						   onClick={this.handleOnEdit}>thumb_up</i>
+
+						<i className="listItemIcon tiny material-icons right grey-text"
+						   onClick={this.deleteThisRoleLabel}>thumb_down</i>
+
 
 						<div className="right">
 							{this.renderGoalOwnerList()}
@@ -142,6 +145,15 @@ Goal = React.createClass({
 				</li>
 			);
 		}
+
+		/*
+		if (false) {
+			<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
+			   onClick={this.handleOnEdit}>edit</i>
+
+			<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
+			onClick={this.deleteThisRoleLabel}>delete</i>
+		}*/
 	}
 });
 
