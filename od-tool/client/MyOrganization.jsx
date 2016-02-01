@@ -7,23 +7,15 @@ MyOrganization = React.createClass({
 		};
 	},
 
-	handleOrgChanged(o) {
-		if (this.refs.org) {
-			this.refs.org.zoomToOrg(o);
-		} else {
-			this.refs.tree.zoomToOrg(o);
-		}
-	},
-
 	componentDidMount: function() {
 	},
 
 	renderOrganization() {
-		return <Organization ref="org" org={this.state.org} roleMode={true} roleModeVisible={true} searchVisible={true}/>;
+		return <Organization ref="org" objectName={this.state.org} objectType="organization" roleMode={true} roleModeVisible={true} searchVisible={true}/>;
 	},
 
 	renderAccountabilities() {
-		return <Tree ref="tree" org={this.state.org} roleMode={this.state.roleMode}/>;
+		return <Tree ref="tree" objectName="" objectType="organization"/>;
 	},
 
 	handleAccClicked() {
@@ -48,10 +40,6 @@ MyOrganization = React.createClass({
 		} else {
 			return this.renderOrganization();
 		}
-	},
-
-	handleSearch(o) {
-		TreeView.zoomToNodeByName(o);
 	},
 
 	render() {

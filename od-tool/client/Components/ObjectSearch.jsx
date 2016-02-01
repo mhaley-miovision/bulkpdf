@@ -12,12 +12,12 @@ ObjectSearch = React.createClass({
 
 				// TODO: nosql injection risk here!?
 
-				var organizationMatches = OrganizationsCollection.find(
+				var organizationMatches = this.props.findOrganizations ? OrganizationsCollection.find(
 					q,
-					{fields: {name: 1, _id: 1, id: 1}}).fetch();
-				var contributorMatches = ContributorsCollection.find(
+					{fields: {name: 1, _id: 1, id: 1}}).fetch() : {};
+				var contributorMatches = this.props.findContributors ? ContributorsCollection.find(
 					q,
-					{fields: {name: 1, _id: 1, id: 1}}).fetch();
+					{fields: {name: 1, _id: 1, id: 1, email: 1}}).fetch() : {};
 
 				return {contributors: contributorMatches, organizations: organizationMatches};
 			}
@@ -37,7 +37,9 @@ ObjectSearch = React.createClass({
 
 	getDefaultProperties() {
 		return {
-			width: screen.width < 700 ? 330 : "100%"
+			width: screen.width < 700 ? 330 : "100%",
+			findContributors: true,
+			findOrganizations: true,
 		};
 	},
 
@@ -51,15 +53,6 @@ ObjectSearch = React.createClass({
 		this.setState( { showList: show } );
 	},
 
-	selectOrg(evt) {
-		evt.preventDefault();
-		console.log(evt);
-		if (evt.target && evt.target.id) {
-			Materialize.toast(evt.target.id, 1000);
-		}
-		this.toggleDropdown(false);
-	},
-
 	onBlur() {
 		var _this = this;
 		setTimeout(function() { _this.toggleDropdown(false); }, 150); // TODO HACK: to facilitate clicking first
@@ -69,21 +62,22 @@ ObjectSearch = React.createClass({
 		this.toggleDropdown(true);
 	},
 
-	handleOrganizationClick: function(o) {
-		o.preventDefault();
+	handleOrganizationClick: function(e) {
+		e.preventDefault();
 		if (this.props.onClick) {
-			this.props.onClick(o.target.text, 'organization');
+			this.props.onClick(e.target.text, 'organization');
 		}
 	},
 
-	handleContributorClick: function(o) {
-		o.preventDefault();
+	handleContributorClick: function(e) {
+		e.preventDefault();
 		if (this.props.onClick) {
-			this.props.onClick(o.target.text, 'contributor');
+			this.props.onClick(e.target.id, 'contributor');
 		}
 	},
 
 	renderDropdownItems() {
+		var _this = this;
 		if (this.data.contributors.length > 0 || this.data.organizations.length > 0) {
 			var collection = [];
 			var i = 0;
@@ -91,8 +85,8 @@ ObjectSearch = React.createClass({
 				for (var c in this.data.contributors) {
 					var o = this.data.contributors[c];
 					collection.push(
-						<a href="#!" className="collection-item" key={i} id={i} object={o}
-						   onClick={  this.handleContributorClick }>{o.name}</a>);
+						<a href="#!" className="collection-item" key={i} id={o.email} object={o}
+						   onClick={ this.handleContributorClick }>{o.name}</a>);
 					i++;
 				}
 			}
@@ -116,10 +110,18 @@ ObjectSearch = React.createClass({
 	},
 
 	render: function() {
+		var s = "a person or an organization";
+		if (!this.props.findContributors) {
+			s = "an organization";
+		} else {
+			s = "a person";
+		}
+		s = "Click here to search for a " + s;
+
 		return (
 			<div style={{width:this.props.width}}>
 				<input className="button" type="text" id="orgSelection" ref="textInput"
-					   onChange={this.onInputChange} placeholder="Click here to search for a person or organization"
+					   onChange={this.onInputChange} placeholder={s}
 						onBlur={this.onBlur} onSelect={this.onSelected}/>
 				<label htmlFor="orgSelection"/>
 

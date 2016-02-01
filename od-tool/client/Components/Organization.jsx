@@ -655,7 +655,7 @@ Organization = React.createClass({
 		if (this.props.searchVisible) {
 			return (
 				<div>
-					<ObjectSearch onClick={this.handleSearch} />
+					<ObjectSearch onClick={this.handleSearch} findContributors={true} findOrganizations={true}/>
 				</div>
 			);
 		}
@@ -671,8 +671,7 @@ Organization = React.createClass({
 				{this.renderRoleModeSwitch()}
 				{this.renderSearch()}
 				{this.renderLoading()}
-				<div className="chartContainer" style={divStyle}>
-				</div>
+				<div className="chartContainer" style={divStyle} />
 				<div className="clear-block"/>
 			</div>
 		);

@@ -145,6 +145,16 @@ Meteor.methods({
 
 		// find all goals with this email attached to them
 		let contributor = ContributorsCollection.findOne({email: contributorEmail});
+
+		if (goals.length == 0) {
+			return {
+				name: contributor.name + "'s has no goals defined yet.",
+				children: [],
+				owners: [createOwnerObject(contributorEmail)],
+				stats: { completed: 0, inProgress: 0, notStarted: 0 },
+			};
+		}
+
 		// create a root goal
 		let root = {
 			name: contributor.name + "'s Goals",

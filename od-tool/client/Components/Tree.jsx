@@ -348,6 +348,8 @@ var TreeView = (function() {
 		loadData: function(data) {
 			root = data;
 
+			$(".chartContainer").empty();
+
 			svg = d3.select(".chartContainer").append("svg").attr("width", width).attr("height", height)
 				.call(zm).append("g")
 				.attr("transform", "translate(" + zoomAnchorX + "," + zoomAnchorY + ")");
@@ -372,32 +374,46 @@ Tree = React.createClass({
 	mixins: [ReactMeteorData],
 
 	propTypes: {
-		org: React.PropTypes.string.isRequired,
-		roleMode: React.PropTypes.bool,
+		objectName: React.PropTypes.string.isRequired,
+		objectType: React.PropTypes.string,
+	},
+
+	getInitialState() {
+		return {
+			objectName: this.props.org,
+			objectType: this.props.objectType,
+		};
 	},
 
 	getDefaultProps() {
 		return {
-			roleMode: true,
+			objectType: "organizations",
 			searchVisible: true,
 		}
 	},
 
 	// TODO: move some of this log into server-side methods
 	getMeteorData() {
-		_this = this;
+		var _this = this;
 
-		Meteor.call("loadGoalTree", function (err, data) {
-			_this.data.goals = data;
-			_this.data.doneLoading = true;
-			_this.updateTreeView();
-		});
-
+		if (this.state.objectType == 'organization') {
+			Meteor.call("loadGoalTree", function (err, data) {
+				_this.data.goals = data;
+				_this.data.doneLoading = true;
+				_this.updateTreeView();
+			});
+		} else if (this.state.objectType == 'contributor') {
+			Meteor.call("loadGoalTreeForContributor", this.state.objectName, function (err, data) {
+				_this.data.goals = data;
+				_this.data.doneLoading = true;
+				_this.updateTreeView();
+			});
+		}
 		return this.data ? this.data : {};
 	},
 
-	handleSearch(orgName) {
-		TreeView.zoomToNodeByName(orgName);
+	handleSearch(objectName, objectType) {
+		this.setState({objectName: objectName, objectType:objectType});
 	},
 
 	updateTreeView() {
@@ -416,7 +432,7 @@ Tree = React.createClass({
 	},
 
 	componentWillUpdate(nextProps, nextState) {
-		if (nextProps.roleMode != this.props.roleMode) {
+		if (nextProps.objectType != this.props.objectType) {
 			// detected role mode change!
 		}
 		console.log("componentWillUpdate called!");
@@ -451,7 +467,7 @@ Tree = React.createClass({
 		if (this.props.searchVisible) {
 			return (
 				<div>
-					<ObjectSearch onClick={this.handleSearch} />
+					<ObjectSearch onClick={this.handleSearch} findContributors={true} findOrganizations={false}/>
 				</div>
 			);
 		}
