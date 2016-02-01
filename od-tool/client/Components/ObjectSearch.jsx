@@ -72,12 +72,12 @@ ObjectSearch = React.createClass({
 	handleContributorClick: function(e) {
 		e.preventDefault();
 		if (this.props.onClick) {
+			console.log("'" + e.target.id + "'")
 			this.props.onClick(e.target.id, 'contributor');
 		}
 	},
 
 	renderDropdownItems() {
-		var _this = this;
 		if (this.data.contributors.length > 0 || this.data.organizations.length > 0) {
 			var collection = [];
 			var i = 0;

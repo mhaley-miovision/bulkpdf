@@ -362,7 +362,9 @@ var TreeView = (function() {
 			root.x0 = 0;
 			root.y0 = height / 2;
 
-			root.children.forEach(collapse);
+			if (root.children) {
+				root.children.forEach(collapse);
+			}
 			update(root);
 
 			d3.select(".chartContainer").style("height", "800px");

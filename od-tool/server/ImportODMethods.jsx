@@ -31,6 +31,9 @@ function importHelper_transformJobAccountability(x) {
 }
 function importHelper_transformContributor(x) {
 	x.type = 'contributor';
+	if (x.email.indexOf(" ") > 0) {
+		x.email = x.email.replace(/ /g, "");
+	}
 	x.name = x.name.trim();
 	x.createdAt = new Date();
 	x.createdBy = Meteor.userId;

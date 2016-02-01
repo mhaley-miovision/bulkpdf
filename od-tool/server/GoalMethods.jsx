@@ -117,6 +117,8 @@ Meteor.methods({
 	},
 
 	loadGoalTreeForContributor(contributorEmail = null) {
+		console.log("Goaltree for: '" + contributorEmail + "'");
+
 		if (contributorEmail == null) {
 			var myUser = Meteor.users.findOne({_id: Meteor.userId()});
 			contributorEmail = myUser.services.google.email;
@@ -170,6 +172,9 @@ Meteor.methods({
 			}
 		}
 		populateStats(root);
+
+		console.log(root);
+
 		return root;
 	},
 
