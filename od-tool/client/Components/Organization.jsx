@@ -265,6 +265,10 @@ var Chart = (function () {
 					}
 				}
 			}
+			// sanity check
+			if (parents.length != nodes.length) {
+				return root;
+			}
 			// are all parents the same?
 			if (parents.length > 0) {
 				var p = parents[0];
