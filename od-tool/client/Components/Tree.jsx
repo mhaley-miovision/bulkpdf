@@ -65,6 +65,8 @@ var TreeView = (function() {
 	function htmlForTreeNode(d) {
 		var ownersHtmlString = '';
 		for (var i in d.owners) {
+			//url = "/organization?objectName=" + d.owners[i].email + "&objectType=contributor&mode=acc";
+			//ownersHtmlString += '<a href="'+url+'"><img class="treeItemProfilePhoto" src="' + d.owners[i].photo + '" title="' + d.owners[i].email + '"/></a>';
 			ownersHtmlString += '<img class="treeItemProfilePhoto" src="' + d.owners[i].photo + '" title="' + d.owners[i].email + '"/>';
 		}
 
@@ -184,10 +186,7 @@ var TreeView = (function() {
 				.attr("fill", "none")
 				.attr("stroke-width", 1);*/
 
-		//var xx = 0;
 		nodeEnter.each(function(d) {
-			//console.log("nodeenter" + xx++);
-
 			//var yy = 0;
 			var p = g1.selectAll("path")
 				.data(function(d) {

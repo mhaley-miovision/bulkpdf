@@ -22,8 +22,10 @@ MyOrganization = React.createClass({
 	},
 
 	renderOrganization() {
-		return <Organization ref="org" objectName={this.state.objectName} objectType={this.state.objectType}
-							 roleMode={this.props.roleMode} roleModeVisible={true} searchVisible={true} zoomTo={this.state.zoomTo}/>;
+		return <Organization ref="org"
+							 objectName={this.state.objectName} objectType={this.state.objectType}
+							 roleMode={this.props.roleMode} roleModeVisible={true}
+							 searchVisible={true} zoomTo={this.state.zoomTo}/>;
 	},
 
 	renderAccountabilities() {
@@ -56,10 +58,14 @@ MyOrganization = React.createClass({
 
 	render() {
 		return (
-			<div>
+				<div>
 				<div className="section center">
-					<a className={this.getClasses(this.state.mode != 'acc')} onClick={this.handleAccClicked}>Accountabilities</a>
-					<a className={this.getClasses(this.state.mode != 'comp')} onClick={this.handleCompClicked}>Team Composition</a>
+					<div className="section center">
+						<a className={this.getClasses(this.state.mode != 'acc')}
+						   onClick={this.handleAccClicked}>Accountabilities</a>
+						<a className={this.getClasses(this.state.mode != 'comp')}
+						   onClick={this.handleCompClicked}>Team Composition</a>
+					</div>
 				</div>
 				<div>
 					{this.renderBody()}

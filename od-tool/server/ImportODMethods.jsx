@@ -23,7 +23,8 @@ function importHelper_transformOrgAccountability(x) {
 	x.createdBy = Meteor.userId;
 	return x;
 }
-function importHelper_transformJobAccountability(x) {
+function importHelper_transformJobAccountability(x, id) {
+	x.id = id;
 	x.type = 'role_accountability';
 	x.createdAt = new Date();
 	x.createdBy = Meteor.userId;
@@ -86,7 +87,7 @@ Meteor.methods({
 			OrgAccountabilitiesCollection.insert(importHelper_transformOrgAccountability(orgAccountabilities.data[x]));
 		}
 		for (var x in jobAccountabilities.data) {
-			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[x]));
+			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[x], x));
 		}
 		for (var x in roles.data) {
 			RolesCollection.insert(importHelper_transformRole(roles.data[x]));

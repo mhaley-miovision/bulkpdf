@@ -75,7 +75,12 @@ Goal = React.createClass({
 	renderGoalOwnerList() {
 		if (!this.data.isLoading) {
 			return this.props.goal.owners.map(owner => {
-				return <img key={owner.email} title={owner.email} className="right goalItemPhoto" src={owner.photo}/>
+				// TODO: build route in a more sustainable way (i.e. using Flow router params)
+				return (
+					<a href={"/organization?objectName=" + owner.email + "&objectType=contributor&mode=acc"}>
+						<img key={owner.email} title={owner.email} className="right goalItemPhoto" src={owner.photo}/>
+					</a>
+				);
 			});
 		}
 	},

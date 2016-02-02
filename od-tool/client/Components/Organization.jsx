@@ -398,7 +398,7 @@ var Chart = (function () {
 				return;
 			}
 			$roleBody
-				.height($('#js-role-details').height() - $roleBody.position().top)
+				.height($('#role-zoomed').height() - $roleBody.position().top)
 				.scrollbar({orientation: 'vertical'});
 			if ($roleBody.hasOverflow()) {
 				$roleBody.addClass('scrollable');
@@ -476,8 +476,12 @@ var Chart = (function () {
 
 			// node initialization
 			node = root = data;
-			$roleDetails = $('#js-role-details');
 			var nodes = pack.nodes(root);
+
+			// when zoomed into a role
+			d3.select(".chartContainer").insert("div").attr("id", "role-zoomed");
+
+			$roleDetails = $('#role-zoomed');
 
 			// add the circles
 			var circles = vis.selectAll("organization").data(nodes).enter().append("svg:circle");
@@ -511,8 +515,27 @@ var Chart = (function () {
 				console.log(zoomTo);
 
 				function loadRoleDetails(id) {
-					$roleDetails.html("<b>This is a test</b>");
-					//vis.selectAll('.title').style('opacity', '0');
+					// get role accountability list
+					var roleId = zoomTo.id;
+					var accs = RoleAccountabilitiesCollection.find({id: roleId}).fetch();
+					var s = "<b>Accountabilities</b>";
+
+					if (accs.length > 0) {
+						s += '<ul>';
+						var j = 0;
+						while(accs[0][j]) {
+							var a = accs[0][j];
+							if (a) {
+								s += '<li>' + a.label + '</li>';
+							}
+							j++;
+						}
+						s += '</ul>';
+					} else {
+						s += "<div>No accountabilities defined for this role yet.</div>";
+					}
+
+					$roleDetails.html(s);
 					$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
 					Chart.setRoleDetailHeight();
 				}
@@ -774,7 +797,8 @@ Organization = React.createClass({
 				{this.renderRoleModeSwitch()}
 				{this.renderSearch()}
 				{this.renderLoading()}
-				<div className="chartContainer" style={divStyle} />
+				<div className="chartContainer" style={divStyle}>
+				</div>
 				<div className="clear-block"/>
 			</div>
 		);
