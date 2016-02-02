@@ -301,7 +301,7 @@ var Chart = (function () {
 			}
 		},
 
-		zoomToOrg: function (zoomToObject) {
+		zoomToOrg: function (zoomToObject, shouldAnimate = true) {
 			if (zoomToObject) {
 				if (this.objectNameToNode[zoomToObject]) {
 					this.highlightRoles([]);
@@ -316,7 +316,7 @@ var Chart = (function () {
 						this.highlightRoles(roles);
 
 						// zoom to the closest containing parent
-						this.zoom(commonParent, true);
+						this.zoom(commonParent, shouldAnimate);
 					} else {
 						console.log("this.objectNameToNode[zoomToObject] is undefined");
 					}
@@ -449,7 +449,7 @@ var Chart = (function () {
 
 			Note that this is an additive only method - I need to modify this to remove nodes as well
 		* */
-		loadData: function (data, zoomToOrg) {
+		loadData: function (data, initiallyZoomedTo) {
 			// use the circle packing layout
 			pack = d3.layout.pack()
 				.size([r, r])
@@ -527,9 +527,15 @@ var Chart = (function () {
 				Chart.zoom(root, true);
 			})
 
-			if (zoomToOrg && this.objectNameToNode[zoomToOrg])
+			if (initiallyZoomedTo)
 			{
-				Chart.zoom(this.objectNameToNode[zoomToOrg]);
+				Chart.zoom(root, false);
+
+				setTimeout(
+					function() { Chart.zoomToOrg(initiallyZoomedTo, true); },
+					100
+				);
+
 			} else {
 				Chart.zoom(root, false);
 			}
@@ -542,6 +548,8 @@ Organization = React.createClass({
 
 	propTypes: {
 		objectName : React.PropTypes.string.isRequired,
+		objectType : React.PropTypes.string,
+		zoomTo : React.PropTypes.string,
 		roleMode : React.PropTypes.bool,
 		roleModeVisible : React.PropTypes.bool,
 		searchVisible : React.PropTypes.bool,
@@ -684,12 +692,12 @@ Organization = React.createClass({
 	updateOrganizationGraph() {
 		if (!this.data.isLoading) {
 			var org = this.data.organization; // as loaded from the db
-			var zoomToOrg = this.state && this.state.zoomToOrg ? this.state.zoomToOrg : "";
+			var zoomTo = this.props.zoomTo;
 
 			// this is super FUCKED
 			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
 			setTimeout(function () {
-				Chart.loadData(org, zoomToOrg);
+				Chart.loadData(org, zoomTo);
 			}, 0);
 		}
 	},

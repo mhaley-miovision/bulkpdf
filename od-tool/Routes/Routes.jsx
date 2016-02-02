@@ -42,8 +42,22 @@ FlowRouter.route( '/team', {
 
 FlowRouter.route( '/organization', {
 	name: 'organization',
-	action() {
-		ReactLayout.render( App, { yield: <MyOrganization /> } );
+	action(params, queryParams) {
+		// TODO: validate params
+		var objectName = queryParams.objectName;
+		var objectType = queryParams.objectType;
+		var zoomTo = queryParams.zoomTo;
+		var mode = queryParams.mode;
+		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
+
+		console.log("Query Params:", queryParams);
+		ReactLayout.render( App, { yield: <MyOrganization
+			objectName={objectName}
+			objectType={objectType}
+			zoomTo={zoomTo}
+			mode={mode}
+			roleMode={roleMode}
+		/> } );
 	}
 });
 

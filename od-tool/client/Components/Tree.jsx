@@ -382,14 +382,14 @@ Tree = React.createClass({
 
 	getInitialState() {
 		return {
-			objectName: this.props.org,
+			objectName: this.props.objectName,
 			objectType: this.props.objectType,
 		};
 	},
 
 	getDefaultProps() {
 		return {
-			objectType: "organizations",
+			objectType: "organization",
 			searchVisible: true,
 		}
 	},
