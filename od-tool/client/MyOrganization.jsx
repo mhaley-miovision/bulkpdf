@@ -4,7 +4,7 @@ MyOrganization = React.createClass({
 		return {
 			objectName: "Miovision",
 			objectType: "organization",
-			mode: 'acc',
+			mode: 'comp',
 		};
 	},
 

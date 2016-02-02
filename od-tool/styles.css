@@ -586,3 +586,8 @@ circle.container, circle.label {
     width:150px;
     word-wrap:break-word;
 }
+
+.highlight {
+    stroke: black;
+    fill: #D9853B !important;
+}

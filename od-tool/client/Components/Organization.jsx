@@ -41,14 +41,8 @@ var Chart = (function () {
 		if (d.type === 'role' || d.type === 'contributor') {
 			classes.push(d.contributor || d.type == "contributor" ? "filled" : "unfilled");
 		}
-		if (d.structural_role) {
-			classes.push("structural");
-		}
-		if (d.core_role) {
-			classes.push("core-role");
-		}
-		if (d.role_alert) {
-			classes.push("alert");
+		if (d.isHighlighted) {
+			classes.push("highlight");
 		}
 		if (d.type === 'label') {
 			classes.push("text-main1");
@@ -151,7 +145,8 @@ var Chart = (function () {
 			})
 			.attr("r", function (d) {
 				return k * d.r;
-			});
+			})
+			.attr("class", classesForNode);
 	}
 
 	function initCircles(circles) {
@@ -239,23 +234,91 @@ var Chart = (function () {
 			}
 		},
 
-		zoomToOrg: function (zoomToOrg) {
-			if (zoomToOrg) {
-				if (this.objectNameToNode[zoomToOrg]) {
-					this.zoom(this.objectNameToNode[zoomToOrg], true);
+		isDescendantOf(n, parent) {
+			if (n.parent) {
+				if (n.parent === parent) {
+					return true;
 				} else {
-					// TODO: hack - try finding as a contributor if an email was specified
-					var c = ContributorsCollection.findOne({email: zoomToOrg});
-					if (c) {
-						if (this.objectNameToNode[c.name]) {
-							this.zoom(this.objectNameToNode[c.name], true);
-						}
-					} else {
-						console.log("this.objectNameToNode[zoomToOrg] is undefined");
+					return this.isDescendantOf(n.parent, parent);
+				}
+			} else {
+				return false;
+			}
+		},
+
+		getLowestCommonParent(nodes, root) {
+			var parents = [];
+			// for each node, see which child of root they match up to as a parent
+			for (var ni in nodes) {
+				var n = nodes[ni];
+
+				// the root isn't even a parent!
+				if (!this.isDescendantOf(n, root)) {
+					return null;
+				}
+
+				// check the root children
+				for (var ci in root.children) {
+					if (this.isDescendantOf(n, root.children[ci])) {
+						parents.push(root.children[ci]);
+						break;
+					}
+				}
+			}
+			// are all parents the same?
+			if (parents.length > 0) {
+				var p = parents[0];
+				for (var i = 1; i < parents.length; i++) {
+					if (p != parents[i]) {
+						return root; // different parents, root was the common parent
 					}
 				}
 			} else {
-				console.log("zoomToOrg is undefined");
+				return root;
+			}
+			// div in to the next level
+			return this.getLowestCommonParent(nodes, parents[0]);
+		},
+
+		highlightRoles(roles) {
+			function clearHighlight(n) {
+				if (n.children) {
+					for (var ni in n.children) {
+						n.children[ni].isHighlighted = false;
+						clearHighlight(n.children[ni]);
+					}
+				}
+			}
+			clearHighlight(root);
+
+			// highlight the roles
+			for (var ri in roles) {
+				roles[ri].isHighlighted = true;
+			}
+		},
+
+		zoomToOrg: function (zoomToObject) {
+			if (zoomToObject) {
+				if (this.objectNameToNode[zoomToObject]) {
+					this.highlightRoles([]);
+					this.zoom(this.objectNameToNode[zoomToObject], true);
+				} else {
+					// TODO: hack - try finding as a contributor if an email was specified
+					var c = ContributorsCollection.findOne({email: zoomToObject});
+					if (c) {
+						// see if multiple matches occured
+						var roles = this.getRolesForContributorEmail(zoomToObject);
+						var commonParent = this.getLowestCommonParent(roles, root);
+						this.highlightRoles(roles);
+
+						// zoom to the closest containing parent
+						this.zoom(commonParent, true);
+					} else {
+						console.log("this.objectNameToNode[zoomToObject] is undefined");
+					}
+				}
+			} else {
+				console.log("zoomToObject is undefined");
 			}
 		},
 
@@ -353,6 +416,28 @@ var Chart = (function () {
 			return 0
 		},
 
+		getRolesForContributorEmail(contributorEmail) {
+			var c = ContributorsCollection.findOne({email: contributorEmail});
+			if (c && c.email) {
+				return this._getRolesForContributorName(c.name, root);
+			} else {
+				console.error("Contributor not found by email " + contributorEmail);
+				return 0;
+			}
+		},
+
+		_getRolesForContributorName(contributorName, n) {
+			var roles = [];
+			if (n.contributor === contributorName || n.name == contributorName) {
+				roles.push(n);
+			}
+			if (n.children) {
+				for (var i in n.children) {
+					roles = roles.concat(this._getRolesForContributorName(contributorName, n.children[i]));
+				}
+			}
+			return roles;
+		},
 
 		/* TODO: To make this callable upon update, I should split this out into the initialization and update function,
 			which calls enter/update/exit and transitions in between to make for a smooth switch when properties are
