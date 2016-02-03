@@ -568,6 +568,15 @@ circle.container, circle.label {
     border: solid 2px white;
 }
 
+.zoomedInRolePhoto {
+    max-width: 96px;
+    max-height: 96px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 5px;
+    border: solid 2px white;
+}
+
 .goalItemPhoto:hover {
     border: solid 2px #D9853B;
 }
@@ -598,7 +607,7 @@ circle.container, circle.label {
     text-align: left;
     height: 530px;
     width: 530px;
-    top: 232px;
+    top: 182px;
     left: 252px;
     color: #ECECEA;
     position: absolute;

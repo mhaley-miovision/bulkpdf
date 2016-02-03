@@ -511,37 +511,59 @@ var Chart = (function () {
 			circles.on("click", function (d) {
 				var zoomTo = node === d ? root : d;
 
-				console.log("*** CIRCLE CLICK ZOOM***");
-				console.log(zoomTo);
-
-				function loadRoleDetails(id) {
+				function loadRoleDetails() {
 					// get role accountability list
 					var roleId = zoomTo.id;
 					var accs = RoleAccountabilitiesCollection.find({id: roleId}).fetch();
-					var s = "<b>Accountabilities</b>";
 
+					// profile image
+					var c = ContributorsCollection.findOne({name: zoomTo.contributor});
+					var url = (c && c.photo) ? c.photo : "img/user_avatar_blank.jpg";
+					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + url + "'/></div>";
+
+					// bucketize the accountabilities
+					var accountabilityBuckets = {};
+					var j = 0;
+					s += "<div style='margin-left:20px; margin-top:20px; overflow: auto; height: 200px'>";
 					if (accs.length > 0) {
-						s += '<ul>';
-						var j = 0;
-						while(accs[0][j]) {
+						while (accs[0][j]) {
 							var a = accs[0][j];
 							if (a) {
-								s += '<li>' + a.label + '</li>';
+								if (typeof(accountabilityBuckets[a.accountabilityType]) === 'undefined') {
+									accountabilityBuckets[a.accountabilityType] = [];
+								}
+								accountabilityBuckets[a.accountabilityType].push(a);
 							}
 							j++;
 						}
-						s += '</ul>';
+						// output them to the html
+						for (var k in Object.keys(accountabilityBuckets)) {
+							var key = Object.keys(accountabilityBuckets)[k];
+							s += '<div><b>' + key + '</b></div>';
+							s += '<ul>';
+							for (var i in accountabilityBuckets[key]) {
+								var a = accountabilityBuckets[key][i];
+								s += '<li>' + a.label + '</li>';
+							}
+							s += '</ul>';
+						}
 					} else {
 						s += "<div>No accountabilities defined for this role yet.</div>";
 					}
+					s += '</div>';
 
-					$roleDetails.html(s);
-					$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
-					Chart.setRoleDetailHeight();
+					// has to do with update thread (but WTFFFF)
+					setTimeout(function() {
+						$roleDetails.html(s);
+						$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
+						Chart.setRoleDetailHeight();
+					}, 100);
 				}
 
-				if (zoomTo.type == 'role') {
-					loadRoleDetails(zoomTo.id);
+				console.log("zoomTo.type:" + zoomTo.type);
+
+				if (zoomTo.type === 'role' || zoomTo.type === 'contributor') {
+					loadRoleDetails(zoomTo);
 				}
 				Chart.zoom(zoomTo, true);
 			});
