@@ -14,7 +14,7 @@ MyOrganization = React.createClass({
 			objectName: "Miovision",
 			zoomTo: "Miovision",
 			objectType: "organization",
-			mode: 'comp',
+			mode: 'acc',
 		}
 	},
 

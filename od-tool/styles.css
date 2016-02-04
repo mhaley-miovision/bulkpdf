@@ -615,3 +615,18 @@ circle.container, circle.label {
     display: none;
     padding-right: 10px;
 }
+
+.simpleProgressChart div {
+    font: 10px sans-serif;
+    background-color: #888888;
+    text-align: right;
+    padding: 0px;
+    margin: 5px;
+    color: white;
+}
+
+.simpleProgressChartBar div {
+    float: left;
+    padding: 0px;
+    margin: 0px;
+}

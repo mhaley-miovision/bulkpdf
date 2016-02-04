@@ -14,10 +14,10 @@ ObjectSearch = React.createClass({
 
 				var organizationMatches = this.props.findOrganizations ? OrganizationsCollection.find(
 					q,
-					{fields: {name: 1, _id: 1, id: 1}}).fetch() : {};
+					{fields: {name: 1, _id: 1, id: 1}, sort: {name: 1}}).fetch() : {};
 				var contributorMatches = this.props.findContributors ? ContributorsCollection.find(
 					q,
-					{fields: {name: 1, _id: 1, id: 1, email: 1}}).fetch() : {};
+					{fields: {name: 1, _id: 1, id: 1, email: 1}, sort: {name: 1}}).fetch() : {};
 
 				return {contributors: contributorMatches, organizations: organizationMatches};
 			}

@@ -46,6 +46,8 @@ GoalList = React.createClass({
 			console.log(this.state.goals);
 
 			return this.state.goals.children.map(goal => {
+				console.log("goal.name = " + goal.name);
+				console.log("goal._id = " + goal._id);
 				return <Goal
 					key={goal._id}
 					goal={goal}/>;

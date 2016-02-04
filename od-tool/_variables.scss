@@ -1,0 +1,30 @@
+$colors: #B52D43, #620CAC, #F83E5B, #7AC36A, #5A9BD4, #FAA75B, #A368D5, #CE7058, #D77FB4;
+
+.Chart {}
+
+.Chart-path {
+  @for $i from 1 through length($colors) {
+    &:nth-child(#{$i}) {
+      fill: nth($colors, $i);
+    }
+  }
+
+  &.Chart-path--empty {
+    fill: #CCC;
+  }
+
+  &.Chart-path--spent {
+    fill: #D77FB4;
+  }
+
+  &.Chart-path--remaining {
+    fill: #144A90;
+  }
+}
+
+.Chart-text {
+  display:inline-block;
+  text-align:center;
+  width:100%;
+}
+

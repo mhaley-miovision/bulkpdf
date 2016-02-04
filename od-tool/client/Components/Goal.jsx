@@ -131,7 +131,10 @@ Goal = React.createClass({
 			return (
 				<li>
 					<div className="collapsible-header">
-						{this.props.goal.name}
+
+						<div style={{display:"inline-block", width:"60%", lineHeight:"1.5em", marginTop:"10px"}}>
+							{this.props.goal.name}
+						</div>
 
 						<i className="listItemIcon tiny material-icons right grey-text"
 						   onClick={this.handleOnEdit}>thumb_up</i>
@@ -141,8 +144,16 @@ Goal = React.createClass({
 
 
 						<div className="right">
+							<SimpleGoalProgressBar goal={this.props.goal}/>
+						</div>
+
+
+						<div className="right">
 							{this.renderGoalOwnerList()}
 						</div>
+
+
+
 					</div>
 					<div className="collapsible-body">
 						{this.renderSubgoalsList()}
