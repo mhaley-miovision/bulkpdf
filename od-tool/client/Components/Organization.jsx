@@ -522,7 +522,7 @@ var Chart = (function () {
 
 					// profile image
 					var c = ContributorsCollection.findOne({name: zoomTo.contributor});
-					var url = (c && c.photo) ? c.photo : "img/user_avatar_blank.jpg";
+					var url = zoomTo.photo ? zoomTo.photo : (c && c.photo) ? c.photo : "img/user_avatar_blank.jpg";
 					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + url + "'/></div>";
 
 					var goalsUrl = "/organization?objectName=" + d.email + "&objectType=contributor&mode=acc";
@@ -555,7 +555,9 @@ var Chart = (function () {
 							s += '</ul>';
 						}
 					} else {
-						s += "<div>No accountabilities defined for this role yet.</div>";
+						if (zoomTo.type === 'role') {
+							s += "<div>No accountabilities defined for this role yet.</div>";
+						}
 					}
 					s += '</div>';
 
