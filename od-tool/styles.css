@@ -362,8 +362,12 @@ circle.role.alert {
 }
 
 circle.role {
-    fill: #81c4c2;
+    fill: #87cecc;
     stroke-width: 1.5;
+}
+
+circle.role.hasGoals {
+    fill: #6db2ae;
 }
 
 circle.parent.container, circle.child.label {
@@ -524,7 +528,7 @@ circle.container, circle.label {
     background-color: #74AFAD;
     color: white;
     font-size: 8pt;
-    padding: 2px;
+    padding: x`2px;
     overflow: hidden;
     text-align: center;
     text-overflow: ellipsis;
@@ -623,10 +627,13 @@ circle.container, circle.label {
     padding: 0px;
     margin: 5px;
     color: white;
+    border: solid 1px black;
 }
 
-.simpleProgressChartBar div {
-    float: left;
-    padding: 0px;
-    margin: 0px;
+.numGoalsLabel {
+    text-align: center;
+    color: #D9853B !important;
+    font-size: 14px;
+    font-weight: bold;
+    font-decoration: underline;
 }

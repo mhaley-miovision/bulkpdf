@@ -90,7 +90,12 @@ Meteor.methods({
 			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[x], x));
 		}
 		for (var x in roles.data) {
-			RolesCollection.insert(importHelper_transformRole(roles.data[x]));
+			var r_id = RolesCollection.insert(importHelper_transformRole(roles.data[x]));
+			var c = ContributorsCollection.findOne({name:roles.data[x].contributor});
+			if (c) {
+				roles.data[x].email = c.email;
+				RolesCollection.update(r_id, roles.data[x]);
+			}
 		}
 		for (var x in roleLabels.data) {
 			RoleLabelsCollection.insert(importHelper_transformRoleLabel(roleLabels.data[x]));

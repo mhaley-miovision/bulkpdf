@@ -40,6 +40,9 @@ var Chart = (function () {
 		classes.push(d.type === "contributor" ? "role" : d.type);
 		if (d.type === 'role' || d.type === 'contributor') {
 			classes.push(d.contributor || d.type == "contributor" ? "filled" : "unfilled");
+			if (d.numGoals > 0) {
+				classes.push("hasGoals");
+			}
 		}
 		if (d.isHighlighted) {
 			classes.push("highlight");
@@ -67,6 +70,7 @@ var Chart = (function () {
 		var content =
 			'<div class="d3label"><div class="title"><a href="' + d.url + '" class="' + classesForNode(d) + '">'
 			+ html + '</a></div>';
+
 		return content + '</div>';
 	}
 
@@ -521,6 +525,9 @@ var Chart = (function () {
 					var url = (c && c.photo) ? c.photo : "img/user_avatar_blank.jpg";
 					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + url + "'/></div>";
 
+					var goalsUrl = "/organization?objectName=" + d.email + "&objectType=contributor&mode=acc";
+					s += '<div class="numGoalsLabel"><a href="' + goalsUrl + '">(' + d.numGoals + ' goals)</a></div>';
+
 					// bucketize the accountabilities
 					var accountabilityBuckets = {};
 					var j = 0;
@@ -629,7 +636,8 @@ Organization = React.createClass({
 		var handle4 = Meteor.subscribe("job_accountabilities");
 		var handle5 = Meteor.subscribe("org_accountabilities");
 
-		var data = { isLoading: !handle1.ready() && !handle2.ready() && !handle3.ready() && !handle4.ready() && !handle5.ready() };
+		var data = { isLoading: !handle1.ready() && !handle2.ready() && !handle3.ready()
+					&& !handle4.ready() && !handle5.ready() };
 
 		if (!data.isLoading) {
 
@@ -665,11 +673,23 @@ Organization = React.createClass({
 					if (q.count() > 0) {
 						var r = q.fetch();
 						for (var x in r) {
-							o.children.push(r[x]);
+							var role = r[x];
+							/* THIS IS TOO SLOW, PRE-POPULATE ON IMPORT INSTEAD
+							// also find the number of goals this contributor has
+							let c = ContributorsCollection.findOne({name: role.contributor});
+							if (c && c !== '') {
+								console.log("finding goals for '" + c.email + "'");
+								let g = GoalsCollection.find({owners: c.email});
+								role.numGoals = g.count();
+								console.log(c.email + " has " + role.numGoals + " goals");
+							} else {
+								console.log("Couldn't find contributor for role: " + role);
+							}*/
+							o.children.push(role);
 						}
 					}
 				}
-
+				// for attaching contributors to orgs
 				let attachOrgContributors = function (o) {
 					if (typeof(o.children) === 'undefined') {
 						o.children = [];
@@ -679,6 +699,9 @@ Organization = React.createClass({
 					if (q.count() > 0) {
 						var r = q.fetch();
 						for (var x in r) {
+							/* THIS IS TOO SLOW, PRE-POPULATE ON IMPORT INSTEAD
+							let g = GoalsCollection.find({owners: q.email});
+							r[x].numGoals = g.count();*/
 							o.children.push(r[x]);
 						}
 					}

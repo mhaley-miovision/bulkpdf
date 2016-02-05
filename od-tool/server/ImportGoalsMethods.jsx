@@ -242,6 +242,19 @@ Meteor.methods({
 			GoalsCollection.update(g._id, g);
 		});
 
+		// calculate number of goals for contributors and cache this
+		ContributorsCollection.find({}).forEach(c => {
+			c.numGoals = GoalsCollection.find({ owners:c.email }).count();
+			ContributorsCollection.update(c._id, c);
+			if (c.numGoals > 0) {
+				console.log(c.numGoals + " found for " + c.email);
+			}
+			RolesCollection.find({email: c.email}).forEach(r => {
+				r.numGoals = c.numGoals;
+				RolesCollection.update(r._id, r);
+			});
+		});
+
 		// email about unmatched
 		var s = "Imported " + goals.length + " goals successfully.\n\n";
 		s += "Unmatched owner strings:\n" + result.unmatched.join(",");
