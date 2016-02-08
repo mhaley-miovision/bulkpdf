@@ -103,12 +103,30 @@ Goal = React.createClass({
 		}
 	},
 
+	componentDidMount() {
+		$('.tooltipped').tooltip({delay: 50});
+	},
+
 	renderSubgoalsListItems() {
 		return (this.props.goal.children.map(goal => {
 			return <Goal
 				key={goal._id}
 				goal={goal}/>;
 		}));
+	},
+
+	renderGoalDueDateLabel() {
+		if (this.props.goal.estimatedCompletedOn) {
+			var gd = this.props.goal.estimatedCompletedOn ? new Date(this.props.goal.estimatedCompletedOn) : null;
+			var complete = this.props.goal.stats && (this.props.goal.stats.inProgress == 0 && this.props.goal.stats.notStarted == 0);
+			var overdue = gd && (gd < new Date());
+
+			var classes = "goalDueDate";
+			if (overdue && !complete) {
+				classes += " late";
+			}
+			return <span className={classes}>{this.props.goal.estimatedCompletedOn}</span>;
+		}
 	},
 
 	render() {
@@ -132,27 +150,18 @@ Goal = React.createClass({
 				<li>
 					<div className="collapsible-header">
 
-						<div style={{display:"inline-block", width:"60%", lineHeight:"1.5em", marginTop:"10px"}}>
-							{this.props.goal.name}
+						<div className="row">
+							<div className="col m9 goalNameText">
+								{this.props.goal.name}
+							</div>
+							<div className="col m2">
+								{this.renderGoalOwnerList()}
+							</div>
+							<div className="col m1">
+								<SimpleGoalProgressBar goal={this.props.goal}/>
+								{this.renderGoalDueDateLabel()}
+							</div>
 						</div>
-
-						<i className="listItemIcon tiny material-icons right grey-text"
-						   onClick={this.handleOnEdit}>thumb_up</i>
-
-						<i className="listItemIcon tiny material-icons right grey-text"
-						   onClick={this.deleteThisRoleLabel}>thumb_down</i>
-
-
-						<div className="right">
-							<SimpleGoalProgressBar goal={this.props.goal}/>
-						</div>
-
-
-						<div className="right">
-							{this.renderGoalOwnerList()}
-						</div>
-
-
 
 					</div>
 					<div className="collapsible-body">
@@ -164,11 +173,43 @@ Goal = React.createClass({
 
 		/*
 		if (false) {
+
+
+		 <div style={{display:"inline-block", width:"60%", lineHeight:"1.5em", marginTop:"10px"}}>
+		 {this.props.goal.name}
+		 </div>
+
+
+
+
+		 <div className="right">
+		 <SimpleGoalProgressBar goal={this.props.goal}/>
+		 </div>
+
+
+		 <div className="right">
+		 {this.renderGoalOwnerList()}
+		 </div>
+
+
+
+		 </div>
+		 <div className="collapsible-body">
+		 {this.renderSubgoalsList()}
+		 </div>
+
+
 			<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
 			   onClick={this.handleOnEdit}>edit</i>
 
 			<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
 			onClick={this.deleteThisRoleLabel}>delete</i>
+
+		 <i className="listItemIcon tiny material-icons right grey-text"
+		 onClick={this.handleOnEdit}>thumb_up</i>
+
+		 <i className="listItemIcon tiny material-icons right grey-text"
+		 onClick={this.deleteThisRoleLabel}>thumb_down</i>
 		}*/
 	}
 });

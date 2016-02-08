@@ -6,7 +6,7 @@ SimpleGoalProgressBar = React.createClass({
 	},
 	getDefaultProps() {
 		return {
-			width: 60,
+			width: 62,
 			height: 7,
 		};
 	},
