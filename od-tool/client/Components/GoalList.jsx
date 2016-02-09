@@ -3,11 +3,7 @@ GoalList = React.createClass({
 	mixins: [ReactMeteorData],
 
 	getInitialState() {
-		return { doneLoading: false }
-	},
-
-	getInitialProps() {
-		return { addingGoalsEnabled: false }
+		return { contributorPrefix: "My " }
 	},
 
 	getMeteorData() {
@@ -61,14 +57,9 @@ GoalList = React.createClass({
 	},
 
 	shouldComponentUpdate(nextProps, nextState) {
-		if (nextState.goals) {
-			if (typeof(this.state) === 'undefined' || typeof(this.state.goals) === 'undefined'
-				|| this.state.goals._id != nextState.goals._id) {
-				console.log("shouldComponentUpdate YES");
-				return true;
-			}
+		if (nextProps.contributorEmail !== this.props.contributorEmail) {
+			return true;
 		}
-		console.log("shouldComponentUpdate NO");
 		return false;
 	},
 
@@ -81,6 +72,8 @@ GoalList = React.createClass({
 					key={goal._id}
 					goal={goal}/>;
 			});
+		} else {
+			return <Loading />
 		}
 	},
 	render() {
@@ -89,7 +82,7 @@ GoalList = React.createClass({
 				<br/>
 
 				<header>
-					<h3 className="center header text-main1">My Goals</h3>
+					<h4 className="center header text-main1">{this.state.contributorPrefix}Goals</h4>
 				</header>
 
 				<br />

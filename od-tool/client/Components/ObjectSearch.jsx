@@ -102,7 +102,14 @@ ObjectSearch = React.createClass({
 			}
 			return collection;
 		} else {
-			return <a href="#!" className="collection-item" onClick={this.onBlur}>No matching people or organizations found.</a>
+			var s = "people or organizations";
+			if (!this.props.findContributors) {
+				s = "organizations";
+			} else if (!this.props.findOrganizations) {
+				s = "people";
+			}
+
+			return <a href="#!" className="collection-item" onClick={this.onBlur}>No matching {s} found.</a>
 		}
 	},
 

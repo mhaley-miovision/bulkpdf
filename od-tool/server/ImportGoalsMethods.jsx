@@ -116,6 +116,7 @@ function processGoalsJson(json) {
 				if (x) {
 					s[i] = x;
 				} else {
+					l = _.escape(l);
 					console.log("unmatched: '" + l + "'");
 					s2.push(l);
 				}
@@ -147,7 +148,7 @@ function processGoalsJson(json) {
 			lastGoal = {
 				name: c["B"+r],
 				// TODO: haxxor on the date
-				estimatedCompletedOn: r < 65 ? Date.parse("Dec 31, 2015") : Date.parse("Dec 31, 2016"),
+				estimatedCompletedOn: r < 65 ? "12/31/2015" : "7/1/2016",
 				owners: ["kmcbride@miovision.com"], // Kurtis???
 			};
 			goals.push(lastGoal);

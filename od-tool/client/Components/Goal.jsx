@@ -15,11 +15,17 @@ Goal = React.createClass({
 		var handle = Meteor.subscribe("goals");
 
 		if (handle.ready()) {
-			var children = GoalsCollection.find({parent:this.props.goal._id}).fetch();
-			var ownerPhotos = [];
-			ContributorsCollection.find({email: { $in: this.props.goal.owners } }, { fields: {email:1,photo:1}}).forEach(
-				x => ownerPhotos[x.email] = x.photo ? x.photo : "img/user_avatar_blank.jpg"
-			);
+			let children = GoalsCollection.find({parent:this.props.goal._id}).fetch();
+			let ownerPhotos = {};
+			if (this.props.goal.name === 'Systems of Collaboration') {
+				debugger;
+			}
+			let photos = ContributorsCollection.find({email: { $in: this.props.goal.owners } }, { fields: {email:1,photo:1}}).fetch();
+			photos.forEach(x => {
+				if (x.email) {
+					ownerPhotos[x.email] = x.photo ? x.photo : "img/user_avatar_blank.jpg"
+				}
+			});
 			return { children: children, ownerPhotos: ownerPhotos, doneLoading: true }
 		} else {
 			return { doneLoading: false }
@@ -75,13 +81,22 @@ Goal = React.createClass({
 
 	renderGoalOwnerList() {
 		if (this.data.doneLoading) {
+			let _this = this;
 			return this.props.goal.owners.map(ownerEmail => {
 				// TODO: build route in a more sustainable way (i.e. using Flow router params)
-				return (
-					<a href={"/organization?objectName=" + ownerEmail + "&objectType=contributor&mode=acc"}>
-						<img title={ownerEmail} className="right goalItemPhoto" src={this.data.ownerPhotos[ownerEmail]}/>
-					</a>
-				);
+				var photo = _this.data.ownerPhotos[ownerEmail];
+				if (photo)
+				{
+					return (
+						<a href={"/organization?objectName=" + ownerEmail + "&objectType=contributor&mode=acc"}>
+							<img title={ownerEmail} className="right goalItemPhoto" src={photo}/>
+						</a>
+					);
+				} else {
+					return (
+						<img title={ownerEmail} className="right goalItemPhoto" src="img/user_avatar_blank.jpg"/>
+					);
+				}
 			});
 		}
 	},
@@ -95,19 +110,29 @@ Goal = React.createClass({
 					</ul>
 				);
 			}
+		} else {
+			return <Loading />
 		}
 	},
 
 	componentDidMount() {
-		$('.tooltipped').tooltip({delay: 50});
+		$(document).ready(function(){
+			$('.collapsible').collapsible({
+				accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+			});
+		});
 	},
 
 	renderSubgoalsListItems() {
-		return (this.data.children.map(goal => {
-			return <Goal
-				key={goal._id}
-				goal={goal}/>;
-		}));
+		if (this.data.doneLoading) {
+			return (this.data.children.map(goal => {
+				return <Goal
+					key={goal._id}
+					goal={goal}/>;
+			}));
+		} else {
+			return <Loading />
+		}
 	},
 
 	renderGoalDueDateLabel() {
