@@ -1,43 +1,29 @@
+const TOAST_DURATION = 1000;
+
 // Role component - represents a single role
 Goal = React.createClass({
+	// This mixin makes the getMeteorData method work
+	mixins: [ReactMeteorData],
+
 	propTypes: {
-		// This component gets the task to display through a React prop.
+		// This component gets the goal to display through a React prop.
 		// We can use propTypes to indicate it is required
 		goal: React.PropTypes.object.isRequired
 	},
 
-	// This mixin makes the getMeteorData method work
-	mixins: [ReactMeteorData],
-
-	// Loads items from the Goals collection and puts them on this.data.goals
 	getMeteorData() {
-		var handle = Meteor.subscribe("contributors");
-		var handle2 = Meteor.subscribe("users");
-		var isLoading = !(handle.ready() && handle2.ready());
-		var ownerPhotos = [];
+		var handle = Meteor.subscribe("goals");
 
-		var handle3 = Meteor.subscribe("loadGoalTree");
-
-
-		if (!isLoading) {
-			//console.log(this.props.goal);
-			var goalTree = Meteor.call("loadGoalTree", function(error, data) {
-				console.log(data);
-			});
-			// populate photo urls
-			for (var i = 0; i < this.props.goal.owners.length; i++) {
-				// TODO: make this more optimal
-				var email = this.props.goal.owners[i];
-				var c = ContributorsCollection.findOne({email: email});
-				var url = (c && c.photo) ? c.photo : "img/user_avatar_blank.jpg";
-				ownerPhotos[email] = url;
-			}
+		if (handle.ready()) {
+			var children = GoalsCollection.find({parent:this.props.goal._id}).fetch();
+			var ownerPhotos = [];
+			ContributorsCollection.find({email: { $in: this.props.goal.owners } }, { fields: {email:1,photo:1}}).forEach(
+				x => ownerPhotos[x.email] = x.photo ? x.photo : "img/user_avatar_blank.jpg"
+			);
+			return { children: children, ownerPhotos: ownerPhotos, doneLoading: true }
+		} else {
+			return { doneLoading: false }
 		}
-		return {
-			isLoading: isLoading,
-			ownerPhotos: ownerPhotos,
-			currentUser: Meteor.user()
-		};
 	},
 
 	getInitialState() {
@@ -47,8 +33,18 @@ Goal = React.createClass({
 		};
 	},
 
-	deleteThisGoal() {
-		Meteor.call("removeGoal", this.props.goal._id);
+	handleDelete()  {
+		// this needs to be done smart
+		//Meteor.call("removeGoal", this.props.goal._id);
+		Materialize.toast("Functionality not implemented yet, stay tuned!", TOAST_DURATION);
+	},
+
+	handleThumbsUp() {
+		Materialize.toast("Functionality not implemented yet, stay tuned!", TOAST_DURATION);
+	},
+
+	handleThumbsDown() {
+		Materialize.toast("Functionality not implemented yet, stay tuned!", TOAST_DURATION);
 	},
 
 	handleSubmit(event) {
@@ -65,20 +61,25 @@ Goal = React.createClass({
 	},
 
 	handleOnEdit() {
-		this.setState({isEditing:true});
+		Materialize.toast("Functionality not implemented yet, stay tuned!", TOAST_DURATION);
+		//this.setState({isEditing:true});
 	},
 
 	handleOnChange() {
 		this.state.newLabel = this.refs.newLabel.value;
 	},
 
+	handleOnMessage() {
+		Materialize.toast("Functionality not implemented yet, stay tuned!", TOAST_DURATION);
+	},
+
 	renderGoalOwnerList() {
-		if (!this.data.isLoading) {
-			return this.props.goal.owners.map(owner => {
+		if (this.data.doneLoading) {
+			return this.props.goal.owners.map(ownerEmail => {
 				// TODO: build route in a more sustainable way (i.e. using Flow router params)
 				return (
-					<a href={"/organization?objectName=" + owner.email + "&objectType=contributor&mode=acc"}>
-						<img key={owner.email} title={owner.email} className="right goalItemPhoto" src={owner.photo}/>
+					<a href={"/organization?objectName=" + ownerEmail + "&objectType=contributor&mode=acc"}>
+						<img title={ownerEmail} className="right goalItemPhoto" src={this.data.ownerPhotos[ownerEmail]}/>
 					</a>
 				);
 			});
@@ -86,20 +87,14 @@ Goal = React.createClass({
 	},
 
 	renderSubgoalsList() {
-		if (this.props.goal.children && this.props.goal.children.length > 1) {
-			return (
-				<div style={{"padding":"25px"}}>
+		if (this.data.doneLoading) {
+			if (this.data.children && this.data.children.length > 0) {
+				return (
 					<ul className="collapsible" data-collapsible="accordion">
 						{this.renderSubgoalsListItems()}
 					</ul>
-				</div>
-			);
-		} else {
-			return (
-				<div className="grey-text" style={{"padding":"25px"}}>
-					This goal has no sub-goals yet.
-					<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text">add</i></div>
-			);
+				);
+			}
 		}
 	},
 
@@ -108,7 +103,7 @@ Goal = React.createClass({
 	},
 
 	renderSubgoalsListItems() {
-		return (this.props.goal.children.map(goal => {
+		return (this.data.children.map(goal => {
 			return <Goal
 				key={goal._id}
 				goal={goal}/>;
@@ -127,6 +122,39 @@ Goal = React.createClass({
 			}
 			return <span className={classes}>{this.props.goal.estimatedCompletedOn}</span>;
 		}
+	},
+
+	renderGoalControls() {
+		// check here if the user can edit
+		let nosubGoalsText = (this.data.children && this.data.children.length > 0) ?
+			"" : "This goal has no sub-goals yet.";
+
+		return (
+			<div className="row">
+				<div className="col s12 m12 goalControls">
+					<span className="grey-text left noSubGoalsText">{nosubGoalsText}</span>
+
+					<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
+					   onClick={this.handleOnMessage}>message</i>
+
+					<span className="verticalToolbarDivider"/>
+
+					<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
+					   onClick={this.handleOnEdit}>edit</i>
+
+					<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
+					   onClick={this.handleDelete}>delete</i>
+
+					<span className="verticalToolbarDivider"/>
+
+					<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
+					   onClick={this.handleThumbsUp}>thumb_up</i>
+
+					<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
+					   onClick={this.handleThumbsDown}>thumb_down</i>
+				</div>
+			</div>
+		);
 	},
 
 	render() {
@@ -151,13 +179,13 @@ Goal = React.createClass({
 					<div className="collapsible-header">
 
 						<div className="row">
-							<div className="col m9 goalNameText">
+							<div className="col m9 s12 goalNameText">
 								{this.props.goal.name}
 							</div>
-							<div className="col m2">
+							<div className="col m2 s8">
 								{this.renderGoalOwnerList()}
 							</div>
-							<div className="col m1">
+							<div className="col m1 s4 goalHeaderInformation">
 								<SimpleGoalProgressBar goal={this.props.goal}/>
 								{this.renderGoalDueDateLabel()}
 							</div>
@@ -165,52 +193,14 @@ Goal = React.createClass({
 
 					</div>
 					<div className="collapsible-body">
-						{this.renderSubgoalsList()}
+						<div style={{"padding":"25px"}}>
+							{this.renderGoalControls()}
+							{this.renderSubgoalsList()}
+						</div>
 					</div>
 				</li>
 			);
 		}
-
-		/*
-		if (false) {
-
-
-		 <div style={{display:"inline-block", width:"60%", lineHeight:"1.5em", marginTop:"10px"}}>
-		 {this.props.goal.name}
-		 </div>
-
-
-
-
-		 <div className="right">
-		 <SimpleGoalProgressBar goal={this.props.goal}/>
-		 </div>
-
-
-		 <div className="right">
-		 {this.renderGoalOwnerList()}
-		 </div>
-
-
-
-		 </div>
-		 <div className="collapsible-body">
-		 {this.renderSubgoalsList()}
-		 </div>
-
-
-			<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
-			   onClick={this.handleOnEdit}>edit</i>
-
-			<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
-			onClick={this.deleteThisRoleLabel}>delete</i>
-
-		 <i className="listItemIcon tiny material-icons right grey-text"
-		 onClick={this.handleOnEdit}>thumb_up</i>
-
-		 <i className="listItemIcon tiny material-icons right grey-text"
-		 onClick={this.deleteThisRoleLabel}>thumb_down</i>
-		}*/
 	}
 });
 

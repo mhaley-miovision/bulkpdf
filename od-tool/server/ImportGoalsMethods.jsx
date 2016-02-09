@@ -242,6 +242,71 @@ Meteor.methods({
 			GoalsCollection.update(g._id, g);
 		});
 
+		// populate the path for goals, making for easy and efficient querying
+		goals.forEach(g => {
+			var p = g.parent;
+			var path = [];
+			if (p) {
+				var i = 0;
+				while (p) {
+					console.log(p);
+					console.log(i++);
+
+					// find the parent object
+					p = GoalsCollection.findOne({_id: p});
+
+					// store the parent id
+					path.push(p._id);
+
+					// move up the tree
+					p = p.parent;
+				}
+				path = path.reverse();
+			}
+			g.path = path;
+			g.depth = path.length;
+			GoalsCollection.update(g._id, g);
+		});
+
+		// populate the goal stats
+		let populateStats = function(nodeId, recurse = true) {
+			var childrenQuery = GoalsCollection.find({parent: nodeId});
+			var n = GoalsCollection.findOne(nodeId);
+
+			if (childrenQuery.count() == 0) {
+				if (n.status && n.status.toLowerCase() === 'completed') {
+					n.stats = { completed:1, inProgress:0, notStarted:0 };
+				} else if (n.status && n.status.toLowerCase() === 'in progress') {
+					n.stats = { completed:0, inProgress:1, notStarted:0 };
+				} else if (n.status && n.status.toLowerCase() === 'not started') {
+					n.stats = { completed:0, inProgress:0, notStarted:1 };
+				} else {
+					console.log("leaf goal node " + n.name + " has undefined status");
+					n.stats = { completed:0, inProgress:0, notStarted:0 };
+				}
+			} else {
+				n.stats = { completed:0, inProgress:0, notStarted:0 };
+
+				let children = childrenQuery.fetch();
+				if (recurse) {
+					// populate for children also
+					children.forEach(c => populateStats(c._id));
+					// read results back into collection
+					children = GoalsCollection.find({parent: nodeId}).fetch();
+				}
+				children.forEach(c => {
+						n.stats.completed += c.stats.completed;
+						n.stats.inProgress += c.stats.inProgress;
+						n.stats.notStarted += c.stats.notStarted;
+					}
+				);
+			}
+			GoalsCollection.update(nodeId, n);
+		}
+
+		// populate stats for root nodes
+		GoalsCollection.find({parent:null}).forEach(n => populateStats(n._id));
+
 		// calculate number of goals for contributors and cache this
 		ContributorsCollection.find({}).forEach(c => {
 			c.numGoals = GoalsCollection.find({ owners:c.email }).count();

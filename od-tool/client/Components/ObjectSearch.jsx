@@ -64,6 +64,7 @@ ObjectSearch = React.createClass({
 
 	handleOrganizationClick: function(e) {
 		e.preventDefault();
+		e.stopPropagation();
 		if (this.props.onClick) {
 			this.props.onClick(e.target.text, 'organization');
 		}
@@ -71,6 +72,7 @@ ObjectSearch = React.createClass({
 
 	handleContributorClick: function(e) {
 		e.preventDefault();
+		e.stopPropagation();
 		if (this.props.onClick) {
 			this.props.onClick(e.target.id, 'contributor');
 		}
@@ -112,7 +114,7 @@ ObjectSearch = React.createClass({
 		var s = "a person or an organization";
 		if (!this.props.findContributors) {
 			s = "an organization";
-		} else {
+		} else if (!this.props.findOrganizations) {
 			s = "a person";
 		}
 		s = "Click here to search for a " + s;

@@ -190,6 +190,8 @@ var Chart = (function () {
 				setOpacity: function(fos) {
 					fos.style("display", function (d) {
 						return showTitle(d, k) && !isObjectTooDeepToShow(d) ? "inline-block" : "none";
+					}).style("opacity", function (d) {
+						return showTitle(d, k) && !isObjectTooDeepToShow(d) ? 1 : 0;
 					});
 				},
 				makeFontSizer: function(factor) {

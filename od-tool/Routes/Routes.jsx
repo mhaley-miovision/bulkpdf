@@ -8,7 +8,7 @@ FlowRouter.route( '/', {
 FlowRouter.route( '/goals', {
 	name: 'goals',
 	action() {
-		ReactLayout.render( App, { yield: <GoalList /> } );
+		ReactLayout.render( App, { yield: <MyGoals /> } );
 	}
 });
 

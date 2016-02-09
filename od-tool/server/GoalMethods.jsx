@@ -26,11 +26,11 @@ function populateGoalChildren(n, recurse = true) {
 
 function populateStats(n, recurse = true) {
 	if (n.children.length == 0) {
-		if (n.status.toLowerCase() === 'completed') {
+		if (n.status && n.status.toLowerCase() === 'completed') {
 			n.stats = { completed:1, inProgress:0, notStarted:0 };
-		} else if (n.status.toLowerCase() === 'in progress') {
+		} else if (n.status && n.status.toLowerCase() === 'in progress') {
 			n.stats = { completed:0, inProgress:1, notStarted:0 };
-		} else if (n.status.toLowerCase() === 'not started') {
+		} else if (n.status && n.status.toLowerCase() === 'not started') {
 			n.stats = { completed:0, inProgress:0, notStarted:1 };
 		} else {
 			console.log("leaf goal node " + n.name + " has undefined status");

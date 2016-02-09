@@ -585,15 +585,6 @@ circle.container, circle.label {
     border: solid 2px #D9853B;
 }
 
-.listItemIcon {
-    font-size: 1rem !important;
-    margin: 0px !important;
-    cursor: hand;
-}
-.listItemIcon:hover {
-    color: #D9853B !important;;
-}
-
 .listItemGoalTitle {
     display:block;
     width:150px;
@@ -639,12 +630,15 @@ circle.container, circle.label {
 }
 
 .goalDueDate {
-    color: #fff;
-    background-color: darkgrey;
+    color: slategray; /*#fff;*/
+    background-color: white; /*darkgrey;*/
     line-height: 11px;
     font-size: 11px;
     padding: 2px;
     border-radius: .25em;
+    width: 61px;
+    text-align: center;
+    display: inline-block;
 }
 
 .goalDueDate.late {
@@ -655,4 +649,38 @@ circle.container, circle.label {
 .row .col.goalNameText {
     line-height: 1.6em;
     padding: 20px 10px 0 20px;
+}
+
+
+/*******************************************************************************************************************/
+/* Goal controls */
+
+.listItemIcon {
+    font-size: 1rem !important;
+    margin: 0px !important;
+    cursor: hand !important;
+    padding: 10px;
+    /*color: slategray !important; /* #558C89 !important;*/
+}
+.listItemIcon:hover {
+    color: #D9853B !important;
+}
+
+.verticalToolbarDivider {
+    float: right;
+    border-left:1px solid #d4d4d4;
+    height: 1rem;
+    margin: 10px;
+}
+
+.row .col.goalControls {
+    padding-right:30px;
+}
+
+.noSubGoalsText {
+    padding: 10px;
+}
+
+.goalHeaderInformation {
+    line-height:18px;
 }
