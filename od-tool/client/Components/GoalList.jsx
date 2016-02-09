@@ -21,7 +21,6 @@ GoalList = React.createClass({
 
 			// find all nodes with this contributor as owner, sorted by depth
 			let goals = GoalsCollection.find({owners: contributorEmail}, {sort: {depth:1}}).fetch();
-			console.log("Found " + goals.length + " owned goals.");
 
 			// remove all nodes which are sub-children
 			let i = 0;
@@ -39,9 +38,6 @@ GoalList = React.createClass({
 				// next top level node
 				i++;
 			}
-			console.log("Trimmed down to " + goals.length + " owned top level goals.");
-			console.log(goals);
-
 			return { goals: goals, doneLoading: true };
 		} else {
 			return { doneLoading : false };
@@ -66,8 +62,6 @@ GoalList = React.createClass({
 	renderGoals() {
 		if (this.data.doneLoading) {
 			return this.data.goals.map(goal => {
-				console.log("goal.name = " + goal.name);
-				console.log("goal._id = " + goal._id);
 				return <Goal
 					key={goal._id}
 					goal={goal}/>;

@@ -17,9 +17,6 @@ Goal = React.createClass({
 		if (handle.ready()) {
 			let children = GoalsCollection.find({parent:this.props.goal._id}).fetch();
 			let ownerPhotos = {};
-			if (this.props.goal.name === 'Systems of Collaboration') {
-				debugger;
-			}
 			let photos = ContributorsCollection.find({email: { $in: this.props.goal.owners } }, { fields: {email:1,photo:1}}).fetch();
 			photos.forEach(x => {
 				if (x.email) {
@@ -88,13 +85,13 @@ Goal = React.createClass({
 				if (photo)
 				{
 					return (
-						<a href={"/organization?objectName=" + ownerEmail + "&objectType=contributor&mode=acc"}>
-							<img title={ownerEmail} className="right goalItemPhoto" src={photo}/>
+						<a key={ownerEmail} href={"/organization?objectName=" + ownerEmail + "&objectType=contributor&mode=acc"}>
+							<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src={photo}/>
 						</a>
 					);
 				} else {
 					return (
-						<img title={ownerEmail} className="right goalItemPhoto" src="img/user_avatar_blank.jpg"/>
+						<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src="img/user_avatar_blank.jpg"/>
 					);
 				}
 			});
