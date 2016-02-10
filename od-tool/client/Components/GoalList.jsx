@@ -67,7 +67,7 @@ GoalList = React.createClass({
 					goal={goal}/>;
 			});
 		} else {
-			return <Loading />
+			return <div><Loading /><br/><br/></div>
 		}
 	},
 	render() {
