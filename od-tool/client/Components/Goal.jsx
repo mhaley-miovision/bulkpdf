@@ -146,10 +146,20 @@ Goal = React.createClass({
 		}
 	},
 
+	renderGoalStateControls() {
+		if (!this.hasChildren()) {
+			return <GoalStateControls goal={this.props.goal}/>
+		}
+	},
+
+	hasChildren() {
+		return (this.data.children && this.data.children.length > 0);
+	},
+
 	renderGoalControls() {
+
 		// check here if the user can edit
-		let nosubGoalsText = (this.data.children && this.data.children.length > 0) ?
-			"" : "This goal has no sub-goals yet.";
+		let nosubGoalsText = this.hasChildren() ? "" : "This goal has no sub-goals yet.";
 
 		return (
 			<div className="row">
@@ -174,6 +184,8 @@ Goal = React.createClass({
 
 					<i className="waves-effect waves-teal listItemIcon tiny material-icons right grey-text"
 					   onClick={this.handleThumbsDown}>thumb_down</i>
+
+					{this.renderGoalStateControls()}
 				</div>
 			</div>
 		);

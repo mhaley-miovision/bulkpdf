@@ -277,10 +277,13 @@ Meteor.methods({
 			if (childrenQuery.count() == 0) {
 				if (n.status && n.status.toLowerCase() === 'completed') {
 					n.stats = { completed:1, inProgress:0, notStarted:0 };
+					n.state = 2;
 				} else if (n.status && n.status.toLowerCase() === 'in progress') {
 					n.stats = { completed:0, inProgress:1, notStarted:0 };
+					n.state = 1;
 				} else if (n.status && n.status.toLowerCase() === 'not started') {
 					n.stats = { completed:0, inProgress:0, notStarted:1 };
+					n.state = 0;
 				} else {
 					console.log("leaf goal node " + n.name + " has undefined status");
 					n.stats = { completed:0, inProgress:0, notStarted:0 };

@@ -684,3 +684,23 @@ circle.container, circle.label {
 .goalHeaderInformation {
     line-height:18px;
 }
+
+.goalStateButton {
+    font-size: 10px;
+    color: slategray; /*#fff;*/
+    background-color: white; /*darkgrey;*/
+    line-height: 11px;
+    font-size: 11px;
+    padding: 2px;
+    margin-top:8px;
+    margin-left:8px;
+    margin-right:8px;
+    border-radius: .25em;
+    text-align: center;
+    width: 61px;
+}
+
+.goalStateButton.active {
+    color: white; /*#fff;*/
+    background-color: #558C89; /*darkgrey;*/
+}

@@ -77,12 +77,52 @@ Meteor.methods({
 		GoalsCollection.remove(goalId);
 	},
 
-	setGoalCompleted(goalId, completed) {
+	// this is a pretty ugly method, but it should do the trick for now
+	setGoalState(goalId, state) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
-		GoalsCollection.update(goalId, {$set: {completed: completed}});
+		if (GoalsCollection.find({parent:goalId}).count() > 0) {
+			throw new Meteor.Error("goal-has-children");
+		}
+
+		// update the goal
+		let g = GoalsCollection.findOne({_id: goalId });
+		let prevState = g.state;
+		if (state == prevState) {
+			return; // no change!
+		}
+		GoalsCollection.update(g._id, {$set: { state:state, stats: {notStarted: state == 0, inProgress: state == 1, completed: state == 2 } } });
+
+		// propagate stats up, by getting list of parents
+		let p = GoalsCollection.find( { _id : { $in : g.path } } ).fetch();
+
+		// determine delta for parents
+		var dNotStarted = 0, dInProgress = 0, dCompleted = 0;
+		if (prevState == 0) {
+			dNotStarted = -1; // one more is now in progress
+		} else if (prevState == 1) {
+			dInProgress = -1;
+		} else {
+			dCompleted = -1;
+		}
+		if (state == 0) {
+			dNotStarted++;
+		} else if (state == 1) {
+			dInProgress++;
+		} else {
+			dCompleted++;
+		}
+
+		console.log("d(NS)=" + dNotStarted + " d(IP)=" + dInProgress + " d(C)=" + dCompleted);
+
+		// apply the diff
+		GoalsCollection.update(
+			{ _id : { $in : g.path } },
+			{ $inc: { "stats.notStarted" : dNotStarted, "stats.inProgress" : dInProgress, "stats.completed" : dCompleted } },
+			{ multi:true }
+		);
 	},
 
 	setGoalPrivate(goalId, setToPrivate) {
