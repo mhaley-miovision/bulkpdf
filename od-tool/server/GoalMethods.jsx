@@ -95,9 +95,6 @@ Meteor.methods({
 		}
 		GoalsCollection.update(g._id, {$set: { state:state, stats: {notStarted: state == 0, inProgress: state == 1, completed: state == 2 } } });
 
-		// propagate stats up, by getting list of parents
-		let p = GoalsCollection.find( { _id : { $in : g.path } } ).fetch();
-
 		// determine delta for parents
 		var dNotStarted = 0, dInProgress = 0, dCompleted = 0;
 		if (prevState == 0) {
@@ -114,8 +111,6 @@ Meteor.methods({
 		} else {
 			dCompleted++;
 		}
-
-		console.log("d(NS)=" + dNotStarted + " d(IP)=" + dInProgress + " d(C)=" + dCompleted);
 
 		// apply the diff
 		GoalsCollection.update(
@@ -211,7 +206,7 @@ Meteor.methods({
 				root.children.push(goals[i]);
 			}
 		}
-		populateStats(root);
+		//populateStats(root);
 
 		console.log(root);
 
@@ -235,7 +230,7 @@ Meteor.methods({
 			}
 		}
 		populateGoalChildren(root);
-		populateStats(root);
+		populateStats(root,false);
 		return root;
 	},
 });

@@ -324,6 +324,17 @@ Meteor.methods({
 			});
 		});
 
+		/*
+		// populate a goal children array for easy rendering access
+		GoalsCollection.find({}).forEach(g => {
+			let childrenQuery = GoalsCollection.find({parent: g._id}, {fields: {_id: 1}});
+			let children = [];
+			if (childrenQuery.count() > 0) {
+				children = childrenQuery.fetch();
+			}
+			GoalsCollection.update(g._id, {$set: {children: children}});
+		});*/
+
 		// email about unmatched
 		var s = "Imported " + goals.length + " goals successfully.\n\n";
 		s += "Unmatched owner strings:\n" + result.unmatched.join(",");
