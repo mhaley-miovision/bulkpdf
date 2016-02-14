@@ -77,25 +77,23 @@ Goal = React.createClass({
 	},
 
 	renderGoalOwnerList() {
-		if (this.data.doneLoading) {
-			let _this = this;
-			return this.props.goal.owners.map(ownerEmail => {
-				// TODO: build route in a more sustainable way (i.e. using Flow router params)
-				var photo = _this.data.ownerPhotos[ownerEmail];
-				if (photo)
-				{
-					return (
-						<a key={ownerEmail} href={"/organization?objectName=" + ownerEmail + "&objectType=contributor&mode=acc"}>
-							<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src={photo}/>
-						</a>
-					);
-				} else {
-					return (
-						<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src="img/user_avatar_blank.jpg"/>
-					);
-				}
-			});
-		}
+		let _this = this;
+		return this.props.goal.owners.map(ownerEmail => {
+			// TODO: build route in a more sustainable way (i.e. using Flow router params)
+			var photo = this.data.doneLoading && _this.data.ownerPhotos[ownerEmail];
+			if (photo)
+			{
+				return (
+					<a key={ownerEmail} href={"/organization?objectName=" + ownerEmail + "&objectType=contributor&mode=acc"}>
+						<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src={photo}/>
+					</a>
+				);
+			} else {
+				return (
+					<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src="img/user_avatar_blank.jpg"/>
+				);
+			}
+		});
 	},
 
 	renderSubgoalsList() {
@@ -108,7 +106,7 @@ Goal = React.createClass({
 				);
 			}
 		} else {
-			return <Loading />
+			return <Loading />;
 		}
 	},
 
@@ -211,7 +209,6 @@ Goal = React.createClass({
 			return (
 				<li>
 					<div className="collapsible-header">
-
 						<div className="row">
 							<div className="col m9 s12 goalNameText">
 								{this.props.goal.name}
@@ -224,7 +221,6 @@ Goal = React.createClass({
 								{this.renderGoalDueDateLabel()}
 							</div>
 						</div>
-
 					</div>
 					<div className="collapsible-body">
 						<div style={{"padding":"25px"}}>
