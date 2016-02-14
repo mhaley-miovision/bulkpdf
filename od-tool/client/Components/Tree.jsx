@@ -442,20 +442,6 @@ Tree = React.createClass({
 	},
 
 	shouldComponentUpdate(nextProps, nextState) {
-		// let d3 do the updating!
-		console.log("shouldComponentUpdate called for component with root: " + this.props.objectName);
-
-		if (this.props.roleMode != nextProps.roleMode) {
-			// update the role vs ic mode
-			console.log("detected switch of role vs IC mode!");
-		}
-
-		// don't render unless the object is changed
-		console.log("this.state.objectName = " + this.state.objectName);
-		console.log("nextState.objectName = " + nextState.objectName);
-		console.log("this.props.objectName = " + this.props.objectName);
-		console.log("nextProps.objectName = " + nextProps.objectName);
-
 		if (this.state.objectName === nextState.objectName) {
 			return false;
 		}

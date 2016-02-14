@@ -206,7 +206,7 @@ Meteor.methods({
 				root.children.push(goals[i]);
 			}
 		}
-		//populateStats(root);
+		populateStats(root,false);
 
 		console.log(root);
 
