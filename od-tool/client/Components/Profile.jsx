@@ -51,33 +51,15 @@ Profile = React.createClass({
 								<GoalsSummary objectId={this.data.contributor.email}/>
 							</div>
 							<div className="col s12 m6">
-								<div>
-									<ul className="collection with-header">
-										<li className="collection-header summaryCardHeader">Roles</li>
-										<li className="collection-item">Computer Vision
-											<a href={url1} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
-										<li className="collection-item">Organizational Development
-											<a href={url2} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
-										<li className="collection-item">Organizational Development
-											<a href={url2} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
-										<li className="collection-item">Organizational Development
-											<a href={url2} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
-									</ul>
-								</div>
+								<TeamsSummary objectId={this.data.contributor.email}/>
 							</div>
 							<div className="col s12 m6">
 								<div>
 									<ul className="collection with-header">
 										<li className="collection-header summaryCardHeader">Skills</li>
-										<li className="collection-item">Computer Vision
+										<li className="collection-item">Knitting
 											<a href={url1} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
-										<li className="collection-item">Organizational Development
-											<a href={url2} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
-										<li className="collection-item">Organizational Development
-											<a href={url2} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
-										<li className="collection-item">Organizational Development
-											<a href={url2} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
-										<li className="collection-item">Organizational Development
+										<li className="collection-item">Sowing
 											<a href={url2} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
 									</ul>
 								</div>

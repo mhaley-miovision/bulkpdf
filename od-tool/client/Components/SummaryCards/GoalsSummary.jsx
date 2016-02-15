@@ -41,9 +41,6 @@ GoalsSummary = React.createClass({
 	renderGoalsControls(g) {
 		let controls = [];
 
-		// TODO: implement actually jumping to the role, not the contributor
-		var url1 = FlowRouter.path("organizationView", {}, { objectId: g.organization, objectType:"organization"});
-
 		// public controls
 		controls.push(
 			<a key={g._id+"1"} onClick={this.messageOnClick} className="secondary-content">
