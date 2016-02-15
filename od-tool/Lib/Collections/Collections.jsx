@@ -10,3 +10,4 @@ RoleAccountabilitiesCollection = new Mongo.Collection("role_accountabilities");
 RoleLabelsCollection = new Mongo.Collection("role_labels");
 RolesCollection = new Mongo.Collection("roles");
 TasksCollection = new Mongo.Collection("tasks");
+SkillsCollection = new Mongo.Collection("skills");

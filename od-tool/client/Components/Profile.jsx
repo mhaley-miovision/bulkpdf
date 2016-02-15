@@ -31,13 +31,10 @@ Profile = React.createClass({
 
 	render() {
 		if (this.data.doneLoading) {
-			var url1 = FlowRouter.path("organizationView", {}, { objectId: "Computer Vision", objectType:"organization"});
-			var url2 = FlowRouter.path("organizationView", {}, { objectId: "Organizational Development", objectType:"organization"});
-
 			return (
 				<div>
 					<div className="section center">
-						<ProfileImage width="128px" height="128px" url={this.data.contributor.photo}/>
+						<ProfileImage width="128px" height="128px" url={this.data.contributor.photo ? this.data.contributor.photo : "/img/user_avatar_blank.jpg"}/>
 						<h5 className="text-main1">{this.data.contributor.name}</h5>
 					</div>
 					<div className="divider"></div>
@@ -50,19 +47,13 @@ Profile = React.createClass({
 							<div className="col s12 m6">
 								<GoalsSummary objectId={this.data.contributor.email}/>
 							</div>
+						</div>
+						<div className="row">
 							<div className="col s12 m6">
 								<TeamsSummary objectId={this.data.contributor.email}/>
 							</div>
 							<div className="col s12 m6">
-								<div>
-									<ul className="collection with-header">
-										<li className="collection-header summaryCardHeader">Skills</li>
-										<li className="collection-item">Knitting
-											<a href={url1} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
-										<li className="collection-item">Sowing
-											<a href={url2} className="secondary-content"><i className="material-icons tiny">search</i></a></li>
-									</ul>
-								</div>
+								<SkillsSummary objectId={this.data.contributor.email}/>
 							</div>
 						</div>
 					</div>

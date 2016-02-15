@@ -48,6 +48,45 @@ function importHelper_transformRoleLabel(x) {
 	return x;
 }
 
+var url = "https://spreadsheets.google.com/feeds/worksheets/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/public/basic?alt=json";
+var skillsCellFeed = "https://spreadsheets.google.com/feeds/cells/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/ov5rkqr/public/basic?alt=json";
+function processSkillsJson(json) {
+	var cellItems = json.feed.entry;
+
+	var res = [];
+	for (e in cellItems) {
+		var o = cellItems[e];
+		res[o.title.$t] = o.content.$t;
+	}
+
+	c = res;
+
+	var startRow = 2;
+	var blankRowCount = 0;
+	var r = startRow;
+
+	var skills = [];
+
+	while (r++ < 2000) {
+		// stop if exceeded blank row coun
+		//
+		// t
+		if (typeof(c["C"+r]) === 'undefined') {
+			if (blankRowCount++ > 10) {
+				break;
+			}
+			continue;
+		}
+
+		var email = res['C'+r];
+		var skill = res['D'+r];
+		var rating = res['E'+r];
+		skills.push({email:email, skill:skill, rating:rating });
+	}
+
+	return skills;
+}
+
 Meteor.methods({
 	v1ImportDatabase() {
 		// Make sure the user is logged in before inserting a task
@@ -65,6 +104,7 @@ Meteor.methods({
 		RoleAccountabilitiesCollection.remove({});
 		RolesCollection.remove({});
 		RoleLabelsCollection.remove({});
+		SkillsCollection.remove({});
 
 		var contributors = Meteor.http.call("GET", v1BaseURL + "contributors");
 		var roleLabels = Meteor.http.call("GET", v1BaseURL + "roles");
@@ -88,6 +128,7 @@ Meteor.methods({
 		}
 		for (var x in jobAccountabilities.data) {
 			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[x], x));
+			console.log(jobAccountabilities.data[x]);
 		}
 		for (var x in roles.data) {
 			var r_id = RolesCollection.insert(importHelper_transformRole(roles.data[x]));
@@ -99,6 +140,18 @@ Meteor.methods({
 		}
 		for (var x in roleLabels.data) {
 			RoleLabelsCollection.insert(importHelper_transformRoleLabel(roleLabels.data[x]));
+		}
+
+		// get skills also
+
+		var response = HTTP.call( 'GET', skillsCellFeed );
+		console.log(response);
+		var result = processSkillsJson(response.data);
+		if (result && result.length > 0) {
+			result.forEach(s => { SkillsCollection.insert(s) });
+			console.log("Successfully imported " + result.length + " skill entries.");
+		} else {
+			console.error("Could not find any skills!");
 		}
 	}
 });
