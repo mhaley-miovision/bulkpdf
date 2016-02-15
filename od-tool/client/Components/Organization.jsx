@@ -527,8 +527,8 @@ var Chart = (function () {
 					var url = zoomTo.photo ? zoomTo.photo : (c && c.photo) ? c.photo : "/img/user_avatar_blank.jpg";
 					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + url + "'/></div>";
 
-					var goalsUrl = "/organization?objectId=" + d.email + "&objectType=contributor&mode=acc";
-					s += '<div class="numGoalsLabel"><a href="' + goalsUrl + '">(' + d.numGoals + ' goals)</a></div>';
+					var goalsUrl = FlowRouter.path("profile", {}, { objectId: d.email })
+					s += '<div class="numGoalsLabel"><a href="' + goalsUrl + '">View Profile</a></div>';
 
 					// bucketize the accountabilities
 					var accountabilityBuckets = {};

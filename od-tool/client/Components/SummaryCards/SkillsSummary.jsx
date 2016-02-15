@@ -10,10 +10,12 @@ SkillsSummary = React.createClass({
 		let handle2 = Meteor.subscribe("skills");
 
 		if (handle.ready() && handle2.ready()) {
+			let c = ContributorsCollection.findOne({email: this.props.objectId});
 			let s = SkillsCollection.find({email: this.props.objectId }).fetch();
-			this.data = { skills: s, doneLoading: true }
-
-			this.updateChart();
+			this.data = { skills: s, doneLoading: true, name: c.name }
+			if (s.length > 0) {
+				this.updateChart();
+			}
 			return this.data;
 		} else {
 			return { doneLoading: false };
@@ -56,15 +58,31 @@ SkillsSummary = React.createClass({
 		}, 10);
 	},
 
+	renderCanvas() {
+		if (this.data.skills.length > 0) {
+			return (
+				<div>
+					<canvas id="skillsPolarGraph" width="175px" height="175px" className="skillsPolarGraph"></canvas>
+				</div>
+			);
+		} else {
+			return (
+				<div className="grey-text">
+					<p style={{textAlign:"center"}}>
+						{this.data.name} has no skills defined yet.
+					</p>
+				</div>
+			);
+		}
+	},
+
 	render() {
 		if (this.data.doneLoading) {
 			return (
 				<div>
 					<ul className="collection with-header">
 						<li className="collection-header summaryCardHeader">Skills</li>
-						<div>
-							<canvas id="skillsPolarGraph" width="175px" height="175px" className="skillsPolarGraph"></canvas>
-						</div>
+						{this.renderCanvas()}
 					</ul>
 				</div>
 			);
