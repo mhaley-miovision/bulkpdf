@@ -1,4 +1,4 @@
-RolesSummaryCard = React.createClass({
+RolesSummary = React.createClass({
 	mixins: [ReactMeteorData],
 
 	propTypes: {
@@ -24,7 +24,7 @@ RolesSummaryCard = React.createClass({
 
 		// public controls
 		controls.push(
-			<a href={url1} className="secondary-content">
+			<a key={r._id+"1"} href={url1} className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">search</i>
 			</a>
 		);
@@ -33,12 +33,12 @@ RolesSummaryCard = React.createClass({
 		// TODO: check for permissions here
 
 		controls.push(
-			<a href="#" className="secondary-content">
+			<a key={r._id+"2"} href="#" className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">thumb_down</i>
 			</a>
 		);
 		controls.push(
-			<a href="#" className="secondary-content">
+			<a key={r._id+"3"} href="#" className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">thumb_up</i>
 			</a>
 		);
@@ -50,7 +50,7 @@ RolesSummaryCard = React.createClass({
 		if (this.data.doneLoading) {
 			return this.data.roles.map(r => {
 				return (
-					<li className="collection-item">
+					<li className="collection-item" key={r._id}>
 						<div className="collection-item-text">
 							{r.role}, {r.organization}
 						</div>
@@ -62,14 +62,11 @@ RolesSummaryCard = React.createClass({
 	},
 
 	render() {
-		var url1 = FlowRouter.path("organizationView", {}, { objectId: "Computer Vision", objectType:"organization"});
-		var url2 = FlowRouter.path("organizationView", {}, { objectId: "Organizational Development", objectType:"organization"});
-
 		if (this.data.doneLoading) {
 			return (
 				<div>
 					<ul className="collection with-header">
-						<li className="collection-header summaryCardHeader">Roles</li>
+						<li className="collection-header summaryCardHeader" key={_.escape(this.props.email)+"_roles"}>Roles</li>
 						{this.renderRoles()}
 					</ul>
 				</div>

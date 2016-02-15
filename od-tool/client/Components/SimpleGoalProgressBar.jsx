@@ -8,6 +8,7 @@ SimpleGoalProgressBar = React.createClass({
 		return {
 			width: 70,
 			height: 7,
+			margin: "14px 0 0 0",
 		};
 	},
 
@@ -48,13 +49,13 @@ SimpleGoalProgressBar = React.createClass({
 			<div className="simpleProgressChart" style={{"width" : this.props.width, "height" : this.props.height}}>
 				<div className="simpleProgressChartBar" style={{
 					"width" : widths.completedWidth, "backgroundColor" : "#33cc33", "height" : this.props.height,
-					float:"left", margin:"14px 0 0 0", borderStyle:"solid", borderColor:"#666666", borderWidth:"1px 0 1px 1px"}}></div>
+					float:"left", margin: this.props.margin, borderStyle:"solid", borderColor:"#666666", borderWidth:"1px 0 1px 1px"}}></div>
 				<div className="simpleProgressChartBar"  style={{
 					"width" : widths.inProgressWidth, "backgroundColor" : "#ffe166", "height" : this.props.height,
-					float:"left", margin:"14px 0 0 0", borderStyle:"solid", borderColor:"#666666", borderWidth:"1px 0 1px 0"}}></div>
+					float:"left", margin: this.props.margin, borderStyle:"solid", borderColor:"#666666", borderWidth:"1px 0 1px 0"}}></div>
 				<div className="simpleProgressChartBar"  style={{
 					"width" : widths.notStartedWidth, "backgroundColor" : "#ff6666", "height" : this.props.height,
-					float:"left", margin:"14px 0 0 0", borderStyle:"solid", borderColor:"#666666", borderWidth:"1px 1px 1px 0"}}></div>
+					float:"left", margin: this.props.margin, borderStyle:"solid", borderColor:"#666666", borderWidth:"1px 1px 1px 0"}}></div>
 			</div>
 		);
 	},

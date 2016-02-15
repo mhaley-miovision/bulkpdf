@@ -713,8 +713,14 @@ circle.container, circle.label {
     background-color: #ECECEA !important;
     color: #558C89;
     text-transform: uppercase;
-    text-weight:bold;
     font-size: 1.2rem;
+    border-color: #558C89 !important;
+}
+.summaryCardSubHeader {
+    background-color: white !important;
+    font-size: 1rem;
+    color: #D9853B;
+    text-transform: uppercase;
     border-color: #558C89 !important;
 }
 
