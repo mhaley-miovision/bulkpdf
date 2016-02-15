@@ -26,10 +26,19 @@ FlowRouter.route( '/login', {
 	}
 });
 
-FlowRouter.route( '/profile', {
-	name: 'profile',
+FlowRouter.route( '/myProfile', {
+	name: 'myProfile',
 	action() {
 		ReactLayout.render( App, { yield: <MyProfile /> } );
+	}
+});
+
+FlowRouter.route( '/profile', {
+	name: 'profile',
+	action(params, queryParams) {
+		// TODO: validate params
+		var objectId = queryParams.objectId;
+		ReactLayout.render(App, {yield: <Profile objectId={objectId}/>});
 	}
 });
 
@@ -49,8 +58,6 @@ FlowRouter.route( '/organization', {
 		var zoomTo = queryParams.zoomTo;
 		var mode = queryParams.mode;
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
-
-		console.log("Query Params:", queryParams);
 		ReactLayout.render( App, { yield: <MyOrganization
 			objectId={objectId}
 			objectType={objectType}
@@ -69,8 +76,6 @@ FlowRouter.route( '/goals/tree', {
 		var zoomTo = queryParams.zoomTo;
 		var mode = queryParams.mode;
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
-
-		console.log("Query Params:", queryParams);
 		ReactLayout.render( App, { yield: <Tree
 			objectId={objectId}
 			objectType='contributor'
@@ -89,8 +94,6 @@ FlowRouter.route( '/goals/list/contributor', {
 		var zoomTo = queryParams.zoomTo;
 		var mode = queryParams.mode;
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
-
-		console.log("Query Params:", queryParams);
 		ReactLayout.render( App, { yield: <GoalList
 			objectId={objectId}
 			objectType='contributor'
@@ -109,8 +112,6 @@ FlowRouter.route( '/organization/view', {
 		var zoomTo = queryParams.zoomTo;
 		var mode = queryParams.mode;
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
-
-		console.log("Query Params:", queryParams);
 		ReactLayout.render( App, { yield: <Organization
 			objectId={objectId}
 			objectType='contributor'

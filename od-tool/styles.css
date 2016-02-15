@@ -110,6 +110,7 @@
     border-radius: 50%;
     vertical-align: middle;
     margin: 15px;
+    border: solid 2px white;
     -webkit-filter: opacity(70%); /*sepia, hue-rotate, invert....*/
 }
 
@@ -703,4 +704,50 @@ circle.container, circle.label {
 .goalStateButton.active {
     color: white; /*#fff;*/
     background-color: #558C89; /*darkgrey;*/
+}
+
+/*******************************************************************************************************************/
+/* Summary cards */
+
+.summaryCardHeader {
+    background-color: #ECECEA !important;
+    color: #558C89;
+    text-transform: uppercase;
+    text-weight:bold;
+    font-size: 1.2rem;
+    border-color: #558C89 !important;
+}
+
+.summaryCardText {
+    color: #558C89;
+}
+
+.summaryCard {
+    transition: box-shadow .25s;
+    padding: 20px;
+    margin: 0.5rem 0 1rem 0;
+    border-radius: 2px;
+}
+
+.summaryCardIcon {
+    font-size: 1rem !important;
+    cursor: hand !important;
+    padding-left: 10px;
+    /*color: slategray !important; /* #558C89 !important;*/
+}
+
+.summaryCardIcon:hover {
+    color: #D9853B !important;
+}
+
+.spinner-teal {
+    border-color: #74AFAD !important;
+}
+.spinner-orange {
+    border-color: #D9853B !important;
+}
+
+.collection-item-text {
+    display: inline-block;
+    width: 70%;
 }

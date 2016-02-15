@@ -8,15 +8,16 @@ ProfileImage = React.createClass({
 			height: '32px',
 			verticalAlign: 'middle',
 			textAlign: 'center',
-			WebkitFilter: 'opacity(50%)',
+			//WebkitFilter: 'opacity(50%)',
+			photoUrl: null,
 		}
 	},
 
 	// Loads items from the Tasks collection and puts them on this.data.tasks
 	getMeteorData() {
 		var handle = Meteor.subscribe("users");
-		var data = { profilePhotoUrl: "" }; //"/img/user_avatar_blank.jpg" };
-		if (handle.ready()) {
+		var data = { profilePhotoUrl: this.props.url };
+		if (!this.props.url && handle.ready()) {
 			var usr = Meteor.users.findOne({ _id : Meteor.user()._id });
 			if (usr) {
 				data.profilePhotoUrl = usr.services.google.picture;

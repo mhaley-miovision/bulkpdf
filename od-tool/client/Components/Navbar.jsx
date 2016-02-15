@@ -36,7 +36,7 @@ Navbar = React.createClass({
 				<li className={FlowHelpers.currentRoute("tasks")}><a href="/tasks">Tasks</a></li>
 				<li className={FlowHelpers.currentRoute("team")}><a href="/team">Team</a></li>
 				<li className={FlowHelpers.currentRoute("organization")}><a href="/organization">Organization</a></li>
-				<li className={FlowHelpers.currentRoute("profile")}><a href="/profile">Profile</a></li>
+				<li className={FlowHelpers.currentRoute("profile")}><a href="/myProfile">Profile</a></li>
 				<li className={FlowHelpers.currentRoute("admin")}><a href="/admin">Admin</a></li>
 				<li className={FlowHelpers.currentRoute("enps")}><a href="/enps">myENPS</a></li>
 			</ul>
