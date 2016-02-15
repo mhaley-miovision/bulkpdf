@@ -309,9 +309,9 @@ var Chart = (function () {
 
 		zoomToOrg: function (zoomToObject, shouldAnimate = true) {
 			if (zoomToObject) {
-				if (this.objectNameToNode[zoomToObject]) {
+				if (this.objectIdToNode[zoomToObject]) {
 					this.highlightRoles([]);
-					this.zoom(this.objectNameToNode[zoomToObject], true);
+					this.zoom(this.objectIdToNode[zoomToObject], true);
 				} else {
 					// TODO: hack - try finding as a contributor if an email was specified
 					var c = ContributorsCollection.findOne({email: zoomToObject});
@@ -324,7 +324,7 @@ var Chart = (function () {
 						// zoom to the closest containing parent
 						this.zoom(commonParent, shouldAnimate);
 					} else {
-						console.log("this.objectNameToNode[zoomToObject] is undefined");
+						console.log("this.objectIdToNode[zoomToObject] is undefined");
 					}
 				}
 			} else {
@@ -494,15 +494,15 @@ var Chart = (function () {
 			initCircles(circles);
 
 			// create map of orgname and contributorname -> node
-			this.objectNameToNode = [];
-			nodes.filter(n => n.type == "organization").forEach(n => this.objectNameToNode[n.name] = n);
+			this.objectIdToNode = [];
+			nodes.filter(n => n.type == "organization").forEach(n => this.objectIdToNode[n.name] = n);
 
 			// this will fail for multiple matches!
 			// TODO: make this work for multiple matches
-			nodes.filter(n => n.type == "role").forEach(n => this.objectNameToNode[n.contributor] = n);
+			nodes.filter(n => n.type == "role").forEach(n => this.objectIdToNode[n.contributor] = n);
 
 			// contributors
-			nodes.filter(n => n.type == "contributor").forEach(n => this.objectNameToNode[n.name] = n);
+			nodes.filter(n => n.type == "contributor").forEach(n => this.objectIdToNode[n.name] = n);
 
 			// don't add these object to organizations, since we use the label object instead for them, as a circle
 			var foreignObjects = vis.selectAll(".foreign-object")
@@ -524,10 +524,10 @@ var Chart = (function () {
 
 					// profile image
 					var c = ContributorsCollection.findOne({name: zoomTo.contributor});
-					var url = zoomTo.photo ? zoomTo.photo : (c && c.photo) ? c.photo : "img/user_avatar_blank.jpg";
+					var url = zoomTo.photo ? zoomTo.photo : (c && c.photo) ? c.photo : "/img/user_avatar_blank.jpg";
 					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + url + "'/></div>";
 
-					var goalsUrl = "/organization?objectName=" + d.email + "&objectType=contributor&mode=acc";
+					var goalsUrl = "/organization?objectId=" + d.email + "&objectType=contributor&mode=acc";
 					s += '<div class="numGoalsLabel"><a href="' + goalsUrl + '">(' + d.numGoals + ' goals)</a></div>';
 
 					// bucketize the accountabilities
@@ -603,7 +603,7 @@ Organization = React.createClass({
 	mixins: [ReactMeteorData],
 
 	propTypes: {
-		objectName : React.PropTypes.string.isRequired,
+		objectId : React.PropTypes.string.isRequired,
 		objectType : React.PropTypes.string,
 		zoomTo : React.PropTypes.string,
 		roleMode : React.PropTypes.bool,
@@ -645,9 +645,14 @@ Organization = React.createClass({
 
 		if (!data.isLoading) {
 
+			var objectId = this.props.objectId;
+			if (this.props.objectType === 'contributor') {
+				objectId = "Miovision";
+			}
+
 			// TODO: SHOULD OPTIMIZE THESE QUERIES TO USE THE DB MORE RATHER THAN DO THIS CLIENT-SIDE
 
-			let org = OrganizationsCollection.findOne({ name: this.props.objectName });
+			let org = OrganizationsCollection.findOne({ name: objectId });
 			if (org) {
 				// for building an org tree
 				let populateOrgChildren = function (o) {
@@ -754,7 +759,7 @@ Organization = React.createClass({
 
 				data.organization = org;
 			} else {
-				Materialize.toast("Could not find organization: " + this.props.objectName, 3000);
+				Materialize.toast("Could not find organization: " + objectId, 3000);
 				return {};
 			}
 		};
@@ -764,7 +769,7 @@ Organization = React.createClass({
 	updateOrganizationGraph() {
 		if (!this.data.isLoading) {
 			var org = this.data.organization; // as loaded from the db
-			var zoomTo = this.props.zoomTo;
+			var zoomTo = this.props.objectType === 'contributor' ? this.props.objectId : this.props.zoomTo;
 
 			// this is super FUCKED
 			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
@@ -781,17 +786,6 @@ Organization = React.createClass({
 		console.log("componentWillUpdate called!");
 
 		this.updateOrganizationGraph();
-	},
-
-	shouldComponentUpdate(nextProps, nextState) {
-		// let d3 do the updating!
-		console.log("shouldComponentUpdate called for component with root: " + this.props.objectName);
-
-		if (this.state.roleMode != nextState.roleMode) {
-			// update the role vs ic mode
-			console.log("detected switch of role vs IC mode!");
-		}
-		return true;
 	},
 
 	componentDidMount() {

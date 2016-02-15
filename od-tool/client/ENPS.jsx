@@ -58,21 +58,21 @@ ENPS = React.createClass({
 											<label>
 												<input className="validate required" type="radio" name="enps_value" value="1"
 													   onChange={this.onEnpsChanged}/>
-												<img className={this.setIconClass("1")} src="img/enps-icons/happy.jpg" />
+												<img className={this.setIconClass("1")} src="/img/enps-icons/happy.jpg" />
 											</label>
 										</div>
 										<div className="col s4">
 											<label>
 												<input className="validate required" type="radio" name="enps_value" value="0"
 													   onChange={this.onEnpsChanged}/>
-												<img className={this.setIconClass("0")} src="img/enps-icons/neutral.jpg" />
+												<img className={this.setIconClass("0")} src="/img/enps-icons/neutral.jpg" />
 											</label>
 										</div>
 										<div className="col s4">
 											<label>
 												<input className="validate required" type="radio" name="enps_value" value="-1"
 													   onChange={this.onEnpsChanged}/>
-												<img className={this.setIconClass("-1")} src="img/enps-icons/sad.jpg" />
+												<img className={this.setIconClass("-1")} src="/img/enps-icons/sad.jpg" />
 											</label>
 										</div>
 									</div>

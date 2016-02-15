@@ -81,7 +81,7 @@ if (Meteor.isServer) {
 			if (c && c.photo) {
 				return c.photo;
 			} else {
-				return "img/user_avatar_blank.jpg";
+				return "/img/user_avatar_blank.jpg";
 			}
 		},
 
@@ -100,7 +100,7 @@ if (Meteor.isServer) {
 			if (c && c.photo) {
 				return c.photo;
 			} else {
-				return "img/user_avatar_blank.jpg";
+				return "/img/user_avatar_blank.jpg";
 			}
 		}
 	});

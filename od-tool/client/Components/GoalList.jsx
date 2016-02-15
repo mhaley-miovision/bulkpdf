@@ -8,19 +8,20 @@ GoalList = React.createClass({
 
 	getMeteorData() {
 		let handle = Meteor.subscribe("goals");
-		if (handle.ready()) {
+		let handle2 = Meteor.subscribe("contributors");
+		if (handle.ready() && handle2.ready()) {
 			// default is current user
-			let contributorEmail = this.props.contributorEmail;
-			if (contributorEmail == null) {
+			let objectId = this.props.objectId;
+			if (objectId == null) {
 				var myUser = Meteor.users.findOne({_id: Meteor.userId()});
-				contributorEmail = myUser.services.google.email;
+				objectId = myUser.services.google.email;
 			}
 			// determine the title prefix
-			let prefix = this.props.contributorEmail ? ContributorsCollection.findOne({email: this.props.contributorEmail}).name + "'s " : "My ";
+			let prefix = this.props.objectId ? ContributorsCollection.findOne({email: this.props.objectId}).name + "'s " : "My ";
 			this.state.contributorPrefix = prefix;
 
 			// find all nodes with this contributor as owner, sorted by depth
-			let goals = GoalsCollection.find({owners: contributorEmail}, {sort: {depth:1}}).fetch();
+			let goals = GoalsCollection.find({owners: objectId}, {sort: {depth:1}}).fetch();
 
 			// remove all nodes which are sub-children
 			let i = 0;
@@ -53,7 +54,7 @@ GoalList = React.createClass({
 	},
 
 	shouldComponentUpdate(nextProps, nextState) {
-		if (nextProps.contributorEmail !== this.props.contributorEmail) {
+		if (nextProps.objectId !== this.props.objectId) {
 			return true;
 		}
 		return false;

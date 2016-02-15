@@ -44,7 +44,7 @@ FlowRouter.route( '/organization', {
 	name: 'organization',
 	action(params, queryParams) {
 		// TODO: validate params
-		var objectName = queryParams.objectName;
+		var objectId = queryParams.objectId;
 		var objectType = queryParams.objectType;
 		var zoomTo = queryParams.zoomTo;
 		var mode = queryParams.mode;
@@ -52,8 +52,68 @@ FlowRouter.route( '/organization', {
 
 		console.log("Query Params:", queryParams);
 		ReactLayout.render( App, { yield: <MyOrganization
-			objectName={objectName}
+			objectId={objectId}
 			objectType={objectType}
+			zoomTo={zoomTo}
+			mode={mode}
+			roleMode={roleMode}
+		/> } );
+	}
+});
+
+FlowRouter.route( '/goals/tree', {
+	name: 'goalsTree',
+	action(params, queryParams) {
+		// TODO: validate params
+		var objectId = queryParams.objectId;
+		var zoomTo = queryParams.zoomTo;
+		var mode = queryParams.mode;
+		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
+
+		console.log("Query Params:", queryParams);
+		ReactLayout.render( App, { yield: <Tree
+			objectId={objectId}
+			objectType='contributor'
+			zoomTo={zoomTo}
+			mode={mode}
+			roleMode={roleMode}
+		/> } );
+	}
+});
+
+FlowRouter.route( '/goals/list/contributor', {
+	name: 'goalsList',
+	action(params, queryParams) {
+		// TODO: validate params
+		var objectId = queryParams.objectId;
+		var zoomTo = queryParams.zoomTo;
+		var mode = queryParams.mode;
+		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
+
+		console.log("Query Params:", queryParams);
+		ReactLayout.render( App, { yield: <GoalList
+			objectId={objectId}
+			objectType='contributor'
+			zoomTo={zoomTo}
+			mode={mode}
+			roleMode={roleMode}
+		/> } );
+	}
+});
+
+FlowRouter.route( '/organization/view', {
+	name: 'organizationView',
+	action(params, queryParams) {
+		// TODO: validate params
+		var objectId = queryParams.objectId;
+		var zoomTo = queryParams.zoomTo;
+		var mode = queryParams.mode;
+		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
+
+		console.log("Query Params:", queryParams);
+		ReactLayout.render( App, { yield: <Organization
+			objectId={objectId}
+			objectType='contributor'
 			zoomTo={zoomTo}
 			mode={mode}
 			roleMode={roleMode}

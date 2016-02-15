@@ -2,7 +2,7 @@ MyOrganization = React.createClass({
 
 	getInitialState() {
 		return {
-			objectName: this.props.objectName,
+			objectId: this.props.objectId,
 			objectType: this.props.objectType,
 			zoomTo: this.props.zoomTo,
 			mode: this.props.mode,
@@ -11,7 +11,7 @@ MyOrganization = React.createClass({
 
 	getDefaultProps() {
 		return {
-			objectName: "Miovision",
+			objectId: "Miovision",
 			zoomTo: "Miovision",
 			objectType: "organization",
 			mode: 'acc',
@@ -23,13 +23,13 @@ MyOrganization = React.createClass({
 
 	renderOrganization() {
 		return <Organization ref="org"
-							 objectName={this.state.objectName} objectType={this.state.objectType}
+							 objectId={this.state.objectId} objectType={this.state.objectType}
 							 roleMode={this.props.roleMode} roleModeVisible={true}
 							 searchVisible={true} zoomTo={this.state.zoomTo}/>;
 	},
 
 	renderAccountabilities() {
-		return <Tree ref="tree" objectName={this.state.objectName} objectType={this.state.objectType}/>;
+		return <Tree ref="tree" objectId={this.state.objectId} objectType={this.state.objectType}/>;
 	},
 
 	handleAccClicked() {

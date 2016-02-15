@@ -1,6 +1,6 @@
 function createOwnerObject(email) {
 	var c = ContributorsCollection.findOne({email: email});
-	var url = (c && c.photo) ? c.photo : "img/user_avatar_blank.jpg";
+	var url = (c && c.photo) ? c.photo : "/img/user_avatar_blank.jpg";
 	return { email: email, photo: url };
 }
 

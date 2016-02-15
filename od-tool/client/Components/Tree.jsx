@@ -65,7 +65,7 @@ var TreeView = (function() {
 	function htmlForTreeNode(d) {
 		var ownersHtmlString = '';
 		for (var i in d.owners) {
-			//url = "/organization?objectName=" + d.owners[i].email + "&objectType=contributor&mode=acc";
+			//url = "/organization?objectId=" + d.owners[i].email + "&objectType=contributor&mode=acc";
 			//ownersHtmlString += '<a href="'+url+'"><img class="treeItemProfilePhoto" src="' + d.owners[i].photo + '" title="' + d.owners[i].email + '"/></a>';
 			ownersHtmlString += '<img class="treeItemProfilePhoto" src="' + d.owners[i].photo + '" title="' + d.owners[i].email + '"/>';
 		}
@@ -375,13 +375,13 @@ Tree = React.createClass({
 	mixins: [ReactMeteorData],
 
 	propTypes: {
-		objectName: React.PropTypes.string.isRequired,
+		objectId: React.PropTypes.string.isRequired,
 		objectType: React.PropTypes.string,
 	},
 
 	getInitialState() {
 		return {
-			objectName: this.props.objectName,
+			objectId: this.props.objectId,
 			objectType: this.props.objectType,
 		};
 	},
@@ -404,7 +404,7 @@ Tree = React.createClass({
 				_this.updateTreeView();
 			});
 		} else if (this.state.objectType == 'contributor') {
-			Meteor.call("loadGoalTreeForContributor", this.state.objectName, function (err, data) {
+			Meteor.call("loadGoalTreeForContributor", this.state.objectId, function (err, data) {
 				_this.data.goals = data;
 				_this.data.doneLoading = true;
 				_this.updateTreeView();
@@ -413,8 +413,8 @@ Tree = React.createClass({
 		return this.data ? this.data : {};
 	},
 
-	handleSearch(objectName, objectType) {
-		this.setState({objectName: objectName, objectType:objectType});
+	handleSearch(objectId, objectType) {
+		this.setState({objectId: objectId, objectType:objectType});
 	},
 
 	updateTreeView() {
@@ -442,7 +442,7 @@ Tree = React.createClass({
 	},
 
 	shouldComponentUpdate(nextProps, nextState) {
-		if (this.state.objectName === nextState.objectName) {
+		if (this.state.objectId === nextState.objectId) {
 			return false;
 		}
 

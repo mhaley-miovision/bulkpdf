@@ -20,7 +20,7 @@ Goal = React.createClass({
 			let photos = ContributorsCollection.find({email: { $in: this.props.goal.owners } }, { fields: {email:1,photo:1}}).fetch();
 			photos.forEach(x => {
 				if (x.email) {
-					ownerPhotos[x.email] = x.photo ? x.photo : "img/user_avatar_blank.jpg"
+					ownerPhotos[x.email] = x.photo ? x.photo : "/img/user_avatar_blank.jpg"
 				}
 			});
 			return { children: children, ownerPhotos: ownerPhotos, doneLoading: true }
@@ -83,14 +83,16 @@ Goal = React.createClass({
 			var photo = this.data.doneLoading && _this.data.ownerPhotos[ownerEmail];
 			if (photo)
 			{
+				let url = FlowRouter.path( "organization", {}, {objectId:ownerEmail,objectType:'contributor'} );
+				//let url = FlowRouter.path( "goalsList", {}, {objectId:ownerEmail} );
 				return (
-					<a key={ownerEmail} href={"/organization?objectName=" + ownerEmail + "&objectType=contributor&mode=acc"}>
+					<a key={ownerEmail} href={url}>
 						<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src={photo}/>
 					</a>
 				);
 			} else {
 				return (
-					<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src="img/user_avatar_blank.jpg"/>
+					<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src="/img/user_avatar_blank.jpg"/>
 				);
 			}
 		});

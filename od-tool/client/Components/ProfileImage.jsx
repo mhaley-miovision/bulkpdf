@@ -15,7 +15,7 @@ ProfileImage = React.createClass({
 	// Loads items from the Tasks collection and puts them on this.data.tasks
 	getMeteorData() {
 		var handle = Meteor.subscribe("users");
-		var data = { profilePhotoUrl: "" }; //"img/user_avatar_blank.jpg" };
+		var data = { profilePhotoUrl: "" }; //"/img/user_avatar_blank.jpg" };
 		if (handle.ready()) {
 			var usr = Meteor.users.findOne({ _id : Meteor.user()._id });
 			if (usr) {

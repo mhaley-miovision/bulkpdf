@@ -1,11 +1,11 @@
 MyGoals = React.createClass({
 
 	getInitialState() {
-		return {contributorEmail:null};
+		return {objectId:null};
 	},
 
 	handleSearch(c) {
-		this.setState({contributorEmail:c});
+		this.setState({objectId:c});
 	},
 
 	render() {
@@ -16,7 +16,7 @@ MyGoals = React.createClass({
 				<div>
 					<ObjectSearch onClick={this.handleSearch} findContributors={true} findOrganizations={false}/>
 				</div>
-				<GoalList contributorEmail={this.state.contributorEmail} />
+				<GoalList objectId={this.state.objectId} />
 			</div>
 		);
 	}
