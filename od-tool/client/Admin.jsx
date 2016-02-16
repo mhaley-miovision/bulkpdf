@@ -14,7 +14,7 @@ Admin = React.createClass({
 
 		var myUserName = Meteor.user().profile.name;
 
-		isAuthorized = myUserName === 'Victor Leipnik';
+		isAuthorized = true;//myUserName === 'Victor Leipnik';
 
 		var data = {
 			isLoading: !handle.ready(),

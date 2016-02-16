@@ -28,14 +28,16 @@ GoalsSummary = React.createClass({
 
 			let summaryGoal = { name: "Goal completion", stats: { notStarted:notStarted, inProgress:inProgress, completed:completed }  };
 			this.data = { doneLoading: true, goals: goals, summaryGoal: summaryGoal, lateGoals: lateGoals };
-			this.updateChart();
+			if (goals.length > 0) {
+				this.updateChart();
+			}
 			return this.data;
 		} else {
 			return { doneLoading: false };
 		}
 	},
 
-	messageOnClick() {
+	notImplemented() {
 		Materialize.toast( "Not implemented yet, stay tuned!", 1000);
 	},
 
@@ -44,7 +46,7 @@ GoalsSummary = React.createClass({
 
 		// public controls
 		controls.push(
-			<a key={g._id+"1"} onClick={this.messageOnClick} className="secondary-content">
+			<a key={g._id+"1"} onClick={this.notImplemented} className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">message</i>
 			</a>
 		);
@@ -53,12 +55,12 @@ GoalsSummary = React.createClass({
 		// TODO: check for permissions here
 
 		controls.push(
-			<a key={g._id+"2"} href="#" className="secondary-content">
+			<a key={g._id+"2"} onClick={this.notImplemented} className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">thumb_down</i>
 			</a>
 		);
 		controls.push(
-			<a key={g._id+"3"} href="#" className="secondary-content">
+			<a key={g._id+"3"} onClick={this.notImplemented} className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">thumb_up</i>
 			</a>
 		);
@@ -92,7 +94,7 @@ GoalsSummary = React.createClass({
 	renderLateGoalsHeader() {
 		if (this.data.lateGoals.length > 0) {
 			return (
-				<li className="collection-item summaryCardSubHeader">
+				<li className="collection-item summaryCardSubHeader" key="goalSummary4">
 					Late goals
 				</li>
 			);
@@ -107,29 +109,6 @@ GoalsSummary = React.createClass({
 
 			// This will get the first returned node in the jQuery collection.
 			var c = new Chart(ctx);
-
-			/*
-			Chart.types.Doughnut.extend({
-				name: "DoughnutAlt",
-				draw: function() {
-					Chart.types.Doughnut.prototype.draw.apply(this, arguments);
-					this.chart.ctx.fillStyle = 'black';
-					this.chart.ctx.font = "16pt Arial";
-					this.chart.ctx.textBaseline = 'middle';
-
-					//TODO: hack because I'm tired and impatient with this fidgetting at this point
-					var xOffset = 30;
-					if (this.segments[0].value >= 10) {
-						xOffset = 21;
-					} else if (this.segments[0].value === 100) {
-						xOffset = 17;
-					}
-
-					this.chart.ctx.fillText(this.segments[0].value + "%", 30, 40, 140);
-				}
-			});
-			*/
-
 			var g = _this.data.summaryGoal;
 			var data = [
 				{
@@ -184,9 +163,51 @@ GoalsSummary = React.createClass({
 		}, 50);
 	},
 
-	getCompleteAsPercentString() {
-		var total = this.data.summaryGoal.stats.completed + this.data.summaryGoal.stats.inProgress + this.data.summaryGoal.stats.notStarted;
-		return Math.ceil(this.data.summaryGoal.stats.completed / total * 100) + "%";
+	handleAddGoalsNudge() {
+		Materialize.toast("Functionality coming soon, stay tuned.", 1000);
+	},
+
+	renderSection() {
+		if (this.data.doneLoading && this.data.goals.length) {
+			var url = FlowRouter.path("goalsList", {}, {objectId:this.props.objectId});
+			var goalsSection = [];
+			goalsSection.push(
+				<li className="collection-item" key="goalSummary1">
+					<div style={{width:"120px", height: "120px"}} className="goalDonutChart">
+						<canvas id="goalDonutChart" width="90" height="90">
+						</canvas>
+					</div>
+				</li>
+			);
+			goalsSection.push(
+				<li className="collection-item" key="goalSummary2">
+					<div className="collection-item-text">{this.data.goals.length} Goals
+						(<a className="tealLink" href={url}>view all</a>)
+					</div>
+					<a className="secondary-content" href={url}>
+						<i className="material-icons summaryCardIcon grey-text">search</i>
+					</a>
+				</li>
+			);
+			goalsSection.push(
+				<li className="collection-item" key="goalSummary3">
+					<div className="collection-item-text">Number of overdue goals: </div>
+					<span className={this.getLateClasses()} style={{margin:"4px 10px 0 0"}}>{this.data.lateGoals.length} late</span>
+				</li>
+			);
+			goalsSection.push(this.renderLateGoalsHeader());
+			goalsSection.push(this.renderLateGoals());
+			return goalsSection;
+		} else {
+			return (
+				<div className="grey-text">
+					<p style={{textAlign:"center"}}>
+						This person has no goals defined yet.<br/>
+						<a className="tealLink" onClick={this.handleAddGoalsNudge}>Nudge them to add some.</a>
+					</p>
+				</div>
+			);
+		}
 	},
 
 	render() {
@@ -195,20 +216,7 @@ GoalsSummary = React.createClass({
 				<div>
 					<ul className="collection with-header">
 						<li className="collection-header summaryCardHeader">Goals</li>
-
-						<li className="collection-item">
-							<div style={{width:"120px", height: "120px"}} className="goalDonutChart">
-								<canvas id="goalDonutChart" width="90" height="90">
-								</canvas>
-							</div>
-						</li>
-						<li className="collection-item">
-							<div className="collection-item-text">Number of overdue goals: </div>
-							<span className={this.getLateClasses()} style={{margin:"4px 10px 0 0"}}>{this.data.lateGoals.length} late</span>
-						</li>
-
-						{this.renderLateGoalsHeader()}
-						{this.renderLateGoals()}
+						{this.renderSection()}
 					</ul>
 				</div>
 			);

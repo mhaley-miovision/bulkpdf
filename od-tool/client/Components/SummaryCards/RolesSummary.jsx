@@ -16,6 +16,10 @@ RolesSummary = React.createClass({
 		}
 	},
 
+	notImplemented() {
+		Materialize.toast( "Not implemented yet, stay tuned!", 1000);
+	},
+
 	renderRolesControls(r) {
 		let controls = [];
 
@@ -33,12 +37,12 @@ RolesSummary = React.createClass({
 		// TODO: check for permissions here
 
 		controls.push(
-			<a key={r._id+"2"} href="#" className="secondary-content">
+			<a key={r._id+"2"} onClick={this.notImplemented} className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">thumb_down</i>
 			</a>
 		);
 		controls.push(
-			<a key={r._id+"3"} href="#" className="secondary-content">
+			<a key={r._id+"3"} onClick={this.notImplemented} className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">thumb_up</i>
 			</a>
 		);

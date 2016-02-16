@@ -1,9 +1,10 @@
+/*
 FlowRouter.route( '/', {
 	name: 'home',
 	action() {
 		ReactLayout.render(App, {yield: <Welcome />});
 	}
-});
+});*/
 
 FlowRouter.route( '/goals', {
 	name: 'goals',
@@ -26,7 +27,7 @@ FlowRouter.route( '/login', {
 	}
 });
 
-FlowRouter.route( '/myProfile', {
+FlowRouter.route( '/', {
 	name: 'myProfile',
 	action() {
 		ReactLayout.render( App, { yield: <MyProfile /> } );

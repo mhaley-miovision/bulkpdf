@@ -83,8 +83,7 @@ Goal = React.createClass({
 			var photo = this.data.doneLoading && _this.data.ownerPhotos[ownerEmail];
 			if (photo)
 			{
-				let url = FlowRouter.path( "organization", {}, {objectId:ownerEmail,objectType:'contributor'} );
-				//let url = FlowRouter.path( "goalsList", {}, {objectId:ownerEmail} );
+				let url = FlowRouter.path( "profile", {}, {objectId:ownerEmail} );
 				return (
 					<a key={ownerEmail} href={url}>
 						<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src={photo}/>

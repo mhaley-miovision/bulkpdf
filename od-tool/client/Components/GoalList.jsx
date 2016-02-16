@@ -6,6 +6,15 @@ GoalList = React.createClass({
 		return { contributorPrefix: "My " }
 	},
 
+	getDefaultProps() {
+		var objectId = FlowRouter.getQueryParam("objectId");
+		if (objectId) {
+			return {
+				objectId: objectId
+			}
+		}
+	},
+
 	getMeteorData() {
 		let handle = Meteor.subscribe("goals");
 		let handle2 = Meteor.subscribe("contributors");
