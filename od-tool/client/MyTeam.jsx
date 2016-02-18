@@ -38,6 +38,7 @@ MyTeam = React.createClass({
 		} else if (this.data.org) {
 			return (
 				<div className="section center">
+					<TeamSkillsSummary orgName="Computer Vision"/>
 					<div>
 						<Organization objectId={this.data.org} roleMode={this.state.roleMode} roleModeVisible={true} searchVisible={false}/>
 					</div>

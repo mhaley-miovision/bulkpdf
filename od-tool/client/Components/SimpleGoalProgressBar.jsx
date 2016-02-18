@@ -18,7 +18,7 @@ SimpleGoalProgressBar = React.createClass({
 		} else if (i == 1) {
 			return "#ffe166";
 		} else if (i == 2) {
-			return "#ff6666";
+			return "#46BFBD";
 		}
 		return "#888888";
 	},
@@ -48,7 +48,7 @@ SimpleGoalProgressBar = React.createClass({
 		return (
 			<div className="simpleProgressChart" style={{"width" : this.props.width, "height" : this.props.height}}>
 				<div className="simpleProgressChartBar" style={{
-					"width" : widths.completedWidth, "backgroundColor" : "#33cc33", "height" : this.props.height,
+					"width" : widths.completedWidth, "backgroundColor" : "#46BFBD", "height" : this.props.height,
 					float:"left", margin: this.props.margin, borderStyle:"solid", borderColor:"#666666", borderWidth:"1px 0 1px 1px"}}></div>
 				<div className="simpleProgressChartBar"  style={{
 					"width" : widths.inProgressWidth, "backgroundColor" : "#ffe166", "height" : this.props.height,

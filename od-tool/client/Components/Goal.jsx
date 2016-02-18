@@ -190,6 +190,15 @@ Goal = React.createClass({
 		);
 	},
 
+	renderComments() {
+		return;
+		return (
+			<div className="commentsBox-wrapper">
+				<textarea className="commentsBox" tabIndex="0" />
+			</div>
+		);
+	},
+
 	render() {
 		if (this.state.isEditing) {
 			return (
@@ -226,6 +235,7 @@ Goal = React.createClass({
 					<div className="collapsible-body">
 						<div style={{"padding":"25px"}}>
 							{this.renderGoalControls()}
+							{this.renderComments()}
 							{this.renderSubgoalsList()}
 						</div>
 					</div>

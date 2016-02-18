@@ -68,9 +68,7 @@ function processSkillsJson(json) {
 	var skills = [];
 
 	while (r++ < 2000) {
-		// stop if exceeded blank row coun
-		//
-		// t
+		// stop if exceeded blank row count
 		if (typeof(c["C"+r]) === 'undefined') {
 			if (blankRowCount++ > 10) {
 				break;
@@ -120,32 +118,60 @@ Meteor.methods({
 		for (var x in contributors.data) {
 			ContributorsCollection.insert(importHelper_transformContributor(contributors.data[x]));
 		}
+
+		// organization import
 		for (var x in organizations.data) {
 			OrganizationsCollection.insert(importHelper_transformOrganization(organizations.data[x]));
+
 		}
+
+		// calculate paths for easy querying
+		OrganizationsCollection.find({}).forEach(org => {
+
+			// find the parent chain
+			var o = OrganizationsCollection.findOne({name: org.name});
+			var parentId = null;
+			var path = [];
+			while (o.parent) {
+				var p = OrganizationsCollection.findOne({name: o.parent});
+				parentId = p._id;
+				path.push(parentId);
+				o = p; // traverse upwards
+			}
+			path.reverse();
+
+			OrganizationsCollection.update(org._id, {$set : { parentId:parentId, path:path }});
+		});
+
 		for (var x in orgAccountabilities.data) {
 			OrgAccountabilitiesCollection.insert(importHelper_transformOrgAccountability(orgAccountabilities.data[x]));
 		}
 		for (var x in jobAccountabilities.data) {
 			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[x], x));
-			console.log(jobAccountabilities.data[x]);
 		}
 		for (var x in roles.data) {
 			var r_id = RolesCollection.insert(importHelper_transformRole(roles.data[x]));
+
+			// append user email
 			var c = ContributorsCollection.findOne({name:roles.data[x].contributor});
 			if (c) {
-				roles.data[x].email = c.email;
-				RolesCollection.update(r_id, roles.data[x]);
+				RolesCollection.update(r_id, {$set: { email: c.email }});
 			}
+
+			// append org path (for easy role querying)
+			var path = [];
+			var org = OrganizationsCollection.findOne({name:roles.data[x].organization});
+			if (org) {
+				path = org.path;
+			}
+			RolesCollection.update(r_id, {$set: { orgPath: path }});
 		}
 		for (var x in roleLabels.data) {
 			RoleLabelsCollection.insert(importHelper_transformRoleLabel(roleLabels.data[x]));
 		}
 
-		// get skills also
-
+		// get skills also, bypassing v1 of tool
 		var response = HTTP.call( 'GET', skillsCellFeed );
-		console.log(response);
 		var result = processSkillsJson(response.data);
 		if (result && result.length > 0) {
 			result.forEach(s => { SkillsCollection.insert(s) });

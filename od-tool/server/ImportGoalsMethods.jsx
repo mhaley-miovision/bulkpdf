@@ -128,6 +128,7 @@ function processGoalsJson(json) {
 	}
 
 	var unmatchedOwners = [];
+	var numObjectives = 0;
 
 	while (r++ < 2000) {
 		if (r == 64 || r == 65 || r == 66 || r == 67 || r == 68 || r == 69) { // HOLY FUCK LORD HELP ME LOL, I NEED TO NUKE THE SHIT OUT OF THIS WHOLE SCRIPT VERY FAST
@@ -157,6 +158,16 @@ function processGoalsJson(json) {
 		// find projects
 		var p = c["C"+r];
 		if (p && (lastProject == null || p != lastProject.name)) {
+
+			// new project, "close off" the previous project
+			// if the project only had one key objective, then collapse it upward
+			if (lastProject && numObjectives == 1) {
+				console.log("project[" + lastProject.name + "] should be consolidated!");
+			}
+
+			// reset objectives
+			numObjectives = 0;
+
 			var result = processOwners(c["D"+r]);
 			unmatchedOwners = unmatchedOwners.concat(result.unmatched);
 			lastProject = {
@@ -173,8 +184,9 @@ function processGoalsJson(json) {
 		// find key objectives
 		var ko = c["G" + r];
 		var dc = c["H" + r];
-		if (typeof(ko) !== 'undefined'  || typeof(dc) !== 'undefined') {
+		if (typeof(ko) !== 'undefined' || typeof(dc) !== 'undefined') {
 
+			// TODO: REEVALUATE THIS
 			if (typeof(ko) === 'undefined') {
 				ko = dc; // make the same as the done criteria (legacy)
 			}
@@ -196,6 +208,7 @@ function processGoalsJson(json) {
 			unmatchedOwners = unmatchedOwners.concat(result.unmatched);
 
 			objectives.push(objective);
+			numObjectives++;
 			lastKeyObjective = objective;
 		}
 
@@ -250,9 +263,6 @@ Meteor.methods({
 			if (p) {
 				var i = 0;
 				while (p) {
-					console.log(p);
-					console.log(i++);
-
 					// find the parent object
 					p = GoalsCollection.findOne({_id: p});
 

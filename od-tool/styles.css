@@ -121,7 +121,7 @@
     vertical-align: middle;
     margin: 15px;
     border: solid 2px white;
-    -webkit-filter: opacity(70%); /*sepia, hue-rotate, invert....*/
+    -webkit-filter: opacity(85%); /*sepia, hue-rotate, invert....*/
 }
 
 .item
@@ -709,11 +709,21 @@ circle.container, circle.label {
     border-radius: .25em;
     text-align: center;
     width: 61px;
+    border: solid white 1px;
+}
+
+.goalStateButton:hover {
+    border: solid #D9853B 1px;
 }
 
 .goalStateButton.active {
-    color: white; /*#fff;*/
+    color: white;
+    border: solid #558C89 1px;
     background-color: #558C89; /*darkgrey;*/
+}
+
+.goalStateButton.active:hover {
+    border: solid #D9853B 1px;
 }
 
 /*******************************************************************************************************************/
@@ -784,4 +794,27 @@ circle.container, circle.label {
     margin-right: auto;
     display: block;
     width: 100px;
+}
+
+/*******************************************************************************************************************/
+/* commenting */
+
+.commentsBox-wrapper .commentsBox {
+    color: #3f4549;
+    cursor: text;
+    resize: none;
+    border: 2px solid #d4d4d4;
+    display: block;
+    padding: 6px 10px 8px;
+    margin: 0;
+    width: 100%;
+    min-height: 44px;
+    height: auto;
+    line-height: 1.4;
+    font-size: 14px;
+    font-family: "Helvetica Neue",arial,sans-serif;
+    overflow-y: scroll;
+    transition: all .15s ease-in-out;
+
+    overflow: auto; max-height: 100px;
 }
