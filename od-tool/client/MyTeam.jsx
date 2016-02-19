@@ -2,7 +2,7 @@ MyTeam = React.createClass({
 	mixins: [ReactMeteorData],
 
 	getInitialState() {
-		return { roleMode: true };
+		return { roleMode: true, orgName: "" };
 	},
 
 	getMeteorData() {
@@ -12,14 +12,18 @@ MyTeam = React.createClass({
 			throw new Meteor.Error("not-authorized");
 		}
 
-		var myUserName = Meteor.user().profile.name;
-		var contributor = ContributorsCollection.findOne ({ name: myUserName });
-		var organization = contributor ? contributor.physicalTeam : null;
-
-		var data = {
-			isLoading: !handle.ready(),
-			org: organization
-		};
+		if (!this.state.orgName) {
+			var myUserName = Meteor.user().profile.name;
+			var contributor = ContributorsCollection.findOne({name: myUserName});
+			var organization = contributor ? contributor.physicalTeam : null;
+			var data = {
+				isLoading: !handle.ready(),
+				org: organization
+			};
+			this.state.orgName = organization;
+		} else {
+			data = { isLoading: false, org: this.state.orgName };
+		}
 		return data;
 	},
 
@@ -27,20 +31,22 @@ MyTeam = React.createClass({
 		this.forceUpdate();
 	},
 
-	handleRoleModeChanged(event) {
-		console.log(this.refs.roleMode.checked);
-		this.setState( {roleMode: !this.refs.roleMode.checked });
+	handleSearch(orgName) {
+		console.log("handleSearch: " + orgName)
+		this.setState({orgName:orgName});
 	},
 
 	render() {
 		if (this.data.isLoading) {
 			return <Loading/>;
-		} else if (this.data.org) {
+		} else if (this.state.orgName) {
 			return (
 				<div className="section center">
-					<TeamSkillsSummary orgName="Computer Vision"/>
+					<ObjectSearch onClick={this.handleSearch} findOrganizations={true} findContributors={false}  />
+
+					<TeamSkillsSummary orgName={this.state.orgName}/>
 					<div>
-						<Organization objectId={this.data.org} roleMode={this.state.roleMode} roleModeVisible={true} searchVisible={false}/>
+						<Organization objectId={this.state.orgName} roleMode={this.state.roleMode} roleModeVisible={true} searchVisible={false}/>
 					</div>
 				</div>
 			);

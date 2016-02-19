@@ -19,8 +19,6 @@ TeamSkillsSummary = React.createClass({
 				return x.email;
 			}), true);
 
-			debugger;
-
 			// get skills, and ensure skills must be alpha sorted
 			var skills = [];
 			var skillRatings = {};
@@ -46,7 +44,11 @@ TeamSkillsSummary = React.createClass({
 	},
 
 	updateChart() {
+		if (!this.data.skills || this.data.skills.length <= 0) {
+			return;
+		}
 		let _this = this;
+
 		setTimeout(function () {
 			// Get context with jQuery - using jQuery's .get() method.
 			let ctx = $("#skillsPolarGraph").get(0).getContext("2d");
@@ -58,7 +60,6 @@ TeamSkillsSummary = React.createClass({
 				labels: labels,
 				datasets: [],
 			};
-
 			for (var email in _this.data.skillRatings) {
 				let sr = _this.data.skillRatings[email];
 
@@ -67,10 +68,8 @@ TeamSkillsSummary = React.createClass({
 				for (var i = 0; i < labels.length; i++) {
 					skillsData.push(sr[labels[i]]);
 				}
-
-				data.labels.push(sr)
 				data.datasets.push({
-					label: email + "'s skills",
+					label: email.split('@')[0],
 					fillColor: "rgba(220,220,220,0.2)",
 					strokeColor: "rgba(220,220,220,1)",
 					pointColor: "rgba(220,220,220,1)",
@@ -80,14 +79,21 @@ TeamSkillsSummary = React.createClass({
 					data: skillsData
 				});
 			};
-
+			ctx.canvas.width = 400;
+			ctx.canvas.height = 400;
 			var c = new Chart(ctx).Radar(data, Chart.defaults.Radar );
 
 		}, 10);
 	},
 
+	componentDidUpdate(nextProps, nextState) {
+		if (this.data.doneLoading && this.data.skills) {
+			this.updateChart();
+		}
+	},
+
 	renderCanvas() {
-		if (this.data.skills) {
+		if (this.data.skills && this.data.skills.length > 0) {
 			return (
 				<div>
 					<canvas id="skillsPolarGraph" width="175px" height="175px" className="skillsPolarGraph"></canvas>
@@ -97,7 +103,7 @@ TeamSkillsSummary = React.createClass({
 			return (
 				<div className="grey-text">
 					<p style={{textAlign:"center"}}>
-						{this.data.name} has no skills defined yet.
+						{this.props.orgName} has no skills defined yet.
 					</p>
 				</div>
 			);
