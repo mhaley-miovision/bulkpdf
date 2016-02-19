@@ -25,6 +25,9 @@ SkillsSummary = React.createClass({
 	updateChart() {
 		let _this = this;
 		setTimeout(function () {
+			$("#skillsPolarGraph").remove();
+			$('#skillsPolarGraphContainer').append('<canvas id="skillsPolarGraph"><canvas>');
+
 			// Get context with jQuery - using jQuery's .get() method.
 			var ctx = $("#skillsPolarGraph").get(0).getContext("2d");
 			// This will get the first returned node in the jQuery collection.
@@ -61,7 +64,7 @@ SkillsSummary = React.createClass({
 	renderCanvas() {
 		if (this.data.skills.length > 0) {
 			return (
-				<div>
+				<div id="skillsPolarGraphContainer">
 					<canvas id="skillsPolarGraph" width="175px" height="175px" className="skillsPolarGraph"></canvas>
 				</div>
 			);
