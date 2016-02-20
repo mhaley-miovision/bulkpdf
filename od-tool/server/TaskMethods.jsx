@@ -1,5 +1,5 @@
 Meteor.methods({
-	addTask(text) {
+	"teal.tasks.addTask": function(text) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -13,7 +13,7 @@ Meteor.methods({
 		});
 	},
 
-	removeTask(taskId) {
+	"teal.tasks.removeTask": function(taskId) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -21,7 +21,7 @@ Meteor.methods({
 		TasksCollection.remove(taskId);
 	},
 
-	setChecked(taskId, setChecked) {
+	"teal.tasks.setChecked": function(taskId, setChecked) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -29,7 +29,7 @@ Meteor.methods({
 		TasksCollection.update(taskId, {$set: {checked: setChecked}});
 	},
 
-	setPrivate(taskId, setToPrivate) {
+	"teal.tasks.setPrivate": function(taskId, setToPrivate) {
 		const task = TasksCollection.findOne(taskId);
 
 		// Make sure only the task owner can make a task private

@@ -398,13 +398,13 @@ Tree = React.createClass({
 		var _this = this;
 
 		if (this.state.objectType == 'organization') {
-			Meteor.call("loadGoalTree", function (err, data) {
+			Meteor.call("teal.goals.loadGoalTree", function (err, data) {
 				_this.data.goals = data;
 				_this.data.doneLoading = true;
 				_this.updateTreeView();
 			});
 		} else if (this.state.objectType == 'contributor') {
-			Meteor.call("loadGoalTreeForContributor", this.state.objectId, function (err, data) {
+			Meteor.call("teal.goals.loadGoalTreeForContributor", this.state.objectId, function (err, data) {
 				_this.data.goals = data;
 				_this.data.doneLoading = true;
 				_this.updateTreeView();

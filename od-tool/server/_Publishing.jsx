@@ -1,23 +1,23 @@
-Meteor.publish("applications", function () {
+Meteor.publish("teal.applications", function () {
 	return ApplicationsCollection.find({});
 });
-Meteor.publish("organizations", function () {
+Meteor.publish("teal.organizations", function () {
 	return OrganizationsCollection.find({});
 });
-Meteor.publish("org_accountabilities", function () {
+Meteor.publish("teal.org_accountabilities", function () {
 	return OrgAccountabilitiesCollection.find({});
 });
-Meteor.publish("role_accountabilities", function () {
+Meteor.publish("teal.role_accountabilities", function () {
 	return RoleAccountabilitiesCollection.find({});
 });
-Meteor.publish("role_labels", function () {
+Meteor.publish("teal.role_labels", function () {
 	return RoleLabelsCollection.find({});
 });
-Meteor.publish("roles", function () {
+Meteor.publish("teal.roles", function () {
 	return RolesCollection.find({});
 });
 
-Meteor.publish("contributors", function () {
+Meteor.publish("teal.contributors", function () {
 	return ContributorsCollection.find({});
 });
 
@@ -36,7 +36,7 @@ Meteor.publish("users", function () {
 });
 
 // Only publish goals that are public
-Meteor.publish("goals", function () {
+Meteor.publish("teal.goals", function () {
 	return GoalsCollection.find({
 		$or: [
 			{ private: {$ne: true} },
@@ -46,7 +46,7 @@ Meteor.publish("goals", function () {
 
 
 // Only publish tasks that are public or belong to the current user
-Meteor.publish("tasks", function () {
+Meteor.publish("teal.tasks", function () {
 	return TasksCollection.find({
 		$or: [
 			{ private: {$ne: true} },
@@ -56,6 +56,6 @@ Meteor.publish("tasks", function () {
 });
 
 // Only publish tasks that are public or belong to the current user
-Meteor.publish("skills", function () {
+Meteor.publish("teal.skills", function () {
 	return SkillsCollection.find({});
 });

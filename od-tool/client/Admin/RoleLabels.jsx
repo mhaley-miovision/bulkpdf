@@ -4,11 +4,17 @@ RoleLabels = React.createClass({
 
 	// Loads items from the Tasks collection and puts them on this.data.tasks
 	getMeteorData() {
-		var roleLabels = RoleLabelsCollection.find({}, {sort: {name:1}}).fetch();
-		return {
-			roleLabels: roleLabels,
-			currentUser: Meteor.user()
-		};
+		var handle = Meteor.subscribe("teal.role_labels");
+		if (handle.ready()) {
+			var roleLabels = RoleLabelsCollection.find({}, {sort: {name: 1}}).fetch();
+			return {
+				roleLabels: roleLabels,
+				currentUser: Meteor.user(),
+				doneLoading:true,
+			};
+		} else {
+			return { doneLoading:false };
+		}
 	},
 
 	getInitialState() {
@@ -32,7 +38,7 @@ RoleLabels = React.createClass({
 		// Find the text field via the React ref
 		var text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
 
-		Meteor.call("addRoleLabel", text, function(err, data) {
+		Meteor.call("teal.roles.addRoleLabel", text, function(err, data) {
 			if (err && err.error == "duplicate") {
 				Materialize.toast("That label already exists, item was not added.", 3000);
 			}
@@ -40,6 +46,18 @@ RoleLabels = React.createClass({
 
 		// Clear form
 		ReactDOM.findDOMNode(this.refs.textInput).value = "";
+	},
+
+	renderBody() {
+		if (this.data.doneLoading) {
+			return (
+				<ul className="collection">
+					{this.renderRoleLabels()}
+				</ul>
+			);
+		} else {
+			return <Loading />
+		}
 	},
 
 	render() {
@@ -59,9 +77,7 @@ RoleLabels = React.createClass({
 				</form> : ''
 			}
 
-			<ul className="collection">
-					{this.renderRoleLabels()}
-			</ul>
+			{this.renderBody()}
 
 			<br/>
 			<br/>

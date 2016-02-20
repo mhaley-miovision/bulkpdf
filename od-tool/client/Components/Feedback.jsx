@@ -23,7 +23,7 @@ FeedbackComponent = React.createClass({
 		}
 		if (this.state.feedback != null && !this.state.submitted) {
 			$('#' + this.props.modalId).closeModal();
-			Meteor.call("submitFeedback", this.state.feedback);
+			Meteor.call("teal.feedback.submitFeedback", this.state.feedback);
 			this.state.submitted = true;
 			Materialize.toast("Thank you for your feedback. Keep letting us know how we're doing!", 3000);
 		}

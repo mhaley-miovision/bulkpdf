@@ -1,5 +1,5 @@
 Meteor.methods({
-	addRole(name, organizationId, contributorId, startDate, endDate) {
+	"teal.roles.addRole": function(name, organizationId, contributorId, startDate, endDate) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -18,7 +18,7 @@ Meteor.methods({
 		});
 	},
 
-	removeRole(roleId) {
+	"teal.roles.removeRole": function(roleId) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");

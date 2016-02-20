@@ -4,7 +4,7 @@ TaskList = React.createClass({
 
 	// Loads items from the Tasks collection and puts them on this.data.tasks
 	getMeteorData() {
-		Meteor.subscribe("tasks");
+		Meteor.subscribe("teal.tasks");
 
 		let query = {};
 
@@ -45,7 +45,7 @@ TaskList = React.createClass({
 		// Find the text field via the React ref
 		var text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
 
-		Meteor.call("addTask", text);
+		Meteor.call("teal.tasks.addTask", text);
 
 		// Clear form
 		ReactDOM.findDOMNode(this.refs.textInput).value = "";

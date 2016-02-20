@@ -1,5 +1,5 @@
 Meteor.methods({
-	addOrganization: function(name, parentOrgId, startDate, endDate) {
+	"teal.orgs.addOrganization": function(name, parentOrgId, startDate, endDate) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -20,7 +20,7 @@ Meteor.methods({
 		});
 	},
 
-	removeOrganization: function(organizationId) {
+	"teal.orgs.removeOrganization": function(organizationId) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -32,7 +32,7 @@ Meteor.methods({
 		OrganizationsCollection.remove(organizationId);
 	},
 
-	getOrganizationTree: function(organizationName) {
+	"teal.orgs.getOrganizationTree": function(organizationName) {
 		console.log("organizationName: " + organizationName);
 
 		// first check if it exists
@@ -56,7 +56,7 @@ Meteor.methods({
 		}
 	},
 
-	renameOrganization: function(organizationId, name) {
+	"teal.orgs.renameOrganization": function(organizationId, name) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -71,7 +71,7 @@ Meteor.methods({
 		OrganizationsCollection.update(organizationId, {$set: {name: name}});
 	},
 
-	orgSearch: function(query) {
+	"teal.orgs.rgSearch": function(query) {
 		if (query && query !== '') {
 			find = {name: {$regex: new RegExp('.*' + query + '.*', "i")}};
 		} else {

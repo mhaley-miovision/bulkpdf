@@ -1,6 +1,6 @@
 if (Meteor.isServer) {
 	Meteor.methods({
-		submitFeedback(feedback) {
+		"teal.feedback.submitFeedback": function(feedback) {
 			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
@@ -15,7 +15,7 @@ if (Meteor.isServer) {
 
 			// also send notification
 			let n = {type: "feedback.received", payload: o};
-			Meteor.call("createNotification", n);
+			Meteor.call("teal.notification.createNotification", n);
 		}
 	});
 }

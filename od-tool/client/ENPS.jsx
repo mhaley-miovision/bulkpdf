@@ -22,7 +22,7 @@ ENPS = React.createClass({
 		}
 
 		if (this.state.enpsRating != null && !this.state.recentlySubmitted) {
-			Meteor.call("submitEnps", this.state.enpsRating, this.state.enpsReason);
+			Meteor.call("teal.enps.submitEnps", this.state.enpsRating, this.state.enpsReason);
 			this.state.recentlySubmitted = true;
 			// prevent accidental repeated submission
 			var self = this;

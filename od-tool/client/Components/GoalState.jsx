@@ -15,13 +15,13 @@ GoalStateControls = React.createClass({
 	},
 
 	handleNotStartedClicked()  {
-		Meteor.call("setGoalState", this.props.goal._id, 0);
+		Meteor.call("teal.goals.setGoalState", this.props.goal._id, 0);
 	},
 	handleInProgressClicked()  {
-		Meteor.call("setGoalState", this.props.goal._id, 1);
+		Meteor.call("teal.goals.setGoalState", this.props.goal._id, 1);
 	},
 	handleCompletedClicked()  {
-		Meteor.call("setGoalState", this.props.goal._id, 2);
+		Meteor.call("teal.goals.setGoalState", this.props.goal._id, 2);
 	},
 
 	componentDidMount() {

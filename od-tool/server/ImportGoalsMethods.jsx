@@ -233,16 +233,17 @@ function processGoalsJson(json) {
 }
 
 Meteor.methods({
-	importGoals() {
+	"teal.import.importGoals": function() {
 		var response = HTTP.call( 'GET', cellsFeed);
 		var result = processGoalsJson(response.data);
 		var goals = result.matched;
 
-			// drop the entire table (!!!)
-		GoalsCollection.remove({});
+		// drop the entire table (!!!)
+		GoalsCollection.remove({rootOrgId:"miovision-root"});
 
 		// insert the raw goals, and update objects with ids
 		goals.forEach(g => {
+			g.rootOrgId = "miovision-root";
 			var id = GoalsCollection.insert(g);
 			g._id = id;
 		});

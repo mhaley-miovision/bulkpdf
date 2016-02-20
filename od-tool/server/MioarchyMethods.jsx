@@ -1,5 +1,5 @@
 Meteor.methods({
-	loadMioarchy() {
+	"teal.orgs.loadMioarchy": function() {
 		// read applications
 		let applications = [];
 		ApplicationsCollection.find({}).forEach(function(a) {

@@ -6,7 +6,7 @@ RolesSummary = React.createClass({
 	},
 
 	getMeteorData() {
-		let handle = Meteor.subscribe("roles");
+		let handle = Meteor.subscribe("teal.roles");
 
 		if (handle.ready()) {
 			let roles = RolesCollection.find({email:this.props.objectId}).fetch();

@@ -14,11 +14,11 @@ RoleLabel = React.createClass({
 	},
 
 	deleteThisRoleLabel() {
-		Meteor.call("removeRoleLabel", this.props.roleLabel._id);
+		Meteor.call("teal.roles.removeRoleLabel", this.props.roleLabel._id);
 	},
 
 	renameThisRoleLabel() {
-		Meteor.call("renameRoleLabel", this.props.roleLabel._id, this.state.newLabel, function(err, data) {
+		Meteor.call("teal.roles.renameRoleLabel", this.props.roleLabel._id, this.state.newLabel, function(err, data) {
 			if (err && err.error == "duplicate") {
 				Materialize.toast("That label already exists, change was not applied.", 3000);
 			}
@@ -39,6 +39,10 @@ RoleLabel = React.createClass({
 
 	handleOnChange() {
 		this.state.newLabel = this.refs.newLabel.value;
+	},
+
+	handleOnEdit() {
+		this.setState({isEditing:true});
 	},
 
 	render() {

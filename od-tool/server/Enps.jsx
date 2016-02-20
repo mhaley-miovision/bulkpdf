@@ -1,6 +1,6 @@
 if (Meteor.isServer) {
 	Meteor.methods({
-		submitEnps(enpsValue, enpsReason) {
+		"teal.enps.submitEnps": function(enpsValue, enpsReason) {
 			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");

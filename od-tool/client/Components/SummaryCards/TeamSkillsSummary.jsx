@@ -6,9 +6,9 @@ TeamSkillsSummary = React.createClass({
 	},
 
 	getMeteorData() {
-		let handle = Meteor.subscribe("roles");
-		let handle2 = Meteor.subscribe("skills");
-		let handle3 = Meteor.subscribe("organizations");
+		let handle = Meteor.subscribe("teal.roles");
+		let handle2 = Meteor.subscribe("teal.skills");
+		let handle3 = Meteor.subscribe("teal.organizations");
 
 		if (handle.ready() && handle2.ready() && handle3.ready()) {
 			// get organization id

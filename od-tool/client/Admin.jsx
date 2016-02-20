@@ -6,7 +6,7 @@ Admin = React.createClass({
 	},
 
 	getMeteorData() {
-		var handle = Meteor.subscribe("contributors");
+		var handle = Meteor.subscribe("teal.contributors");
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -46,13 +46,13 @@ Admin = React.createClass({
 						</header>
 						<div className="row">
 							<div className="col s12 m4">
-								<ImportPanel id="importODPanel" label="Import OD info" method="v1ImportDatabase"/>
+								<ImportPanel id="importODPanel" label="Import OD info" method="teal.import.v1ImportDatabase"/>
 							</div>
 							<div className="col s12 m4">
-								<ImportPanel id="importGoalsPanel" label="Import company goals" method="importGoals"/>
+								<ImportPanel id="importGoalsPanel" label="Import company goals" method="teal.import.importGoals"/>
 							</div>
 							<div className="col s12 m4">
-								<ImportPanel id="userPhotosPanel" label="Import user photo info" method="importUserPhotoInfo"/>
+								<ImportPanel id="userPhotosPanel" label="Import user photo info" method="teal.import.importUserPhotoInfo"/>
 							</div>
 						</div>
 					</div>

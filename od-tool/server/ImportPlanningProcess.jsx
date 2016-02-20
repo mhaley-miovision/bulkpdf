@@ -54,7 +54,7 @@ function processPlanningProcessJson(json) {
 }
 
 Meteor.methods({
-	importPlanningProcess() {
+	"teal.import.importPlanningProcess": function() {
 		var response = HTTP.call( 'GET', cellsFeed);
 		var result = processGoalsJson(response.data);
 		var goals = result.matched;

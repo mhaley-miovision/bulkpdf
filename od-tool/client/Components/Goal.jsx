@@ -12,7 +12,7 @@ Goal = React.createClass({
 	},
 
 	getMeteorData() {
-		var handle = Meteor.subscribe("goals");
+		var handle = Meteor.subscribe("teal.goals");
 
 		if (handle.ready()) {
 			let children = GoalsCollection.find({parent:this.props.goal._id}).fetch();
@@ -38,7 +38,7 @@ Goal = React.createClass({
 
 	handleDelete()  {
 		// this needs to be done smart
-		//Meteor.call("removeGoal", this.props.goal._id);
+		//Meteor.call("teal.goals.removeGoal", this.props.goal._id);
 		Materialize.toast("Functionality not implemented yet, stay tuned!", TOAST_DURATION);
 	},
 
@@ -54,7 +54,7 @@ Goal = React.createClass({
 		event.preventDefault();
 		this.setState({isEditing:false});
 		if (this.state.newGoalName != '') {
-			Meteor.call("renameGoal", this.props.goal._id, this.state.newGoalName, function(err, data) {
+			Meteor.call("teal.goals.renameGoal", this.props.goal._id, this.state.newGoalName, function(err, data) {
 			});
 		}
 	},

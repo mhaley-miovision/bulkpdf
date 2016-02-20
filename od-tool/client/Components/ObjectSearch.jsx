@@ -2,8 +2,8 @@ ObjectSearch = React.createClass({
 	mixins: [ReactMeteorData],
 
 	getMeteorData() {
-		var handle1 = Meteor.subscribe('organizations');
-		var handle2 = Meteor.subscribe('contributors');
+		var handle1 = Meteor.subscribe('teal.organizations');
+		var handle2 = Meteor.subscribe('teal.contributors');
 
 		if (handle1.ready() && handle2.ready()) {
 			if (this.state.query && this.state.query !== '') {

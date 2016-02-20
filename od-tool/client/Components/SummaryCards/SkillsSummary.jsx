@@ -6,8 +6,8 @@ SkillsSummary = React.createClass({
 	},
 
 	getMeteorData() {
-		let handle = Meteor.subscribe("contributors");
-		let handle2 = Meteor.subscribe("skills");
+		let handle = Meteor.subscribe("teal.contributors");
+		let handle2 = Meteor.subscribe("teal.skills");
 
 		if (handle.ready() && handle2.ready()) {
 			let c = ContributorsCollection.findOne({email: this.props.objectId});

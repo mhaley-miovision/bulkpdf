@@ -8,7 +8,7 @@ if (Meteor.isServer) {
 			console.log("received notification of type " + n.type);
 			switch (n.type) {
 				case 'enps.received':
-					Meteor.call("sendEmail",
+					Meteor.call("teal.email.sendEmail",
 						{
 							to:"vleipnik@miovision.com",
 							from:"teal@miovision.com",
@@ -18,7 +18,7 @@ if (Meteor.isServer) {
 						});
 					break;
 				case 'feedback.received':
-					Meteor.call("sendEmail",
+					Meteor.call("teal.email.sendEmail",
 						{
 							to:"vleipnik@miovision.com",
 							from:"teal@miovision.com",
@@ -31,7 +31,7 @@ if (Meteor.isServer) {
 					if (n.userName === 'Victor Leipnik') {
 						console.log("Vic logged in, skipping email notification.");
 					} else {
-						Meteor.call("sendEmail",
+						Meteor.call("teal.email.sendEmail",
 							{
 								to:"vleipnik@miovision.com",
 								from:"teal@miovision.com",
@@ -60,7 +60,7 @@ if (Meteor.isServer) {
 
 	// In your server code: define a method that the client can call
 	Meteor.methods({
-		createNotification(n) {
+		"teal.notifications.createNotification": function(n) {
 			insertNotification(n);
 			return processNotification(n);
 		}

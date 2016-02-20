@@ -634,16 +634,22 @@ Organization = React.createClass({
 
 	// TODO: move some of this log into server-side methods
 	getMeteorData() {
-		var handle1 = Meteor.subscribe("organizations");
-		var handle2 = Meteor.subscribe("roles");
-		var handle3 = Meteor.subscribe("contributors");
-		var handle4 = Meteor.subscribe("job_accountabilities");
-		var handle5 = Meteor.subscribe("org_accountabilities");
+		var handle1 = Meteor.subscribe("teal.organizations");
+		var handle2 = Meteor.subscribe("teal.roles");
+		var handle3 = Meteor.subscribe("teal.contributors");
+		var handle4 = Meteor.subscribe("teal.role_accountabilities");
+		var handle5 = Meteor.subscribe("teal.org_accountabilities");
 
-		var data = { isLoading: !handle1.ready() && !handle2.ready() && !handle3.ready()
-					&& !handle4.ready() && !handle5.ready() };
+		var data = { doneLoading: handle1.ready() && handle2.ready() && handle3.ready()
+					&& handle4.ready() && handle5.ready() };
 
-		if (!data.isLoading) {
+		console.log("teal.organizations.ready=" + handle1.ready());
+		console.log("teal.roles.ready=" + handle2.ready());
+		console.log("teal.contributors.ready=" + handle3.ready());
+		console.log("teal.role_accountabilities.ready=" + handle4.ready());
+		console.log("teal.org_accountabilities.ready=" + handle5.ready());
+
+		if (data.doneLoading) {
 
 			var objectId = this.props.objectId;
 			if (this.props.objectType === 'contributor') {
@@ -767,7 +773,7 @@ Organization = React.createClass({
 	},
 
 	updateOrganizationGraph() {
-		if (!this.data.isLoading) {
+		if (this.data.doneLoading) {
 			var org = this.data.organization; // as loaded from the db
 			var zoomTo = this.props.objectType === 'contributor' ? this.props.objectId : this.props.zoomTo;
 
@@ -779,22 +785,27 @@ Organization = React.createClass({
 		}
 	},
 
+	shouldComponentUpdate(nextProps, nextState) {
+		console.log("shouldComponentUpdate -- this.state.isLoading=" + this.state.doneLoading);
+		console.log("shouldComponentUpdate -- nextState.isLoading=" + nextState.doneLoading);
+
+		return true;
+	},
+
 	componentWillUpdate(nextProps, nextState) {
 		if (nextProps.roleMode != this.props.roleMode) {
 			// detected role mode change!
 		}
-		console.log("componentWillUpdate called!");
-
 		this.updateOrganizationGraph();
 	},
 
 	componentDidMount() {
 		console.log("org component mounted");
-		this.updateOrganizationGraph();
+		//this.updateOrganizationGraph();
 	},
 
 	renderLoading() {
-		if (this.data.isLoading) {
+		if (!this.data.doneLoading) {
 			return (
 				<div className="centeredItem">
 					<Loading/>

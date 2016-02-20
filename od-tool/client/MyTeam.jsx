@@ -6,7 +6,7 @@ MyTeam = React.createClass({
 	},
 
 	getMeteorData() {
-		var handle = Meteor.subscribe("contributors");
+		var handle = Meteor.subscribe("teal.contributors");
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");

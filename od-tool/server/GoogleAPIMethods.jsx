@@ -1,5 +1,5 @@
 Meteor.methods({
-	getGoogleUsers() {
+	"teal.users.getGoogleUsers": function() {
 		const adminProfile = Meteor.users.findOne({
 			'profile.name' : 'Victor Leipnik'
 		});
@@ -20,7 +20,7 @@ Meteor.methods({
 		return true;
 	},
 
-	getMyProfilePhoto() {
+	"teal.users.getMyProfilePhoto": function() {
 		const myUserProfile = Meteor.users.findOne({
 			'_id' : this.userId,
 		});
@@ -28,14 +28,3 @@ Meteor.methods({
 		return myUserProfile.services.google.picture;
 	}
 });
-
-// On server startup, if the database is empty, create some initial data.
-Meteor.startup(function () {
-
-	//console.log("server");
-	Meteor.call("getGoogleUsers", function (err, resp) {
-		//console.log(err);
-		//console.log(resp);
-	});
-});
-

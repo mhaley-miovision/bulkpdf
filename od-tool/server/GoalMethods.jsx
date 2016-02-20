@@ -53,7 +53,7 @@ function populateStats(n, recurse = true) {
 
 Meteor.methods({
 
-	addGoal(text) {
+	"teal.goals.addGoal": function(text) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -69,7 +69,7 @@ Meteor.methods({
 		return goal; // to retrieve the ID
 	},
 
-	removeGoal(goalId) {
+	"teal.goals.removeGoal": function(goalId) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -78,7 +78,7 @@ Meteor.methods({
 	},
 
 	// this is a pretty ugly method, but it should do the trick for now
-	setGoalState(goalId, state) {
+	"teal.goals.setGoalState": function (goalId, state) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -120,7 +120,7 @@ Meteor.methods({
 		);
 	},
 
-	setGoalPrivate(goalId, setToPrivate) {
+	"teal.goals.setGoalPrivate": function(goalId, setToPrivate) {
 		const goal = GoalsCollection.findOne(goalId);
 
 		// Make sure only the task owner can make a task private
@@ -130,7 +130,7 @@ Meteor.methods({
 		GoalsCollection.update(goalId, {$set: {private: setToPrivate}});
 	},
 
-	renameGoal(goalId, name) {
+	"teal.goals.renameGoal": function(goalId, name) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -138,20 +138,7 @@ Meteor.methods({
 		GoalsCollection.update(goalId, {$set: {name: name}});
 	},
 
-	getMyGoals() {
-		// Make sure the user is logged in before inserting a task
-		if (!Meteor.userId()) {
-			throw new Meteor.Error("not-authorized");
-		}
-
-		var email = Meteor.call("getMyEmail");
-
-		console.log(email);
-
-		GoalsCollection.find({owners:email});
-	},
-
-	loadGoalTreeForContributor(contributorEmail = null) {
+	"teal.goals.loadGoalTreeForContributor": function(contributorEmail = null) {
 		console.log("Goaltree for: '" + contributorEmail + "'");
 
 		if (contributorEmail == null) {
@@ -213,7 +200,7 @@ Meteor.methods({
 		return root;
 	},
 
-	loadGoalTree(goalId = null) {
+	"teal.goals.loadGoalTree": function(goalId = null) {
 		// find the goal or take all root nodes
 		var goals = goalId ? GoalsCollection.find({_id: goalId}).fetch()
 			: GoalsCollection.find({parent: null}).fetch();

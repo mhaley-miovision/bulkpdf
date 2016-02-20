@@ -6,8 +6,8 @@ TeamsSummary = React.createClass({
 	},
 
 	getMeteorData() {
-		let handle = Meteor.subscribe("contributors");
-		let handle2 = Meteor.subscribe("roles");
+		let handle = Meteor.subscribe("teal.contributors");
+		let handle2 = Meteor.subscribe("teal.roles");
 
 		if (handle.ready() && handle2.ready()) {
 			let orgs = _.uniq(RolesCollection.find({email:this.props.objectId}, {

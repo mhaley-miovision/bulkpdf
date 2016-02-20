@@ -1,5 +1,5 @@
 Meteor.methods({
-	addRoleLabel(name) {
+	"teal.roles.addRoleLabel": function(name) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -18,7 +18,7 @@ Meteor.methods({
 		});
 	},
 
-	removeRoleLabel(roleId) {
+	"teal.roles.removeRoleLabel": function(roleId) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -26,7 +26,7 @@ Meteor.methods({
 		RoleLabelsCollection.remove(roleId);
 	},
 
-	renameRoleLabel(roleId, name) {
+	"teal.roles.renameRoleLabel": function(roleId, name) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");

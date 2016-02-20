@@ -16,8 +16,8 @@ GoalList = React.createClass({
 	},
 
 	getMeteorData() {
-		let handle = Meteor.subscribe("goals");
-		let handle2 = Meteor.subscribe("contributors");
+		let handle = Meteor.subscribe("teal.goals");
+		let handle2 = Meteor.subscribe("teal.contributors");
 		if (handle.ready() && handle2.ready()) {
 			// default is current user
 			let objectId = this.props.objectId;

@@ -1,6 +1,7 @@
 if (Meteor.isServer) {
 	Meteor.methods({
-		getMyOrganization() {
+		// TODO: this needs to be publication
+		"teal.users.getMyOrganization": function() {
 			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
@@ -18,7 +19,8 @@ if (Meteor.isServer) {
 			return contributor.physicalTeam;
 		},
 
-		getMyEmail() {
+		// TODO: this needs to be publication
+		"teal.users.getMyEmail": function() {
 			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
@@ -29,7 +31,7 @@ if (Meteor.isServer) {
 			return Meteor.user().services.google.email;
 		},
 
-		importUserPhotoInfo() {
+		"teal.import.importUserPhotoInfo": function() {
 			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
@@ -71,7 +73,8 @@ if (Meteor.isServer) {
 			return true;
 		},
 
-		getPhotoUrlByUserName(userName) {
+		// TODO: this needs to be publication
+		"teal.users.getPhotoUrlByUserName": function(userName) {
 			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
@@ -85,7 +88,8 @@ if (Meteor.isServer) {
 			}
 		},
 
-		getPhotoUrlByUserEmail(email) {
+		// TODO: this needs to be publication
+		"teal.users.getPhotoUrlByUserEmail": function(email) {
 			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
@@ -105,3 +109,28 @@ if (Meteor.isServer) {
 		}
 	});
 }
+
+Meteor.startup(function() {
+	Meteor.users._ensureIndex( {"email": 1 }, { unique: true } );
+});
+
+Meteor.publish("teal.user_context", function() {
+	if (Meteor.userId) {
+		let context = { id: Meteor.userId };
+		let u = Meteor.users.findOne({_id:Meteor.userId});
+		if (u) {
+			context.name = u.name;
+			context.email = u.email;
+			context.rootOrgId = u.rootOrgId;
+
+			let c = ContributorsCollection.findOne({_id:u.contributorId});
+			if (c) {
+				context.physicalOrgId = c.physicalOrgId;
+			}
+		}
+
+		return context;
+	} else {
+		return {};
+	}
+});

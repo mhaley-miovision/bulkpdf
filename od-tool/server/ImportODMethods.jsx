@@ -1,7 +1,12 @@
+// globals for this file
+let rootOrgName = "Miovision";
+let rootOrgId = "miovision-root";
+
 function importHelper_transformApplication(x) {
 	x.type = 'application';
 	x.createdAt = new Date();
 	x.createdBy = Meteor.userId;
+	x.rootOrgId = rootOrgId;
 	return x;
 }
 function importHelper_transformOrganization(x) {
@@ -9,18 +14,21 @@ function importHelper_transformOrganization(x) {
 	x.name = x.name.trim();
 	x.createdAt = new Date();
 	x.createdBy = Meteor.userId;
+	x.rootOrgId = rootOrgId;
 	return x;
 }
 function importHelper_transformRole(x) {
 	x.type = 'role';
 	x.createdAt = new Date();
 	x.createdBy = Meteor.userId;
+	x.rootOrgId = rootOrgId;
 	return x;
 }
 function importHelper_transformOrgAccountability(x) {
 	x.type = 'org_accountability';
 	x.createdAt = new Date();
 	x.createdBy = Meteor.userId;
+	x.rootOrgId = rootOrgId;
 	return x;
 }
 function importHelper_transformJobAccountability(x, id) {
@@ -28,6 +36,7 @@ function importHelper_transformJobAccountability(x, id) {
 	x.type = 'role_accountability';
 	x.createdAt = new Date();
 	x.createdBy = Meteor.userId;
+	x.rootOrgId = rootOrgId;
 	return x;
 }
 function importHelper_transformContributor(x) {
@@ -38,6 +47,7 @@ function importHelper_transformContributor(x) {
 	x.name = x.name.trim();
 	x.createdAt = new Date();
 	x.createdBy = Meteor.userId;
+	x.rootOrgId = rootOrgId;
 	return x;
 }
 function importHelper_transformRoleLabel(x) {
@@ -45,6 +55,7 @@ function importHelper_transformRoleLabel(x) {
 	x.name = x.name.trim();
 	x.createdAt = new Date();
 	x.createdBy = Meteor.userId;
+	x.rootOrgId = rootOrgId;
 	return x;
 }
 
@@ -85,8 +96,12 @@ function processSkillsJson(json) {
 	return skills;
 }
 
+// TODO: add users upon importing
+// TODO: populate ID field references
+// TODO: add notion of root org to all objects
+
 Meteor.methods({
-	v1ImportDatabase() {
+	"teal.import.v1ImportDatabase": function() {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -94,16 +109,37 @@ Meteor.methods({
 
 		var v1BaseURL = "http://ec2-54-152-211-94.compute-1.amazonaws.com/";
 
-		// drop all existing data (!)
-		ApplicationsCollection.remove({});
-		ContributorsCollection.remove({});
-		OrganizationsCollection.remove({});
-		OrgAccountabilitiesCollection.remove({});
-		RoleAccountabilitiesCollection.remove({});
-		RolesCollection.remove({});
-		RoleLabelsCollection.remove({});
-		SkillsCollection.remove({});
+		// find the root org if it exists already, and if not, insert it
+		var rootOrg = OrganizationsCollection.findOne({name:rootOrgName});
+		if (!rootOrg) {
+			rootOrgId = OrganizationsCollection.insert({
+				_id: "miovision-root",
+				type: "organization",
+				id: "1",
+				name: rootOrgName,
+				parent: null,
+				isApplication: false,
+				startDate: null,
+				endDate: null,
+				createdAt: new Date(),
+				parentId: null,
+				path: [],
+			});
+		} else {
+			rootOrgId = rootOrg._id;
 
+			// remove all objects belonging to this org - complete cleanup will occur
+			ApplicationsCollection.remove({rootOrgId:rootOrgId});
+			ContributorsCollection.remove({rootOrgId:rootOrgId});
+			OrganizationsCollection.remove({rootOrgId:rootOrgId});
+			OrgAccountabilitiesCollection.remove({rootOrgId:rootOrgId});
+			RoleAccountabilitiesCollection.remove({rootOrgId:rootOrgId});
+			RolesCollection.remove({rootOrgId:rootOrgId});
+			RoleLabelsCollection.remove({rootOrgId:rootOrgId});
+			SkillsCollection.remove({rootOrgId:rootOrgId});
+		}
+
+		// Use API to retrieve OD data
 		var contributors = Meteor.http.call("GET", v1BaseURL + "contributors");
 		var roleLabels = Meteor.http.call("GET", v1BaseURL + "roles");
 		var applications = Meteor.http.call("GET", v1BaseURL + "applications");
@@ -112,22 +148,27 @@ Meteor.methods({
 		var orgAccountabilities = Meteor.http.call("GET", v1BaseURL + "orgAccountabilities");
 		var roles = Meteor.http.call("GET", v1BaseURL + "jobs");
 
+		//==============================================================================================================
+		// Applications
+		//==============================================================================================================
+
 		for (var x in applications.data) {
 			ApplicationsCollection.insert(importHelper_transformApplication(applications.data[x]));
 		}
-		for (var x in contributors.data) {
-			ContributorsCollection.insert(importHelper_transformContributor(contributors.data[x]));
-		}
+
+		//==============================================================================================================
+		// Organizations
+		//==============================================================================================================
 
 		// organization import
 		for (var x in organizations.data) {
-			OrganizationsCollection.insert(importHelper_transformOrganization(organizations.data[x]));
-
+			// do not re-insert root org
+			if (organizations.data[x] !== rootOrgName) {
+				OrganizationsCollection.insert(importHelper_transformOrganization(organizations.data[x]));
+			}
 		}
 
-		// calculate paths for easy querying
-		OrganizationsCollection.find({}).forEach(org => {
-
+		OrganizationsCollection.find({rootOrgId:rootOrgId}).forEach(org => {
 			// find the parent chain
 			var o = OrganizationsCollection.findOne({name: org.name});
 			var parentId = null;
@@ -143,12 +184,77 @@ Meteor.methods({
 			OrganizationsCollection.update(org._id, {$set : { parentId:parentId, path:path }});
 		});
 
+
+		//==============================================================================================================
+		// Contributors
+		//==============================================================================================================
+
+		for (var x in contributors.data) {
+			var c_id = ContributorsCollection.insert(importHelper_transformContributor(contributors.data[x]));
+			var c = ContributorsCollection.findOne({_id:c_id});
+
+			// also add to the users table, with appropriate roles
+			var existing = Meteor.users.findOne({email: c.email});
+			var userId = null;
+			if (!existing) {
+				userId = Meteor.users.insert({
+					email: c.email,
+					profile: { name: c.name }
+				});
+			} else {
+				userId = existing._id;
+			}
+
+			// attach Teal-specific user information
+			Meteor.users.update(userId, {$set: {rootOrgId:rootOrgId, contributorId:c_id}});
+
+			// look up actual id instead of name
+			let o = OrganizationsCollection.findOne({name: c.physicalTeam});
+			if (o) {
+			ContributorsCollection.update(c_id,{$set:{physicalOrgId: o._id}});
+			} else {
+				console.error("Couldn't find physical team for: " + c.name);
+			}
+
+			// enabled users
+			var enabledUsers = ['vleipnik@miovision.com','leipnik@gmail.com','jreeve@miovision.com',
+				'jwincey@miovision.com', 'jbhavnani@miovision.com','lgreig@miovision.com','kmcbride@miovision.com',
+				'tbrijpaul@miovision.com', 'ndumond@miovision.com','dbullock@miovision.com','bward@miovision.com',
+				'bpeters@miovision.com','jbarr@miovision.com'];
+			if (enabledUsers.indexOf(c.email) >= 0) {
+				Roles.addUsersToRoles(userId, 'enabledUser', rootOrgId);
+			}
+
+			// admins
+			var adminUsers = ['vleipnik@miovision.com','jreeve@miovision.com',
+				'jwincey@miovision.com', 'jbhavnani@miovision.com','lgreig@miovision.com','kmcbride@miovision.com',
+				'tbrijpaul@miovision.com', 'ndumond@miovision.com','dbullock@miovision.com','bward@miovision.com',
+				'bpeters@miovision.com'];
+			if (adminUsers.indexOf(c.email) >= 0) {
+				Roles.addUsersToRoles(userId, 'admin', rootOrgId);
+			}
+		}
+
+		//==============================================================================================================
+		// Org Accountabilities
+		//==============================================================================================================
+
 		for (var x in orgAccountabilities.data) {
 			OrgAccountabilitiesCollection.insert(importHelper_transformOrgAccountability(orgAccountabilities.data[x]));
 		}
+
+		//==============================================================================================================
+		// Role Accountabilities
+		//==============================================================================================================
+
 		for (var x in jobAccountabilities.data) {
 			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[x], x));
 		}
+
+		//==============================================================================================================
+		// Roles
+		//==============================================================================================================
+
 		for (var x in roles.data) {
 			var r_id = RolesCollection.insert(importHelper_transformRole(roles.data[x]));
 
@@ -166,9 +272,18 @@ Meteor.methods({
 			}
 			RolesCollection.update(r_id, {$set: { orgPath: path }});
 		}
+
+		//==============================================================================================================
+		// Role Labels
+		//==============================================================================================================
+
 		for (var x in roleLabels.data) {
 			RoleLabelsCollection.insert(importHelper_transformRoleLabel(roleLabels.data[x]));
 		}
+
+		//==============================================================================================================
+		// Skills
+		//==============================================================================================================
 
 		// get skills also, bypassing v1 of tool
 		var response = HTTP.call( 'GET', skillsCellFeed );

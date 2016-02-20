@@ -6,7 +6,7 @@ GoalsSummary = React.createClass({
 	},
 
 	getMeteorData() {
-		let handle = Meteor.subscribe("goals");
+		let handle = Meteor.subscribe("teal.goals");
 
 		if (handle.ready()) {
 			let goals = GoalsCollection.find({owners:this.props.objectId}).fetch();

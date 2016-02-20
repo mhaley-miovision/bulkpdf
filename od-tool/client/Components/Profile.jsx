@@ -9,7 +9,7 @@ Profile = React.createClass({
 	},
 
 	getMeteorData() {
-		let handle = Meteor.subscribe("contributors");
+		let handle = Meteor.subscribe("teal.contributors");
 		let handle2 = Meteor.subscribe("users");
 		if (handle.ready() && handle2.ready()) {
 			// default is current user
