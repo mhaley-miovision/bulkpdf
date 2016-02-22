@@ -31,34 +31,39 @@ Profile = React.createClass({
 
 	render() {
 		if (this.data.doneLoading) {
-			return (
-				<div>
-					<div className="section center">
-						<ProfileImage width="128px" height="128px" url={this.data.contributor.photo ? this.data.contributor.photo : "/img/user_avatar_blank.jpg"}/>
-						<h5 className="text-main1">{this.data.contributor.name}</h5>
-					</div>
-					<div className="divider"></div>
+			if (this.data.contributor) {
+				return (
+					<div>
+						<div className="section center">
+							<ProfileImage width="128px" height="128px"
+										  url={this.data.contributor.photo ? this.data.contributor.photo : "/img/user_avatar_blank.jpg"}/>
+							<h5 className="text-main1">{this.data.contributor.name}</h5>
+						</div>
+						<div className="divider"></div>
 
-					<div className="section">
-						<div className="row">
-							<div className="col s12 m6">
-								<RolesSummary objectId={this.data.contributor.email}/>
+						<div className="section">
+							<div className="row">
+								<div className="col s12 m6">
+									<RolesSummary objectId={this.data.contributor.email}/>
+								</div>
+								<div className="col s12 m6">
+									<GoalsSummary objectId={this.data.contributor.email}/>
+								</div>
 							</div>
-							<div className="col s12 m6">
-								<GoalsSummary objectId={this.data.contributor.email}/>
-							</div>
-						</div>
-						<div className="row">
-							<div className="col s12 m6">
-								<TeamsSummary objectId={this.data.contributor.email}/>
-							</div>
-							<div className="col s12 m6">
-								<SkillsSummary objectId={this.data.contributor.email}/>
+							<div className="row">
+								<div className="col s12 m6">
+									<TeamsSummary objectId={this.data.contributor.email}/>
+								</div>
+								<div className="col s12 m6">
+									<SkillsSummary objectId={this.data.contributor.email}/>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			);
+				);
+			} else {
+				return <NotOnAnyTeam/>;
+			}
 		} else {
 			return <Loading />;
 		}

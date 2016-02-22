@@ -1,6 +1,4 @@
 Navbar = React.createClass({
-
-
 	handleFeedbackClick() {
 		this.refs.enps.showDialog();
 	},
@@ -37,7 +35,11 @@ Navbar = React.createClass({
 				<li className={FlowHelpers.currentRoute("goals")}><a href="/goals">Goals</a></li>
 				<li className={FlowHelpers.currentRoute("team")}><a href="/team">Team</a></li>
 				<li className={FlowHelpers.currentRoute("organization")}><a href="/organization">Organization</a></li>
-				<li className={FlowHelpers.currentRoute("admin")}><a href="/admin">Admin</a></li>
+				{
+					Permissions.isAdminUser() ?
+						<li className={FlowHelpers.currentRoute("admin")}><a href="/admin">Admin</a></li>
+						: ''
+				}
 				<li className={FlowHelpers.currentRoute("enps")}><a href="/enps">myENPS</a></li>
 			</ul>
 		);
@@ -60,7 +62,7 @@ Navbar = React.createClass({
 	},
 
 	renderNavContent() {
-		if (!Meteor.userId()) {
+		if (!Meteor.userId() || !Permissions.isEnabledUser()) {
 			return this.renderPublic();
 		} else {
 			return this.renderPrivate();

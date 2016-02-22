@@ -20,5 +20,6 @@ Hooks.onLoggedOut = function (userId)
 	let o = {
 		userId: userId
 	};
+
 	Meteor.call("teal.notifications.createNotification", { type: 'user.logged_out', payload: o});
 }

@@ -41,6 +41,7 @@ if (Meteor.isClient) {
     });
 
 	Meteor.startup(function(){
+		// determine root org based on user
 		Hooks.init();
 	});
 }

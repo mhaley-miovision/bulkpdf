@@ -15,7 +15,7 @@
     "express": "^4.13.3",
     "google-auth-library": "^0.9.6",
     "google-spreadsheet": "^1.0.1",
-    "googleapis": "^2.1.6",
+    "googleapis": "^2.1.7",
     "mongoose": "^4.2.2",
     "underscore": "^1.8.3"
   },

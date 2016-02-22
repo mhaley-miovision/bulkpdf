@@ -31,7 +31,9 @@ Meteor.publish("users", function () {
 			'services.google.given_name': 1,
 			'services.google.family_name': 1,
 			'services.google.picture': 1,
-			'services.google.gender': 1
+			'services.google.gender': 1,
+			'rootOrgId': 1,
+			'email': 1,
 		}});
 });
 

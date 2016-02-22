@@ -1,42 +1,17 @@
 Admin = React.createClass({
 	mixins: [ReactMeteorData],
 
-	getInitialState() {
-		return { roleMode: true };
-	},
-
 	getMeteorData() {
-		var handle = Meteor.subscribe("teal.contributors");
-
-		if (!Meteor.userId()) {
-			throw new Meteor.Error("not-authorized");
+		var u = Meteor.users.findOne(Meteor.userId);
+		return {
+			isAuthorized: Roles.userIsInRole(Meteor.user(), 'admin')//, u.rootOrgId)
 		}
-
-		var myUserName = Meteor.user().profile.name;
-
-		isAuthorized = true;//myUserName === 'Victor Leipnik';
-
-		var data = {
-			isLoading: !handle.ready(),
-			isAuthorized: isAuthorized
-		};
-
-		return data;
-	},
-
-	componentDidMount() {
-		this.forceUpdate();
-	},
-
-	handleRoleModeChanged(event) {
-		console.log(this.refs.roleMode.checked);
-		this.setState( {roleMode: !this.refs.roleMode.checked });
 	},
 
 	render() {
 		if (this.data.isLoading) {
 			return <Loading/>;
-		} else if (isAuthorized) {
+		} else if (this.data.isAuthorized) {
 			return (
 				<div>
 					<br />

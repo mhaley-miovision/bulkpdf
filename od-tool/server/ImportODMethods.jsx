@@ -222,7 +222,7 @@ Meteor.methods({
 				'tbrijpaul@miovision.com', 'ndumond@miovision.com','dbullock@miovision.com','bward@miovision.com',
 				'bpeters@miovision.com','jbarr@miovision.com'];
 			if (enabledUsers.indexOf(c.email) >= 0) {
-				Roles.addUsersToRoles(userId, 'enabledUser', rootOrgId);
+				Roles.addUsersToRoles(userId, 'enabledUser'); //TODO:fix groups to work properly , rootOrgId);
 			}
 
 			// admins
@@ -231,7 +231,7 @@ Meteor.methods({
 				'tbrijpaul@miovision.com', 'ndumond@miovision.com','dbullock@miovision.com','bward@miovision.com',
 				'bpeters@miovision.com'];
 			if (adminUsers.indexOf(c.email) >= 0) {
-				Roles.addUsersToRoles(userId, 'admin', rootOrgId);
+				Roles.addUsersToRoles(userId, 'admin'); //TODO:fix groups to work properly , rootOrgId);
 			}
 		}
 

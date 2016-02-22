@@ -643,12 +643,6 @@ Organization = React.createClass({
 		var data = { doneLoading: handle1.ready() && handle2.ready() && handle3.ready()
 					&& handle4.ready() && handle5.ready() };
 
-		console.log("teal.organizations.ready=" + handle1.ready());
-		console.log("teal.roles.ready=" + handle2.ready());
-		console.log("teal.contributors.ready=" + handle3.ready());
-		console.log("teal.role_accountabilities.ready=" + handle4.ready());
-		console.log("teal.org_accountabilities.ready=" + handle5.ready());
-
 		if (data.doneLoading) {
 
 			var objectId = this.props.objectId;
@@ -689,17 +683,6 @@ Organization = React.createClass({
 						var r = q.fetch();
 						for (var x in r) {
 							var role = r[x];
-							/* THIS IS TOO SLOW, PRE-POPULATE ON IMPORT INSTEAD
-							// also find the number of goals this contributor has
-							let c = ContributorsCollection.findOne({name: role.contributor});
-							if (c && c !== '') {
-								console.log("finding goals for '" + c.email + "'");
-								let g = GoalsCollection.find({owners: c.email});
-								role.numGoals = g.count();
-								console.log(c.email + " has " + role.numGoals + " goals");
-							} else {
-								console.log("Couldn't find contributor for role: " + role);
-							}*/
 							o.children.push(role);
 						}
 					}
@@ -785,23 +768,8 @@ Organization = React.createClass({
 		}
 	},
 
-	shouldComponentUpdate(nextProps, nextState) {
-		console.log("shouldComponentUpdate -- this.state.isLoading=" + this.state.doneLoading);
-		console.log("shouldComponentUpdate -- nextState.isLoading=" + nextState.doneLoading);
-
-		return true;
-	},
-
 	componentWillUpdate(nextProps, nextState) {
-		if (nextProps.roleMode != this.props.roleMode) {
-			// detected role mode change!
-		}
 		this.updateOrganizationGraph();
-	},
-
-	componentDidMount() {
-		console.log("org component mounted");
-		//this.updateOrganizationGraph();
 	},
 
 	renderLoading() {

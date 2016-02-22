@@ -110,27 +110,32 @@ if (Meteor.isServer) {
 	});
 }
 
+Meteor.publish("teal.user", function() {
+	if (Meteor.userId) {
+		let user = Meteor.users.findOne(Meteor.userId);
+		return user;
+	} else {
+		return {  };
+	}
+})
+
 Meteor.startup(function() {
 	Meteor.users._ensureIndex( {"email": 1 }, { unique: true } );
-});
 
-Meteor.publish("teal.user_context", function() {
-	if (Meteor.userId) {
-		let context = { id: Meteor.userId };
-		let u = Meteor.users.findOne({_id:Meteor.userId});
-		if (u) {
-			context.name = u.name;
-			context.email = u.email;
-			context.rootOrgId = u.rootOrgId;
-
-			let c = ContributorsCollection.findOne({_id:u.contributorId});
-			if (c) {
-				context.physicalOrgId = c.physicalOrgId;
-			}
+	// useful when doing a full DB drop
+	let u = Meteor.users.findOne({email:"vleipnik@miovision.com"});
+	if (u) {
+		if (!u.roles) {
+			Meteor.users.update(u._id, {$set:{roles:['enabledUser','admin']}});
 		}
+	}
 
-		return context;
-	} else {
-		return {};
+
+	// useful when doing a full DB drop
+	u = Meteor.users.findOne({email:"leipnik@gmail.com"});
+	if (u) {
+		if (!u.roles) {
+			Meteor.users.update(u._id, {$set:{roles:['enabledUser']}});
+		}
 	}
 });
