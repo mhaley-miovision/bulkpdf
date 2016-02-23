@@ -726,6 +726,60 @@ circle.container, circle.label {
     border: solid #D9853B 1px;
 }
 
+.RootGoalTitle {
+    font-size: 1.8em;
+    color: #D9853B;
+}
+
+.ProjectGoalTitle {
+    color: #558C89;
+    font-size: 1.5em;
+    vertical-align: middle;
+}
+
+.ProjectTag {
+    color: white;
+    background-color: lightgrey;
+    line-height: 11px;
+    vertical-align:middle;
+    font-size: 11px;
+    padding: 2px 5px 2px 5px;
+    border-radius: .25em;
+    text-align: center;
+    margin: 0 15px 0 15px;
+    vertical-align: middle;
+}
+
+.ProjectGoalSubtitle {
+    color: #74AFAD;
+    font-size: 1.1em;
+    padding-top: 20px;
+    padding-bottom: 7px;
+    clear:left;
+}
+
+.ProjectGoalDoneCriteria {
+    color: #9e9e9e;
+    font-size: 14.5px;
+}
+
+.ProjectGoalKeyObjectivesList {
+    margin-left: 10px;
+}
+
+.ProjectGoalKeyObjective {
+    color: #9e9e9e;
+    font-size: 14.5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+}
+
+.TaskGoalTitle {
+    color: #9e9e9e;
+    font-size: 14.5px;
+}
+
 /*******************************************************************************************************************/
 /* Summary cards */
 

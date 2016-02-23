@@ -9,14 +9,14 @@ FlowRouter.route( '/', {
 FlowRouter.route( '/goals', {
 	name: 'goals',
 	action() {
-		ReactLayout.render( App, { yield: Permissions.isEnabledUser() ? <MyGoals /> : <Unauthorized /> } );
+		ReactLayout.render( App, { yield: <MyGoals /> } );
 	}
 });
 
 FlowRouter.route( '/tasks', {
 	name: 'tasks',
 	action() {
-		ReactLayout.render( App, { yield: Permissions.isEnabledUser() ? <TaskList /> : <Unauthorized /> } );
+		ReactLayout.render( App, { yield: <TaskList /> } );
 	}
 });
 
@@ -30,7 +30,7 @@ FlowRouter.route( '/login', {
 FlowRouter.route( '/', {
 	name: 'myProfile',
 	action() {
-		ReactLayout.render( App, { yield: Permissions.isEnabledUser() ? <MyProfile /> : <Unauthorized /> } );
+		ReactLayout.render( App, { yield: <MyProfile /> } );
 	}
 });
 
@@ -39,14 +39,14 @@ FlowRouter.route( '/profile', {
 	action(params, queryParams) {
 		// TODO: validate params
 		var objectId = queryParams.objectId;
-		ReactLayout.render(App, {yield: Permissions.isEnabledUser() ? <Profile objectId={objectId}/> : <Unauthorized />});
+		ReactLayout.render(App, {yield: <Profile objectId={objectId}/> });
 	}
 });
 
 FlowRouter.route( '/team', {
 	name: 'team',
 	action() {
-		ReactLayout.render( App, { yield: Permissions.isEnabledUser() ? <MyTeam /> : <Unauthorized /> } );
+		ReactLayout.render( App, { yield: <MyTeam /> } );
 	}
 });
 
@@ -59,13 +59,13 @@ FlowRouter.route( '/organization', {
 		var zoomTo = queryParams.zoomTo;
 		var mode = queryParams.mode;
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
-		ReactLayout.render( App, { yield: Permissions.isEnabledUser() ? <MyOrganization
+		ReactLayout.render( App, { yield:  <MyOrganization
 			objectId={objectId}
 			objectType={objectType}
 			zoomTo={zoomTo}
 			mode={mode}
 			roleMode={roleMode}
-		/> : <Unauthorized /> } );
+		/>} );
 	}
 });
 
@@ -77,13 +77,13 @@ FlowRouter.route( '/goals/tree', {
 		var zoomTo = queryParams.zoomTo;
 		var mode = queryParams.mode;
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
-		ReactLayout.render( App, { yield: Permissions.isEnabledUser() ? <Tree
+		ReactLayout.render( App, { yield: <Tree
 			objectId={objectId}
 			objectType='contributor'
 			zoomTo={zoomTo}
 			mode={mode}
 			roleMode={roleMode}
-		/> : <Unauthorized />} );
+		/>} );
 	}
 });
 
@@ -95,13 +95,13 @@ FlowRouter.route( '/goals/list/contributor', {
 		var zoomTo = queryParams.zoomTo;
 		var mode = queryParams.mode;
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
-		ReactLayout.render( App, { yield: Permissions.isEnabledUser() ? <GoalList
+		ReactLayout.render( App, { yield: <GoalList
 			objectId={objectId}
 			objectType='contributor'
 			zoomTo={zoomTo}
 			mode={mode}
 			roleMode={roleMode}
-		/> : <Unauthorized /> } );
+		/> } );
 	}
 });
 
@@ -113,26 +113,26 @@ FlowRouter.route( '/organization/view', {
 		var zoomTo = queryParams.zoomTo;
 		var mode = queryParams.mode;
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
-		ReactLayout.render( App, { yield: Permissions.isEnabledUser() ? <Organization
+		ReactLayout.render( App, { yield: <Organization
 			objectId={objectId}
 			objectType='contributor'
 			zoomTo={zoomTo}
 			mode={mode}
 			roleMode={roleMode}
-		/> : <Unauthorized />} );
+		/> } );
 	}
 });
 
 FlowRouter.route( '/admin', {
 	name: 'admin',
 	action() {
-		ReactLayout.render( App, { yield: Permissions.isEnabledUser() && Permissions.isAdminUser() ? <Admin /> : <Unauthorized /> } );
+		ReactLayout.render( App, { yield: <Admin /> } );
 	}
 });
 
 FlowRouter.route( '/enps', {
 	name: 'enps',
 	action() {
-		ReactLayout.render( App, { yield: Permissions.isEnabledUser() ? <ENPS /> : <Unauthorized /> } );
+		ReactLayout.render( App, { yield: <ENPS />  } );
 	}
 });

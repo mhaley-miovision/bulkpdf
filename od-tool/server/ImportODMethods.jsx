@@ -96,10 +96,6 @@ function processSkillsJson(json) {
 	return skills;
 }
 
-// TODO: add users upon importing
-// TODO: populate ID field references
-// TODO: add notion of root org to all objects
-
 Meteor.methods({
 	"teal.import.v1ImportDatabase": function() {
 		// Make sure the user is logged in before inserting a task
@@ -184,7 +180,6 @@ Meteor.methods({
 			OrganizationsCollection.update(org._id, {$set : { parentId:parentId, path:path }});
 		});
 
-
 		//==============================================================================================================
 		// Contributors
 		//==============================================================================================================
@@ -213,15 +208,14 @@ Meteor.methods({
 			if (o) {
 			ContributorsCollection.update(c_id,{$set:{physicalOrgId: o._id}});
 			} else {
-				console.error("Couldn't find physical team for: " + c.name);
+				console.warn("Couldn't find physical team for: " + c.name);
 			}
 
-			// enabled users
-			var enabledUsers = ['vleipnik@miovision.com','leipnik@gmail.com','jreeve@miovision.com',
-				'jwincey@miovision.com', 'jbhavnani@miovision.com','lgreig@miovision.com','kmcbride@miovision.com',
-				'tbrijpaul@miovision.com', 'ndumond@miovision.com','dbullock@miovision.com','bward@miovision.com',
-				'bpeters@miovision.com','jbarr@miovision.com'];
-			if (enabledUsers.indexOf(c.email) >= 0) {
+			var userEmail = c.email ? c.email : c.services ? c.services.google ? c.services.google.email : null : null;
+
+			// enable all miovision users by default + extras
+			var enabledUsers = ['leipnik@gmail.com'];
+			if (c.email.indexOf("@miovision.com" >= 0) || userEmail && enabledUsers.indexOf(userEmail) >= 0) {
 				Roles.addUsersToRoles(userId, 'enabledUser'); //TODO:fix groups to work properly , rootOrgId);
 			}
 
@@ -289,7 +283,10 @@ Meteor.methods({
 		var response = HTTP.call( 'GET', skillsCellFeed );
 		var result = processSkillsJson(response.data);
 		if (result && result.length > 0) {
-			result.forEach(s => { SkillsCollection.insert(s) });
+			result.forEach(s => {
+				s.rootOrgId = rootOrgId;
+				SkillsCollection.insert(s)
+			});
 			console.log("Successfully imported " + result.length + " skill entries.");
 		} else {
 			console.error("Could not find any skills!");

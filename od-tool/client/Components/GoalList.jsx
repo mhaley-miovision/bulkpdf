@@ -48,6 +48,7 @@ GoalList = React.createClass({
 				// next top level node
 				i++;
 			}
+
 			return { goals: goals, doneLoading: true };
 		} else {
 			return { doneLoading : false };

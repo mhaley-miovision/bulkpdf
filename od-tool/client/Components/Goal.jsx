@@ -133,7 +133,7 @@ Goal = React.createClass({
 
 	renderGoalDueDateLabel() {
 		if (this.props.goal.estimatedCompletedOn) {
-			var gd = this.props.goal.estimatedCompletedOn ? new Date(this.props.goal.estimatedCompletedOn) : null;
+			var gd = this.props.goal.estimatedCompletedOn;// ? new Date(this.props.goal.estimatedCompletedOn) : null;
 			var complete = this.props.goal.stats && (this.props.goal.stats.inProgress == 0 && this.props.goal.stats.notStarted == 0);
 			var overdue = gd && (gd < new Date());
 
@@ -141,7 +141,7 @@ Goal = React.createClass({
 			if (overdue && !complete) {
 				classes += " late";
 			}
-			return <span className={classes}>{this.props.goal.estimatedCompletedOn}</span>;
+			return <span className={classes}>{moment(this.props.goal.estimatedCompletedOn).format("MMM Do")}</span>;
 		}
 	},
 
@@ -199,6 +199,106 @@ Goal = React.createClass({
 		);
 	},
 
+	renderRootLevelGoal() {
+		return (
+			<div className="row">
+				<div className="col m9 s12 goalNameText">
+					<div className="RootGoalTitle">{this.props.goal.name}</div>
+				</div>
+			</div>
+		);
+	},
+
+	renderKeyObjectives() {
+		if (this.props.goal.keyObjectives.length > 0) {
+			return this.props.goal.keyObjectives.map(function(o,i) {
+				return (
+					<li className="ProjectGoalKeyObjective">
+						<input id={o+"-ko"+i} type="checkbox"/>
+						<label htmlFor={o+"-ko"+i}>{o}</label>
+					</li>
+				);
+			});
+		} else {
+			return 'No key objectives defined yet.';
+		}
+	},
+
+	renderDoneCriteria() {
+		if (this.props.goal.doneCriteria.length > 0) {
+			return this.props.goal.doneCriteria.map(function(o,i) {
+				return (
+					<li className="ProjectGoalKeyObjective">
+						<input id={o+"-dc"+i} type="checkbox"/>
+						<label htmlFor={o+"-dc"+i}>{o}</label>
+					</li>
+				);
+			});
+		} else {
+			return 'No done criteria defined yet.';
+		}
+	},
+
+	renderProjectGoal() {
+		return (
+			<div>
+				<div className="row">
+					<div className="col m9 s12 goalNameText">
+						<div className="">
+							<span className="ProjectGoalTitle">{this.props.goal.name}</span>
+							<span className="ProjectTag">{this.props.goal.rootGoalName}</span>
+						</div>
+
+						<div className="ProjectGoalSubtitle">What Done Looks Like</div>
+						<ul className="ProjectGoalDoneCriteria">
+							{this.renderDoneCriteria()}
+						</ul>
+						<div className="ProjectGoalSubtitle">Key Objectives</div>
+						<ul className="ProjectGoalDoneCriteria">
+							{this.renderKeyObjectives()}
+						</ul>
+					</div>
+					<div className="col m2 s8">
+						{this.renderGoalOwnerList()}
+					</div>
+					<div className="col m1 s4 goalHeaderInformation">
+						<SimpleGoalProgressBar goal={this.props.goal}/>
+						{this.renderGoalDueDateLabel()}
+					</div>
+				</div>
+			</div>
+		);
+	},
+
+	renderTaskGoal() {
+		return (
+			<div className="row">
+				<div className="col m9 s12 goalNameText">
+					<div className="TaskGoalTitle">{this.props.goal.name}</div>
+				</div>
+				<div className="col m2 s8">
+					{this.renderGoalOwnerList()}
+				</div>
+				<div className="col m1 s4 goalHeaderInformation">
+					<SimpleGoalProgressBar goal={this.props.goal}/>
+					{this.renderGoalDueDateLabel()}
+				</div>
+			</div>
+		);
+	},
+
+	renderGoalBody() {
+		if (this.props.goal.path.length == 0) {
+			// this is a root level goal
+			return this.renderRootLevelGoal();
+		} else if (this.hasChildren()) {
+			// this is a project goal
+			return this.renderProjectGoal();
+		} else {
+			return this.renderTaskGoal();
+		}
+	},
+
 	render() {
 		if (this.state.isEditing) {
 			return (
@@ -219,18 +319,7 @@ Goal = React.createClass({
 			return (
 				<li>
 					<div className="collapsible-header">
-						<div className="row">
-							<div className="col m9 s12 goalNameText">
-								{this.props.goal.name}
-							</div>
-							<div className="col m2 s8">
-								{this.renderGoalOwnerList()}
-							</div>
-							<div className="col m1 s4 goalHeaderInformation">
-								<SimpleGoalProgressBar goal={this.props.goal}/>
-								{this.renderGoalDueDateLabel()}
-							</div>
-						</div>
+						{this.renderGoalBody()}
 					</div>
 					<div className="collapsible-body">
 						<div style={{"padding":"25px"}}>
