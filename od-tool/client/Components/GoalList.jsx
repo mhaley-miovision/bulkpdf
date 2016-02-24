@@ -23,7 +23,7 @@ GoalList = React.createClass({
 			let objectId = this.props.objectId;
 			if (objectId == null) {
 				var myUser = Meteor.users.findOne({_id: Meteor.userId()});
-				objectId = myUser.services.google.email;
+				objectId = myUser.email;
 			}
 			// determine the title prefix
 			let prefix = this.props.objectId ? ContributorsCollection.findOne({email: this.props.objectId}).name + "'s " : "My ";

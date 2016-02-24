@@ -15,15 +15,17 @@ Goal = React.createClass({
 		var handle = Meteor.subscribe("teal.goals");
 
 		if (handle.ready()) {
+			// TODO: don't retrieve this in the future
 			let children = GoalsCollection.find({parent:this.props.goal._id}).fetch();
-			let ownerPhotos = {};
-			let photos = ContributorsCollection.find({email: { $in: this.props.goal.owners } }, { fields: {email:1,photo:1}}).fetch();
-			photos.forEach(x => {
-				if (x.email) {
-					ownerPhotos[x.email] = x.photo ? x.photo : "/img/user_avatar_blank.jpg"
-				}
-			});
-			return { children: children, ownerPhotos: ownerPhotos, doneLoading: true }
+
+			let ownerPhotos = this.props.goal.owners ?
+				ContributorsCollection.find({email: { $in: this.props.goal.owners } }, { fields: {email:1,photo:1}}).fetch()
+				: [];
+			let contributorPhotos = this.props.goal.contributors ?
+				ContributorsCollection.find({email: { $in: this.props.goal.contributors } }, { fields: {email:1,photo:1}}).fetch()
+				: [];
+
+			return { children: children, ownerPhotos: ownerPhotos, contributorPhotos:contributorPhotos, doneLoading: true }
 		} else {
 			return { doneLoading: false }
 		}
@@ -76,30 +78,40 @@ Goal = React.createClass({
 		Materialize.toast("Functionality not implemented yet, stay tuned!", TOAST_DURATION);
 	},
 
-	renderGoalOwnerList() {
-		let _this = this;
-		return this.props.goal.owners.map(ownerEmail => {
-			// TODO: build route in a more sustainable way (i.e. using Flow router params)
-			var photo = this.data.doneLoading && _this.data.ownerPhotos[ownerEmail];
-			if (photo)
-			{
-				let url = FlowRouter.path( "profile", {}, {objectId:ownerEmail} );
-				return (
-					<a key={ownerEmail} href={url}>
-						<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src={photo}/>
+	renderUserPhotoList(list, heading) {
+		if (list.length == 0) return ''; // don't render anything
+
+		let objects = [];
+		list.forEach(item => {
+			let email = item.email;
+			let photoUrl = item.photo;
+			let url = FlowRouter.path( "profile", {}, {objectId:email} );
+			if (photoUrl) {
+				objects.push(
+					<a key={email} href={url}>
+						<img key={email} title={email} className="goalItemPhoto" src={photoUrl}/>
 					</a>
 				);
 			} else {
-				return (
-					<img key={ownerEmail} title={ownerEmail} className="right goalItemPhoto" src="/img/user_avatar_blank.jpg"/>
+				objects.push(
+					<a key={email} href={url}>
+						<img key={email} title={email} className="goalItemPhoto" src="/img/user_avatar_blank.jpg"/>
+					</a>
 				);
 			}
 		});
+
+		let rootObjects = [];
+		if (heading) {
+			rootObjects.push(<div className="GoalOwnersHeading">{heading + (list.length > 1 ? "s" : "")}</div>);
+		}
+		rootObjects.push(<div className="GoalOwnerPhotos center">{objects}</div>);
+		return <div className="GoalOwnersSection">{rootObjects}</div>;
 	},
 
 	renderSubgoalsList() {
 		if (this.data.doneLoading) {
-			if (this.data.children && this.data.children.length > 0) {
+			if (!this.props.goal.isLeaf) {
 				return (
 					<ul className="collapsible" data-collapsible="accordion">
 						{this.renderSubgoalsListItems()}
@@ -107,7 +119,7 @@ Goal = React.createClass({
 				);
 			}
 		} else {
-			return <Loading />;
+			return <Loading spinner={true}/>;
 		}
 	},
 
@@ -137,7 +149,7 @@ Goal = React.createClass({
 			var complete = this.props.goal.stats && (this.props.goal.stats.inProgress == 0 && this.props.goal.stats.notStarted == 0);
 			var overdue = gd && (gd < new Date());
 
-			var classes = "goalDueDate";
+			var classes = "GoalDueDate";
 			if (overdue && !complete) {
 				classes += " late";
 			}
@@ -202,7 +214,7 @@ Goal = React.createClass({
 	renderRootLevelGoal() {
 		return (
 			<div className="row">
-				<div className="col m9 s12 goalNameText">
+				<div className="col m9 s12 GoalContainer">
 					<div className="RootGoalTitle">{this.props.goal.name}</div>
 				</div>
 			</div>
@@ -239,11 +251,32 @@ Goal = React.createClass({
 		}
 	},
 
+	renderProjectSummaryDetails() {
+		if (this.data.doneLoading) {
+			let objects = [];
+			objects.push(this.renderUserPhotoList(this.data.ownerPhotos, "Owner"));
+			objects.push(this.renderUserPhotoList(this.data.contributorPhotos, "Contributor"));
+			objects.push(
+				<div className="center GoalStatsSection">
+					<GoalsStatsDonut goal={this.props.goal} width="60px" height="60px" />
+				</div>
+			);
+			objects.push(
+				<div className="center">
+					{this.renderGoalDueDateLabel()}
+				</div>
+			);
+			return objects;
+		} else {
+			return <Loading spinner={true}/>
+		}
+	},
+
 	renderProjectGoal() {
 		return (
 			<div>
 				<div className="row">
-					<div className="col m9 s12 goalNameText">
+					<div className="col m9 s12 GoalContainer">
 						<div className="">
 							<span className="ProjectGoalTitle">{this.props.goal.name}</span>
 							<span className="ProjectTag">{this.props.goal.rootGoalName}</span>
@@ -258,30 +291,57 @@ Goal = React.createClass({
 							{this.renderKeyObjectives()}
 						</ul>
 					</div>
-					<div className="col m2 s8">
-						{this.renderGoalOwnerList()}
-					</div>
-					<div className="col m1 s4 goalHeaderInformation">
-						<SimpleGoalProgressBar goal={this.props.goal}/>
-						{this.renderGoalDueDateLabel()}
+					<div className="col m3 s8 GoalContainer">
+						{this.renderProjectSummaryDetails()}
 					</div>
 				</div>
 			</div>
 		);
 	},
 
+	renderTaskGoalPhotos() {
+		if (this.data.doneLoading) {
+			var objects = [];
+			objects.push(this.renderUserPhotoList(this.data.ownerPhotos));
+			objects.push(this.renderUserPhotoList(this.data.contributorPhotos));
+			return objects;
+		} else {
+			return <Loading spinner={true}/>
+		}
+	},
+
+	renderTaskState() {
+		//TODO: fix this garbage
+		let state = "NotStarted";
+		let label = "Not Started";
+		if (this.props.goal.state == 2) {
+			state = "Completed";
+			label = "Completed";
+		} else if (this.props.goal.state == 1) {
+			state = "InProgress";
+			label = "In Progress";
+		}
+		let classes = "TaskGoalState" + state;
+		return <div className={classes}>{label}</div>;
+	},
+
 	renderTaskGoal() {
 		return (
 			<div className="row">
-				<div className="col m9 s12 goalNameText">
+				<div className="col m10 s8 GoalContainer">
 					<div className="TaskGoalTitle">{this.props.goal.name}</div>
 				</div>
-				<div className="col m2 s8">
-					{this.renderGoalOwnerList()}
-				</div>
-				<div className="col m1 s4 goalHeaderInformation">
-					<SimpleGoalProgressBar goal={this.props.goal}/>
-					{this.renderGoalDueDateLabel()}
+				<div className="col m2 s2 GoalContainer">
+					<div className="TaskGoalSummaryContainer">
+						<div className="TaskGoalPhotos">
+							{this.renderTaskGoalPhotos()}
+						</div>
+						<div className="TaskGoalState">
+							{this.renderTaskState()}
+						</div>
+						{this.renderGoalDueDateLabel()}
+					</div>
+
 				</div>
 			</div>
 		);
@@ -297,6 +357,10 @@ Goal = React.createClass({
 		} else {
 			return this.renderTaskGoal();
 		}
+	},
+
+	handleOnClick(e) {
+		console.log("EEEE");
 	},
 
 	render() {
@@ -318,7 +382,7 @@ Goal = React.createClass({
 		} else {
 			return (
 				<li>
-					<div className="collapsible-header">
+					<div className="collapsible-header" onClick={this.handleOnClick}>
 						{this.renderGoalBody()}
 					</div>
 					<div className="collapsible-body">

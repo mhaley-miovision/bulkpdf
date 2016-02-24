@@ -4,30 +4,22 @@ var cellsFeed = "https://spreadsheets.google.com/feeds/cells/1cCbZtpGdPhfaM3Y-sB
 
 function processGoalsJson(json) {
 	var cellItems = json.feed.entry;
-
 	var res = [];
 	for (e in cellItems) {
 		var o = cellItems[e];
 		res[o.title.$t] = o.content.$t;
 	}
-
-	//return res;
 	c = res;
-
 	var startRow = 69;//5; // ignore last year's goals for now
 	var blankRowCount = 0;
 	var r = startRow;
-
 	var goals = [];
 	var projects = [];
 	var tasks = [];
-
 	var lastKeyObjective = null;
 	var lastProject = null;
 	var lastGoal = null;
-	;
-
-	lookup = {
+	var lookup = {
 		"Tony": "tbrijpaul@miovision.com",
 		"Kurtis": "kmcbride@miovision.com",
 		"Bryan": "bpeters@miovision.com",
@@ -75,7 +67,6 @@ function processGoalsJson(json) {
 		"Lisa": "lwilhelm@miovision.com",
 		"Chelsea": "ctam@miovision.com",
 	}
-
 	var parseOwners = function (o) {
 		var s = [];
 		var s2 = [];
@@ -126,7 +117,6 @@ function processGoalsJson(json) {
 		var result = {matched: s, unmatched: s2};
 		return result;
 	}
-
 	var parseNewlineSeparatedList = function (l) {
 		var split = l.split('\n');
 		var items = [];
@@ -145,9 +135,7 @@ function processGoalsJson(json) {
 		}
 		return items;
 	}
-
 	var unmatchedOwners = [];
-
 	var MAX_ROWS = 2000;
 
 	while (r++ < MAX_ROWS) {
@@ -200,13 +188,11 @@ function processGoalsJson(json) {
 			var lastKo = ko;
 			var lastDc = dc;
 			while (++tempR < MAX_ROWS) {
-
 				// if new project detected, break out of this loop
 				var testP = c["C" + tempR];
 				if (testP && testP !== lastP) {
 					break;
 				}
-
 				// account for too many blank rows in the task column
 				if (typeof(c["L" + tempR]) === 'undefined') {
 					if (blankRowCount++ > 100) {
@@ -214,7 +200,6 @@ function processGoalsJson(json) {
 					}
 					continue;
 				}
-
 				// get new key objectives and done criteria (and make sure they are new)
 				var ko2 = c["G" + tempR];
 				var dc2 = c["H" + tempR];
@@ -239,6 +224,7 @@ function processGoalsJson(json) {
 				keyObjectives: keyObjectives,
 				status: c["M" + r],
 				estimatedCompletionOn: c["J" + r] ? new Date(c["J" + r]) : null,
+				isLeaf: false
 			};
 			projects.push(lastProject);
 		}
@@ -260,117 +246,13 @@ function processGoalsJson(json) {
 				owners: result.matched,
 				estimatedCompletedOn: date,
 				links: c["P" + r],
+				isLeaf: true
 			};
 			tasks.push(task);
 		}
 	}
 	return {matched: goals.concat(projects).concat(tasks), unmatched: unmatchedOwners};
 }
-/*
- // SUMMARY OF PARSING INTERPRETATION
- // goals with single key objective and single done criteria show done criteria and parse out key objective string
- // goals without key objectives but done criterias show no key objectives, but show the done criteria - single goal
- // goals with multiple key objectives and multiple done criteria
-
- // look for a NEW goal (new name), or assume the last one otherwise
- var g = c["B"+r];
- if (g && (lastGoal == null || g != lastGoal.name)) {
- // new goal found
- lastGoal = {
- name: c["B"+r],
- // TODO: haxxor on the date
- estimatedCompletedOn: r < 65 ? "12/31/2015" : "7/1/2016",
- owners: ["kmcbride@miovision.com"], // Kurtis???
- };
- goals.push(lastGoal);
- }
-
- // find projects
- var p = c["C"+r];
- if (p && (lastProject == null || p != lastProject.name)) {
-
- // new project, "close off" the previous project
- // if the project only had one key objective, then collapse it upward
- if (lastProject && numObjectives == 1) {
- console.log("project[" + lastProject.name + "] should be consolidated!");
-
- // copy all tasks as a child of the last project instead of key objective
- for (var i = 0; i < tasks.length; i++) {
- if (tasks[i].parent === lastKeyObjective) {
- tasks[i].parent = lastProject;
- }
- }
-
- lastKeyObjective
- }
-
- // reset objectives
- numObjectives = 0;
-
- var result = parseOwners(c["D"+r]);
- unmatchedOwners = unmatchedOwners.concat(result.unmatched);
- lastProject = {
- parent: lastGoal,
- name: p,
- owners: result.matched,
- };
- projects.push(lastProject);
-
- // reset this so merged columns will work properly
- lastKeyObjectiveOwnersRaw = null;
- }
-
- // find key objectives
- var ko = c["G" + r];
- var dc = c["H" + r];
- if (typeof(ko) !== 'undefined' || typeof(dc) !== 'undefined') {
-
- // TODO: REEVALUATE THIS
- if (typeof(ko) === 'undefined') {
- ko = dc; // make the same as the done criteria (legacy)
- }
-
- // new objectives found
- var objective = {
- parent: lastProject,
- name: ko,
- doneCriteria: dc,
- status: c["I" + r],
- estimatedCompletedOn: c["J" + r],
- };
-
- // if no owners defined, check if last was set (merged column OR it will be pulled from manager owner, so this has to be reset)
- if (typeof(c["E" + r]) !== 'undefined') {
- lastKeyObjectiveOwnersRaw = c["E" + r];
- }			var result = parseOwners(lastKeyObjectiveOwnersRaw);
- objective.owners = result.matched;
- unmatchedOwners = unmatchedOwners.concat(result.unmatched);
-
- objectives.push(objective);
- numObjectives++;
- lastKeyObjective = objective;
- }
-
- // get the task
- var t = c["L"+r];
- if (typeof(o) !== 'undefined') {
- var result = parseOwners(c["N"+r]);
- unmatchedOwners = unmatchedOwners.concat(result.unmatched);
- var task = {
- parent: lastKeyObjective,
- name: t,
- status: c["M"+r],
- owners: result.matched,
- estimatedCompletedOn: c["O"+r],
- links: c["P"+r],
- };
- tasks.push(task);
- }
- }
- // merge results
- return { matched: goals.concat(projects).concat(objectives).concat(tasks), unmatched: unmatchedOwners };
-
- */
 
 Meteor.methods({
 	"teal.import.importGoals": function() {
