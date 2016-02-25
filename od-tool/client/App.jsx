@@ -4,7 +4,7 @@ App = React.createClass({
 	getMeteorData() {
 		return {
 			loggingIn: Meteor.loggingIn(),
-			hasUser: !!Meteor.user(),
+			hasUser: !!Meteor.user() && Permissions.isEnabledUser(),
 			isPublic( route ) {
 				let publicRoutes = [
 					'login'

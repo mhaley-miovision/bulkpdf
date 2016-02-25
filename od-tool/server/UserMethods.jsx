@@ -32,37 +32,36 @@ if (Meteor.isServer) {
 		},
 
 		"teal.import.importUserPhotoInfo": function() {
-			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
 			}
 
-			var myjson = JSON.parse(Assets.getText("users.json"));
+			Meteor.call("teal.users.updateGoogleAdminCache");
 
-			// update contributors photos
+			// now we have populated a user cache we can pull data from
 			var notFoundString = "";
 			var noPhotoString = "";
+			var updatedString = "";
 			var updatedCount = 0;
 			var notFoundCount = 0;
-			for (var x in myjson) {
-				var o = myjson[x];
-				var c = ContributorsCollection.findOne({email: x});
-				if (c && o.photo) {
-					c.photo = o.photo;
-					ContributorsCollection.update(c._id, c);
+			GoogleUserCacheCollection.find({}).forEach(o => {
+				// update the corresponding contributor
+				c = ContributorsCollection.findOne({email: o.primaryEmail});
+				if (!c) {
+					notFoundString += o.primaryEmail + "\n";
+					notFoundCount++;
+				} else if (o.thumbnailPhotoUrl) {
+					ContributorsCollection.update(c._id, {$set : {photo: o.thumbnailPhotoUrl}})
+					updatedString += o.primaryEmail + "\n";
 					updatedCount++;
 				} else {
-					if (c) {
-						noPhotoString += x + ", " + o.name + (o.photo ? o.photo : "") + "\n";
-						notFoundCount++;
-					} else {
-						notFoundString += x + ", " + o.name + (o.photo ? o.photo : "") + "\n";
-					}
+					noPhotoString += o.primaryEmail + "\n";
 				}
-			}
+			});
 
-			var email = "Updated " + updatedCount + " photo urls.\n\n\nUnknown contributors:\n\n" + notFoundString
-				+ "Contributors without a photo:\n\n" + noPhotoString;
+			var email = "Updated " + updatedCount + " photo urls.\n\n\nUpdated:" + updatedString
+				+ "\n\n\nUnknown contributors:\n\n" + notFoundString
+				+ "\n\nContributors without a photo:\n\n" + noPhotoString;
 			Email.send({
 				from:"teal@miovision.com",
 				to:"vleipnik@miovision.com",
