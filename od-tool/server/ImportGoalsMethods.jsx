@@ -117,7 +117,7 @@ function processGoalsJson(json) {
 		var result = {matched: s, unmatched: s2};
 		return result;
 	}
-	var parseNewlineSeparatedList = function (l) {
+	var parseNewlineSeparatedObjectList = function (l) {
 		var split = l.split('\n');
 		var items = [];
 		for (var i = 0; i < split.length; i++) {
@@ -127,10 +127,13 @@ function processGoalsJson(json) {
 			var rp = s.indexOf(")");
 			if (rp >= 0) {
 				s = s.split(")")[1].trim();
-			}
+			};
+
+			var id = new Mongo.Collection.ObjectID()._str;
+			console.log(id);
 
 			if (s !== '' && s !== '.') {
-				items.push(s);
+				items.push({name: s, _id: id, completed: false});
 			}
 		}
 		return items;
@@ -178,9 +181,9 @@ function processGoalsJson(json) {
 
 			// get key objectives
 			var ko = c["G" + r];
-			var keyObjectives = ko ? parseNewlineSeparatedList(ko) : [];
+			var keyObjectives = ko ? parseNewlineSeparatedObjectList(ko) : [];
 			var dc = c["H" + r];
-			var doneCriteria = dc ? parseNewlineSeparatedList(dc) : [];
+			var doneCriteria = dc ? parseNewlineSeparatedObjectList(dc) : [];
 
 			// TODO: !!!!!! now determine if multiple sub goals here !!!!!!
 			var lastP = c["C" + r];
@@ -205,8 +208,8 @@ function processGoalsJson(json) {
 				var dc2 = c["H" + tempR];
 
 				if (ko2 && ko2 != lastKo) {
-					var keyObjectives2 = parseNewlineSeparatedList(ko2);
-					var doneCriteria2 = dc2 ? parseNewlineSeparatedList(dc2) : [];
+					var keyObjectives2 = parseNewlineSeparatedObjectList(ko2);
+					var doneCriteria2 = dc2 ? parseNewlineSeparatedObjectList(dc2) : [];
 					keyObjectives = keyObjectives.concat(keyObjectives2);
 					doneCriteria = doneCriteria.concat(doneCriteria2);
 					lastKo = ko2;

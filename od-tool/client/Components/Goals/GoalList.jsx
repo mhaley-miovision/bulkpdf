@@ -99,5 +99,6 @@ GoalList = React.createClass({
 				<br/>
 				<br/>
 
-			</div>);
+			</div>
+		);
 	}});

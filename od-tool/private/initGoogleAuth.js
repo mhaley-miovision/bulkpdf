@@ -6,9 +6,22 @@ var googleAuth = require('google-auth-library');
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/admin-directory_v1-nodejs-quickstart.json
 var SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly'];
-var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'token.json';
+
+var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) + '/.credentials/';
+try {
+  // Query the entry
+  stats = fs.lstatSync('/home/ubuntu');
+
+  // Is it a directory?
+  if (stats.isDirectory()) {
+    var TOKEN_DIR = '/home/ubuntu/.credentials/';
+  }
+}
+catch (e) {
+  // do nothing
+}
+var TOKEN_PATH = TOKEN_DIR + "token.json";
+
 
 // Load client secrets from a local file.
 fs.readFile('clientSecret.json', function processClientSecrets(err, content) {

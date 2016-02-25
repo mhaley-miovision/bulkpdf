@@ -4,9 +4,21 @@ var googleAuth = Meteor.npmRequire('google-auth-library');
 var readline = Meteor.npmRequire('readline');
 var google = Meteor.npmRequire('googleapis');
 var SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly'];
-var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-	process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'token.json';
+
+var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) + '/.credentials/';
+try {
+	// Query the entry
+	stats = fs.lstatSync('/home/ubuntu');
+
+	// Is it a directory?
+	if (stats.isDirectory()) {
+		var TOKEN_DIR = '/home/ubuntu/.credentials/';
+	}
+}
+catch (e) {
+	console.error(e);
+}
+var TOKEN_PATH = TOKEN_DIR + "token.json";
 
 var tokenVerified = false;
 

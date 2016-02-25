@@ -129,7 +129,6 @@ Meteor.startup(function() {
 		}
 	}
 
-
 	// useful when doing a full DB drop
 	u = Meteor.users.findOne({email:"leipnik@gmail.com"});
 	if (u) {

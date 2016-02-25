@@ -45,7 +45,6 @@ Task = React.createClass({
 					checked={this.props.task.checked}
 					id={this.props.task._id}/>
 				<label htmlFor={this.props.task._id}>{this.props.task.username} - {this.props.task.text}</label>
-
 			</li>
 		);
 	}

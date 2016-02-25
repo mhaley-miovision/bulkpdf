@@ -25,19 +25,31 @@ App = React.createClass({
 	},
 
     render() {
-		return <div className="app-root">
-			<Navbar hasUser={this.data.hasUser}/>
-			<div className="container">
-				{this.data.loggingIn ? this.loading() : this.getView()}
+		return (
+			<div className="app-root">
+				<Navbar hasUser={this.data.hasUser}/>
+				<div className="container">
+					{this.data.loggingIn ? this.loading() : this.getView()}
+				</div>
+				<Footer hasUser={this.data.hasUser}/>
 			</div>
-			<Footer hasUser={this.data.hasUser}/>
-		</div>;
+		);
     }
 });
 
 if (Meteor.isClient) {
     $(document).ready(function(){
         $('.parallax').parallax();
+
+		setTimeout(function() {
+			$('.button-collapse').sideNav({
+					menuWidth: 300, // Default is 240
+					edge: 'left', // Choose the horizontal origin
+					closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
+				}
+			);
+		}, 1000);
+
     });
 
 	Meteor.startup(function(){

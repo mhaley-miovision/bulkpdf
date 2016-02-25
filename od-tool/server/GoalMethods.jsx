@@ -220,4 +220,29 @@ Meteor.methods({
 		populateStats(root,false);
 		return root;
 	},
+
+	"teal.goals.setKeyObjective": function(keyObjectiveId, isCompleted) {
+		// Make sure the user is logged in before inserting a task
+		if (!Meteor.userId()) {
+			throw new Meteor.Error("not-authorized");
+		}
+		GoalsCollection.update(
+			{ "keyObjectives._id" : keyObjectiveId} ,
+			{ $set: { "keyObjectives.$.completed" : isCompleted } });
+	},
+
+	"teal.goals.setDoneCriterion": function(doneCriterionId, isCompleted) {
+		// Make sure the user is logged in before inserting a task
+		if (!Meteor.userId()) {
+			throw new Meteor.Error("not-authorized");
+		}
+		GoalsCollection.update(
+			{ "doneCriteria._id" : doneCriterionId} ,
+			{ $set: { "doneCriteria.$.completed" : isCompleted } });
+	},
+});
+
+Meteor.startup(function() {
+	GoalsCollection._ensureIndex({"keyObjectives._id": 1}, {unique: false});
+	GoalsCollection._ensureIndex({"doneCriteria._id": 1}, {unique: false});
 });
