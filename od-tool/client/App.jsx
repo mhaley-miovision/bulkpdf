@@ -49,7 +49,6 @@ if (Meteor.isClient) {
 				}
 			);
 		}, 1000);
-
     });
 
 	Meteor.startup(function(){

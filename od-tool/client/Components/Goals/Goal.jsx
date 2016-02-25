@@ -133,23 +133,6 @@ Goal = React.createClass({
 		} else {
 			return <Loading spinner={true}/>
 		}
-
-		if (this.state.isEditing) {
-			return (
-				<li className="collection-item">
-					<form onSubmit={this.handleSubmit}>
-						<input placeholder="Enter a new label"
-							   type="text"
-							   className="validate"
-							   autoFocus
-							   onBlur={this.handleOnBlur}
-							   ref="newLabel"
-							   onChange={this.handleOnChange}
-						/>
-					</form>
-				</li>
-			);
-		}
 	}
 });
 

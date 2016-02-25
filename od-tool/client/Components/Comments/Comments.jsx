@@ -1,5 +1,4 @@
 /*
-
 GoalsSummary = React.createClass({
 	mixins: [ReactMeteorData],
 
@@ -21,5 +20,4 @@ GoalsSummary = React.createClass({
 		}
 	}
 });
-
-			*/
+*/

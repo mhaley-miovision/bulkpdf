@@ -42,3 +42,4 @@ alanning:roles
 momentjs:moment
 meteorhacks:subs-manager
 percolate:synced-cron
+cosmos:browserify
