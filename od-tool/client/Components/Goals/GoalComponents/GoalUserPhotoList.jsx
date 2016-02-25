@@ -30,7 +30,7 @@ GoalUserPhotoList = React.createClass({
 			<div className="GoalOwnersSection">
 				{ this.props.heading ?
 					<div
-						className="GoalOwnersHeading">{this.props.heading + (this.props.list.length > 1 ? "s" : "")}</div>
+						className="GoalSummaryHeading">{this.props.heading + (this.props.list.length > 1 ? "s" : "")}</div>
 					: ''
 				}
 				<div className="GoalOwnerPhotos center">{this.renderPhotos()}</div>

@@ -14,6 +14,7 @@ ProjectGoalSummary = React.createClass({
 					: ''
 				}
 				<div className="center GoalStatsSection">
+					<div className="GoalSummaryHeading">Subgoals</div>
 					<GoalsStatsDonut goal={this.props.goal} width="60px" height="60px" />
 				</div>
 				{ this.props.goal.estimatedCompletedOn ?
