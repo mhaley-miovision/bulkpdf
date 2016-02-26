@@ -279,6 +279,26 @@ Meteor.methods({
 		let goalIds = goals.map(g => { return g._id });
 		ContributorsCollection.update(contributorId, {$set: { topGoals: goalIds }});
 	},
+
+	"teal.goals.updateOrInsertGoal": function(goalId, name, keyObjectives, doneCriteria) {
+		console.log(goalId);
+
+		let newGoal = false;
+		let g = GoalsCollection.findOne({_id:goalId});
+		if (!g) {
+			g = {}; // new goal!
+			newGoal = true;
+		}
+		g.name = name;
+		g.keyObjectives = keyObjectives;
+		g.doneCriteria = doneCriteria;
+
+		if (newGoal) {
+			GoalsCollection.insert(g);
+		} else {
+			GoalsCollection.update(goalId, g);
+		}
+	}
 });
 
 Meteor.startup(function() {

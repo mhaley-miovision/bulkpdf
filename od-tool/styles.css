@@ -246,6 +246,10 @@ li.checked label {
     background-color: teal;
 }
 
+.btn a {
+    cursor: pointer;
+}
+
 /* ***************************************************************************** */
 
 #org-chart {
