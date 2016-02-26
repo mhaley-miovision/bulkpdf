@@ -42,18 +42,25 @@ GoalControls = React.createClass({
 			);
 		} else {
 			return (
-				<div className="card-action center-align">
-					<a className="btn-flat" onClick={this.props.onEditClicked}>Edit</a>
-					{	this.props.goal.isLeaf ? '' :
-						<a className="btn-flat" onClick={this.showModal}>Subgoals</a>
-					}
+				<div className="card-action">
+					<div className="center-align">
+						<a className="btn-flat" onClick={this.props.onEditClicked}>Edit</a>
+						{	this.props.goal.isLeaf ? '' :
+							<a className="btn-flat" onClick={this.showModal}>Subgoals</a>
+						}
+					</div>
 					<div id={this.getModalId()} className="modal">
-						<div className="modal-content">
-							<GoalSubGoals ref="subgoalModalObj" objectId={this.state.subGoalsTargetId}/>
+						<div className="modal-content" style={{padding:0}}>
+							<GoalSubGoals ref="subgoalModalObj"
+										  objectId={this.state.subGoalsTargetId}
+										  compactViewMode={true}/>
 						</div>
-						<div className="modal-footer center-align center">
-							<a href="#!" className=" modal-action modal-close waves-effect waves-green btn"
-							   onClick={this.handleCloseModal}>Close</a>
+						<div className="modal-footer">
+							<div className="center">
+								<a href="#!" className=" modal-action modal-close waves-effect waves-green btn"
+								   style={{float:"none"}}
+								   onClick={this.handleCloseModal}>Close</a>
+							</div>
 						</div>
 					</div>
 				</div>

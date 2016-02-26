@@ -6,11 +6,12 @@ Goal = React.createClass({
 	mixins: [ReactMeteorData],
 
 	propTypes: {
-		goal: React.PropTypes.object.isRequired
+		goal: React.PropTypes.object.isRequired,
+		compactViewMode: React.PropTypes.bool
 	},
 
 	getInitialState() {
-		return { isEditing: true };
+		return { isEditing: false };
 	},
 
 	getMeteorData() {
@@ -29,20 +30,6 @@ Goal = React.createClass({
 		}
 	},
 
-	renderSubgoalsList() {
-		if (this.data.doneLoading) {
-			if (!this.props.goal.isLeaf) {
-				return (
-					<ul className="collapsible" data-collapsible="accordion">
-						{this.renderSubgoalsListItems()}
-					</ul>
-				);
-			}
-		} else {
-			return <Loading spinner={true}/>;
-		}
-	},
-
 	renderRootLevelGoal() {
 		return (
 			<div className="row">
@@ -53,6 +40,17 @@ Goal = React.createClass({
 		);
 	},
 
+	renderTaskState() {
+		let label = "Not Started";
+		if (this.props.goal.state == 2) {
+			label = "Completed";
+		} else if (this.props.goal.state == 1) {
+			label = "In Progress";
+		}
+		let classes = "TaskGoalState" + label.replace(" ", "");
+		return <div className={classes}>{label}</div>;
+	},
+
 	renderGoalBody() {
 		if (this.state.isEditing) {
 			return <GoalEdit ref="obj"
@@ -61,17 +59,52 @@ Goal = React.createClass({
 			if (this.props.goal.path.length == 0) {
 				// this is a root level goal
 				return this.renderRootLevelGoal();
-			} else if (!this.props.goal.isLeaf) {
-				// this is a project goal
-				return <ProjectGoal ref="obj"
-									goal={this.props.goal}
-									ownerPhotos={this.data.ownerPhotos}
-									contributorPhotos={this.data.contributorPhotos}/>;
 			} else {
-				return <TaskGoal red="obj"
-								 goal={this.props.goal}
-								 ownerPhotos={this.data.ownerPhotos}
-								 contributorPhotos={this.data.contributorPhotos}/>;
+				let lw = this.props.goal.isLeaf ? 10 : 9;
+				let rw = this.props.goal.isLeaf ? 2 : 3;
+				return (
+					<div className="card-content">
+						<div className="row">
+							<div className={"col m" + lw + " s12 GoalContainer"}>
+								{ this.props.goal.isLeaf ?
+									<span className="ProjectGoalTitle">{this.props.goal.name}</span>
+									:
+									<div className="">
+										<span className="ProjectGoalTitle">{this.props.goal.name}</span>
+										<span className="ProjectTag">{this.props.goal.rootGoalName}</span>
+									</div>
+								}
+								<GoalDoneCriteria goal={this.props.goal}/>
+								<GoalKeyObjectives goal={this.props.goal}/>
+							</div>
+							<div className={"col m" + rw + " s12 GoalContainer"}>
+								{ this.props.goal.isLeaf ?
+									<div className="TaskGoalSummaryContainer center">
+										<div className="TaskGoalPhotos center">
+											{ this.data.ownerPhotos.length > 0 ?
+												<GoalUserPhotoList compactViewMode={this.props.compactViewMode} list={this.data.ownerPhotos}/>
+												: ''
+											}
+											{this.data.contributorPhotos.length > 0 ?
+												<GoalUserPhotoList compactViewMode={this.props.compactViewMode} list={this.data.contributorPhotos}/>
+												: ''
+											}
+										</div>
+										<div className="TaskGoalState">
+											{this.renderTaskState()}
+										</div>
+										<br/>
+										<GoalDueDateLabel goal={this.props.goal}/>
+									</div>
+									:
+									<ProjectGoalSummary goal={this.props.goal}
+														ownerPhotos={this.data.ownerPhotos}
+														contributorPhotos={this.data.contributorPhotos}/>
+								}
+							</div>
+						</div>
+					</div>
+				);
 			}
 		}
 	},
@@ -92,6 +125,7 @@ Goal = React.createClass({
 		if (this.refs.obj) {
 			let inputs = this.refs.obj.getInputs();
 			Meteor.call("teal.goals.updateOrInsertGoal", inputs._id, inputs.name, inputs.keyObjectives, inputs.doneCriteria);
+			Materialize.toast("Goal saved!", 1000);
 		}
 	},
 
@@ -101,13 +135,15 @@ Goal = React.createClass({
 
 	render() {
 		return (
-			<div className="card hoverable" style={{marginBottom:"40px"}}>
-				{this.data.doneLoading ? this.renderGoalBody() : <Loading spinner={true}/>}
-				<GoalControls isEditing={this.state.isEditing}
-							  goal={this.props.goal}
-							  onEditClicked={this.handleEditClicked}
-							  onSaveClicked={this.handleSaveClicked}
-							  onCancelClicked={this.handleCancelClicked}/>
+			<div className="card hoverable" style={{marginBottom: this.props.compactViewMode ? "0" : "40px"}}>
+				{ this.data.doneLoading ? this.renderGoalBody() : <Loading spinner={true}/>}
+				{ this.props.compactViewMode ? '' :
+					<GoalControls isEditing={this.state.isEditing}
+								  goal={this.props.goal}
+								  onEditClicked={this.handleEditClicked}
+								  onSaveClicked={this.handleSaveClicked}
+								  onCancelClicked={this.handleCancelClicked}/>
+				}
 			</div>
 		);
 	}

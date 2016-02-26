@@ -249,7 +249,9 @@ function processGoalsJson(json) {
 				owners: result.matched,
 				estimatedCompletedOn: date,
 				links: c["P" + r],
-				isLeaf: true
+				isLeaf: true,
+				doneCriteria: [],
+				keyObjectives: [],
 			};
 			tasks.push(task);
 		}

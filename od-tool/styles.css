@@ -585,6 +585,11 @@ circle.container, circle.label {
     vertical-align: middle;
     margin: 2px;
     border: solid 2px white;
+    display:inline-block;
+
+    width: 32px;
+    margin: 0 auto;
+
 }
 
 .zoomedInRolePhoto {
@@ -663,7 +668,7 @@ circle.container, circle.label {
     margin-right:8px;
     border-radius: .25em;
     text-align: center;
-    width: 61px;
+    max-width: 100%;
     border: solid white 1px;
 }
 
@@ -707,7 +712,7 @@ circle.container, circle.label {
     font-size: 11px;
     padding: 2px;
     border-radius: .25em;
-    width: 61px;
+    max-width: 100%;
     text-align: center;
     display: inline-block;
 }
@@ -784,7 +789,7 @@ circle.container, circle.label {
     margin: 0px;
 }
 .GoalOwnerPhotos {
-
+    text-align: center;
 }
 .GoalOwnersSection {
     margin-bottom: 10px;
@@ -792,6 +797,29 @@ circle.container, circle.label {
 
 .GoalStatsSection {
     margin-top: 20px;
+}
+
+.GoalEditItemInput {
+    margin-bottom: 0;
+    position:relative;
+}
+
+.GoalEditItemInput i {
+    position: absolute;
+    top: 20%;
+    font-size: 16px;
+    margin-left: 5px;
+    background-color: #e4e4e4;
+    border-radius: 50%;
+    color: rgba(0, 0, 0, 0.6);
+    padding: 4px;
+    cursor: pointer;
+    transition: all .15s ease-in-out;
+}
+
+.GoalEditItemInput i:hover {
+    background-color: #74AFAD;
+    color: white;
 }
 
 .TaskGoalSummaryContainer {
