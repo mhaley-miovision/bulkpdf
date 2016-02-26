@@ -1,9 +1,16 @@
 GoalControls = React.createClass({
 	propTypes: {
-		goal : React.PropTypes.object.isRequired,
-		hasChildren: React.PropTypes.bool.isRequired
+		goal : React.PropTypes.object.isRequired
 	},
 
+	getInitialState() {
+		return {
+			subGoalsModalVisible: false,
+			subGoalsTargetId: null,
+		};
+	},
+
+	/*
 	handleDelete()  {
 		// this needs to be done smart
 		//Meteor.call("teal.goals.removeGoal", this.props.goal._id);
@@ -45,14 +52,52 @@ GoalControls = React.createClass({
 	},
 
 	renderGoalStateControls() {
-		if (!this.props.hasChildren) {
+		if (!this.props.hasChildren()) {
 			return <GoalStateControls goal={this.props.goal}/>
 		}
+	},*/
+
+	componentDidMount() {
+
+	},
+
+	getModalId() {
+		return this.props.goal._id+"_modal";
+	},
+
+	handleCloseModal() {
+		this.setState({subGoalsTargetId:null});
+		$('#' + this.getModalId()).closeModal();
+	},
+
+	showModal() {
+		this.setState({subGoalsTargetId:this.props.goal._id});
+		$('#' + this.getModalId()).openModal();
 	},
 
 	render() {
-		// check here if the user can edit
-		let nosubGoalsText = this.props.hasChildren ? "" : "This goal has no sub-goals yet.";
+		return (
+			<div className="card-action center-align">
+				<a href="#">Edit</a>
+				{	this.props.goal.isLeaf ? '' :
+						<a onClick={this.showModal}>Subgoals</a>
+				}
+				<div id={this.getModalId()} className="modal">
+					<div className="modal-content">
+						<GoalSubGoals ref="subgoalModalObj" objectId={this.state.subGoalsTargetId}/>
+					</div>
+					<div className="modal-footer center-align center">
+						<a href="#!" className=" modal-action modal-close waves-effect waves-green btn"
+						   onClick={this.handleCloseModal}>Close</a>
+					</div>
+				</div>
+			</div>
+		);
+
+		// OLD VERSION
+		/*
+
+		 <a href={FlowRouter.path("goalSubGoals", {}, {objectId:this.props.goal._id})}>Subgoals</a>
 
 		return (
 			<div className="row">
@@ -81,6 +126,6 @@ GoalControls = React.createClass({
 					{this.renderGoalStateControls()}
 				</div>
 			</div>
-		);
+		);*/
 	},
 });

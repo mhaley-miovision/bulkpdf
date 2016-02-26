@@ -643,14 +643,6 @@ circle.container, circle.label {
     margin: 10px;
 }
 
-.row .col.goalControls {
-    padding-right:30px;
-}
-
-.noSubGoalsText {
-    padding: 10px;
-}
-
 .goalHeaderInformation {
     line-height:18px;
 }
@@ -723,7 +715,7 @@ circle.container, circle.label {
 
 .row .col.GoalContainer {
     line-height: 1.6em;
-    padding: 20px;
+    padding: 20px 20px 0 30px;
 }
 .row .col.GoalSummaryContainer {
     line-height: normal;

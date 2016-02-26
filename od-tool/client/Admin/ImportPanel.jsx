@@ -82,4 +82,5 @@ ImportPanel = React.createClass({
 				</form>
 			</div>
 		);
-	}});
+	}
+});

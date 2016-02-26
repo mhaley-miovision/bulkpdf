@@ -7,7 +7,7 @@ ProjectGoal = React.createClass({
 
 	render() {
 		return (
-			<div>
+			<div className="card-content">
 				<div className="row">
 					<div className="col m9 s12 GoalContainer">
 						<div className="">
@@ -17,7 +17,7 @@ ProjectGoal = React.createClass({
 						<GoalDoneCriteria goal={this.props.goal}/>
 						<GoalKeyObjectives goal={this.props.goal}/>
 					</div>
-					<div className="col m3 s8 GoalContainer">
+					<div className="col m3 s12 GoalContainer">
 						<ProjectGoalSummary goal={this.props.goal}
 											ownerPhotos={this.props.ownerPhotos}
 											contributorPhotos={this.props.contributorPhotos}/>

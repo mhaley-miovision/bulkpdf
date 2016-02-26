@@ -50,8 +50,6 @@ GoalsStatsDonut = React.createClass({
 				var canvasWidthvar = $('#'+_this.getChartId()).width();
 				var canvasHeight = $('#'+_this.getChartId()).height();
 
-				console.log('updateChart #'+_this.getChartId() + ", cw="+canvasWidthvar + ", ch="+canvasHeight);
-
 				//this constant base on canvasHeight / 2.8em
 				var constant = 104;
 				var fontsize = (canvasHeight/constant).toFixed(2);
@@ -72,7 +70,6 @@ GoalsStatsDonut = React.createClass({
 	},
 
 	componentDidMount() {
-		console.log("componentDidMount - #"+this.getChartId()+" - w="+this.props.width+",h="+this.props.height);
 		this.updateChart();
 	},
 

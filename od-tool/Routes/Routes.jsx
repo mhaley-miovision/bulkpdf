@@ -87,6 +87,15 @@ FlowRouter.route( '/goals/tree', {
 	}
 });
 
+FlowRouter.route( '/goals/subGoals', {
+	name: 'goalSubGoals',
+	action(params, queryParams) {
+		// TODO: validate params
+		var objectId = queryParams.objectId;
+		ReactLayout.render( App, { yield: <GoalSubGoals objectId={objectId}/>} );
+	}
+});
+
 FlowRouter.route( '/goals/list/contributor', {
 	name: 'goalsList',
 	action(params, queryParams) {

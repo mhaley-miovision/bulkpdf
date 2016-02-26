@@ -361,29 +361,26 @@ Meteor.methods({
 
 		// calculate number of goals for contributors and cache this
 		ContributorsCollection.find({}).forEach(c => {
+
+
 			c.numGoals = GoalsCollection.find({ owners:c.email }).count();
 			ContributorsCollection.update(c._id, c);
 			RolesCollection.find({email: c.email}).forEach(r => {
 				r.numGoals = c.numGoals;
 				RolesCollection.update(r._id, r);
 			});
-		});
 
-		/*
-		// populate a goal children array for easy rendering access
-		GoalsCollection.find({}).forEach(g => {
-			let childrenQuery = GoalsCollection.find({parent: g._id}, {fields: {_id: 1}});
-			let children = [];
-			if (childrenQuery.count() > 0) {
-				children = childrenQuery.fetch();
-			}
-			GoalsCollection.update(g._id, {$set: {children: children}});
-		});*/
+			Meteor.call("teal.goals.updateContributorTopLevelGoals", c._id);
+		});
 
 		// email about unmatched
 		var s = "Imported " + goals.length + " goals successfully.\n\n";
 		s += "Unmatched owner strings:\n" + result.unmatched.join(",");
 		console.log(s);
+
+
+
+
 		/*
 		Email.send({
 			from:"teal@mioviosion.com",

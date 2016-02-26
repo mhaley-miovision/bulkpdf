@@ -16,7 +16,7 @@ MyGoals = React.createClass({
 				<div>
 					<ObjectSearch onClick={this.handleSearch} findContributors={true} findOrganizations={false}/>
 				</div>
-				<GoalList objectId={this.state.objectId} />
+				<GoalsForIndividual objectId={this.state.objectId} />
 			</div>
 		);
 	}
