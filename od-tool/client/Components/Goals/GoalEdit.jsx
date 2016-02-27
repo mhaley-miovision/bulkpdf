@@ -103,7 +103,7 @@ GoalEdit = React.createClass({
 							   placeholder={o.name ? '' : "Enter key objective..."}
 							   value={o.name}>
 						</input>
-						<i key={"r_" + o._id} className="material-icons" id={"r_" + o._id}
+						<i key={"r_" + o._id} className="material-icons GreyButtonSmall" id={"r_" + o._id}
 						   onClick={_this.handleRemoveDoneCriteria}>close</i>
 					</div>
 				);
@@ -126,7 +126,7 @@ GoalEdit = React.createClass({
 							   placeholder={o.name ? '' : "Enter key objective..."}
 							   value={o.name}>
 						</input>
-						<i key={"r_" + o._id} className="material-icons" id={"r_" + o._id}
+						<i key={"r_" + o._id} className="material-icons GreyButtonSmall" id={"r_" + o._id}
 						   onClick={_this.handleRemoveKeyObjective}>close</i>
 					</div>
 				);
@@ -184,7 +184,7 @@ GoalEdit = React.createClass({
 						<div className="chip">
 							<img src="img/user_avatar_blank.jpg" alt="Contact Person"/>
 								Victor Leipnik
-							<i className="material-icons">close</i>
+							<i className="material-icons ">close</i>
 						</div>
 						<div className="chip">
 							<img src="img/user_avatar_blank.jpg" alt="Contact Person"/>

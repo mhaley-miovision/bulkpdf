@@ -63,7 +63,7 @@ Goal = React.createClass({
 				let lw = this.props.goal.isLeaf ? 10 : 9;
 				let rw = this.props.goal.isLeaf ? 2 : 3;
 				return (
-					<div className="card-content">
+					<div className={this.props.compactViewMode ? '' : 'card-content'}>
 						<div className="row">
 							<div className={"col m" + lw + " s12 GoalContainer"}>
 								{ this.props.goal.isLeaf ?
@@ -135,7 +135,7 @@ Goal = React.createClass({
 
 	render() {
 		return (
-			<div className="card hoverable" style={{marginBottom: this.props.compactViewMode ? "0" : "40px"}}>
+			<div className={this.props.compactViewMode ? 'collection-item' : 'card hoverable'} style={{marginBottom: this.props.compactViewMode ? "0" : "40px"}}>
 				{ this.data.doneLoading ? this.renderGoalBody() : <Loading spinner={true}/>}
 				{ this.props.compactViewMode ? '' :
 					<GoalControls isEditing={this.state.isEditing}

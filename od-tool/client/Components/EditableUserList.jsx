@@ -1,27 +1,16 @@
 GoalUserPhotoList = React.createClass({
-
-	mixins: [ReactMeteorData],
-
-	getMeteorData() {
-		let handle = Meteor.subscribe("teal.roles");
-
-		if (handle.ready()) {
-			return { doneLoading: true };
-		} else {
-			return { doneLoading: false };
-		}
-	},
-
 	propTypes: {
-		emailList : React.PropTypes.array.isRequired,
+		list : React.PropTypes.array.isRequired,
 		heading : React.PropTypes.string,
-		compactViewMode : React.PropTypes.bool
 	},
 
 	renderPhotos() {
 		return this.props.list.map(item => {
-
-			//let url = FlowRouter.path("profile", {}, {objectId: email});
+			//TODO: CSS Positioning horrible hack - no friggin clue why the
+			let horribleHack = this.props.compactViewMode && this.props.list.length == 1 ? "13px" : "0";
+			let email = item.email;
+			let photoUrl = item.photo;
+			let url = FlowRouter.path("profile", {}, {objectId: email});
 			if (photoUrl) {
 				return (
 					<a key={email} href={url} style={{margin:horribleHack}}>

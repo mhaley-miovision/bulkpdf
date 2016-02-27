@@ -58,6 +58,12 @@ function importHelper_transformRoleLabel(x) {
 	x.rootOrgId = rootOrgId;
 	return x;
 }
+function sanitizeCell(cellContent) {
+	if (cellContent) {
+		return cellContent.trim();
+	}
+	return null;
+}
 
 var url = "https://spreadsheets.google.com/feeds/worksheets/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/public/basic?alt=json";
 var skillsCellFeed = "https://spreadsheets.google.com/feeds/cells/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/ov5rkqr/public/basic?alt=json";
@@ -87,17 +93,64 @@ function processSkillsJson(json) {
 			continue;
 		}
 
-		var email = res['C'+r];
-		var skill = res['D'+r];
-		var rating = res['E'+r];
+		var email = sanitizeCell(res['C'+r]);
+		var skill = sanitizeCell(res['D'+r]);
+		var rating = sanitizeCell(res['E'+r]);
 		skills.push({email:email, skill:skill, rating:rating });
 	}
 
 	return skills;
 }
 
+var rolesCellFeed = "https://spreadsheets.google.com/feeds/cells/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/oz844tv/public/basic?alt=json";
+
+function processRolesJson(json) {
+	var cellItems = json.feed.entry;
+
+	var res = [];
+	for (e in cellItems) {
+		var o = cellItems[e];
+		res[o.title.$t] = o.content.$t;
+	}
+
+	c = res;
+
+	var startRow = 2;
+	var blankRowCount = 0;
+	var r = startRow;
+
+	var roles = [];
+
+	while (r++ < 2000) {
+		// stop if exceeded blank row count
+		if (typeof(c["C" + r]) === 'undefined') {
+			if (blankRowCount++ > 10) {
+				break;
+			}
+			continue;
+		}
+
+		let role = {
+			label: sanitizeCell(res['A' + r]),
+			accountabilityLabel: sanitizeCell(res['B' + r]),
+			organization: sanitizeCell(res['D' + r]),
+			application: sanitizeCell(res['E' + r]),
+			accountabilityLevel: sanitizeCell(res['F' + r]),
+			contributor: sanitizeCell(res['G' + r]),
+			primaryAccountability: sanitizeCell(res['H' + r]),
+			isActive: sanitizeCell(res['I' + r]),
+			startDate: sanitizeCell(res['O' + r]),
+			endDate: sanitizeCell(res['P' + r]),
+			isExternal: sanitizeCell(res['Q' + r])
+		};
+		roles.push(role);
+	}
+
+	return roles;
+}
+
 Meteor.methods({
-	"teal.import.v1ImportDatabase": function() {
+	"teal.import.v1ImportDatabase": function () {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -106,7 +159,7 @@ Meteor.methods({
 		var v1BaseURL = "http://ec2-54-152-211-94.compute-1.amazonaws.com/";
 
 		// find the root org if it exists already, and if not, insert it
-		var rootOrg = OrganizationsCollection.findOne({name:rootOrgName});
+		var rootOrg = OrganizationsCollection.findOne({name: rootOrgName});
 		if (!rootOrg) {
 			rootOrgId = OrganizationsCollection.insert({
 				_id: "miovision-root",
@@ -125,14 +178,14 @@ Meteor.methods({
 			rootOrgId = rootOrg._id;
 
 			// remove all objects belonging to this org - complete cleanup will occur
-			ApplicationsCollection.remove({rootOrgId:rootOrgId});
-			ContributorsCollection.remove({rootOrgId:rootOrgId});
-			OrganizationsCollection.remove({rootOrgId:rootOrgId});
-			OrgAccountabilitiesCollection.remove({rootOrgId:rootOrgId});
-			RoleAccountabilitiesCollection.remove({rootOrgId:rootOrgId});
-			RolesCollection.remove({rootOrgId:rootOrgId});
-			RoleLabelsCollection.remove({rootOrgId:rootOrgId});
-			SkillsCollection.remove({rootOrgId:rootOrgId});
+			ApplicationsCollection.remove({rootOrgId: rootOrgId});
+			ContributorsCollection.remove({rootOrgId: rootOrgId});
+			OrganizationsCollection.remove({rootOrgId: rootOrgId});
+			OrgAccountabilitiesCollection.remove({rootOrgId: rootOrgId});
+			RoleAccountabilitiesCollection.remove({rootOrgId: rootOrgId});
+			RolesCollection.remove({rootOrgId: rootOrgId});
+			RoleLabelsCollection.remove({rootOrgId: rootOrgId});
+			SkillsCollection.remove({rootOrgId: rootOrgId});
 		}
 
 		// Use API to retrieve OD data
@@ -164,7 +217,7 @@ Meteor.methods({
 			}
 		}
 
-		OrganizationsCollection.find({rootOrgId:rootOrgId}).forEach(org => {
+		OrganizationsCollection.find({rootOrgId: rootOrgId}).forEach(org => {
 			// find the parent chain
 			var o = OrganizationsCollection.findOne({name: org.name});
 			var parentId = null;
@@ -177,7 +230,7 @@ Meteor.methods({
 			}
 			path.reverse();
 
-			OrganizationsCollection.update(org._id, {$set : { parentId:parentId, path:path }});
+			OrganizationsCollection.update(org._id, {$set: {parentId: parentId, path: path}});
 		});
 
 		//==============================================================================================================
@@ -186,7 +239,7 @@ Meteor.methods({
 
 		for (var x in contributors.data) {
 			var c_id = ContributorsCollection.insert(importHelper_transformContributor(contributors.data[x]));
-			var c = ContributorsCollection.findOne({_id:c_id});
+			var c = ContributorsCollection.findOne({_id: c_id});
 
 			// also add to the users table, with appropriate roles
 			var existing = Meteor.users.findOne({email: c.email});
@@ -194,19 +247,19 @@ Meteor.methods({
 			if (!existing) {
 				userId = Meteor.users.insert({
 					email: c.email,
-					profile: { name: c.name }
+					profile: {name: c.name}
 				});
 			} else {
 				userId = existing._id;
 			}
 
 			// attach Teal-specific user information
-			Meteor.users.update(userId, {$set: {rootOrgId:rootOrgId, contributorId:c_id}});
+			Meteor.users.update(userId, {$set: {rootOrgId: rootOrgId, contributorId: c_id}});
 
 			// look up actual id instead of name
 			let o = OrganizationsCollection.findOne({name: c.physicalTeam});
 			if (o) {
-			ContributorsCollection.update(c_id,{$set:{physicalOrgId: o._id}});
+				ContributorsCollection.update(c_id, {$set: {physicalOrgId: o._id}});
 			} else {
 				console.warn("Couldn't find physical team for: " + c.name);
 			}
@@ -220,9 +273,9 @@ Meteor.methods({
 			}
 
 			// admins
-			var adminUsers = ['vleipnik@miovision.com','jreeve@miovision.com',
-				'jwincey@miovision.com', 'jbhavnani@miovision.com','lgreig@miovision.com','kmcbride@miovision.com',
-				'tbrijpaul@miovision.com', 'ndumond@miovision.com','dbullock@miovision.com','bward@miovision.com',
+			var adminUsers = ['vleipnik@miovision.com', 'jreeve@miovision.com',
+				'jwincey@miovision.com', 'jbhavnani@miovision.com', 'lgreig@miovision.com', 'kmcbride@miovision.com',
+				'tbrijpaul@miovision.com', 'ndumond@miovision.com', 'dbullock@miovision.com', 'bward@miovision.com',
 				'bpeters@miovision.com'];
 			if (adminUsers.indexOf(c.email) >= 0) {
 				Roles.addUsersToRoles(userId, 'admin'); //TODO:fix groups to work properly , rootOrgId);
@@ -249,23 +302,47 @@ Meteor.methods({
 		// Roles
 		//==============================================================================================================
 
-		for (var x in roles.data) {
-			var r_id = RolesCollection.insert(importHelper_transformRole(roles.data[x]));
+		// get skills also, bypassing v1 of tool
+		var response = HTTP.call('GET', rolesCellFeed);
+		var result = processRolesJson(response.data);
+		if (result && result.length > 0) {
+			result.forEach(r => {
+				var r_id = RolesCollection.insert(importHelper_transformRole(r));
 
-			// append user email
-			var c = ContributorsCollection.findOne({name:roles.data[x].contributor});
-			if (c) {
-				RolesCollection.update(r_id, {$set: { email: c.email }});
-			}
+				// append user email
+				var c = ContributorsCollection.findOne({name: r.contributor});
+				if (c) {
+					RolesCollection.update(r_id, {$set: {email: c.email}});
+				}
 
-			// append org path (for easy role querying)
-			var path = [];
-			var org = OrganizationsCollection.findOne({name:roles.data[x].organization});
-			if (org) {
-				path = org.path;
-			}
-			RolesCollection.update(r_id, {$set: { orgPath: path }});
+				// append org path (for easy role querying)
+				var path = [];
+				var org = OrganizationsCollection.findOne({name: r.organization});
+				if (org) {
+					path = org.path;
+					RolesCollection.update(r_id, {$set: {path: path}});
+				}
+
+				// append primary role id to contributor
+				if (c && r.primaryAccountability === 'TRUE') {
+					ContributorsCollection.update({_id: c._id}, {$set: {primaryRoleId: r_id}});
+				}
+			});
+			console.log("Successfully imported " + result.length + " role entries.");
+		} else {
+			console.error("Could not find any roles!");
 		}
+
+		// any contributor without a primary role identified can be filled in automatically
+		ContributorsCollection.find({primaryRoleId: {$exists: false}}).forEach(c => {
+			// if there is a single matching role, default it to the primary one
+			var roles = RolesCollection.find({email: c.email}).fetch();
+			if (roles.length == 1) {
+				ContributorsCollection.update({_id: c._id}, {$set: {primaryRoleId: roles[0]._id}});
+			} else {
+				console.warn("Could not decide on primary role for contributor: " + c.email);
+			}
+		});
 
 		//==============================================================================================================
 		// Role Labels
@@ -280,7 +357,7 @@ Meteor.methods({
 		//==============================================================================================================
 
 		// get skills also, bypassing v1 of tool
-		var response = HTTP.call( 'GET', skillsCellFeed );
+		var response = HTTP.call('GET', skillsCellFeed);
 		var result = processSkillsJson(response.data);
 		if (result && result.length > 0) {
 			result.forEach(s => {
@@ -292,4 +369,4 @@ Meteor.methods({
 			console.error("Could not find any skills!");
 		}
 	}
-});
+})

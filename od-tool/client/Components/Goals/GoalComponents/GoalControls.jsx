@@ -36,17 +36,18 @@ GoalControls = React.createClass({
 		if (this.props.isEditing) {
 			return (
 				<div className="card-action center-align">
-					<a className="btn-flat" onClick={this.props.onCancelClicked}>Cancel</a>
-					<a className="btn" onClick={this.props.onSaveClicked}>Save</a>
+					<i className="material-icons GreyButton" onClick={this.props.onCancelClicked}>close</i>
+					<i className="material-icons GreyButton" onClick={this.props.onSaveClicked}>check</i>
 				</div>
 			);
 		} else {
 			return (
 				<div className="card-action">
 					<div className="center-align">
-						<a className="btn-flat" onClick={this.props.onEditClicked}>Edit</a>
+						<i className="material-icons GreyButton" onClick={this.props.onEditClicked}>edit</i>
 						{	this.props.goal.isLeaf ? '' :
-							<a className="btn-flat" onClick={this.showModal}>Subgoals</a>
+
+						<i className="material-icons GreyButton" onClick={this.showModal}>list</i>
 						}
 					</div>
 					<div id={this.getModalId()} className="modal">
@@ -57,9 +58,8 @@ GoalControls = React.createClass({
 						</div>
 						<div className="modal-footer">
 							<div className="center">
-								<a href="#!" className=" modal-action modal-close waves-effect waves-green btn"
-								   style={{float:"none"}}
-								   onClick={this.handleCloseModal}>Close</a>
+								<i className="material-icons GreyButton" onClick={this.handleCloseModal}
+								   style={{float:"none"}}>check</i>
 							</div>
 						</div>
 					</div>

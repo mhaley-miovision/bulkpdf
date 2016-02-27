@@ -51,7 +51,12 @@ if (Meteor.isServer) {
 					notFoundString += o.primaryEmail + "\n";
 					notFoundCount++;
 				} else if (o.thumbnailPhotoUrl) {
-					ContributorsCollection.update(c._id, {$set : {photo: o.thumbnailPhotoUrl}})
+					// attach to this contributor
+					ContributorsCollection.update(c._id, {$set : {photo: o.thumbnailPhotoUrl}});
+
+					// also attach photo to all roles tied to this user
+					RolesCollection.update({email: c.email}, {$set : {photo: o.thumbnailPhotoUrl}});
+
 					updatedString += o.primaryEmail + "\n";
 					updatedCount++;
 				} else {

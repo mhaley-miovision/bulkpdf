@@ -807,7 +807,26 @@ circle.container, circle.label {
 .GoalEditItemInput i {
     position: absolute;
     top: 20%;
-    font-size: 16px;
+    margin-left: 5px;
+}
+.GreyButton {
+    font-size: 20px;
+    margin-left: 5px;
+    background-color: #e4e4e4;
+    border-radius: 50%;
+    color: rgba(0, 0, 0, 0.6);
+    padding: 4px;
+    margin-left:10px;
+    margin-right:10px;
+    cursor: pointer;
+    transition: all .15s ease-in-out;
+}
+.GreyButton:hover {
+    background-color: #74AFAD;
+    color: white;
+}
+.GreyButtonSmall {
+    font-size: 13px;
     margin-left: 5px;
     background-color: #e4e4e4;
     border-radius: 50%;
@@ -816,8 +835,7 @@ circle.container, circle.label {
     cursor: pointer;
     transition: all .15s ease-in-out;
 }
-
-.GoalEditItemInput i:hover {
+.GreyButtonSmall:hover {
     background-color: #74AFAD;
     color: white;
 }
