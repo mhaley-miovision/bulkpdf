@@ -24,6 +24,10 @@ RoleListEdit = React.createClass({
 		});
 	},
 
+	addNewRole() {
+
+	},
+
 	render() {
 		return (
 			<div className="GoalOwnersSection">
@@ -35,6 +39,8 @@ RoleListEdit = React.createClass({
 				<div className="GoalOwnerPhotos">
 					{this.renderRoles()}
 				</div>
+
+				<div><ObjectSearch label="Enter email..." notFound="No matching roles found" findRoles={true} findContributors={false} findOrganizations={false}/></div>
 			</div>
 		);
 	}

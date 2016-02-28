@@ -1,6 +1,21 @@
 ObjectSearch = React.createClass({
 	mixins: [ReactMeteorData],
 
+	propTypes: {
+		customLabel: React.PropTypes.string,
+		findOrganizations: React.PropTypes.bool,
+		findContributors: React.PropTypes.bool,
+		findRoles: React.PropTypes.bool,
+	},
+
+	getDefaultProps() {
+		return {
+			width: screen.width < 700 ? 330 : "100%",
+			findContributors: true,
+			findOrganizations: true,
+		};
+	},
+
 	getMeteorData() {
 		var handle1 = Meteor.subscribe('teal.organizations');
 		var handle2 = Meteor.subscribe('teal.contributors');
@@ -12,17 +27,23 @@ ObjectSearch = React.createClass({
 
 				// TODO: nosql injection risk here!?
 
+				// TODO: filter by owned root organization!!!
+
 				var organizationMatches = this.props.findOrganizations ? OrganizationsCollection.find(
 					q,
 					{ fields: {name: 1, _id: 1, id: 1}, sort: {name: 1} }).fetch() : {};
 				var contributorMatches = this.props.findContributors ? ContributorsCollection.find(
 					q,
 					{ fields: {name: 1, _id: 1, id: 1, email: 1}, sort: {name: 1} }).fetch() : {};
+				var roleMatches = this.props.findRoles ? RolesCollection.find(
+					{ email: {$regex: new RegExp('.*' + this.state.query + '.*', "i")} },
+					{ fields: {accountabilityLabel: 1, email:1, contributor:1}, sort: {accountabilityLabel: 1} }
+				).fetch() : {};
 
-				return {contributors: contributorMatches, organizations: organizationMatches};
+				return {contributors: contributorMatches, organizations: organizationMatches, roles: roleMatches};
 			}
 		}
-		return { contributors: [], organizations: []};
+		return { contributors: [], organizations: [], roles: []};
 	},
 
 	getInitialState() {
@@ -32,14 +53,6 @@ ObjectSearch = React.createClass({
 			query: "",
 			contributors: [],
 			organization: [],
-		};
-	},
-
-	getDefaultProperties() {
-		return {
-			width: screen.width < 700 ? 330 : "100%",
-			findContributors: true,
-			findOrganizations: true,
 		};
 	},
 
@@ -78,8 +91,16 @@ ObjectSearch = React.createClass({
 		}
 	},
 
+	handleRoleClick: function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (this.props.onClick) {
+			this.props.onClick(e.target.id, 'role');
+		}
+	},
+
 	renderDropdownItems() {
-		if (this.data.contributors.length > 0 || this.data.organizations.length > 0) {
+		if (this.data.contributors.length > 0 || this.data.organizations.length > 0 || this.data.roles.length > 0) {
 			var collection = [];
 			var i = 0;
 			if (this.data.contributors.length > 0) {
@@ -100,15 +121,26 @@ ObjectSearch = React.createClass({
 					i++;
 				}
 			}
+			if (this.data.roles.length > 0) {
+				this.data.roles.forEach(r => {
+					collection.push(
+						<a href="#!" className="collection-item" key={r._id} id={r._id} object={r}
+						   onClick={ this.handleRoleClick }>{r.contributor ? r.contributor : "&lt;Unfilled%gt;"} - {r.accountabilityLabel}</a>
+					);
+				})
+			}
 			return collection;
 		} else {
 			var s = "people or organizations";
-			if (!this.props.findContributors) {
-				s = "organizations";
-			} else if (!this.props.findOrganizations) {
-				s = "people";
+			if (this.props.notFoundLabel) {
+				s = this.props.notFoundLabel;
+			} else {
+				if (!this.props.findContributors) {
+					s = "organizations";
+				} else if (!this.props.findOrganizations) {
+					s = "people";
+				}
 			}
-
 			return <a href="#!" className="collection-item" onClick={this.onBlur}>No matching {s} found.</a>
 		}
 	},
@@ -119,12 +151,16 @@ ObjectSearch = React.createClass({
 
 	render: function() {
 		var s = "a person or an organization";
-		if (!this.props.findContributors) {
-			s = "an organization";
-		} else if (!this.props.findOrganizations) {
-			s = "a person";
+		if (this.props.label) {
+			s = this.props.label;
+		} else {
+			if (!this.props.findContributors) {
+				s = "an organization";
+			} else if (!this.props.findOrganizations) {
+				s = "a person";
+			}
+			s = "Click here to search for a " + s;
 		}
-		s = "Click here to search for a " + s;
 
 		return (
 			<div style={{width:this.props.width}}>
