@@ -15,6 +15,9 @@ GoalEdit = React.createClass({
 	},
 
 	getInputs() {
+		// TODO: this is kind of nasty and a leaky abstraction - there must be a better way to do this (flux/redux?)
+		this.state.ownersList = this.refs.ownersList.state.roles;
+		this.state.contributorsList = this.refs.contributorsList.state.roles;
 		return this.state;
 	},
 
@@ -167,7 +170,7 @@ GoalEdit = React.createClass({
 							</ul>
 						</section>
 						<section>
-							<div className="ProjectGoalSubtitle">KeyObjectives</div>
+							<div className="ProjectGoalSubtitle">Key Objectives</div>
 							<ul className="ProjectGoalDoneCriteria">
 								{this.renderKeyObjectiveItems()}
 								<form onSubmit={this.addKeyObjective}>
@@ -183,8 +186,8 @@ GoalEdit = React.createClass({
 						</section>
 					</div>
 					<div className="col m3 s12 GoalContainer">
-						<RoleListEdit roleList={this.props.goal.ownerRoles} heading="Owner" isEditing={true}/>
-						<RoleListEdit roleList={this.props.goal.contributorRoles} heading="Contributor" isEditing={true}/>
+						<RoleListEdit ref="ownersList" roleList={this.props.goal.ownerRoles} heading="Owner" isEditing={true}/>
+						<RoleListEdit ref="contributorsList" roleList={this.props.goal.contributorRoles} heading="Contributor" isEditing={true}/>
 					</div>
 				</div>
 			</div>

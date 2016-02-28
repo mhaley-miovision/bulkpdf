@@ -1,16 +1,17 @@
 ProjectGoalSummary = React.createClass({
 	propTypes: {
-		goal : React.PropTypes.object.isRequired,
-		ownerPhotos : React.PropTypes.array.isRequired,
-		contributorPhotos : React.PropTypes.array.isRequired
+		goal : React.PropTypes.object.isRequired
 	},
 
 	render() {
 		return (
 			<section>
-				<GoalUserPhotoList list={this.props.ownerPhotos} heading="Owner" />
-				{ this.props.contributorPhotos.length > 0 ?
-					<GoalUserPhotoList list={this.props.contributorPhotos} heading="Contributor"/>
+				{ this.props.goal.ownerRoles.length > 0 ?
+					<GoalUserPhotoList list={this.props.goal.ownerRoles} heading="Owner"/>
+					: ''
+				}
+				{ this.props.goal.contributorRoles.length > 0 ?
+					<GoalUserPhotoList list={this.props.goal.contributorRoles} heading="Contributor"/>
 					: ''
 				}
 				<div className="center GoalStatsSection">

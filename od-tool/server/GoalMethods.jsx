@@ -319,7 +319,7 @@ Meteor.methods({
 		RolesCollection.update(roleId, {$set: { topGoals: goalIds }});
 	},
 
-	"teal.goals.updateOrInsertGoal": function(goalId, name, keyObjectives, doneCriteria) {
+	"teal.goals.updateOrInsertGoal": function(goalId, name, keyObjectives, doneCriteria, ownerRoles, contributorRoles) {
 		console.log(goalId);
 
 		let newGoal = false;
@@ -331,6 +331,8 @@ Meteor.methods({
 		g.name = name;
 		g.keyObjectives = keyObjectives;
 		g.doneCriteria = doneCriteria;
+		g.ownerRoles = ownerRoles;
+		g.contributorRoles = contributorRoles;
 
 		if (newGoal) {
 			GoalsCollection.insert(g);

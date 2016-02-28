@@ -6,6 +6,7 @@ ObjectSearch = React.createClass({
 		findOrganizations: React.PropTypes.bool,
 		findContributors: React.PropTypes.bool,
 		findRoles: React.PropTypes.bool,
+		onClick: React.PropTypes.any.isRequired
 	},
 
 	getDefaultProps() {
@@ -95,7 +96,7 @@ ObjectSearch = React.createClass({
 		e.preventDefault();
 		e.stopPropagation();
 		if (this.props.onClick) {
-			this.props.onClick(e.target.id, 'role');
+			this.props.onClick(e.target.id, 'contributor');
 		}
 	},
 
@@ -107,7 +108,7 @@ ObjectSearch = React.createClass({
 				for (var c in this.data.contributors) {
 					var o = this.data.contributors[c];
 					collection.push(
-						<a href="#!" className="collection-item" key={i} id={o.email} object={o}
+						<a href="#!" className="collection-item" key={i} id={o.email} object={o} style={{cursor:"pointer"}}
 						   onClick={ this.handleContributorClick }>{o.name}</a>);
 					i++;
 				}
@@ -116,16 +117,17 @@ ObjectSearch = React.createClass({
 				for (var c in this.data.organizations) {
 					var o = this.data.organizations[c];
 					collection.push(
-						<a href="#!" className="collection-item" key={i} id={i} object={o}
+						<a href="#!" className="collection-item" key={i} id={i} object={o} style={{cursor:"pointer"}}
 						   onClick={  this.handleOrganizationClick }>{o.name}</a>);
 					i++;
 				}
 			}
 			if (this.data.roles.length > 0) {
 				this.data.roles.forEach(r => {
+					let l = (r.contributor ? r.contributor : "&lt;Unfilled%gt;") + " - " + r.accountabilityLabel;
 					collection.push(
-						<a href="#!" className="collection-item" key={r._id} id={r._id} object={r}
-						   onClick={ this.handleRoleClick }>{r.contributor ? r.contributor : "&lt;Unfilled%gt;"} - {r.accountabilityLabel}</a>
+						<a className="collection-item" key={r._id} id={r._id} object={r} style={{cursor:"pointer"}}
+						   onClick={ this.handleRoleClick }>{l}</a>
 					);
 				})
 			}

@@ -14,7 +14,7 @@ GoalList = React.createClass({
 	},
 	render() {
 		return (
-			<div className={this.props.compactViewMode ? 'collection' : ''}>
+			<div className={this.props.compactViewMode ? 'collection' : ''} style={{ margin: 0 }}>
 				{this.renderGoals()}
 			</div>
 		);
