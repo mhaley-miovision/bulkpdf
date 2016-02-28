@@ -30,7 +30,10 @@ GoalsForIndividual = React.createClass({
 			this.state.contributorPrefix = prefix;
 
 			// find all nodes with this contributor as owner, sorted by depth
-			let goals = GoalsCollection.find({$or: [ {owners: objectId}, {contributors: objectId} ]}, {sort: {depth:1}}).fetch();
+			let goals = GoalsCollection.find({$or: [
+					{ ownerRoles: { $elemMatch : {email: objectId} }},
+					{ contributorRoles: { $elemMatch : {email: objectId} }}
+			]}, {sort: {depth:1}}).fetch();
 
 			// remove all nodes which are sub-children
 			let i = 0;
