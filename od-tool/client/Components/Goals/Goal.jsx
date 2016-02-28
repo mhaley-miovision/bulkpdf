@@ -113,6 +113,16 @@ Goal = React.createClass({
 		this.setState({isEditing:false});
 	},
 
+	handleDeleteClicked() {
+		Meteor.call("teal.goals.deleteGoal", this.props.goal._id, function(err) {
+			if (err) {
+				Materialize.toast("Failed to delete goal!", 1000);
+			} else {
+				Materialize.toast("Goal deleted!", 1000);
+			}
+		});
+	},
+
 	render() {
 		return (
 			<div className={this.props.compactViewMode ? 'collection-item' : 'card hoverable'}
@@ -123,6 +133,7 @@ Goal = React.createClass({
 								  goal={this.props.goal}
 								  onEditClicked={this.handleEditClicked}
 								  onSaveClicked={this.handleSaveClicked}
+								  onDeleteClicked={this.handleDeleteClicked}
 								  onCancelClicked={this.handleCancelClicked}/>
 				}
 			</div>

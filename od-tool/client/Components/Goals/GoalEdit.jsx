@@ -48,7 +48,6 @@ GoalEdit = React.createClass({
 	handleNameChange(event) {
 		let v = event.target.value;
 		this.setState({name:event.target.value});
-		console.log(v);
 	},
 
 	handleDoneCriteriaChange(event) {

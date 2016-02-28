@@ -77,6 +77,54 @@ Meteor.methods({
 		GoalsCollection.remove(goalId);
 	},
 
+	// note: this function recurses up the goal tree
+	"teal.goals.updateGoalStats": function (goalId) {
+		// Make sure the user is logged in before inserting a task
+		if (!Meteor.userId()) {
+			throw new Meteor.Error("not-authorized");
+		}
+
+		// get the goal
+		let g = GoalsCollection.findOne({_id:goalId});
+
+		// get the children of this goal
+		let children = GoalsCollection.find({parent:goalId}).fetch();
+		if (children.length > 0) {
+			let completed = 0;
+			let inProgress = 0;
+			let notStarted = 0;
+			children.forEach(c => {
+				completed += c.stats.completed;
+				inProgress += c.stats.inProgress;
+				notStarted += c.stats.notStarted;
+			});
+
+			// update the goal
+			GoalsCollection.update(goalId, {
+				$set: {
+					stats: {
+						completed: completed,
+						inProgress: inProgress,
+						notStarted: notStarted
+					}
+				}
+			});
+		} else {
+			// this is a leaf
+			GoalsCollection.update(g._id, {$set: {
+				stats: {
+					notStarted: g.state == 0 ? 1 : 0,
+					inProgress: g.state == 1 ? 1 : 0,
+					completed: g.state == 2 ? 1 : 0
+				} } });
+		}
+
+		// recurse upwards!
+		if (g.parent) {
+			Meteor.call("teal.goals.updateGoalStats", g.parent);
+		}
+	},
+
 	// this is a pretty ugly method, but it should do the trick for now
 	"teal.goals.setGoalState": function (goalId, state) {
 		// Make sure the user is logged in before inserting a task
@@ -194,8 +242,6 @@ Meteor.methods({
 			}
 		}
 		populateStats(root,false);
-
-		console.log(root);
 
 		return root;
 	},
@@ -320,6 +366,11 @@ Meteor.methods({
 	},
 
 	"teal.goals.updateOrInsertGoal": function(goalId, goalParentId, name, keyObjectives, doneCriteria, ownerRoles, contributorRoles) {
+		// Make sure the user is logged in before inserting a task
+		if (!Meteor.userId()) {
+			throw new Meteor.Error("not-authorized");
+		}
+
 		let newGoal = false;
 		let g = goalId ? GoalsCollection.findOne({_id:goalId}) : null;
 		if (!g) {
@@ -350,7 +401,10 @@ Meteor.methods({
 			}
 
 			// actually insert the goal
-			GoalsCollection.insert(g);
+			let _id = GoalsCollection.insert(g);
+
+			// update goal stats
+			Meteor.call("teal.goals.updateGoalStats", _id);
 
 			// populate role goal stats
 			ownerRoles.forEach(r => {
@@ -366,6 +420,26 @@ Meteor.methods({
 			} else {
 				GoalsCollection.update(goalId, g);
 			}
+		}
+	},
+
+	"teal.goals.deleteGoal" : function(goalId) {
+		// Make sure the user is logged in before inserting a task
+		if (!Meteor.userId()) {
+			throw new Meteor.Error("not-authorized");
+		}
+		let g = GoalsCollection.findOne({_id:goalId});
+		if (g) {
+			if (g.isLeaf) {
+				GoalsCollection.remove({_id:goalId});
+
+				// update parent stats
+				Meteor.call("teal.goals.updateGoalStats", g.parent);
+			} else {
+				throw new Meteor.Error("not-allowed");
+			}
+		} else {
+			throw new Meteor.Error("not-found");
 		}
 	}
 });

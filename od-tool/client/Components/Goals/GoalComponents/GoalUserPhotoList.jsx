@@ -1,40 +1,21 @@
 GoalUserPhotoList = React.createClass({
-
-	mixins: [ReactMeteorData],
-
-	getMeteorData() {
-		let handle = Meteor.subscribe("teal.roles");
-
-		if (handle.ready()) {
-			return { doneLoading: true };
-		} else {
-			return { doneLoading: false };
-		}
-	},
-
 	propTypes: {
-		emailList : React.PropTypes.array.isRequired,
+		list : React.PropTypes.array.isRequired,
 		heading : React.PropTypes.string,
-		compactViewMode : React.PropTypes.bool
 	},
 
 	renderPhotos() {
 		return this.props.list.map(item => {
-
-			//let url = FlowRouter.path("profile", {}, {objectId: email});
-			if (photoUrl) {
-				return (
-					<a key={email} href={url} style={{margin:horribleHack}}>
-						<img key={email} title={email} className="goalItemPhoto" src={photoUrl}/>
-					</a>
-				);
-			} else {
-				return (
-					<a key={email} href={url} style={{margin:horribleHack}}>
-						<img key={email} title={email} className="goalItemPhoto" src="/img/user_avatar_blank.jpg"/>
-					</a>
-				);
-			}
+			//TODO: CSS Positioning horrible hack - no friggin clue why the
+			let horribleHack = this.props.compactViewMode && this.props.list.length == 1 ? "13px" : "0";
+			let email = item.email;
+			let photoUrl = item.photo ? item.photo : "/img/user_avatar_blank.jpg";
+			let url = FlowRouter.path("profile", {}, {objectId: email});
+			return (
+				<a key={email} href={url} style={{margin:horribleHack}} data-tip={item.accountabilityLabel}>
+					<img key={item._id} title={email} className="goalItemPhoto" src={photoUrl}/>
+				</a>
+			);
 		});
 	},
 
@@ -47,6 +28,7 @@ GoalUserPhotoList = React.createClass({
 					: ''
 				}
 				<div className="GoalOwnerPhotos">{this.renderPhotos()}</div>
+				<ReactTooltip place="bottom"/>
 			</div>
 		);
 	}

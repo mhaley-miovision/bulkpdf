@@ -5,6 +5,7 @@ GoalControls = React.createClass({
 		onEditClicked: React.PropTypes.any.isRequired,
 		onSaveClicked: React.PropTypes.any.isRequired,
 		onCancelClicked: React.PropTypes.any.isRequired,
+		onDeleteClicked: React.PropTypes.any.isRequired,
 	},
 
 	getInitialState() {
@@ -14,16 +15,12 @@ GoalControls = React.createClass({
 		};
 	},
 
-	componentDidMount() {
-
-	},
-
 	getModalId() {
 		return this.props.goal._id+"_modal";
 	},
 
 	getNewGoalModalId() {
-		return this.props.goal.id+"_new";
+		return this.props.goal._id+"_new";
 	},
 
 	handleCloseModal() {
@@ -53,6 +50,10 @@ GoalControls = React.createClass({
 			return (
 				<div className="card-action">
 					<div className="center-align">
+						{  this.props.goal.isLeaf ? // only show delete button for leaves
+							<i className = "material-icons GreyButton" onClick={this.props.onDeleteClicked}>delete</i>
+							: ''
+						}
 						<i className="material-icons GreyButton" onClick={this.props.onEditClicked}>edit</i>
 						{	this.props.goal.isLeaf ? '' :
 
