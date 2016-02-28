@@ -319,11 +319,9 @@ Meteor.methods({
 		RolesCollection.update(roleId, {$set: { topGoals: goalIds }});
 	},
 
-	"teal.goals.updateOrInsertGoal": function(goalId, name, keyObjectives, doneCriteria, ownerRoles, contributorRoles) {
-		console.log(goalId);
-
+	"teal.goals.updateOrInsertGoal": function(goalId, goalParentId, name, keyObjectives, doneCriteria, ownerRoles, contributorRoles) {
 		let newGoal = false;
-		let g = GoalsCollection.findOne({_id:goalId});
+		let g = goalId ? GoalsCollection.findOne({_id:goalId}) : null;
 		if (!g) {
 			g = {}; // new goal!
 			newGoal = true;
@@ -333,11 +331,41 @@ Meteor.methods({
 		g.doneCriteria = doneCriteria;
 		g.ownerRoles = ownerRoles;
 		g.contributorRoles = contributorRoles;
+		g.state = 0;
 
 		if (newGoal) {
+			// build path to this node
+			let p = null;
+			if (goalParentId) {
+				p = GoalsCollection.findOne({_id: goalParentId});
+				GoalsCollection.update({_id: goalParentId}, {$set: {isLeaf:false}}); // no longer a leaf
+				g.path = _.clone(p.path);
+				g.path.push(p._id);
+				g.depth = p.depth + 1;
+				g.rootOrgId = p.rootOrgId;
+				g.rootGoalName = p.rootGoalName;
+				g.rootGoalId = p.rootGoalId;
+				g.parent = goalParentId; // attach to parent
+				g.isLeaf = true;
+			}
+
+			// actually insert the goal
 			GoalsCollection.insert(g);
+
+			// populate role goal stats
+			ownerRoles.forEach(r => {
+				Meteor.call("teal.goals.updateContributorTopLevelGoals", r._id);
+			});
+			contributorRoles.forEach(r => {
+				Meteor.call("teal.goals.updateContributorTopLevelGoals", r._id);
+			});
+
 		} else {
-			GoalsCollection.update(goalId, g);
+			if (goalParentId != null) {
+				console.error("moving around goal branches around not yet supported!")
+			} else {
+				GoalsCollection.update(goalId, g);
+			}
 		}
 	}
 });

@@ -22,6 +22,10 @@ GoalControls = React.createClass({
 		return this.props.goal._id+"_modal";
 	},
 
+	getNewGoalModalId() {
+		return this.props.goal.id+"_new";
+	},
+
 	handleCloseModal() {
 		this.setState({subGoalsTargetId:null});
 		$('#' + this.getModalId()).closeModal();
@@ -30,6 +34,11 @@ GoalControls = React.createClass({
 	showModal() {
 		this.setState({subGoalsTargetId:this.props.goal._id});
 		$('#' + this.getModalId()).openModal();
+	},
+
+	showNewGoalModal() {
+		// TODO: move this to a method on the component
+		$('#' + this.getNewGoalModalId()).openModal();
 	},
 
 	render() {
@@ -47,10 +56,11 @@ GoalControls = React.createClass({
 						<i className="material-icons GreyButton" onClick={this.props.onEditClicked}>edit</i>
 						{	this.props.goal.isLeaf ? '' :
 
-						<i className="material-icons GreyButton" onClick={this.showModal}>list</i>
+							<i className="material-icons GreyButton" onClick={this.showModal}>list</i>
 						}
+						<i className="material-icons GreyButton" onClick={this.showNewGoalModal}>add</i>
 					</div>
-					<div id={this.getModalId()} className="modal">
+					<div id={this.getModalId()} className="modal modal-fixed-footer">
 						<div className="modal-content" style={{padding:0}}>
 							<GoalSubGoals ref="subgoalModalObj"
 										  objectId={this.state.subGoalsTargetId}
@@ -59,10 +69,11 @@ GoalControls = React.createClass({
 						<div className="modal-footer">
 							<div className="center">
 								<i className="material-icons GreyButton" onClick={this.handleCloseModal}
-								   style={{float:"none"}}>check</i>
+								   style={{float:"none",marginTop:"7px"}}>check</i>
 							</div>
 						</div>
 					</div>
+					<GoalNewModal id={this.getNewGoalModalId()} parentGoalId={this.props.goal._id}/>
 				</div>
 			);
 		}

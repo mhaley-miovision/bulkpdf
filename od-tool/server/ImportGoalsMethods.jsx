@@ -260,6 +260,7 @@ function processGoalsJson(json) {
 }
 
 Meteor.methods({
+	//TODO: refactor this to use creation method and unify actions on create
 	"teal.import.importGoals": function() {
 		var response = HTTP.call( 'GET', cellsFeed);
 		var result = processGoalsJson(response.data);

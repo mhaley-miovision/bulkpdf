@@ -100,8 +100,9 @@ Goal = React.createClass({
 		if (this.refs.obj) {
 			let inputs = this.refs.obj.getInputs();
 			Meteor.call("teal.goals.updateOrInsertGoal",
-				inputs._id, inputs.name, inputs.keyObjectives, inputs.doneCriteria,
-				inputs.ownersList, inputs.contributorsList);
+				inputs._id, null, inputs.name, inputs.keyObjectives, inputs.doneCriteria,
+				inputs.ownerRoles, inputs.contributorRoles);
+			// TODO: goal state
 			Materialize.toast("Goal saved!", 1000);
 		}
 	},

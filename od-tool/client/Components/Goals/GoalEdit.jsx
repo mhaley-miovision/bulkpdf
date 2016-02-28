@@ -8,16 +8,18 @@ GoalEdit = React.createClass({
 			keyObjectives: this.props.goal ? _.clone(this.props.goal.keyObjectives) : [],
 			doneCriteria: this.props.goal ? _.clone(this.props.goal.doneCriteria) : [],
 			name: this.props.goal ? _.clone(this.props.goal.name) : "",
-			_id: this.props.goal ? this.props.goal._id : new Meteor.Collection.ObjectId()._str,
+			_id: this.props.goal ? this.props.goal._id : null,
 			newKeyObjective: "",
 			newDoneCriteria: "",
+			ownerRoles: this.props.goal ? _.clone(this.props.goal.ownerRoles) : [],
+			contributorRoles: this.props.goal ?  _.clone(this.props.goal.contributorRoles) : [],
 		}
 	},
 
 	getInputs() {
 		// TODO: this is kind of nasty and a leaky abstraction - there must be a better way to do this (flux/redux?)
-		this.state.ownersList = this.refs.ownersList.state.roles;
-		this.state.contributorsList = this.refs.contributorsList.state.roles;
+		this.state.ownerRoles = this.refs.ownersList.state.roles;
+		this.state.contributorRoles = this.refs.contributorsList.state.roles;
 		return this.state;
 	},
 
@@ -149,8 +151,10 @@ GoalEdit = React.createClass({
 						<div className="">
 							<span className="ProjectGoalTitle">
 								<input key="new_ko" type="text"
+									   placeholder="Enter new goal name..."
 									   onChange={this.handleNameChange}
-									   value={this.state.name}>
+									   value={this.state.name}
+									   id="goalNameInput">
 								</input>
 							</span>
 						</div>
@@ -186,8 +190,8 @@ GoalEdit = React.createClass({
 						</section>
 					</div>
 					<div className="col m3 s12 GoalContainer">
-						<RoleListEdit ref="ownersList" roleList={this.props.goal.ownerRoles} heading="Owner" isEditing={true}/>
-						<RoleListEdit ref="contributorsList" roleList={this.props.goal.contributorRoles} heading="Contributor" isEditing={true}/>
+						<RoleListEdit ref="ownersList" roleList={this.state.ownerRoles} heading="Owner" isEditing={true}/>
+						<RoleListEdit ref="contributorsList" roleList={this.state.contributorRoles} heading="Contributor" isEditing={true}/>
 					</div>
 				</div>
 			</div>
