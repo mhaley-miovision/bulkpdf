@@ -11,7 +11,7 @@ Goal = React.createClass({
 	},
 
 	getInitialState() {
-		return { isEditing: false };
+		return { isEditing: true };
 	},
 
 	getMeteorData() {
@@ -24,7 +24,7 @@ Goal = React.createClass({
 				ContributorsCollection.find({email: { $in: this.props.goal.contributors } }, { fields: {email:1,photo:1}}).fetch()
 				: [];
 
-			return { ownerPhotos: ownerPhotos, contributorPhotos:contributorPhotos, doneLoading: true }
+			return { ownerPhotos: ownerPhotos, contributorPhotos: contributorPhotos, doneLoading: true }
 		} else {
 			return { doneLoading: false }
 		}
@@ -130,6 +130,8 @@ Goal = React.createClass({
 	},
 
 	handleCancelClicked() {
+		// reset changes made
+		this.refs.obj.setState(this.refs.obj.getInitialState());
 		this.setState({isEditing:false});
 	},
 

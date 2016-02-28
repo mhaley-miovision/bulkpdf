@@ -5,9 +5,9 @@ GoalEdit = React.createClass({
 
 	getInitialState() {
 		return {
-			keyObjectives: this.props.goal ? this.props.goal.keyObjectives : [],
-			doneCriteria: this.props.goal ? this.props.goal.doneCriteria : [],
-			name: this.props.goal ? this.props.goal.name : "",
+			keyObjectives: this.props.goal ? _.clone(this.props.goal.keyObjectives) : [],
+			doneCriteria: this.props.goal ? _.clone(this.props.goal.doneCriteria) : [],
+			name: this.props.goal ? _.clone(this.props.goal.name) : "",
 			_id: this.props.goal ? this.props.goal._id : new Meteor.Collection.ObjectId()._str,
 			newKeyObjective: "",
 			newDoneCriteria: "",
@@ -103,7 +103,8 @@ GoalEdit = React.createClass({
 							   placeholder={o.name ? '' : "Enter key objective..."}
 							   value={o.name}>
 						</input>
-						<i key={"r_" + o._id} className="material-icons GreyButtonSmall" id={"r_" + o._id}
+						<i key={"r_" + o._id} className="material-icons GreyButton" id={"r_" + o._id}
+						   style={{fontSize:"13px"}}
 						   onClick={_this.handleRemoveDoneCriteria}>close</i>
 					</div>
 				);
@@ -126,7 +127,8 @@ GoalEdit = React.createClass({
 							   placeholder={o.name ? '' : "Enter key objective..."}
 							   value={o.name}>
 						</input>
-						<i key={"r_" + o._id} className="material-icons GreyButtonSmall" id={"r_" + o._id}
+						<i key={"r_" + o._id} className="material-icons GreyButton" id={"r_" + o._id}
+						   style={{fontSize:"13px"}}
 						   onClick={_this.handleRemoveKeyObjective}>close</i>
 					</div>
 				);
@@ -181,26 +183,7 @@ GoalEdit = React.createClass({
 						</section>
 					</div>
 					<div className="col m3 s12 GoalContainer">
-						<div className="chip">
-							<img src="img/user_avatar_blank.jpg" alt="Contact Person"/>
-								Victor Leipnik
-							<i className="material-icons ">close</i>
-						</div>
-						<div className="chip">
-							<img src="img/user_avatar_blank.jpg" alt="Contact Person"/>
-								Kurtis McBride
-							<i className="material-icons">close</i>
-						</div>
-						<div className="chip">
-							<img src="img/user_avatar_blank.jpg" alt="Contact Person"/>
-								Natalie Dumond
-							<i className="material-icons">close</i>
-						</div>
-						<div className="chip">
-							<img src="img/user_avatar_blank.jpg" alt="Contact Person"/>
-								Jamie Reeve
-							<i className="material-icons">close</i>
-						</div>
+
 					</div>
 				</div>
 			</div>

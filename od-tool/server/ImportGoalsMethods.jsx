@@ -128,9 +128,7 @@ function processGoalsJson(json) {
 			if (rp >= 0) {
 				s = s.split(")")[1].trim();
 			};
-
 			var id = new Mongo.Collection.ObjectID()._str;
-			console.log(id);
 
 			if (s !== '' && s !== '.') {
 				items.push({name: s, _id: id, completed: false});
@@ -379,9 +377,6 @@ Meteor.methods({
 		var s = "Imported " + goals.length + " goals successfully.\n\n";
 		s += "Unmatched owner strings:\n" + result.unmatched.join(",");
 		console.log(s);
-
-
-
 
 		/*
 		Email.send({

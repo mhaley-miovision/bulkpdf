@@ -22,6 +22,7 @@ function importHelper_transformRole(x) {
 	x.createdAt = new Date();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
+	x.primaryAccountability = x.primaryAccountability === 'TRUE';
 	return x;
 }
 function importHelper_transformOrgAccountability(x) {
@@ -320,11 +321,11 @@ Meteor.methods({
 				var org = OrganizationsCollection.findOne({name: r.organization});
 				if (org) {
 					path = org.path;
-					RolesCollection.update(r_id, {$set: {path: path}});
+					RolesCollection.update(r_id, {$set: {path: path, organizationId: org._id}});
 				}
 
 				// append primary role id to contributor
-				if (c && r.primaryAccountability === 'TRUE') {
+				if (c && r.primaryAccountability) {
 					ContributorsCollection.update({_id: c._id}, {$set: {primaryRoleId: r_id}});
 				}
 			});
@@ -339,6 +340,7 @@ Meteor.methods({
 			var roles = RolesCollection.find({email: c.email}).fetch();
 			if (roles.length == 1) {
 				ContributorsCollection.update({_id: c._id}, {$set: {primaryRoleId: roles[0]._id}});
+				RolesCollection.update(roles[0]._id, {$set: {primaryAccountability : true}});
 			} else {
 				console.warn("Could not decide on primary role for contributor: " + c.email);
 			}

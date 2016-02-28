@@ -825,20 +825,6 @@ circle.container, circle.label {
     background-color: #74AFAD;
     color: white;
 }
-.GreyButtonSmall {
-    font-size: 13px;
-    margin-left: 5px;
-    background-color: #e4e4e4;
-    border-radius: 50%;
-    color: rgba(0, 0, 0, 0.6);
-    padding: 4px;
-    cursor: pointer;
-    transition: all .15s ease-in-out;
-}
-.GreyButtonSmall:hover {
-    background-color: #74AFAD;
-    color: white;
-}
 
 .TaskGoalSummaryContainer {
     text-align:center;

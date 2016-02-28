@@ -55,7 +55,7 @@ if (Meteor.isServer) {
 					ContributorsCollection.update(c._id, {$set : {photo: o.thumbnailPhotoUrl}});
 
 					// also attach photo to all roles tied to this user
-					RolesCollection.update({email: c.email}, {$set : {photo: o.thumbnailPhotoUrl}});
+					RolesCollection.update({email: c.email}, {$set : {photo: o.thumbnailPhotoUrl}}, {multi:true});
 
 					updatedString += o.primaryEmail + "\n";
 					updatedCount++;
