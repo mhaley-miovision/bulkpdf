@@ -160,6 +160,7 @@ function processGoalsJson(json) {
 				// TODO: haxxor on the date
 				estimatedCompletedOn: r < 65 ? "12/31/2015" : "7/1/2016",
 				owners: ["kmcbride@miovision.com"], // Kurtis???
+				contributors: []
 			};
 			goals.push(lastGoal);
 		}
@@ -245,6 +246,7 @@ function processGoalsJson(json) {
 				name: t,
 				status: c["M" + r],
 				owners: result.matched,
+				contributors: [],
 				estimatedCompletedOn: date,
 				links: c["P" + r],
 				isLeaf: true,
@@ -314,6 +316,13 @@ Meteor.methods({
 				g.rootGoalId = null;
 			}
 
+			//TODO: when adding / removing / modifying roles, make sure to look for this
+			// replace contributors with role ids
+			g.ownerRoles = RolesCollection.find({primaryAccountability:true, email:{$in: g.owners}},
+				{fields:{_id:1,label:1,accountabilityLabel:1,organizationId:1,contributor:1,email:1}}).fetch();
+			g.contributorRoles = RolesCollection.find({primaryAccountability:true, email:{$in: g.contributors}},
+				{fields:{_id:1,label:1,accountabilityLabel:1,organizationId:1,contributor:1,email:1}}).fetch();
+
 			GoalsCollection.update(g._id, g);
 		});
 
@@ -359,18 +368,9 @@ Meteor.methods({
 		// populate stats for root nodes
 		GoalsCollection.find({parent:null}).forEach(n => populateStats(n._id));
 
-		// calculate number of goals for contributors and cache this
-		ContributorsCollection.find({}).forEach(c => {
-
-
-			c.numGoals = GoalsCollection.find({ owners:c.email }).count();
-			ContributorsCollection.update(c._id, c);
-			RolesCollection.find({email: c.email}).forEach(r => {
-				r.numGoals = c.numGoals;
-				RolesCollection.update(r._id, r);
-			});
-
-			Meteor.call("teal.goals.updateContributorTopLevelGoals", c._id);
+		// populate role goal stats
+		RolesCollection.find({}).forEach(r => {
+			Meteor.call("teal.goals.updateContributorTopLevelGoals", r._id);
 		});
 
 		// email about unmatched

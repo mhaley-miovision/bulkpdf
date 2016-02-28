@@ -280,6 +280,45 @@ Meteor.methods({
 		ContributorsCollection.update(contributorId, {$set: { topGoals: goalIds }});
 	},
 
+	"teal.goals.updateRoleTopLevelGoals": function(roleId) {
+		// Make sure the user is logged in before inserting a task
+		if (!Meteor.userId()) {
+			throw new Meteor.Error("not-authorized");
+		}
+
+		// find all nodes with this role as owner or contributor, sorted by depth
+		let goals = GoalsCollection.find(
+			{$or: [ {ownerRoles: { $elemMatch: { _id: roleId} } }, {contributorRoles:  { $elemMatch: { _id: roleId } } } ]},
+			{sort: {depth:1}, fields: { _id: 1, path: 1}}).fetch();
+
+		// remove all nodes which are sub-children
+		let i = 0;
+		while (i < goals.length) {
+			let g = goals[i];
+
+			// disallow root goals
+			if (g.depth === 0) {
+				goals.splice(j, 1);
+				continue;
+			}
+
+			// remove all sub children, i.e. that contain this id in their path
+			let j = i+1;
+			while (j < goals.length) {
+				if (goals[j].path.indexOf(g._id) >= 0) {
+					goals.splice(j, 1);
+				} else {
+					j++; // only increment if we didn't remove the element
+				}
+			}
+			// next top level node
+			i++;
+		}
+
+		let goalIds = goals.map(g => { return g._id });
+		RolesCollection.update(roleId, {$set: { topGoals: goalIds }});
+	},
+
 	"teal.goals.updateOrInsertGoal": function(goalId, name, keyObjectives, doneCriteria) {
 		console.log(goalId);
 

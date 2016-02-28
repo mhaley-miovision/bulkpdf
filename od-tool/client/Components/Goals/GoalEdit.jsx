@@ -183,7 +183,8 @@ GoalEdit = React.createClass({
 						</section>
 					</div>
 					<div className="col m3 s12 GoalContainer">
-
+						<RoleListEdit roleList={this.props.goal.ownerRoles} heading="Owner" isEditing={true}/>
+						<RoleListEdit roleList={this.props.goal.contributorRoles} heading="Contributor" isEditing={true}/>
 					</div>
 				</div>
 			</div>

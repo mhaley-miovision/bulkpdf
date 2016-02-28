@@ -46,7 +46,7 @@ if (Meteor.isServer) {
 			var notFoundCount = 0;
 			GoogleUserCacheCollection.find({}).forEach(o => {
 				// update the corresponding contributor
-				c = ContributorsCollection.findOne({email: o.primaryEmail});
+				let c = ContributorsCollection.findOne({email: o.primaryEmail});
 				if (!c) {
 					notFoundString += o.primaryEmail + "\n";
 					notFoundCount++;
@@ -56,6 +56,28 @@ if (Meteor.isServer) {
 
 					// also attach photo to all roles tied to this user
 					RolesCollection.update({email: c.email}, {$set : {photo: o.thumbnailPhotoUrl}}, {multi:true});
+
+					// also attach photo to all roles cached to goals
+					GoalsCollection.find(
+						{$or:
+							[ {ownerRoles: {$elemMatch: {email: c.email}}},
+							  {contributorRoles: {$elemMatch: {email: c.email}}}
+							]
+						}).forEach(g => {
+
+						g.ownerRoles.forEach(r => {
+							if (r.email === c.email) {
+								r.photo = o.thumbnailPhotoUrl;
+							}
+						});
+						g.contributorRoles.forEach(r => {
+							if (r.email === c.email) {
+								r.photo = o.thumbnailPhotoUrl;
+							}
+						});
+						console.log(g);
+						GoalsCollection.update(g._id, g);
+					});
 
 					updatedString += o.primaryEmail + "\n";
 					updatedCount++;
