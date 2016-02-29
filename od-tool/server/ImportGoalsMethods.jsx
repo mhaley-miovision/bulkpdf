@@ -334,18 +334,19 @@ Meteor.methods({
 
 			if (childrenQuery.count() == 0) {
 				if (n.status && n.status.toLowerCase() === 'completed') {
-					n.stats = { completed:1, inProgress:0, notStarted:0 };
+					//n.stats = { completed:1, inProgress:0, notStarted:0 };
 					n.state = 2;
 				} else if (n.status && n.status.toLowerCase() === 'in progress') {
-					n.stats = { completed:0, inProgress:1, notStarted:0 };
+					//n.stats = { completed:0, inProgress:1, notStarted:0 };
 					n.state = 1;
 				} else if (n.status && n.status.toLowerCase() === 'not started') {
-					n.stats = { completed:0, inProgress:0, notStarted:1 };
+					//n.stats = { completed:0, inProgress:0, notStarted:1 };
 					n.state = 0;
 				} else {
-					console.log("leaf goal node " + n.name + " has undefined status");
-					n.stats = { completed:0, inProgress:0, notStarted:0 };
+					//console.log("leaf goal node " + n.name + " has undefined status");
+					//n.stats = { completed:0, inProgress:0, notStarted:0 };
 				}
+				n.stats = { completed:0, inProgress:0, notStarted:0 };
 			} else {
 				n.stats = { completed:0, inProgress:0, notStarted:0 };
 
@@ -360,6 +361,14 @@ Meteor.methods({
 						n.stats.completed += c.stats.completed;
 						n.stats.inProgress += c.stats.inProgress;
 						n.stats.notStarted += c.stats.notStarted;
+						// also count the child goal state
+						if (c.state == 0) {
+							n.stats.notStarted++;
+						} else if (c.state == 1) {
+							n.stats.inProgress++;
+						} else {
+							n.stats.completed++;
+						}
 					}
 				);
 			}

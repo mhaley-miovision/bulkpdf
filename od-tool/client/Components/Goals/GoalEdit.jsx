@@ -20,6 +20,7 @@ GoalEdit = React.createClass({
 		// TODO: this is kind of nasty and a leaky abstraction - there must be a better way to do this (flux/redux?)
 		this.state.ownerRoles = this.refs.ownersList.state.roles;
 		this.state.contributorRoles = this.refs.contributorsList.state.roles;
+		this.state.state = this.refs.goalState.state.state;
 		return this.state;
 	},
 
@@ -150,6 +151,11 @@ GoalEdit = React.createClass({
 		return (
 			<div className="card-content">
 				<div className="row">
+					<div className="ProjectGoalTitle center" style={{marginTop:this.props.goal? "0px":"15px"}}>
+						{this.props.goal ? "Edit Goal" : "New Goal"}
+					</div>
+				</div>
+				<div className="row">
 					<div className="col m9 s12 GoalContainer">
 						<div className="">
 							<span className="ProjectGoalTitle">
@@ -196,6 +202,9 @@ GoalEdit = React.createClass({
 						<RoleListEdit ref="ownersList" roleList={this.state.ownerRoles} heading="Owner" isEditing={true}/>
 						<RoleListEdit ref="contributorsList" roleList={this.state.contributorRoles} heading="Contributor" isEditing={true}/>
 					</div>
+				</div>
+				<div className="row center">
+					<GoalStateControls ref="goalState" goal={this.props.goal}/>
 				</div>
 			</div>
 		);

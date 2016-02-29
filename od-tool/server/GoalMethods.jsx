@@ -39,10 +39,24 @@ Meteor.methods({
 			let completed = 0;
 			let inProgress = 0;
 			let notStarted = 0;
+
 			children.forEach(c => {
+				console.log(c.stats);
+				console.log(c._id);
+
+				// count the child subgoal states
 				completed += c.stats.completed;
 				inProgress += c.stats.inProgress;
 				notStarted += c.stats.notStarted;
+
+				// also count the child goal state
+				if (c.state == 0) {
+					notStarted++;
+				} else if (c.state == 1) {
+					inProgress++;
+				} else {
+					completed++;
+				}
 			});
 
 			// update the goal
@@ -55,14 +69,6 @@ Meteor.methods({
 					}
 				}
 			});
-		} else {
-			// this is a leaf
-			GoalsCollection.update(g._id, {$set: {
-				stats: {
-					notStarted: g.state == 0 ? 1 : 0,
-					inProgress: g.state == 1 ? 1 : 0,
-					completed: g.state == 2 ? 1 : 0
-				} } });
 		}
 
 		// recurse upwards!
@@ -133,7 +139,7 @@ Meteor.methods({
 	},
 
 	"teal.goals.loadGoalTreeForRole": function(roleId = null) {
-		console.log("Goaltree for roleId: '" + roleId + "'");
+		//console.log("Goaltree for roleId: '" + roleId + "'");
 
 		if (roleId == null) {
 			let currentUser = Meteor.users.findOne({_id: Meteor.userId()});
@@ -272,7 +278,7 @@ Meteor.methods({
 	},
 
 	"teal.goals.updateOrInsertGoal": function(goalId, goalParentId, name, keyObjectives,
-											  doneCriteria, ownerRoles, contributorRoles) {
+											  doneCriteria, ownerRoles, contributorRoles, state) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -289,7 +295,9 @@ Meteor.methods({
 		g.doneCriteria = doneCriteria;
 		g.ownerRoles = ownerRoles;
 		g.contributorRoles = contributorRoles;
-		g.state = 0;
+		g.state = state;
+
+		let _id = null; // either new or existing
 
 		if (newGoal) {
 			// build path to this node
@@ -305,13 +313,11 @@ Meteor.methods({
 				g.rootGoalId = p.rootGoalId;
 				g.parent = goalParentId; // attach to parent
 				g.isLeaf = true;
+				g.stats = { notStarted: 0, inProgress: 0, completed: 0 };
 			}
 
 			// actually insert the goal
-			let _id = GoalsCollection.insert(g);
-
-			// update goal stats
-			Meteor.call("teal.goals.updateGoalStats", _id);
+			_id = GoalsCollection.insert(g);
 
 			// populate role goal stats
 			ownerRoles.forEach(r => {
@@ -322,12 +328,15 @@ Meteor.methods({
 			});
 
 		} else {
+			_id = g._id;
 			if (goalParentId != null) {
 				console.error("moving around goal branches around not yet supported!")
 			} else {
 				GoalsCollection.update(goalId, g);
 			}
 		}
+		// update goal stats
+		Meteor.call("teal.goals.updateGoalStats", _id);
 	},
 
 	"teal.goals.deleteGoal" : function(goalId) {

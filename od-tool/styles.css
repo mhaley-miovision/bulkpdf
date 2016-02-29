@@ -687,34 +687,37 @@ circle.container, circle.label {
     line-height:18px;
 }
 
-.goalStateButton {
-    font-size: 10px;
+.GoalStateButton {
+    font-size: 14px;
     color: slategray; /*#fff;*/
     background-color: white; /*darkgrey;*/
     line-height: 11px;
-    font-size: 11px;
-    padding: 2px;
+    padding: 4px;
     margin-top:8px;
     margin-left:8px;
     margin-right:8px;
     border-radius: .25em;
     text-align: center;
     max-width: 100%;
-    border: solid white 1px;
+    /*border: solid white 1px;*/
 }
 
-.goalStateButton:hover {
-    border: solid #D9853B 1px;
-}
-
-.goalStateButton.active {
+.GoalStateButton:hover {
     color: white;
-    border: solid #558C89 1px;
+    background-color: #D9853B;
+    /*border: solid #D9853B 1px;*/
+}
+
+.GoalStateButton.active {
+    color: white;
+    /*border: solid #558C89 1px;*/
     background-color: #558C89; /*darkgrey;*/
 }
 
-.goalStateButton.active:hover {
-    border: solid #D9853B 1px;
+.GoalStateButton.active:hover {
+    background-color: #D9853B;
+    color: white;
+    /*border: solid #D9853B 1px;*/
 }
 
 

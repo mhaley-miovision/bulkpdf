@@ -102,10 +102,9 @@ Goal = React.createClass({
 		this.setState({isEditing:false});
 		if (this.refs.obj) {
 			let inputs = this.refs.obj.getInputs();
-			debugger;
 			Meteor.call("teal.goals.updateOrInsertGoal",
 				inputs._id, null, inputs.name, inputs.keyObjectives, inputs.doneCriteria,
-				inputs.ownerRoles, inputs.contributorRoles);
+				inputs.ownerRoles, inputs.contributorRoles, inputs.state);
 			// TODO: goal state
 			Materialize.toast("Goal saved!", 1000);
 		}
@@ -137,9 +136,6 @@ Goal = React.createClass({
 
 	render() {
 		if (this.props.compactViewMode) {
-			console.log("rendering compact goal: "+this.props.goal._id);
-
-
 			return (
 				// style is to undo what materialize does in the card parent containing this modal
 				<a id={this.props.goal._id} onClick={this.props.onGoalClicked} className='collection-item GoalSublistModal'
