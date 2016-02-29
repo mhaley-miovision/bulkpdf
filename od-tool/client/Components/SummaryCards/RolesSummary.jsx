@@ -24,7 +24,11 @@ RolesSummary = React.createClass({
 		let controls = [];
 
 		// TODO: implement actually jumping to the role, not the contributor
-		var url1 = FlowRouter.path("organizationView", {}, { objectId: r.organization, objectType:"organization"});
+		// TODO: replace miovision with root org name
+		var url1 = FlowRouter.path("organizationView", {}, {
+			objectId: "Miovision",
+			objectType:"organization",
+			zoomTo:r.organization});
 
 		// public controls
 		controls.push(
@@ -56,7 +60,7 @@ RolesSummary = React.createClass({
 				return (
 					<li className="collection-item" key={r._id}>
 						<div className="collection-item-text">
-							{r.role}, {r.organization}
+							{r.label}, {r.organization}
 						</div>
 						{this.renderRolesControls(r)}
 					</li>

@@ -3,6 +3,7 @@ MyTeam = React.createClass({
 
 	getInitialState() {
 		return {orgName:""};
+		return {orgId:""};
 	},
 
 	getMeteorData() {
@@ -13,19 +14,14 @@ MyTeam = React.createClass({
 
 		if (handle.ready() && handle2.ready()) {
 			var c = ContributorsCollection.findOne({email:Meteor.user().email});
-			return {isLoading:false, contributorOrg: c ? c.physicalTeam : ""};
+			return {isLoading:false, contributorOrg: c ? c.physicalTeam : "", contributorOrgId : c ? c.physicalOrgId : "" };
 		} else {
 			return {isLoading:true};
 		}
 	},
 
-		/*
-	componentDidMount() {
-		this.forceUpdate();
-	},*/
-
-	handleSearch(orgName) {
-		this.setState({orgName:orgName});
+	handleSearch(orgName, type, id) {
+		this.setState({orgName:orgName, orgId:id});
 	},
 
 	render() {
@@ -33,14 +29,15 @@ MyTeam = React.createClass({
 			return <Loading/>;
 		} else if (this.state.orgName || this.data.contributorOrg) {
 			var org = this.state.orgName ? this.state.orgName : this.data.contributorOrg;
+			var orgId = this.state.orgId ? this.state.orgId : this.data.contributorOrgId;
 			return (
-				<div className="section center">
+				<div className="section">
 					<ObjectSearch onClick={this.handleSearch} findOrganizations={true} findContributors={false}/>
-
-					<TeamSkillsSummary orgName={org}/>
+					<GoalsForOrganization objectId={orgId}/>
 					<div>
 						<Organization objectId={org} roleMode={true} roleModeVisible={true} searchVisible={false}/>
 					</div>
+					<TeamSkillsSummary orgName={org}/>
 				</div>
 			);
 		} else {

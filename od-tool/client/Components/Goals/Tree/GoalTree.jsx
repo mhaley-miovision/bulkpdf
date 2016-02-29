@@ -7,10 +7,9 @@ var duration = 250;
 var rectW = 200;
 var rectH = 80;
 var nodeMargin = 10;
+var root = null;
 
-// Topdown card view
-
-var TreeView = (function() {
+var D3TreeView = (function() {
 	var width = screen.width < 700 ? chartWidthMobile : chartWidth;
 	var height = screen.width < 700 ? chartHeightMobile : chartHeight;
 	var zoomAnchorX = width / 2 - rectW / 2;
@@ -63,11 +62,12 @@ var TreeView = (function() {
 	}
 
 	function htmlForTreeNode(d) {
+		console.log(d);
 		var ownersHtmlString = '';
-		for (var i in d.owners) {
-			//url = "/organization?objectId=" + d.owners[i].email + "&objectType=contributor&mode=acc";
-			//ownersHtmlString += '<a href="'+url+'"><img class="treeItemProfilePhoto" src="' + d.owners[i].photo + '" title="' + d.owners[i].email + '"/></a>';
-			ownersHtmlString += '<img class="treeItemProfilePhoto" src="' + d.owners[i].photo + '" title="' + d.owners[i].email + '"/>';
+		for (var i in d.ownerRoles) {
+			ownersHtmlString += '<img class="treeItemProfilePhoto" src="'
+				+ (d.ownerRoles[i].photo ? d.ownerRoles[i].photo : "/img/user_avatar_blank.jpg")
+				+ '" title="' + d.ownerRoles[i].accountabilityLabel + '"/>';
 		}
 
 		return '<div class="d3treelabel"><div>' + treeNodeNameText(d.name) + '</div><div>' + ownersHtmlString + '</div>'
@@ -187,16 +187,20 @@ var TreeView = (function() {
 				.attr("stroke-width", 1);*/
 
 		nodeEnter.each(function(d) {
-			//var yy = 0;
-			var p = g1.selectAll("path")
-				.data(function(d) {
-					//console.log("data" + yy++);
-					//console.log("data being called for d=" + d.name);
-					return pie([d.stats.completed, d.stats.inProgress, d.stats.notStarted])
-				})
-				.enter().append("path")
-				.attr("fill", function(d, i) { return color(i); })
-				.attr("d", arc);
+			if (d.stats) {
+				//var yy = 0;
+				var p = g1.selectAll("path")
+					.data(function (d) {
+						//console.log("data" + yy++);
+						//console.log("data being called for d=" + d.name);
+						return pie([d.stats.completed, d.stats.inProgress, d.stats.notStarted])
+					})
+					.enter().append("path")
+					.attr("fill", function (d, i) {
+						return color(i);
+					})
+					.attr("d", arc);
+			}
 		});
 
 		//===========================//===========================//===========================//===========
@@ -371,12 +375,9 @@ var TreeView = (function() {
 	}
 })();
 
-Tree = React.createClass({
-	mixins: [ReactMeteorData],
-
+GoalTree = React.createClass({
 	propTypes: {
-		objectId: React.PropTypes.string,
-		objectType: React.PropTypes.string,
+		goalsRoot: React.PropTypes.object.isRequired
 	},
 
 	getInitialState() {
@@ -386,115 +387,30 @@ Tree = React.createClass({
 		};
 	},
 
-	getDefaultProps() {
-		return {
-			objectType: "role",
-			objectId: null,
-			searchVisible: true,
-		}
-	},
-
-	getMeteorData() {
-		var _this = this;
-
-		// default role is the CEO - TODO: make sure to filter by org root id in the future
-		if (this.state.objectType == 'role' && !this.state.objectId) {
-			let r = RolesCollection.findOne({label:"Chief Executive Officer"},{fields: {_id:1}});
-			if (!!r) {
-				this.state.objectId = r._id;
-			} else {
-				console.error("Couldn't find the CEO role for this org!");
-			}
-		}
-
-		if (!!this.state.objectId) {
-			if (this.state.objectType == 'goal') {
-				Meteor.call("teal.goals.loadGoalTree", this.state.objectId, function (err, data) {
-					console.log(data);
-					_this.data.goals = data;
-					_this.data.doneLoading = true;
-					_this.updateTreeView();
-				});
-			} else if (this.state.objectType == 'role') {
-				Meteor.call("teal.goals.loadGoalTreeForRole", this.state.objectId, function (err, data) {
-					console.log(data);
-					_this.data.goals = data;
-					_this.data.doneLoading = true;
-					_this.updateTreeView();
-				});
-			}
-		} else {
-			console.error("Missing objectID on Tree component!");
-		}
-		return this.data ? this.data : {};
-	},
-
-	handleSearch(objectId, objectType) {
-		this.setState({objectId: objectId, objectType:objectType});
-	},
-
 	updateTreeView() {
-		console.log("updating tree view!");
-		if (this.data.doneLoading) {
-			console.log("data is loaded, rendering tree");
-			var goals = this.data.goals; // as loaded from the db
-			// this is super FUCKED
-			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
-			setTimeout(function () {
-				TreeView.loadData(goals);
-			}, 0);
-		} else {
-			console.log("data isn't loaded yet");
-		}
+		// this is super FUCKED
+		// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
+		let _this = this;
+		setTimeout(function () {
+			D3TreeView.loadData(_this.props.goalsRoot);
+		}, 0);
 	},
 
 	componentWillUpdate(nextProps, nextState) {
-		if (nextProps.objectType != this.props.objectType) {
-			// detected role mode change!
-		}
-		console.log("componentWillUpdate called!");
-
 		this.updateTreeView();
-	},
-
-	shouldComponentUpdate(nextProps, nextState) {
-		if (this.state.objectId === nextState.objectId) {
-			return false;
-		}
-		return true;
 	},
 
 	componentDidMount() {
 		console.log("tree component mounted");
-
 		this.updateTreeView();
-	},
-
-	renderLoading() {
-		if (this.data.isLoading) {
-			return <Loading/>;
-		}
-	},
-
-	renderSearch() {
-		if (this.props.searchVisible) {
-			return (
-				<div>
-					<ObjectSearch onClick={this.handleSearch} findContributors={true} findOrganizations={false}/>
-				</div>
-			);
-		}
 	},
 
 	render() {
 		var divStyle = {
 			height: h = screen.width < 700 ? chartHeightMobile : chartHeight,
 		};
-
 		return (
 			<div>
-				{this.renderSearch()}
-				{this.renderLoading()}
 				<div className="chartContainer" style={divStyle}>
 				</div>
 				<div className="clear-block"/>

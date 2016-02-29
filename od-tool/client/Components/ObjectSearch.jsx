@@ -81,7 +81,7 @@ ObjectSearch = React.createClass({
 		e.preventDefault();
 		e.stopPropagation();
 		if (this.props.onClick) {
-			this.props.onClick(e.target.text, 'organization');
+			this.props.onClick(e.target.text, 'organization', e.target.id);
 		}
 	},
 
@@ -89,7 +89,7 @@ ObjectSearch = React.createClass({
 		e.preventDefault();
 		e.stopPropagation();
 		if (this.props.onClick) {
-			this.props.onClick(e.target.id, 'contributor');
+			this.props.onClick(e.target.id, 'contributor', e.target.id);
 		}
 	},
 
@@ -97,7 +97,7 @@ ObjectSearch = React.createClass({
 		e.preventDefault();
 		e.stopPropagation();
 		if (this.props.onClick) {
-			this.props.onClick(e.target.id, 'role');
+			this.props.onClick(e.target.id, 'role', e.target.id);
 		}
 	},
 
@@ -118,7 +118,7 @@ ObjectSearch = React.createClass({
 				for (var c in this.data.organizations) {
 					var o = this.data.organizations[c];
 					collection.push(
-						<a href="#!" className="collection-item" key={i} id={i} object={o} style={{cursor:"pointer"}}
+						<a href="#!" className="collection-item" key={i} id={o._id} object={o} style={{cursor:"pointer"}}
 						   onClick={  this.handleOrganizationClick }>{o.name}</a>);
 					i++;
 				}

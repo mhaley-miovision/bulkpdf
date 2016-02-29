@@ -4,15 +4,10 @@ GoalDueDateLabel = React.createClass({
 	},
 
 	render() {
-		console.log("this.props.goal.estimatedCompletionOn = " + this.props.goal.estimatedCompletionOn)
-
-		var gd = this.props.goal.estimatedCompletionOn;// ? new Date(this.props.goal.estimatedCompletionOn) : null;
-
-		var complete = this.state == 2;
-			//this.props.goal.stats && (this.props.goal.stats.inProgress == 0 && this.props.goal.stats.notStarted == 0)
-		var overdue = gd && (gd < new Date());
-
-		var classes = "GoalDueDate";
+		let gd = this.props.goal.estimatedCompletionOn;
+		let complete = this.state == 2;
+		let overdue = gd && (gd < new Date());
+		let classes = "GoalDueDate";
 		if (overdue && !complete) {
 			classes += " late";
 		}

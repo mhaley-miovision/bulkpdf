@@ -380,7 +380,7 @@ Meteor.methods({
 
 		// populate role goal stats
 		RolesCollection.find({}).forEach(r => {
-			Meteor.call("teal.goals.updateContributorTopLevelGoals", r._id);
+			Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
 		});
 
 		// email about unmatched

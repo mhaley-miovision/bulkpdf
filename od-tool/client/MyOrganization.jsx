@@ -23,23 +23,23 @@ MyOrganization = React.createClass({
 
 	renderOrganization() {
 		return <Organization ref="org"
-							 objectId={this.state.objectId} objectType={this.state.objectType}
-							 roleMode={this.props.roleMode} roleModeVisible={true}
+							 objectId="Miovision" objectType="organization"
+							 roleMode={true} roleModeVisible={true}
 							 searchVisible={true} zoomTo={this.state.zoomTo}/>;
 	},
 
 	renderAccountabilities() {
-		return <Tree ref="tree" objectId={this.state.objectId} objectType={this.state.objectType}/>;
+		// default role is CEO
+		return <GoalTreeByRole />
+		//return <Tree ref="tree" objectId={this.state.objectId} objectType={this.state.objectType}/>;
 	},
 
 	handleAccClicked() {
-		console.log("handleAccClicked")
 		this.setState({ mode: 'acc'});
 		this.forceUpdate();
 	},
 
 	handleCompClicked() {
-		console.log("handleCompClicked")
 		this.setState({ mode: 'comp'});
 		this.forceUpdate();
 	},
@@ -58,7 +58,7 @@ MyOrganization = React.createClass({
 
 	render() {
 		return (
-				<div>
+			<div>
 				<div className="section center">
 					<div className="section center">
 						<a className={this.getClasses(this.state.mode != 'acc')}
