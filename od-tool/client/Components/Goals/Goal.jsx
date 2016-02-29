@@ -21,17 +21,6 @@ Goal = React.createClass({
 		);
 	},
 
-	renderTaskState() {
-		let label = "Not Started";
-		if (this.props.goal.state == 2) {
-			label = "Completed";
-		} else if (this.props.goal.state == 1) {
-			label = "In Progress";
-		}
-		let classes = "TaskGoalState" + label.replace(" ", "");
-		return <div className={classes}>{label}</div>;
-	},
-
 	renderGoalBody() {
 		if (this.state.isEditing) {
 			return <GoalEdit ref="obj"
@@ -65,18 +54,18 @@ Goal = React.createClass({
 										<div className="TaskGoalPhotos center">
 											{ this.props.goal.ownerRoles.length > 0 ?
 												<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
-																   list={this.props.goal.ownerRoles}/>
+																   list={this.props.goal.ownerRoles}
+																   heading="Owner"/>
 												: ''
 											}
 											{this.props.goal.contributorRoles.length > 0 ?
 												<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
-																   list={this.props.goal.contributorRoles}/>
+																   list={this.props.goal.contributorRoles}
+																   heading="Contributor"/>
 												: ''
 											}
 										</div>
-										<div className="TaskGoalState">
-											{this.renderTaskState()}
-										</div>
+										<GoalState goal={this.props.goal}/>
 										<br/>
 										<GoalDueDateLabel goal={this.props.goal}/>
 									</div>
@@ -104,7 +93,7 @@ Goal = React.createClass({
 			let inputs = this.refs.obj.getInputs();
 			Meteor.call("teal.goals.updateOrInsertGoal",
 				inputs._id, null, inputs.name, inputs.keyObjectives, inputs.doneCriteria,
-				inputs.ownerRoles, inputs.contributorRoles, inputs.state);
+				inputs.ownerRoles, inputs.contributorRoles, inputs.state, inputs.estimatedCompletionOn);
 			// TODO: goal state
 			Materialize.toast("Goal saved!", 1000);
 		}

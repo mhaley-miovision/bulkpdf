@@ -35,11 +35,10 @@ Meteor.methods({
 
 		// get the children of this goal
 		let children = GoalsCollection.find({parent:goalId}).fetch();
+		let completed = 0;
+		let inProgress = 0;
+		let notStarted = 0;
 		if (children.length > 0) {
-			let completed = 0;
-			let inProgress = 0;
-			let notStarted = 0;
-
 			children.forEach(c => {
 				console.log(c.stats);
 				console.log(c._id);
@@ -58,18 +57,17 @@ Meteor.methods({
 					completed++;
 				}
 			});
-
-			// update the goal
-			GoalsCollection.update(goalId, {
-				$set: {
-					stats: {
-						completed: completed,
-						inProgress: inProgress,
-						notStarted: notStarted
-					}
-				}
-			});
 		}
+		// update the goal
+		GoalsCollection.update(goalId, {
+			$set: {
+				stats: {
+					completed: completed,
+					inProgress: inProgress,
+					notStarted: notStarted
+				}
+			}
+		});
 
 		// recurse upwards!
 		if (g.parent) {
@@ -278,7 +276,8 @@ Meteor.methods({
 	},
 
 	"teal.goals.updateOrInsertGoal": function(goalId, goalParentId, name, keyObjectives,
-											  doneCriteria, ownerRoles, contributorRoles, state) {
+											  doneCriteria, ownerRoles, contributorRoles,
+											  state, estimatedCompletionOn) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -296,6 +295,7 @@ Meteor.methods({
 		g.ownerRoles = ownerRoles;
 		g.contributorRoles = contributorRoles;
 		g.state = state;
+		g.estimatedCompletionOn = estimatedCompletionOn;
 
 		let _id = null; // either new or existing
 
@@ -350,7 +350,16 @@ Meteor.methods({
 				GoalsCollection.remove({_id:goalId});
 
 				// update parent stats
-				Meteor.call("teal.goals.updateGoalStats", g.parent);
+				let p = GoalsCollection.findOne({ _id: g.parent });
+				if (p) {
+					let numChildren = GoalsCollection.find({parent: p._id}).count();
+					if (numChildren == 0) {
+						GoalsCollection.update(p._id, {$set: {isLeaf: true}});
+					}
+					Meteor.call("teal.goals.updateGoalStats", p._id);
+				} else {
+					throw new Meteor.Error("failed to find parent of recently deleted goal! id = " + g.parent);
+				}
 			} else {
 				throw new Meteor.Error("not-allowed");
 			}

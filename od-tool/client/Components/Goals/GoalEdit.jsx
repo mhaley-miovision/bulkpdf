@@ -2,9 +2,9 @@ GoalEdit = React.createClass({
 	propTypes: {
 		goal : React.PropTypes.object,
 	},
-
 	getInitialState() {
 		return {
+			datePickerId: "picker" + Math.floor(1 + Math.random()*100000),
 			keyObjectives: this.props.goal ? _.clone(this.props.goal.keyObjectives) : [],
 			doneCriteria: this.props.goal ? _.clone(this.props.goal.doneCriteria) : [],
 			name: this.props.goal ? _.clone(this.props.goal.name) : "",
@@ -13,6 +13,8 @@ GoalEdit = React.createClass({
 			newDoneCriteria: "",
 			ownerRoles: this.props.goal ? _.clone(this.props.goal.ownerRoles) : [],
 			contributorRoles: this.props.goal ?  _.clone(this.props.goal.contributorRoles) : [],
+			estimatedCompletionOn : this.props.goal ?
+				moment(this.props.goal.estimatedCompletionOn).format("MMM Do YY") : '',
 		}
 	},
 
@@ -21,6 +23,9 @@ GoalEdit = React.createClass({
 		this.state.ownerRoles = this.refs.ownersList.state.roles;
 		this.state.contributorRoles = this.refs.contributorsList.state.roles;
 		this.state.state = this.refs.goalState.state.state;
+		console.log("this.state.estimatedCompletionOn was d="+this.state.estimatedCompletionOn);
+		this.state.estimatedCompletionOn = new Date(this.state.estimatedCompletionOn);
+		console.log("this.state.estimatedCompletionOn now is d="+this.state.estimatedCompletionOn);
 		return this.state;
 	},
 
@@ -99,6 +104,19 @@ GoalEdit = React.createClass({
 		this.setState({keyObjectives: this.state.keyObjectives});
 	},
 
+	componentDidMount() {
+		let _this = this;
+		$('#' + _this.state.datePickerId).pickadate({
+			selectMonths: true, // Creates a dropdown to control month
+			selectYears: 15, // Creates a dropdown of 15 years to control year
+			onSet: function () {
+				let d = $('#'+_this.state.datePickerId).pickadate().val();
+				console.log("datepicker was d="+d);
+				_this.setState({estimatedCompletionOn: d});
+			}
+		});
+	},
+
 	renderDoneCriteriaItems() {
 		var _this = this;
 		if (this.state.doneCriteria.length > 0) {
@@ -158,7 +176,8 @@ GoalEdit = React.createClass({
 				<div className="row">
 					<div className="col m9 s12 GoalContainer">
 						<div className="">
-							<span className="ProjectGoalTitle">
+							<label className="text-main1 ProjectGoalSubtitle" htmlFor="dueDateInput">Goal Title</label>
+							<span className="text-main5">
 								<input key="new_ko" type="text"
 									   placeholder="Enter new goal name..."
 									   onChange={this.handleNameChange}
@@ -166,6 +185,15 @@ GoalEdit = React.createClass({
 									   id="goalNameInput">
 								</input>
 							</span>
+						</div>
+						<div className="">
+							<label className="text-main1 ProjectGoalSubtitle" htmlFor="dueDateInput">Estimated Completion</label>
+							<input type="date" className="datepicker text-main5"
+								   placeholder="Select due date..."
+								   readOnly
+								   value={this.state.estimatedCompletionOn}
+								   id={this.state.datePickerId}>
+							</input>
 						</div>
 						<section>
 							<div className="ProjectGoalSubtitle">What Done Looks Like</div>

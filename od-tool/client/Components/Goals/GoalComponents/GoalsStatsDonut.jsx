@@ -95,7 +95,7 @@ GoalsStatsDonut = React.createClass({
 
 	render() {
 		return (
-			<div style={{width:this.props.width, height: this.props.height}} className="goalDonutChart">
+			<div style={{width:this.props.width, height: this.props.height, marginBottom: "7px"}} className="goalDonutChart">
 				<canvas id={this.getChartId()} width={this.props.width} height={this.props.height}>
 				</canvas>
 			</div>

@@ -158,7 +158,7 @@ function processGoalsJson(json) {
 			lastGoal = {
 				name: c["B" + r],
 				// TODO: haxxor on the date
-				estimatedCompletedOn: r < 65 ? "12/31/2015" : "7/1/2016",
+				estimatedCompletionOn: r < 65 ? "12/31/2015" : "7/1/2016",
 				owners: ["kmcbride@miovision.com"], // Kurtis???
 				contributors: []
 			};
@@ -247,7 +247,7 @@ function processGoalsJson(json) {
 				status: c["M" + r],
 				owners: result.matched,
 				contributors: [],
-				estimatedCompletedOn: date,
+				estimatedCompletionOn: date,
 				links: c["P" + r],
 				isLeaf: true,
 				doneCriteria: [],

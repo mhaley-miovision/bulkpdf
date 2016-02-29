@@ -28,13 +28,8 @@ ProjectGoalSummary = React.createClass({
 						<GoalsStatsDonut goal={this.props.goal} width="60px" height="60px"/>
 					}
 					<ReactTooltip place="bottom"/>
+					<GoalDueDateLabel goal={this.props.goal}/>
 				</div>
-				{ this.props.goal.estimatedCompletedOn ?
-					<div className="center">
-						<GoalDueDateLabel goal={this.props.goal}/>
-					</div>
-					: ''
-				}
 			</section>
 		);
 	},

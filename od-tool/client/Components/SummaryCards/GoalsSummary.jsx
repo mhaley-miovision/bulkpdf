@@ -15,7 +15,7 @@ GoalsSummary = React.createClass({
 			let notStarted = 0, inProgress = 0, completed = 0;
 			let lateGoals = [];
 			goals.forEach(g => {
-				var gd = g.estimatedCompletedOn ? new Date(g.estimatedCompletedOn) : null;
+				var gd = g.estimatedCompletionOn ? new Date(g.estimatedCompletionOn) : null;
 				var complete = g.stats && (g.stats.inProgress == 0 && g.stats.notStarted == 0);
 				var overdue = gd && (gd < new Date());
 				if (!complete && overdue) {
