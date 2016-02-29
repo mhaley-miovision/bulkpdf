@@ -740,8 +740,7 @@ circle.container, circle.label {
 }
 
 .GoalDueDate {
-    color: slategray; /*#fff;*/
-    background-color: white; /*darkgrey;*/
+    color: slategray;
     line-height: 11px;
     font-size: 11px;
     padding: 2px;
