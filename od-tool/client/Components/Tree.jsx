@@ -375,7 +375,7 @@ Tree = React.createClass({
 	mixins: [ReactMeteorData],
 
 	propTypes: {
-		objectId: React.PropTypes.string.isRequired,
+		objectId: React.PropTypes.string,
 		objectType: React.PropTypes.string,
 	},
 
@@ -388,27 +388,43 @@ Tree = React.createClass({
 
 	getDefaultProps() {
 		return {
-			objectType: "organization",
+			objectType: "role",
+			objectId: null,
 			searchVisible: true,
 		}
 	},
 
-	// TODO: move some of this log into server-side methods
 	getMeteorData() {
 		var _this = this;
 
-		if (this.state.objectType == 'organization') {
-			Meteor.call("teal.goals.loadGoalTree", function (err, data) {
-				_this.data.goals = data;
-				_this.data.doneLoading = true;
-				_this.updateTreeView();
-			});
-		} else if (this.state.objectType == 'contributor') {
-			Meteor.call("teal.goals.loadGoalTreeForContributor", this.state.objectId, function (err, data) {
-				_this.data.goals = data;
-				_this.data.doneLoading = true;
-				_this.updateTreeView();
-			});
+		// default role is the CEO - TODO: make sure to filter by org root id in the future
+		if (this.state.objectType == 'role' && !this.state.objectId) {
+			let r = RolesCollection.findOne({label:"Chief Executive Officer"},{fields: {_id:1}});
+			if (!!r) {
+				this.state.objectId = r._id;
+			} else {
+				console.error("Couldn't find the CEO role for this org!");
+			}
+		}
+
+		if (!!this.state.objectId) {
+			if (this.state.objectType == 'goal') {
+				Meteor.call("teal.goals.loadGoalTree", this.state.objectId, function (err, data) {
+					console.log(data);
+					_this.data.goals = data;
+					_this.data.doneLoading = true;
+					_this.updateTreeView();
+				});
+			} else if (this.state.objectType == 'role') {
+				Meteor.call("teal.goals.loadGoalTreeForRole", this.state.objectId, function (err, data) {
+					console.log(data);
+					_this.data.goals = data;
+					_this.data.doneLoading = true;
+					_this.updateTreeView();
+				});
+			}
+		} else {
+			console.error("Missing objectID on Tree component!");
 		}
 		return this.data ? this.data : {};
 	},
@@ -445,7 +461,6 @@ Tree = React.createClass({
 		if (this.state.objectId === nextState.objectId) {
 			return false;
 		}
-
 		return true;
 	},
 

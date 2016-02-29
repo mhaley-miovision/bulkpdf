@@ -6,7 +6,8 @@ ObjectSearch = React.createClass({
 		findOrganizations: React.PropTypes.bool,
 		findContributors: React.PropTypes.bool,
 		findRoles: React.PropTypes.bool,
-		onClick: React.PropTypes.any.isRequired
+		onClick: React.PropTypes.any.isRequired,
+		notFoundLabel: React.PropTypes.string,
 	},
 
 	getDefaultProps() {
@@ -96,7 +97,7 @@ ObjectSearch = React.createClass({
 		e.preventDefault();
 		e.stopPropagation();
 		if (this.props.onClick) {
-			this.props.onClick(e.target.id, 'contributor');
+			this.props.onClick(e.target.id, 'role');
 		}
 	},
 

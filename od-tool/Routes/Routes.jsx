@@ -79,7 +79,7 @@ FlowRouter.route( '/goals/tree', {
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
 		ReactLayout.render( App, { yield: <Tree
 			objectId={objectId}
-			objectType='contributor'
+			objectType='role'
 			zoomTo={zoomTo}
 			mode={mode}
 			roleMode={roleMode}
@@ -96,6 +96,15 @@ FlowRouter.route( '/goals/subGoals', {
 	}
 });
 
+FlowRouter.route( '/goals/:goalId', {
+	name: 'goalById',
+	action(params, queryParams) {
+		// TODO: validate params
+		let goalId = params.goalId;
+		ReactLayout.render( App, { yield: <GoalById goalId={goalId}/> } );
+	}
+});
+
 FlowRouter.route( '/goals/list/contributor', {
 	name: 'goalsList',
 	action(params, queryParams) {
@@ -106,7 +115,7 @@ FlowRouter.route( '/goals/list/contributor', {
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
 		ReactLayout.render( App, { yield: <GoalList
 			objectId={objectId}
-			objectType='contributor'
+			objectType='role'
 			zoomTo={zoomTo}
 			mode={mode}
 			roleMode={roleMode}
@@ -124,7 +133,7 @@ FlowRouter.route( '/organization/view', {
 		var roleMode = queryParams.roleMode && queryParams.roleMode.toLowerCase() == "true";
 		ReactLayout.render( App, { yield: <Organization
 			objectId={objectId}
-			objectType='contributor'
+			objectType='role'
 			zoomTo={zoomTo}
 			mode={mode}
 			roleMode={roleMode}

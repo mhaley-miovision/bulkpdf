@@ -4,7 +4,7 @@ const TOAST_DURATION = 1000;
 Goal = React.createClass({
 	propTypes: {
 		goal: React.PropTypes.object.isRequired,
-		compactViewMode: React.PropTypes.bool
+		compactViewMode: React.PropTypes.bool,
 	},
 
 	getInitialState() {
@@ -44,7 +44,8 @@ Goal = React.createClass({
 				let lw = this.props.goal.isLeaf ? 10 : 9;
 				let rw = this.props.goal.isLeaf ? 2 : 3;
 				return (
-					<div className={this.props.compactViewMode ? '' : 'card-content'}>
+					//TODO: look into refactoring this into multiple components rather than all these switches
+					<div className={this.props.compactViewMode ? '' : 'card-content'} onClick={this.props.onClicked}>
 						<div className="row">
 							<div className={"col m" + lw + " s12 GoalContainer"}>
 								{ this.props.goal.isLeaf ?
@@ -63,11 +64,13 @@ Goal = React.createClass({
 									<div className="TaskGoalSummaryContainer center">
 										<div className="TaskGoalPhotos center">
 											{ this.props.goal.ownerRoles.length > 0 ?
-												<GoalUserPhotoList compactViewMode={this.props.compactViewMode} list={this.props.goal.ownerRoles}/>
+												<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
+																   list={this.props.goal.ownerRoles}/>
 												: ''
 											}
 											{this.props.goal.contributorRoles.length > 0 ?
-												<GoalUserPhotoList compactViewMode={this.props.compactViewMode} list={this.props.goal.contributorRoles}/>
+												<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
+																   list={this.props.goal.contributorRoles}/>
 												: ''
 											}
 										</div>
@@ -99,6 +102,7 @@ Goal = React.createClass({
 		this.setState({isEditing:false});
 		if (this.refs.obj) {
 			let inputs = this.refs.obj.getInputs();
+			debugger;
 			Meteor.call("teal.goals.updateOrInsertGoal",
 				inputs._id, null, inputs.name, inputs.keyObjectives, inputs.doneCriteria,
 				inputs.ownerRoles, inputs.contributorRoles);
@@ -124,20 +128,29 @@ Goal = React.createClass({
 	},
 
 	render() {
-		return (
-			<div className={this.props.compactViewMode ? 'collection-item' : 'card hoverable'}
-				 style={{marginBottom: this.props.compactViewMode ? "0" : "40px"}}>
-				{ this.renderGoalBody() }
-				{ this.props.compactViewMode ? '' :
+		if (this.props.compactViewMode) {
+			let url = FlowRouter.path("goalById", {goalId: this.props.goal._id}, {});
+			return (
+				// style is to undo what materialize does in the card parent containing this modal
+				<a href={url} className='collection-item GoalSublistModal'
+				   style={{marginBottom: 0, marginRight: 0, textTransform: "none"}}>
+					{ this.renderGoalBody() }
+				</a>
+			);
+		} else {
+			return (
+				<div className='card hoverable' style={{marginBottom: "40px"}}>
+					{ this.props.goal._id }
+					{ this.renderGoalBody() }
 					<GoalControls isEditing={this.state.isEditing}
 								  goal={this.props.goal}
 								  onEditClicked={this.handleEditClicked}
 								  onSaveClicked={this.handleSaveClicked}
 								  onDeleteClicked={this.handleDeleteClicked}
 								  onCancelClicked={this.handleCancelClicked}/>
-				}
-			</div>
-		);
+				</div>
+			);
+		}
 	}
 });
 

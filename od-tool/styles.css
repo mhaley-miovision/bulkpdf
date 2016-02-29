@@ -930,6 +930,11 @@ circle.container, circle.label {
     font-size: 14.5px;
 }
 
+.GoalSublistModal:hover {
+    background: #9ae4e2;
+    cursor:pointer;
+}
+
 /*******************************************************************************************************************/
 /* Summary cards */
 

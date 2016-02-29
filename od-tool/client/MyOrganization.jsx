@@ -11,9 +11,9 @@ MyOrganization = React.createClass({
 
 	getDefaultProps() {
 		return {
-			objectId: "Miovision",
-			zoomTo: "Miovision",
-			objectType: "organization",
+			objectId: "",
+			zoomTo: "",
+			objectType: "role",
 			mode: 'acc',
 		}
 	},

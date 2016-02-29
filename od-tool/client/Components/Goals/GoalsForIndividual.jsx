@@ -1,5 +1,4 @@
 GoalsForIndividual = React.createClass({
-	// This mixin makes the getMeteorData method work
 	mixins: [ReactMeteorData],
 
 	getInitialState() {
@@ -60,14 +59,6 @@ GoalsForIndividual = React.createClass({
 		} else {
 			return { doneLoading : false };
 		}
-	},
-
-	componentDidMount() {
-		$(document).ready(function(){
-			$('.collapsible').collapsible({
-				accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
-			});
-		});
 	},
 
 	shouldComponentUpdate(nextProps, nextState) {

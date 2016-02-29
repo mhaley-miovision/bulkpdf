@@ -51,7 +51,7 @@ GoalControls = React.createClass({
 				<div className="card-action">
 					<div className="center-align">
 						{  this.props.goal.isLeaf ? // only show delete button for leaves
-							<i className = "material-icons GreyButton" onClick={this.props.onDeleteClicked}>delete</i>
+							<i className = "material-icons GreyButton" onClick={this.props.onDeleteClicked}>trash</i>
 							: ''
 						}
 						<i className="material-icons GreyButton" onClick={this.props.onEditClicked}>edit</i>
