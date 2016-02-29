@@ -6,6 +6,7 @@ GoalById = React.createClass({
 
 	propTypes: {
 		goalId: React.PropTypes.string.isRequired,
+		showBackButton : React.PropTypes.bool
 	},
 
 	getMeteorData() {
@@ -19,13 +20,24 @@ GoalById = React.createClass({
 		}
 	},
 
+	goBack() {
+		history.back();
+	},
+
 	render() {
 		if (this.data.doneLoading) {
-			if (this.data.goal) {
-				return <Goal goal={this.data.goal}/>
-			} else {
-				return <NotFound/>
-			}
+			return (
+				<div>
+					<div className="section center">
+						{this.props.showBackButton ?
+							<i className="material-icons GreyButton" onClick={this.goBack}>undo</i> : ''}
+					</div>
+					<div className="divider"></div>
+					<div className="section">
+						{this.data.goal ? <Goal goal={this.data.goal}/> : <NotFound/>}
+					</div>
+				</div>
+			)
 		} else {
 			return <Loading spinner={true}/>
 		}

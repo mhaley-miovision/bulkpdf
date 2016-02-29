@@ -5,12 +5,16 @@ GoalsStatsDonut = React.createClass({
 		height: React.PropTypes.string,
 	},
 
+	getInitialState() {
+		return { chartId: "chart_" + Math.floor((1 + Math.random()*1000)) };
+	},
+
 	getDefaultProps() {
 		return { width: "120px", height: "120px" };
 	},
 
 	getChartId() {
-		return "gd-" + this.props.goal._id;
+		return this.state.chartId;
 	},
 
 	updateChart() {
@@ -83,6 +87,7 @@ GoalsStatsDonut = React.createClass({
 	},
 
 	componentDidUpdate(prevProps, prevState) {
+		console.log("udpating on componentDidUpdate")
 		if (!this.areSameStats(prevProps, this.props)) {
 			this.updateChart();
 		}

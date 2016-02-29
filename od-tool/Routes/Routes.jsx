@@ -101,7 +101,8 @@ FlowRouter.route( '/goals/:goalId', {
 	action(params, queryParams) {
 		// TODO: validate params
 		let goalId = params.goalId;
-		ReactLayout.render( App, { yield: <GoalById goalId={goalId}/> } );
+		let showBackButton = queryParams.showBackButton ? queryParams.showBackButton.toLowerCase() === 'true' : false;
+		ReactLayout.render( App, { yield: <GoalById goalId={goalId} showBackButton={showBackButton}/> } );
 	}
 });
 

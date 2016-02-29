@@ -81,7 +81,7 @@ Goal = React.createClass({
 										<GoalDueDateLabel goal={this.props.goal}/>
 									</div>
 									:
-									<ProjectGoalSummary goal={this.props.goal}/>
+									<ProjectGoalSummary goal={this.props.goal} compactViewMode={this.props.compactViewMode}/>
 								}
 							</div>
 						</div>
@@ -127,27 +127,42 @@ Goal = React.createClass({
 		});
 	},
 
+	getNewGoalModalId() {
+		return this.props.goal._id+"_new";
+	},
+
+	getSubGoalsModalId() {
+		return this.props.goal._id+"_sub";
+	},
+
 	render() {
 		if (this.props.compactViewMode) {
-			let url = FlowRouter.path("goalById", {goalId: this.props.goal._id}, {});
+			console.log("rendering compact goal: "+this.props.goal._id);
+
+
 			return (
 				// style is to undo what materialize does in the card parent containing this modal
-				<a href={url} className='collection-item GoalSublistModal'
+				<a id={this.props.goal._id} onClick={this.props.onGoalClicked} className='collection-item GoalSublistModal'
 				   style={{marginBottom: 0, marginRight: 0, textTransform: "none"}}>
 					{ this.renderGoalBody() }
 				</a>
 			);
 		} else {
 			return (
-				<div className='card hoverable' style={{marginBottom: "40px"}}>
-					{ this.props.goal._id }
-					{ this.renderGoalBody() }
-					<GoalControls isEditing={this.state.isEditing}
-								  goal={this.props.goal}
-								  onEditClicked={this.handleEditClicked}
-								  onSaveClicked={this.handleSaveClicked}
-								  onDeleteClicked={this.handleDeleteClicked}
-								  onCancelClicked={this.handleCancelClicked}/>
+				<div>
+					<div className='card hoverable' style={{marginBottom: "40px"}}>
+						{ this.renderGoalBody() }
+						<GoalControls newModalId= {this.getNewGoalModalId()}
+									  subGoalsModalId={this.getSubGoalsModalId()}
+									  isEditing={this.state.isEditing}
+									  goal={this.props.goal}
+									  onEditClicked={this.handleEditClicked}
+									  onSaveClicked={this.handleSaveClicked}
+									  onDeleteClicked={this.handleDeleteClicked}
+									  onCancelClicked={this.handleCancelClicked}/>
+					</div>
+					<GoalNewModal id={this.getNewGoalModalId()} parentGoalId={this.props.goal._id}/>
+					<SubGoalsModal id={this.getSubGoalsModalId()} parentGoalId={this.props.goal._id}/>
 				</div>
 			);
 		}

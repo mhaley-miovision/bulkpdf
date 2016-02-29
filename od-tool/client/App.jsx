@@ -41,6 +41,7 @@ if (Meteor.isClient) {
     $(document).ready(function(){
         $('.parallax').parallax();
 
+		// TODO: hack to get the mobile nav to show
 		setTimeout(function() {
 			$('.button-collapse').sideNav({
 					menuWidth: 300, // Default is 240
@@ -50,6 +51,11 @@ if (Meteor.isClient) {
 			);
 		}, 1000);
     });
+
+	$(window).load(function() {
+		// executes when complete page is fully loaded, including all frames, objects and images
+		console.log("window is loaded");
+	});
 
 	Meteor.startup(function(){
 		// determine root org based on user

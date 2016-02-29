@@ -1,6 +1,7 @@
 ProjectGoalSummary = React.createClass({
 	propTypes: {
-		goal : React.PropTypes.object.isRequired
+		goal : React.PropTypes.object.isRequired,
+		compactViewMode : React.PropTypes.bool
 	},
 
 	render() {
@@ -14,16 +15,18 @@ ProjectGoalSummary = React.createClass({
 		return (
 			<section>
 				{ this.props.goal.ownerRoles.length > 0 ?
-					<GoalUserPhotoList list={this.props.goal.ownerRoles} heading="Owner"/>
+					<GoalUserPhotoList list={this.props.goal.ownerRoles} compactViewMode={this.props.compactViewMode} heading="Owner"/>
 					: ''
 				}
 				{ this.props.goal.contributorRoles.length > 0 ?
-					<GoalUserPhotoList list={this.props.goal.contributorRoles} heading="Contributor"/>
+					<GoalUserPhotoList list={this.props.goal.contributorRoles} compactViewMode={this.props.compactViewMode} heading="Contributor"/>
 					: ''
 				}
 				<div className="center GoalStatsSection" data-tip={subGoalsToolTip}>
 					<div className="GoalSummaryHeading">{subGoalsLabel}</div>
-					<GoalsStatsDonut goal={this.props.goal} width="60px" height="60px" />
+					{this.props.compactViewMode ? '' :
+						<GoalsStatsDonut goal={this.props.goal} width="60px" height="60px"/>
+					}
 					<ReactTooltip place="bottom"/>
 				</div>
 				{ this.props.goal.estimatedCompletedOn ?

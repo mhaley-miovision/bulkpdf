@@ -4,6 +4,7 @@ GoalSubGoals = React.createClass({
 
 	propTypes: {
 		compactViewMode: React.PropTypes.bool,
+		onGoalClicked: React.PropTypes.any,
 	},
 
 	getDefaultProps() {
@@ -40,7 +41,8 @@ GoalSubGoals = React.createClass({
 
 	renderGoals() {
 		if (this.data.doneLoading) {
-			return <GoalList goalList={this.data.goals} compactViewMode={this.props.compactViewMode} />
+			return <GoalList goalList={this.data.goals} compactViewMode={this.props.compactViewMode}
+							 onGoalClicked={this.props.onGoalClicked}/>
 		} else {
 			return <div><Loading /><br/><br/></div>
 		}

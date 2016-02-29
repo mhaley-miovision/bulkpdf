@@ -23,6 +23,10 @@ GoalEdit = React.createClass({
 		return this.state;
 	},
 
+	clearInputs() {
+		this.setState(this.getInitialState());
+	},
+
 	addKeyObjective(event) {
 		if (!!this.state.newKeyObjective && this.state.newKeyObjective.trim() !== '') {
 			if (event.type === 'submit') {
