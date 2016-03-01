@@ -108,7 +108,7 @@ Goal = React.createClass({
 	handleDeleteClicked() {
 		Meteor.call("teal.goals.deleteGoal", this.props.goal._id, function(err) {
 			if (err) {
-				Materialize.toast("Failed to delete goal!", 1000);
+				Materialize.toast("Failed to delete goal: " + err, 1000);
 			} else {
 				Materialize.toast("Goal deleted!", 1000);
 			}

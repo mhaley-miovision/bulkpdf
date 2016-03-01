@@ -312,10 +312,10 @@ Meteor.methods({
 
 				// update affected contributors and owners
 				g.ownerRoles.forEach(r => {
-					Meteor.call("teal.goals.updateContributorTopLevelGoals", r._id);
+					Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
 				});
 				g.contributorRoles.forEach(r => {
-					Meteor.call("teal.goals.updateContributorTopLevelGoals", r._id);
+					Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
 				});
 
 				// update parent stats

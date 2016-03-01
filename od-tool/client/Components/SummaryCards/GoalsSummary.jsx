@@ -9,14 +9,20 @@ GoalsSummary = React.createClass({
 		let handle = Meteor.subscribe("teal.goals");
 
 		if (handle.ready()) {
-			let goals = GoalsCollection.find({owners:this.props.objectId}).fetch();
+			let goals = GoalsCollection.find({
+					$or: [
+						{ownerRoles: {$elemMatch: {email: this.props.objectId}}},
+						{contributorRoles: {$elemMatch: {email: this.props.objectId}}},
+					]
+				},
+				{sort:{depth:1}}).fetch();
 
 			// summarize late goals, and sum up totals
 			let notStarted = 0, inProgress = 0, completed = 0;
 			let lateGoals = [];
 			goals.forEach(g => {
 				var gd = g.estimatedCompletionOn ? new Date(g.estimatedCompletionOn) : null;
-				var complete = g.stats && (g.stats.inProgress == 0 && g.stats.notStarted == 0);
+				var complete = g.state == 2;
 				var overdue = gd && (gd < new Date());
 				if (!complete && overdue) {
 					lateGoals.push(g);
@@ -167,6 +173,11 @@ GoalsSummary = React.createClass({
 		Materialize.toast("Functionality coming soon, stay tuned.", 1000);
 	},
 
+	showGoalsModal() {
+		// TODO: move this to a method on the component
+		$('#userGoalListModalId').openModal();
+	},
+
 	renderSection() {
 		if (this.data.doneLoading && this.data.goals.length) {
 			var url = FlowRouter.path("goalsList", {}, {objectId:this.props.objectId});
@@ -182,7 +193,7 @@ GoalsSummary = React.createClass({
 			goalsSection.push(
 				<li className="collection-item" key="goalSummary2">
 					<div className="collection-item-text">{this.data.goals.length} Goals
-						(<a className="tealLink" href={url}>view all</a>)
+						(<a className="tealLink" onClick={ this.showGoalsModal }>view all</a>)
 					</div>
 					<a className="secondary-content" href={url}>
 						<i className="material-icons summaryCardIcon grey-text">search</i>
@@ -197,6 +208,7 @@ GoalsSummary = React.createClass({
 			);
 			goalsSection.push(this.renderLateGoalsHeader());
 			goalsSection.push(this.renderLateGoals());
+			goalsSection.push(<GoalListModal key="userGoalListModalId" id="userGoalListModalId" goalList={this.data.goals}/>);
 			return goalsSection;
 		} else {
 			return (
