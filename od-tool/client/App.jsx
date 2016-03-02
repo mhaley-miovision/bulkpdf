@@ -4,7 +4,7 @@ App = React.createClass({
 	getMeteorData() {
 		return {
 			loggingIn: Meteor.loggingIn(),
-			hasUser: !!Meteor.user() && Permissions.isEnabledUser(),
+			hasUser: !!Meteor.user() && Permissions.isEnabled(),
 			isPublic( route ) {
 				let publicRoutes = [
 					'login'
@@ -17,9 +17,6 @@ App = React.createClass({
 			}
 		};
 	},
-	loading() {
-		return <div className="loading"></div>;
-	},
 	getView() {
 		return this.data.canView() ? this.props.yield : <Login />;
 	},
@@ -29,7 +26,7 @@ App = React.createClass({
 			<div className="app-root">
 				<Navbar hasUser={this.data.hasUser}/>
 				<div className="container">
-					{this.data.loggingIn ? this.loading() : this.getView()}
+					{this.data.loggingIn ? <Loading /> : this.getView()}
 				</div>
 				<Footer hasUser={this.data.hasUser}/>
 			</div>
@@ -58,7 +55,6 @@ if (Meteor.isClient) {
 	});
 
 	Meteor.startup(function(){
-		// determine root org based on user
 		Hooks.init();
 	});
 }

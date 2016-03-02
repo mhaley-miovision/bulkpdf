@@ -10,8 +10,6 @@ MyTeam = React.createClass({
 		var handle = Meteor.subscribe("teal.contributors");
 		var handle2 = Meteor.subscribe("users");
 
-		console.log("getMeteorData! - ")
-
 		if (handle.ready() && handle2.ready()) {
 			var c = ContributorsCollection.findOne({email:Meteor.user().email});
 			return {isLoading:false, contributorOrg: c ? c.physicalTeam : "", contributorOrgId : c ? c.physicalOrgId : "" };

@@ -1,8 +1,11 @@
 Permissions = {
-	isEnabledUser() {
-		return Roles.userIsInRole(Meteor.user(), "enabledUser");
+	isEnabled() {
+		return Roles.userIsInRole(Meteor.user(), "enabled");
 	},
-	isAdminUser() {
+	isAdmin() {
 		return Roles.userIsInRole(Meteor.user(), "admin");
+	},
+	isDesigner() {
+		return Roles.userIsInRole(Meteor.user(), "designer");
 	}
 }

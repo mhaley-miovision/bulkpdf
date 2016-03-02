@@ -70,7 +70,8 @@ Goal = React.createClass({
 										<GoalDueDateLabel goal={this.props.goal}/>
 									</div>
 									:
-									<ProjectGoalSummary goal={this.props.goal} compactViewMode={this.props.compactViewMode}/>
+									<ProjectGoalSummary goal={this.props.goal}
+														compactViewMode={this.props.compactViewMode}/>
 								}
 							</div>
 						</div>
@@ -93,7 +94,7 @@ Goal = React.createClass({
 			let inputs = this.refs.obj.getInputs();
 			Meteor.call("teal.goals.updateOrInsertGoal",
 				inputs._id, null, inputs.name, inputs.keyObjectives, inputs.doneCriteria,
-				inputs.ownerRoles, inputs.contributorRoles, inputs.state, inputs.estimatedCompletionOn);
+				inputs.ownerRoles, inputs.contributorRoles, inputs.state, inputs.dueDate);
 			// TODO: goal state
 			Materialize.toast("Goal saved!", 1000);
 		}
@@ -127,7 +128,9 @@ Goal = React.createClass({
 		if (this.props.compactViewMode) {
 			return (
 				// style is to undo what materialize does in the card parent containing this modal
-				<a id={this.props.goal._id} onClick={this.props.onGoalClicked} className='collection-item GoalSublistModal'
+				<a id={this.props.goal._id}
+				   onClick={this.props.onGoalClicked}
+				   className='collection-item GoalSublistModal'
 				   style={{marginBottom: 0, marginRight: 0, textTransform: "none"}}>
 					{ this.renderGoalBody() }
 				</a>

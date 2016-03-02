@@ -3,6 +3,7 @@ GoalEdit = React.createClass({
 		goal : React.PropTypes.object,
 	},
 	getInitialState() {
+		let d = this.props.goal ? this.props.goal.dueDate : null;
 		return {
 			datePickerId: "picker" + Math.floor(1 + Math.random()*100000),
 			keyObjectives: this.props.goal ? _.clone(this.props.goal.keyObjectives) : [],
@@ -11,10 +12,9 @@ GoalEdit = React.createClass({
 			_id: this.props.goal ? this.props.goal._id : null,
 			newKeyObjective: "",
 			newDoneCriteria: "",
-			ownerRoles: this.props.goal ? _.clone(this.props.goal.ownerRoles) : [],
+			ownerRoles: this.props.goal ? _.clone(this.props.goal.ownerRoles)  : [],
 			contributorRoles: this.props.goal ?  _.clone(this.props.goal.contributorRoles) : [],
-			estimatedCompletionOn : this.props.goal ?
-				moment(this.props.goal.estimatedCompletionOn).format("MMM Do YY") : '',
+			dueDate : this.props.goal ? this.props.goal.dueDate : moment().format(Teal.DateFormat)
 		}
 	},
 
@@ -23,9 +23,7 @@ GoalEdit = React.createClass({
 		this.state.ownerRoles = this.refs.ownersList.state.roles;
 		this.state.contributorRoles = this.refs.contributorsList.state.roles;
 		this.state.state = this.refs.goalState.state.state;
-		console.log("this.state.estimatedCompletionOn was d="+this.state.estimatedCompletionOn);
-		this.state.estimatedCompletionOn = new Date(this.state.estimatedCompletionOn);
-		console.log("this.state.estimatedCompletionOn now is d="+this.state.estimatedCompletionOn);
+		this.state.dueDate = $('#'+this.state.datePickerId)[0].value;
 		return this.state;
 	},
 
@@ -56,7 +54,6 @@ GoalEdit = React.createClass({
 	},
 
 	handleNameChange(event) {
-		let v = event.target.value;
 		this.setState({name:event.target.value});
 	},
 
@@ -102,19 +99,6 @@ GoalEdit = React.createClass({
 		let k = event.target.id.replace("r_","");
 		this.state.keyObjectives = _.without(this.state.keyObjectives, _.findWhere(this.state.keyObjectives, {_id: k}));
 		this.setState({keyObjectives: this.state.keyObjectives});
-	},
-
-	componentDidMount() {
-		let _this = this;
-		$('#' + _this.state.datePickerId).pickadate({
-			selectMonths: true, // Creates a dropdown to control month
-			selectYears: 15, // Creates a dropdown of 15 years to control year
-			onSet: function () {
-				let d = $('#'+_this.state.datePickerId).pickadate().val();
-				console.log("datepicker was d="+d);
-				_this.setState({estimatedCompletionOn: d});
-			}
-		});
 	},
 
 	renderDoneCriteriaItems() {
@@ -165,6 +149,15 @@ GoalEdit = React.createClass({
 		}
 	},
 
+	componentDidMount() {
+		$input = $('#'+this.state.datePickerId).pickadate({
+			format: 'yyyy-mm-dd',
+			onSet: function(contex) {
+				console.log(this.$node[0].value);
+			}
+		});
+	},
+
 	render() {
 		return (
 			<div className="card-content">
@@ -188,12 +181,9 @@ GoalEdit = React.createClass({
 						</div>
 						<div className="">
 							<label className="text-main1 ProjectGoalSubtitle" htmlFor="dueDateInput">Estimated Completion</label>
-							<input type="date" className="datepicker text-main5"
-								   placeholder="Select due date..."
-								   readOnly
-								   value={this.state.estimatedCompletionOn}
-								   id={this.state.datePickerId}>
-							</input>
+							<input id={this.state.datePickerId} type="date" className="datepicker"
+								   data-value={this.state.dueDate}
+								   readOnly/>
 						</div>
 						<section>
 							<div className="ProjectGoalSubtitle">What Done Looks Like</div>

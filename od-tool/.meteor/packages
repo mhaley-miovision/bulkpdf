@@ -43,3 +43,5 @@ momentjs:moment
 meteorhacks:subs-manager
 percolate:synced-cron
 cosmos:browserify
+gildaspk:moment-datepicker
+lesshardtoofind:react-datepicker

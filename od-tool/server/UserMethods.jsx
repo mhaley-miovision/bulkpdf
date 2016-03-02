@@ -152,15 +152,14 @@ Meteor.startup(function() {
 	let u = Meteor.users.findOne({email:"vleipnik@miovision.com"});
 	if (u) {
 		if (!u.roles) {
-			Meteor.users.update(u._id, {$set:{roles:['enabledUser','admin']}});
+			Meteor.users.update(u._id, {$set:{roles:['enabled','admin']}});
 		}
 	}
-
 	// useful when doing a full DB drop
 	u = Meteor.users.findOne({email:"leipnik@gmail.com"});
 	if (u) {
 		if (!u.roles) {
-			Meteor.users.update(u._id, {$set:{roles:['enabledUser']}});
+			Meteor.users.update(u._id, {$set:{roles:['enabled']}});
 		}
 	}
 });

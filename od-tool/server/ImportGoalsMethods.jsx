@@ -2,6 +2,14 @@ var key = '1cCbZtpGdPhfaM3Y-sBcfoKMR2_jIP_rXgooqZQ5CtbE';
 var url = "https://spreadsheets.google.com" + "/feeds/worksheets/" + key + "/public/basic?alt=json";
 var cellsFeed = "https://spreadsheets.google.com/feeds/cells/1cCbZtpGdPhfaM3Y-sBcfoKMR2_jIP_rXgooqZQ5CtbE/olh8u5s/public/basic?alt=json";
 
+function processDate(cellStr) {
+	let d = cellStr? new Date(cellStr) : null;
+	if (d) {
+		d = moment(d).format(Teal.DateFormat);
+	}
+	return d;
+}
+
 function processGoalsJson(json) {
 	var cellItems = json.feed.entry;
 	var res = [];
@@ -158,7 +166,7 @@ function processGoalsJson(json) {
 			lastGoal = {
 				name: c["B" + r],
 				// TODO: haxxor on the date
-				estimatedCompletionOn: r < 65 ? "12/31/2015" : "7/1/2016",
+				dueDate: r < 65 ? "12/31/2015" : "7/1/2016",
 				owners: ["kmcbride@miovision.com"], // Kurtis???
 				contributors: []
 			};
@@ -225,7 +233,7 @@ function processGoalsJson(json) {
 				doneCriteria: doneCriteria,
 				keyObjectives: keyObjectives,
 				status: c["M" + r],
-				estimatedCompletionOn: c["J" + r] ? new Date(c["J" + r]) : null,
+				dueDate: processDate(c["J" + r]),
 				isLeaf: false
 			};
 			projects.push(lastProject);
@@ -236,18 +244,13 @@ function processGoalsJson(json) {
 		if (typeof(t) !== 'undefined') {
 			var result = parseOwners(c["N" + r]);
 			unmatchedOwners = unmatchedOwners.concat(result.unmatched);
-
-			// TODO: !!!!!! check if parent is the project, or there is a sub project situation here !!!!!!
-			var d = c["O" + r];
-			var date = d ? new Date(d) : null;
-
 			var task = {
 				parent: lastProject,
 				name: t,
 				status: c["M" + r],
 				owners: result.matched,
 				contributors: [],
-				estimatedCompletionOn: date,
+				dueDate: processDate(c["O" + r]),
 				links: c["P" + r],
 				isLeaf: true,
 				doneCriteria: [],

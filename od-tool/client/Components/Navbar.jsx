@@ -28,8 +28,14 @@ Navbar = React.createClass({
 				<li className={FlowHelpers.currentRoute("goals")}><a href="/goals">Goals</a></li>
 				<li className={FlowHelpers.currentRoute("team")}><a href="/team">Team</a></li>
 				<li className={FlowHelpers.currentRoute("organization")}><a href="/organization">Organization</a></li>
+				{ Permissions.isDesigner() ?
+					<li className={FlowHelpers.currentRoute("designer")}><a href="/designer">Design</a>
+					</li>
+					: ''
+				}
+				<li className={FlowHelpers.currentRoute("requests")}><a href="/requests">Requests<span className="new badge darken-3 orange white-text">4</span></a></li>
 				{
-					Permissions.isAdminUser() ?
+					Permissions.isAdmin() ?
 						<li className={FlowHelpers.currentRoute("admin")}><a href="/admin">Admin</a></li>
 						: ''
 				}
@@ -50,12 +56,13 @@ Navbar = React.createClass({
 				<div className="right">
 					<ProfileImage />
 				</div>
-		</div>
+				{ Permissions.isAdmin() ? <div className="right">{Teal.rootOrgIg()}</div> : '' }
+			</div>
 		);
 	},
 
 	renderNavContent() {
-		if (!Meteor.userId() || !Permissions.isEnabledUser()) {
+		if (!Meteor.userId() || !Permissions.isEnabled()) {
 			return this.renderPublic();
 		} else {
 			return this.renderPrivate();

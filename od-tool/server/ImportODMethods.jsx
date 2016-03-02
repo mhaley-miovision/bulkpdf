@@ -142,7 +142,8 @@ function processRolesJson(json) {
 			isActive: sanitizeCell(res['I' + r]),
 			startDate: sanitizeCell(res['O' + r]),
 			endDate: sanitizeCell(res['P' + r]),
-			isExternal: sanitizeCell(res['Q' + r])
+			isExternal: sanitizeCell(res['Q' + r]),
+			isLeadNode: sanitizeCell(res['R' + r]) === 'TRUE',
 		};
 		roles.push(role);
 	}
@@ -238,24 +239,29 @@ Meteor.methods({
 		// Contributors
 		//==============================================================================================================
 
-		for (var x in contributors.data) {
-			var c_id = ContributorsCollection.insert(importHelper_transformContributor(contributors.data[x]));
-			var c = ContributorsCollection.findOne({_id: c_id});
+		for (let x in contributors.data) {
+			let processed = importHelper_transformContributor(contributors.data[x]);
 
 			// also add to the users table, with appropriate roles
-			var existing = Meteor.users.findOne({email: c.email});
+			var existing = Meteor.users.findOne({email: processed.email});
 			var userId = null;
 			if (!existing) {
 				userId = Meteor.users.insert({
-					email: c.email,
-					profile: {name: c.name}
+					email: processed.email,
+					profile: {name: processed.name}
 				});
 			} else {
 				userId = existing._id;
 			}
+			// make sure userIds == contributorIds
+			processed._id = userId;
+
+			// insert the contributor
+			var c_id = ContributorsCollection.insert(processed);
+			var c = ContributorsCollection.findOne({_id: c_id});
 
 			// attach Teal-specific user information
-			Meteor.users.update(userId, {$set: {rootOrgId: rootOrgId, contributorId: c_id}});
+			Meteor.users.update(userId, {$set: {rootOrgId: rootOrgId }});
 
 			// look up actual id instead of name
 			let o = OrganizationsCollection.findOne({name: c.physicalTeam});
@@ -270,7 +276,7 @@ Meteor.methods({
 			// enable all miovision users by default + extras
 			var enabledUsers = ['leipnik@gmail.com'];
 			if (c.email.indexOf("@miovision.com" >= 0) || userEmail && enabledUsers.indexOf(userEmail) >= 0) {
-				Roles.addUsersToRoles(userId, 'enabledUser'); //TODO:fix groups to work properly , rootOrgId);
+				Roles.addUsersToRoles(userId, 'enabled'); //TODO:fix groups to work properly , rootOrgId);
 			}
 
 			// admins
@@ -308,21 +314,35 @@ Meteor.methods({
 		var result = processRolesJson(response.data);
 		if (result && result.length > 0) {
 			result.forEach(r => {
-				var r_id = RolesCollection.insert(importHelper_transformRole(r));
+				var processed = importHelper_transformRole(r);
 
-				// append user email
-				var c = ContributorsCollection.findOne({name: r.contributor});
-				if (c) {
-					RolesCollection.update(r_id, {$set: {email: c.email}});
+				// is this a lead role? if so, this will enable designer features
+				if (processed.isLeadNode || processed.email === 'vleipnik@miovision.com') { // person backdoor hack
+					Roles.addUsersToRoles(userId, 'designer'); //TODO:fix groups to work properly , rootOrgId);
 				}
 
-				// append org path (for easy role querying)
-				var path = [];
+				// user info
+				var c = ContributorsCollection.findOne({name: processed.contributor});
+				if (c) {
+					processed.email = c.email;
+					processed.contributorId = c._id;
+				} else {
+					console.error("Couldn't find contributor for role: " + processed.accountabilityLabel);
+				}
+
+				// organization info
 				var org = OrganizationsCollection.findOne({name: r.organization});
 				if (org) {
-					path = org.path;
-					RolesCollection.update(r_id, {$set: {path: path, organizationId: org._id}});
+					path = _.clone(org.path);
+					path.push(org._id); // full path includes this org as a parent
+					processed.path = path
+					processed.organizationId = org._id;
+				} else {
+					console.error("Couldn't find organization for role: " + processed.accountabilityLabel);
 				}
+
+				// finally insert  the role
+				var r_id = RolesCollection.insert(processed);
 
 				// append primary role id to contributor
 				if (c && r.primaryAccountability) {

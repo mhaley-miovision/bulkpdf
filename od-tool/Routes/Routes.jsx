@@ -142,6 +142,13 @@ FlowRouter.route( '/organization/view', {
 	}
 });
 
+FlowRouter.route( '/requests', {
+	name: 'requests',
+	action() {
+		ReactLayout.render( App, { yield: <Requests /> } );
+	}
+});
+
 FlowRouter.route( '/admin', {
 	name: 'admin',
 	action() {

@@ -238,7 +238,7 @@ Meteor.methods({
 
 	"teal.goals.updateOrInsertGoal": function(goalId, goalParentId, name, keyObjectives,
 											  doneCriteria, ownerRoles, contributorRoles,
-											  state, estimatedCompletionOn) {
+											  state, dueDate) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
@@ -256,7 +256,7 @@ Meteor.methods({
 		g.ownerRoles = ownerRoles;
 		g.contributorRoles = contributorRoles;
 		g.state = state;
-		g.estimatedCompletionOn = estimatedCompletionOn;
+		g.dueDate = dueDate;
 
 		let _id = null; // either new or existing
 
