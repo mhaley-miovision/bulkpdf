@@ -25,7 +25,6 @@ GoalsForOrganization = React.createClass({
 					goals.splice(j, 1);
 					continue;
 				}
-
 				// remove all sub children, i.e. that contain this id in their path
 				let j = i+1;
 				while (j < goals.length) {
@@ -54,7 +53,7 @@ GoalsForOrganization = React.createClass({
 
 	renderGoals() {
 		if (this.data.doneLoading) {
-			return <GoalList goalList={this.data.goals}/>
+			return <GoalList goalList={this.data.goals} compactViewMode={true}/>
 		} else {
 			return <div><Loading /><br/><br/></div>
 		}

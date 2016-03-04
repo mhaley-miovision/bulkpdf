@@ -5,22 +5,21 @@ GoalKeyObjectives = React.createClass({
 
 	renderKeyObjectivesItems() {
 		return this.props.goal.keyObjectives.map(function(o,i) {
-			return (
-				<GoalKeyObjective key={o._id} keyObjective={o}/>
-			);
+			return <GoalKeyObjective key={o._id} keyObjective={o}/>;
 		});
 	},
 
 	render() {
 		if (this.props.goal.keyObjectives.length > 0) {
 			return (
-				<section>
-					<div className="ProjectGoalSubtitle">Key Objectives</div>
+				<div>
+					<div className="GoalSubtitle hide-on-small-only">Key Objectives</div>
+					<div className="GoalSubtitleMobile hide-on-med-and-up center">Key Objectives</div>
 					<ul className="ProjectGoalDoneCriteria">{this.renderKeyObjectivesItems()}</ul>
-				</section>
+				</div>
 			);
 		} else {
-			return <section/>
+			return false;
 		}
 	},
 });

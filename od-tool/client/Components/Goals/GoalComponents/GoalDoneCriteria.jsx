@@ -12,15 +12,16 @@ GoalDoneCriteria = React.createClass({
 	render() {
 		if (this.props.goal.doneCriteria.length > 0) {
 			return (
-				<section>
-					<div className="ProjectGoalSubtitle">What Done Looks Like</div>
+				<div>
+					<div className="GoalSubtitle hide-on-small-only">What Done Looks Like</div>
+					<div className="GoalSubtitleMobile hide-on-med-and-up center">What Done Looks Like</div>
 					<ul className="ProjectGoalDoneCriteria">
 						{this.renderDoneCriteriaItems()}
 					</ul>
-				</section>
+				</div>
 			);
 		} else {
-			return <section/>;
+			return false;
 		}
 	},
 });

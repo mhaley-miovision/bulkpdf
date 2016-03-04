@@ -160,16 +160,16 @@ GoalEdit = React.createClass({
 
 	render() {
 		return (
-			<div className="card-content">
+			<div className="card-content GoalContainer">
 				<div className="row">
-					<div className="ProjectGoalTitle center" style={{marginTop:this.props.goal? "0px":"15px"}}>
+					<div className="GoalTitle center" style={{marginTop:this.props.goal? "0px":"15px"}}>
 						{this.props.goal ? "Edit Goal" : "New Goal"}
 					</div>
 				</div>
 				<div className="row">
 					<div className="col m9 s12 GoalContainer">
 						<div className="">
-							<label className="text-main1 ProjectGoalSubtitle" htmlFor="dueDateInput">Goal Title</label>
+							<label className="text-main1 GoalSubtitle" htmlFor="dueDateInput">Goal Title</label>
 							<span className="text-main5">
 								<input key="new_ko" type="text"
 									   placeholder="Enter new goal name..."
@@ -180,13 +180,13 @@ GoalEdit = React.createClass({
 							</span>
 						</div>
 						<div className="">
-							<label className="text-main1 ProjectGoalSubtitle" htmlFor="dueDateInput">Estimated Completion</label>
+							<label className="text-main1 GoalSubtitle" htmlFor="dueDateInput">Estimated Completion</label>
 							<input id={this.state.datePickerId} type="date" className="datepicker"
 								   data-value={this.state.dueDate}
 								   readOnly/>
 						</div>
 						<section>
-							<div className="ProjectGoalSubtitle">What Done Looks Like</div>
+							<div className="GoalSubtitle">What Done Looks Like</div>
 							<ul className="ProjectGoalDoneCriteria">
 								{this.renderDoneCriteriaItems()}
 								<form onSubmit={this.addDoneCriteria}>
@@ -201,7 +201,7 @@ GoalEdit = React.createClass({
 							</ul>
 						</section>
 						<section>
-							<div className="ProjectGoalSubtitle">Key Objectives</div>
+							<div className="GoalSubtitle">Key Objectives</div>
 							<ul className="ProjectGoalDoneCriteria">
 								{this.renderKeyObjectiveItems()}
 								<form onSubmit={this.addKeyObjective}>

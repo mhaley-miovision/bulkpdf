@@ -5,7 +5,7 @@ GoalDueDateLabel = React.createClass({
 
 	render() {
 		let gd = this.props.goal.dueDate;
-		let complete = this.state == 2;
+		let complete = this.props.goal.state == 2;
 		let overdue = gd && (new Date(gd) < new Date());
 		let classes = "GoalDueDate";
 		if (overdue && !complete) {

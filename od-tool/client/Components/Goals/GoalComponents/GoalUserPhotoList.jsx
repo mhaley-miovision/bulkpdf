@@ -5,41 +5,42 @@ GoalUserPhotoList = React.createClass({
 		compactViewMode : React.PropTypes.bool,
 	},
 
+	gotoUserProfile(elt) {
+		let email = elt.currentTarget.id;
+		let url = FlowRouter.path("profile", {}, {objectId: email});
+		FlowRouter.go(url);
+	},
+
 	renderPhotos() {
 		return this.props.list.map(item => {
 			//TODO: CSS Positioning horrible hack - no friggin clue why the
-			let horribleHack = this.props.compactViewMode && this.props.list.length == 1 ? "13px" : "0";
-			let email = item.email;
-			let photoUrl = item.photo ? item.photo : "/img/user_avatar_blank.jpg";
+			//let horribleHack = this.props.compactViewMode && this.props.list.length == 1 ? "13px" : "0";
 
-			if (this.props.compactViewMode) {
-				return (
-					<img key={item._id} title={email} className="goalItemPhoto" src={photoUrl}
-					 data-tip={item.accountabilityLabel}/>
-				);
-			} else {
-				let url = FlowRouter.path("profile", {}, {objectId: email});
-				return (
-					<a key={item._id} href={url} style={{margin:horribleHack}}
-					   data-tip={item.accountabilityLabel}>
-						<img key={item._id} title={email} className="goalItemPhoto" src={photoUrl}/>
-					</a>
-				);
-			}
+			let photoUrl = item.photo ? item.photo : "/img/user_avatar_blank.jpg";
+			return (
+				<img id={item.email} key={item._id} className="goalItemPhoto" src={photoUrl}
+				 data-tip={item.accountabilityLabel} onClick={this.gotoUserProfile}/>
+			);
 		});
 	},
 
 	render() {
-		return (
-			<div className="GoalOwnersSection">
-				{ this.props.heading ?
-					<div
-						className="GoalSummaryHeading">{this.props.heading + (this.props.list.length > 1 ? "s" : "")}</div>
-					: ''
-				}
-				<div className="GoalOwnerPhotos">{this.renderPhotos()}</div>
-				<ReactTooltip place="bottom"/>
-			</div>
-		);
+		if (this.props.list.length > 0) {
+			let heading = '';
+			if (this.props.heading) {
+				let text = this.props.heading + (this.props.list.length > 1 ? "s" : "");
+				heading = [];
+				heading.push(<div key={Teal.newId()} className="GoalOwnersSection GoalSummaryHeading hide-on-small-only">{text}</div>);
+				heading.push(<div key={Teal.newId()} className="GoalOwnersSectionMobile GoalSummaryHeading hide-on-med-and-up center">{text}</div>);
+			}
+			return (
+				<div className="GoalOwnersSection">
+					{heading}
+					<div className="GoalOwnerPhotos">{this.renderPhotos()}</div>
+				</div>
+			);
+		} else {
+			return false;
+		}
 	}
 });

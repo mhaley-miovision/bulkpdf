@@ -1,21 +1,32 @@
 Teal = {
+	// These are what types of changes we track and approve/reject/apply throughout the system
+	// They operate on the basic basic building blocks of the organizational model
 	ChangeTypes: {
 		NewRoleAccountability:'new_accountability',
 		RemoveRoleAccountability:'remove_accountability',
 		NewRole:'new_role',
+		RemoveRole:'remove_role',
 		NewOrganization:'new_organization',
 		RemoveOrganization:'remove_organization',
+		MoveOrganization:'move_organization', // the concept of promoting or demoting is implied here
 		AssignRoleContributor:'assign_role_contributor',
 		RemoveRoleContributor:'remove_role_contributor',
 		AssignRoleGoal:'assign_role_goal',
-		MoveOrganization:'move_organization',
-		RemoveRole:'remove_role',
+		RemoveRoleGoal:'remove_role_goal',
 	},
 
+	// What to show when org is undefined
 	UndefinedRootOrganization: 'no_root_organization',
 
+	// The date format to use throughout Teal
 	DateFormat: "YYYY-MM-DD",
 
+	// Create a new ID
+	newId() {
+		return new Mongo.Collection.ObjectID()._str;
+	},
+
+	// Retrieves the current root org id, based on the logged in user
 	rootOrgIg() {
 		if (!!Meteor.user()) {
 			return Meteor.user().rootOrgId;
@@ -24,10 +35,12 @@ Teal = {
 		}
 	},
 
+	// Is this a valid change type?
 	isAllowedChangeType(changeType) {
 		return _.find(Object.keys(Teal.ChangeTypes), changeType);
 	},
 
+	// Return the list of lead nodes for this organization, for this user
 	getLeadNodeRoleForUser(orgId, userId) {
 		if (!Meteor.userId) {
 			throw new Meteor.Error("not-allowed");
@@ -60,5 +73,19 @@ Teal = {
 		} else {
 			throw new Meteor.Error("not-found");
 		}
+	},
+
+
+
+
+	// mobile haxxor section - TODO: do this better!
+	isSmall() {
+		return screen.width < 700;
+	},
+	whenSmall(output) {
+		return Teal.isSmall() ? output : '';
+	},
+	whenNotSmall(output) {
+		return Teal.isSmall() ? '' : output;
 	},
 };
