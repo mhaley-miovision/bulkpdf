@@ -199,7 +199,7 @@ Goal = React.createClass({
 				// style is to undo what materialize does in the card parent containing this modal
 				<a id={this.props.goal._id}
 				   onClick={this.props.onGoalClicked}
-				   className='collection-item GoalSublistModal'
+				   className='collection-item GoalSublistModal GoalListItem'
 				   style={{marginBottom: 0, marginRight: 0, textTransform: "none"}}>
 					{ this.renderGoalBody() }
 					<ReactTooltip place="bottom"/>

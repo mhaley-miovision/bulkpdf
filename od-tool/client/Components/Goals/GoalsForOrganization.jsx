@@ -51,9 +51,15 @@ GoalsForOrganization = React.createClass({
 		return false;
 	},
 
+	handleGoalClicked(evt) {
+		let id = evt.currentTarget.id;
+		let url = FlowRouter.path("goalById", {goalId:id}, {showBackButton:true});
+		FlowRouter.go(url);
+	},
+
 	renderGoals() {
 		if (this.data.doneLoading) {
-			return <GoalList goalList={this.data.goals} compactViewMode={true}/>
+			return <GoalList goalList={this.data.goals} compactViewMode={true} onGoalClicked={this.handleGoalClicked}/>
 		} else {
 			return <div><Loading /><br/><br/></div>
 		}

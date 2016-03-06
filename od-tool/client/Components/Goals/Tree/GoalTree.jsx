@@ -62,7 +62,6 @@ var D3TreeView = (function() {
 	}
 
 	function htmlForTreeNode(d) {
-		console.log(d);
 		var ownersHtmlString = '';
 		for (var i in d.ownerRoles) {
 			ownersHtmlString += '<img class="treeItemProfilePhoto" src="'
