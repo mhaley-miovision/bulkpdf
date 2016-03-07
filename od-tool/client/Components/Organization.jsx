@@ -125,7 +125,8 @@ var Chart = (function () {
 			.attr("y", function (d) {
 				return d.y - d.r;
 			})
-			.append("xhtml:body")
+			.append("xhtml:div")
+			//.append("xhtml:body")
 			.html(foreignObjectHtml);
 	}
 
@@ -519,16 +520,15 @@ var Chart = (function () {
 
 				function loadRoleDetails() {
 					// get role accountability list
-					var roleId = zoomTo.id;
-					var accs = RoleAccountabilitiesCollection.find({id: roleId}).fetch();
+					var roleId = zoomTo._id;
+					var accs = RoleAccountabilitiesCollection.find({id: zoomTo.id}).fetch();
 
-					// profile image
-					var c = ContributorsCollection.findOne({name: zoomTo.contributor});
-					var url = zoomTo.photo ? zoomTo.photo : (c && c.photo) ? c.photo : "/img/user_avatar_blank.jpg";
-					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + url + "'/></div>";
+					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + d.photo + "'/></div>";
 
-					var goalsUrl = FlowRouter.path("profile", {}, { objectId: d.email })
-					s += '<div class="numGoalsLabel"><a href="' + goalsUrl + '">View Profile</a></div>';
+					console.log(d);
+
+					s += '<div id="view_' + roleId + '" class="numGoalsLabel">View Profile</div>';
+					s += '<div id="edit_' + roleId + '" class="numGoalsLabel">Edit Role</div>';
 
 					// bucketize the accountabilities
 					var accountabilityBuckets = {};
@@ -566,6 +566,29 @@ var Chart = (function () {
 					// has to do with update thread (but WTFFFF)
 					setTimeout(function() {
 						$roleDetails.html(s);
+
+						// view profile link
+						$viewLink = $('#view_' + roleId)[0];
+						if ($viewLink) {
+							$viewLink.onclick = function(evt) {
+								var goalsUrl = FlowRouter.path("profile", {}, { objectId: d.email });
+								FlowRouter.go(goalsUrl);
+							}
+						} else {
+							console.error("Couldn't find edit link with id: " + id);
+						}
+
+						// edit role link
+						$editLink = $('#edit_' + roleId)[0];
+						if ($editLink) {
+							$editLink.onclick = function(evt) {
+								$modal = $('#editRoleModal');
+								$modal.openModal();
+							}
+						} else {
+							console.error("Couldn't find edit link with id: " + id);
+						}
+
 						$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
 						Chart.setRoleDetailHeight();
 					}, 100);
@@ -809,19 +832,32 @@ Organization = React.createClass({
 		}
 	},
 
+	newRoleOnClick() {
+		$('#editRoleModal').openModal();
+	},
+
+	componentDidMount() {
+	},
+
 	render() {
 		var divStyle = {
 			height: h = screen.width < 700 ? chartHeightMobile : chartHeight,
 		};
 
 		return (
-			<div className="center">
-				{this.renderRoleModeSwitch()}
-				{this.renderSearch()}
-				{this.renderLoading()}
-				<div className="chartContainer" style={divStyle}>
+			<div className="">
+				<RoleEditModal id="editRoleModal"/>
+				<div className="center">
+
+					{this.renderRoleModeSwitch()}
+					{this.renderSearch()}
+					{this.renderLoading()}
+					<div className="chartContainer" style={divStyle}>
+					</div>
+					<div className="clear-block"/>
+
+					<a className="btn" onClick={this.newRoleOnClick}>New Role</a>
 				</div>
-				<div className="clear-block"/>
 			</div>
 		);
 	}

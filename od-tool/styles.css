@@ -733,10 +733,14 @@ circle.container, circle.label {
 
 .numGoalsLabel {
     text-align: center;
-    color: #D9853B !important;
+    color: white !important;
     font-size: 14px;
     font-weight: bold;
     font-decoration: underline;
+    cursor:pointer;
+}
+.numGoalsLabel:hover {
+    color: #D9853B !important;
 }
 
 .GoalDueDate {

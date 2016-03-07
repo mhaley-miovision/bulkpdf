@@ -2,17 +2,98 @@ Teal = {
 	// These are what types of changes we track and approve/reject/apply throughout the system
 	// They operate on the basic basic building blocks of the organizational model
 	ChangeTypes: {
+
+		// Role operations
+		NewRole:'new_role',
 		NewRoleAccountability:'new_accountability',
 		RemoveRoleAccountability:'remove_accountability',
-		NewRole:'new_role',
 		RemoveRole:'remove_role',
+		AssignRoleContributor:'assign_role_contributor',
+		RemoveRoleContributor:'remove_role_contributor',
+
+		// Organization operations
 		NewOrganization:'new_organization',
 		RemoveOrganization:'remove_organization',
 		MoveOrganization:'move_organization', // the concept of promoting or demoting is implied here
-		AssignRoleContributor:'assign_role_contributor',
-		RemoveRoleContributor:'remove_role_contributor',
+
+		// Goal operations
+		NewGoal:'new_goal',
 		AssignRoleGoal:'assign_role_goal',
 		RemoveRoleGoal:'remove_role_goal',
+	},
+
+	ObjectTypes: {
+		Goal:'goal',
+		Role:'role',
+		Contributor:'contributor',
+		Organization:'organization',
+		Accountability:'accountability',
+	},
+
+	ActionType: {
+		Request:'request',
+		Immediate:'immediate',
+	},
+
+	currentUserEmail() {
+		return Meteor.user().email;
+	},
+
+	// Each business rule can assume the following context
+	// user = Acting user
+	// operation = Activity to perform
+
+	// Business rules
+	_businessRules: [],
+
+	// Initialize the business rules around object changes
+	// A business rule can either resolve or not
+	// If unresolved, continue the search
+
+	Errors: {
+		InvalidBusinessRuleCall: 'invalid-business-rule-call',
+	},
+
+	_initializeBusinessRules() {
+
+		// Business rules for goals
+
+		// If the user is an owner, the goal can be added immediately, else it's a request
+		Teal._businessRules.push({
+				type: Teal.ChangeTypes.NewGoal,
+				func: function(user, parameters) {
+					if (!!parameters.parentGoal) {
+						// user is an owner
+						if (_.where(g.ownerRoles, {email:user.email})) {
+							return Teal.ActionType.Immediate;
+						} else {
+							return Teal.ActionType.Request;
+						}
+					} else {
+						throw new Meteor.error(Teal.Errors.InvalidBusinessRuleCall);
+					}
+				}
+			});
+
+		// If the user is an owner, the goal can be added immediately
+		Teal._businessRules.push({
+			type: Teal.ChangeTypes.AssignRoleContributor,
+			func: function(user, parameters) {
+				if (!!parameters.parentGoal) {
+					if (g.ownerRoles) {
+
+					}
+				} else {
+					throw new Meteor.error(Teal.Errors.InvalidBusinessRuleCall);
+				}
+			}
+		});
+	},
+
+	// Resolve action type - immediate application or request
+	// Returns a target ActionType object
+	determineActionType(user, operation, parameters) {
+
 	},
 
 	// What to show when org is undefined
@@ -75,9 +156,6 @@ Teal = {
 		}
 	},
 
-
-
-
 	// mobile haxxor section - TODO: do this better!
 	isSmall() {
 		return screen.width < 700;
@@ -89,3 +167,7 @@ Teal = {
 		return Teal.isSmall() ? '' : output;
 	},
 };
+
+Meteor.startup(function() {
+	Teal._initializeBusinessRules();
+});
