@@ -524,9 +524,6 @@ var Chart = (function () {
 					var accs = RoleAccountabilitiesCollection.find({id: zoomTo.id}).fetch();
 
 					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + d.photo + "'/></div>";
-
-					console.log(d);
-
 					s += '<div id="view_' + roleId + '" class="numGoalsLabel">View Profile</div>';
 					s += '<div id="edit_' + roleId + '" class="numGoalsLabel">Edit Role</div>';
 
@@ -571,6 +568,7 @@ var Chart = (function () {
 						$viewLink = $('#view_' + roleId)[0];
 						if ($viewLink) {
 							$viewLink.onclick = function(evt) {
+								evt.stopPropagation();
 								var goalsUrl = FlowRouter.path("profile", {}, { objectId: d.email });
 								FlowRouter.go(goalsUrl);
 							}
@@ -582,6 +580,7 @@ var Chart = (function () {
 						$editLink = $('#edit_' + roleId)[0];
 						if ($editLink) {
 							$editLink.onclick = function(evt) {
+								evt.stopPropagation();
 								$modal = $('#editRoleModal');
 								$modal.openModal();
 							}

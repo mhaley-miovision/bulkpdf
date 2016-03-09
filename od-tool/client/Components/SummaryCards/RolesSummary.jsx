@@ -40,6 +40,13 @@ RolesSummary = React.createClass({
 		// private controls
 		// TODO: check for permissions here
 
+		// edit
+		controls.push(
+			<a key={r._id+"4"} onClick={this.notImplemented} className="secondary-content">
+				<i className="material-icons summaryCardIcon grey-text">edit</i>
+			</a>
+		);
+
 		controls.push(
 			<a key={r._id+"2"} onClick={this.notImplemented} className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">thumb_down</i>

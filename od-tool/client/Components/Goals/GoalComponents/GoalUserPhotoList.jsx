@@ -5,6 +5,10 @@ GoalUserPhotoList = React.createClass({
 		compactViewMode : React.PropTypes.bool,
 	},
 
+	getInitialState() {
+		return { tipId : Teal.newId() };
+	},
+
 	gotoUserProfile(elt) {
 		let email = elt.currentTarget.id;
 		let url = FlowRouter.path("profile", {}, {objectId: email});
@@ -19,7 +23,7 @@ GoalUserPhotoList = React.createClass({
 			let photoUrl = item.photo ? item.photo : "/img/user_avatar_blank.jpg";
 			return (
 				<img id={item.email} key={item._id} className="goalItemPhoto" src={photoUrl}
-				 data-tip={item.accountabilityLabel} onClick={this.gotoUserProfile}/>
+				 data-for={this.state.tipId} data-tip={item.accountabilityLabel} onClick={this.gotoUserProfile}/>
 			);
 		});
 	},
@@ -37,6 +41,7 @@ GoalUserPhotoList = React.createClass({
 				<div className="GoalOwnersSection">
 					{heading}
 					<div className="GoalOwnerPhotos">{this.renderPhotos()}</div>
+					<ReactTooltip id={this.state.tipId}/>
 				</div>
 			);
 		} else {

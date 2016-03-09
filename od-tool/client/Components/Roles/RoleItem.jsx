@@ -15,7 +15,6 @@ RoleItem = React.createClass({
 				</a>
 				{ r.contributor ? r.contributor : "&lt;unfilled&gt;" }
 				<i className="material-icons " onClick={this.props.onDeleteClicked} id={"r_"+r._id}>close</i>
-				<ReactTooltip place="bottom"/>
 			</div>
 		);
 	},

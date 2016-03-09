@@ -50,6 +50,31 @@ Goal = React.createClass({
 		);
 	},
 
+	outputSmallOffsetCompactModeString(itemIndex) {
+		let noContributors = this.props.goal.contributorRoles.length == 0;
+		let noOwners = this.props.goal.ownerRoles.length == 0;
+
+		// status column
+		if (itemIndex == 2) {
+			// no owners or contributors
+			if (noContributors && noOwners) {
+				return 'offset-s4';
+			}
+		}
+		// contributors column
+		if (itemIndex == 1) {
+			if (noOwners) {
+				return 'offset-s2';
+			}
+		}
+		if (itemIndex == 0) {
+			if (noContributors) {
+				return 'offset-s2';
+			}
+		}
+		return '';
+	},
+
 	renderGoalBody() {
 		if (this.state.isEditing) {
 			return <GoalEdit ref="obj"
@@ -66,10 +91,6 @@ Goal = React.createClass({
 				let subGoalsLabel =
 					(this.props.goal.stats.completed + this.props.goal.stats.notStarted + this.props.goal.stats.inProgress)
 					+ " Subgoals";
-				let subGoalsToolTip =
-					"Completed:" + this.props.goal.stats.completed +
-					"\nIn Progress: " + this.props.goal.stats.inProgress +
-					"\nNot Started: " + this.props.goal.stats.notStarted;
 
 				if (this.props.compactViewMode) {
 					// Render the goal body when viewing in compact mode
@@ -77,15 +98,17 @@ Goal = React.createClass({
 						<div className='' onClick={this.props.onClicked}>
 							<div className="row" style={{marginBottom:0}}>
 
-								<div className={"col m" + (12 - numSummaryItems * 2) + " hide-on-small-only GoalTitleCompact"}>
+								<div className={"col m" + (12 - numSummaryItems * 2)
+									+ " hide-on-small-only GoalTitleCompact" + (this.props.goal.isLeaf ? ' Leaf' : '')}>
 									{this.props.goal.name}
 								</div>
-								<div className="col s12 hide-on-med-and-up GoalTitleCompactMobile">
+								<div className={"col s12 hide-on-med-and-up GoalTitleCompactMobile"
+									+ (this.props.goal.isLeaf ? ' Leaf' : '')}>
 									{this.props.goal.name}
 								</div>
 
 								{ this.props.goal.ownerRoles.length > 0 ?
-									<div className="col m2 s4 GoalContainerCompact center">
+									<div className={"col m2 s4 GoalContainerCompact center " + this.outputSmallOffsetCompactModeString(0)}>
 										<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
 														   list={this.props.goal.ownerRoles}
 														   heading="Owner"/>
@@ -93,14 +116,14 @@ Goal = React.createClass({
 									: ''
 								}
 								{ this.props.goal.ownerRoles.length > 0 ?
-									<div className="col m2 s4 GoalContainerCompact center">
+									<div className={"col m2 s4 of GoalContainerCompact center " + this.outputSmallOffsetCompactModeString(1)}>
 										<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
 														   list={this.props.goal.contributorRoles}
 														   heading="Contributor"/>
 									</div>
 									: ''
 								}
-								<div className="col m2 s4 GoalContainerCompact center" data-tip={subGoalsToolTip}>
+								<div className={"col m2 s4 GoalContainerCompact center " + this.outputSmallOffsetCompactModeString(2)}>
 									<div className="GoalOwnersSection GoalSummaryHeading hide-on-small-only">{subGoalsLabel}</div>
 									<div className="GoalOwnersSectionMobile GoalSummaryHeading hide-on-med-and-up">{subGoalsLabel}</div>
 									<GoalState goal={this.props.goal}/>
@@ -119,13 +142,14 @@ Goal = React.createClass({
 									{this.renderGoalTitle()}
 									{this.renderGoalBodyContents()}
 								</div>
-								<div className={"col m3 s12 center"} data-tip={subGoalsToolTip}>
+								<div className={"col m3 s12 center"}>
 									<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
 													   list={this.props.goal.ownerRoles}
 													   heading="Owner"/>
 									<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
 													   list={this.props.goal.contributorRoles}
 													   heading="Contributor"/>
+
 									{ this.props.goal.isLeaf ? '' : <br/> }
 									{ this.props.goal.isLeaf ? '' :
 										<div
@@ -200,9 +224,8 @@ Goal = React.createClass({
 				<a id={this.props.goal._id}
 				   onClick={this.props.onGoalClicked}
 				   className='collection-item GoalSublistModal GoalListItem'
-				   style={{marginBottom: 0, marginRight: 0, textTransform: "none"}}>
+				   style={{paddingBottom: "20px", marginBottom: 0, marginRight: 0, textTransform: "none"}}>
 					{ this.renderGoalBody() }
-					<ReactTooltip place="bottom"/>
 				</a>
 			);
 		} else {
@@ -221,7 +244,6 @@ Goal = React.createClass({
 					</div>
 					<GoalNewModal id={this.getNewGoalModalId()} parentGoalId={this.props.goal._id}/>
 					<SubGoalsModal id={this.getSubGoalsModalId()} parentGoalId={this.props.goal._id}/>
-					<ReactTooltip place="bottom"/>
 				</div>
 			);
 		}

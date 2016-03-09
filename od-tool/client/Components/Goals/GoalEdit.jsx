@@ -115,7 +115,7 @@ GoalEdit = React.createClass({
 							   value={o.name}>
 						</input>
 						<i key={"r_" + o._id} className="material-icons GreyButton" id={"r_" + o._id}
-						   style={{fontSize:"13px"}}
+						   style={{fontSize:"13px", marginLeft:"12px"}}
 						   onClick={_this.handleRemoveDoneCriteria}>close</i>
 					</div>
 				);
@@ -139,7 +139,7 @@ GoalEdit = React.createClass({
 							   value={o.name}>
 						</input>
 						<i key={"r_" + o._id} className="material-icons GreyButton" id={"r_" + o._id}
-						   style={{fontSize:"13px"}}
+						   style={{fontSize:"13px", marginLeft:"12px"}}
 						   onClick={_this.handleRemoveKeyObjective}>close</i>
 					</div>
 				);
@@ -160,69 +160,71 @@ GoalEdit = React.createClass({
 
 	render() {
 		return (
-			<div className="card-content GoalContainer">
-				<div className="row">
-					<div className="GoalTitle center" style={{marginTop:this.props.goal? "0px":"15px"}}>
-						{this.props.goal ? "Edit Goal" : "New Goal"}
-					</div>
-				</div>
-				<div className="row">
-					<div className="col m9 s12 GoalContainer">
-						<div className="">
-							<label className="text-main1 GoalSubtitle" htmlFor="dueDateInput">Goal Title</label>
-							<span className="text-main5">
-								<input key="new_ko" type="text"
-									   placeholder="Enter new goal name..."
-									   onChange={this.handleNameChange}
-									   value={this.state.name}
-									   id="goalNameInput">
-								</input>
-							</span>
+			<div className="card-content">
+				<div className="GoalContainer">
+					<div className="row">
+						<div className="GoalTitle center" style={{marginTop:this.props.goal? "0px":"15px"}}>
+							{this.props.goal ? "Edit Goal" : "New Goal"}
 						</div>
-						<div className="">
-							<label className="text-main1 GoalSubtitle" htmlFor="dueDateInput">Estimated Completion</label>
-							<input id={this.state.datePickerId} type="date" className="datepicker"
-								   data-value={this.state.dueDate}
-								   readOnly/>
+					</div>
+					<div className="row">
+						<div className="col m8 s11 GoalContainer">
+							<div className="">
+								<label className="text-main1 GoalSubtitle" htmlFor="dueDateInput">Goal Title</label>
+								<span className="text-main5">
+									<input key="new_ko" type="text"
+										   placeholder="Enter new goal name..."
+										   onChange={this.handleNameChange}
+										   value={this.state.name}
+										   id="goalNameInput">
+									</input>
+								</span>
+							</div>
+							<div className="">
+								<label className="text-main1 GoalSubtitle" htmlFor="dueDateInput">Estimated Completion</label>
+								<input id={this.state.datePickerId} type="date" className="datepicker"
+									   data-value={this.state.dueDate}
+									   readOnly/>
+							</div>
+							<section>
+								<div className="GoalSubtitle">What Done Looks Like</div>
+								<ul className="ProjectGoalDoneCriteria">
+									{this.renderDoneCriteriaItems()}
+									<form onSubmit={this.addDoneCriteria}>
+										<input type="text"
+											   key="new_dc"
+											   placeholder="Enter new done criteria (and press Enter)"
+											   onChange={this.handleNewDoneCriteriaChange}
+											   value={this.state.newDoneCriteria}
+											   onBlur={this.addDoneCriteria}>
+										</input>
+									</form>
+								</ul>
+							</section>
+							<section>
+								<div className="GoalSubtitle">Key Objectives</div>
+								<ul className="ProjectGoalDoneCriteria">
+									{this.renderKeyObjectiveItems()}
+									<form onSubmit={this.addKeyObjective}>
+										<input key="new_ko"
+											   type="text"
+											   placeholder="Enter new key objective (and press Enter)"
+											   onChange={this.handleNewKeyObjectiveChange}
+											   value={this.state.newKeyObjective}
+											   onBlur={this.addKeyObjective}>
+										</input>
+									</form>
+								</ul>
+							</section>
 						</div>
-						<section>
-							<div className="GoalSubtitle">What Done Looks Like</div>
-							<ul className="ProjectGoalDoneCriteria">
-								{this.renderDoneCriteriaItems()}
-								<form onSubmit={this.addDoneCriteria}>
-									<input type="text"
-										   key="new_dc"
-										   placeholder="Enter new done criteria (and press Enter)"
-										   onChange={this.handleNewDoneCriteriaChange}
-										   value={this.state.newDoneCriteria}
-										   onBlur={this.addDoneCriteria}>
-									</input>
-								</form>
-							</ul>
-						</section>
-						<section>
-							<div className="GoalSubtitle">Key Objectives</div>
-							<ul className="ProjectGoalDoneCriteria">
-								{this.renderKeyObjectiveItems()}
-								<form onSubmit={this.addKeyObjective}>
-									<input key="new_ko"
-										   type="text"
-										   placeholder="Enter new key objective (and press Enter)"
-										   onChange={this.handleNewKeyObjectiveChange}
-										   value={this.state.newKeyObjective}
-										   onBlur={this.addKeyObjective}>
-									</input>
-								</form>
-							</ul>
-						</section>
+						<div className="col m3 offset-m1 s12 GoalContainer">
+							<RoleListEdit ref="ownersList" roleList={this.state.ownerRoles} heading="Owner" isEditing={true}/>
+							<RoleListEdit ref="contributorsList" roleList={this.state.contributorRoles} heading="Contributor" isEditing={true}/>
+						</div>
 					</div>
-					<div className="col m3 s12 GoalContainer">
-						<RoleListEdit ref="ownersList" roleList={this.state.ownerRoles} heading="Owner" isEditing={true}/>
-						<RoleListEdit ref="contributorsList" roleList={this.state.contributorRoles} heading="Contributor" isEditing={true}/>
+					<div className="row center">
+						<GoalStateControls ref="goalState" goal={this.props.goal}/>
 					</div>
-				</div>
-				<div className="row center">
-					<GoalStateControls ref="goalState" goal={this.props.goal}/>
 				</div>
 			</div>
 		);

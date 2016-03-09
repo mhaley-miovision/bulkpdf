@@ -6,7 +6,9 @@ GoalsStatsDonut = React.createClass({
 	},
 
 	getInitialState() {
-		return { chartId: "chart_" + Math.floor((1 + Math.random()*1000)) };
+		return {
+			chartId: "chart_" + Teal.newId()
+		};
 	},
 
 	getDefaultProps() {
@@ -24,7 +26,7 @@ GoalsStatsDonut = React.createClass({
 		var data = [
 			{
 				value: g.stats.completed,
-				color:"#46BFBD",
+				color:"#74AFAD", /*"#46BFBD",*/
 				highlight: "#FF5A5E",
 				label: "Completed"
 			},
@@ -87,17 +89,24 @@ GoalsStatsDonut = React.createClass({
 	},
 
 	componentDidUpdate(prevProps, prevState) {
-		console.log("udpating on componentDidUpdate")
 		if (!this.areSameStats(prevProps, this.props)) {
 			this.updateChart();
 		}
 	},
 
 	render() {
+		let subGoalsToolTip =
+			"Completed:" + this.props.goal.stats.completed +
+			"\nIn Progress: " + this.props.goal.stats.inProgress +
+			"\nNot Started: " + this.props.goal.stats.notStarted;
+
 		return (
-			<div style={{width:this.props.width, height: this.props.height, marginBottom: "7px"}} className="goalDonutChart">
+			<div style={{width:this.props.width, height: this.props.height, marginBottom: "7px"}}
+				 className="goalDonutChart" data-tip={subGoalsToolTip} data-for={this.state.chartId}>
 				<canvas id={this.getChartId()} width={this.props.width} height={this.props.height}>
 				</canvas>
+
+				<ReactTooltip id={this.state.chartId} place="bottom"/>
 			</div>
 		);
 	}

@@ -40,14 +40,10 @@ Meteor.methods({
 		let notStarted = 0;
 		if (children.length > 0) {
 			children.forEach(c => {
-				console.log(c.stats);
-				console.log(c._id);
-
 				// count the child subgoal states
 				completed += c.stats.completed;
 				inProgress += c.stats.inProgress;
 				notStarted += c.stats.notStarted;
-
 				// also count the child goal state
 				if (c.state == 0) {
 					notStarted++;
@@ -68,7 +64,6 @@ Meteor.methods({
 				}
 			}
 		});
-
 		// recurse upwards!
 		if (g.parent) {
 			Meteor.call("teal.goals.updateGoalStats", g.parent);
@@ -81,9 +76,6 @@ Meteor.methods({
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
-		if (GoalsCollection.find({parent:goalId}).count() > 0) {
-			throw new Meteor.Error("goal-has-children");
-		}
 
 		// update the goal
 		let g = GoalsCollection.findOne({_id: goalId });
@@ -91,31 +83,10 @@ Meteor.methods({
 		if (state == prevState) {
 			return; // no change!
 		}
-		GoalsCollection.update(g._id, {$set: { state:state, stats: {notStarted: state == 0, inProgress: state == 1, completed: state == 2 } } });
+		GoalsCollection.update(g._id, {$set: { state:state }});
 
-		// determine delta for parents
-		var dNotStarted = 0, dInProgress = 0, dCompleted = 0;
-		if (prevState == 0) {
-			dNotStarted = -1; // one more is now in progress
-		} else if (prevState == 1) {
-			dInProgress = -1;
-		} else {
-			dCompleted = -1;
-		}
-		if (state == 0) {
-			dNotStarted++;
-		} else if (state == 1) {
-			dInProgress++;
-		} else {
-			dCompleted++;
-		}
-
-		// apply the diff
-		GoalsCollection.update(
-			{ _id : { $in : g.path } },
-			{ $inc: { "stats.notStarted" : dNotStarted, "stats.inProgress" : dInProgress, "stats.completed" : dCompleted } },
-			{ multi:true }
-		);
+		// update goal stats
+		Meteor.call("teal.goals.updateGoalStats", goalId);
 	},
 
 	"teal.goals.setGoalPrivate": function(goalId, setToPrivate) {
@@ -136,22 +107,6 @@ Meteor.methods({
 		GoalsCollection.update(goalId, {$set: {name: name}});
 	},
 
-	"teal.goals.loadGoalTreeForRole": function(roleId = null) {
-		//console.log("Goaltree for roleId: '" + roleId + "'");
-
-		if (roleId == null) {
-			let currentUser = Meteor.users.findOne({_id: Meteor.userId()});
-			roleId = currentUser.primaryRoleId;
-			throw new Meteor.error("Couldn't find primary role for current user");
-		}
-		let topLevelGoals = Meteor.call("teal.goals.getRoleTopLevelGoals", roleId);
-		let populatedGoals = [];
-		topLevelGoals.forEach(g => {
-			populatedGoals.push(Meteor.call("teal.goals.loadGoalTree", g._id));
-		});
-		return populatedGoals;
-	},
-
 	// TODO: filter to this root org
 	"teal.goals.loadGoalTree": function(goalId) {
 		if (!goalId) {
@@ -169,6 +124,22 @@ Meteor.methods({
 
 		// return the root
 		return _.where(goals, {_id: goalId});
+	},
+
+	"teal.goals.loadGoalTreeForRole": function(roleId = null) {
+		//console.log("Goaltree for roleId: '" + roleId + "'");
+
+		if (roleId == null) {
+			let currentUser = Meteor.users.findOne({_id: Meteor.userId()});
+			roleId = currentUser.primaryRoleId;
+			throw new Meteor.error("Couldn't find primary role for current user");
+		}
+		let topLevelGoals = Meteor.call("teal.goals.getRoleTopLevelGoals", roleId);
+		let populatedGoals = [];
+		topLevelGoals.forEach(g => {
+			populatedGoals.push(Meteor.call("teal.goals.loadGoalTree", g._id));
+		});
+		return populatedGoals;
 	},
 
 	"teal.goals.setKeyObjective": function(keyObjectiveId, isCompleted) {

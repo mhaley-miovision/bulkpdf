@@ -689,8 +689,7 @@ circle.container, circle.label {
 
 .GoalStateButton {
     font-size: 14px;
-    color: slategray; /*#fff;*/
-    background-color: white; /*darkgrey;*/
+    color: slategray;
     line-height: 11px;
     padding: 4px;
     margin-top:8px;
@@ -699,25 +698,21 @@ circle.container, circle.label {
     border-radius: .25em;
     text-align: center;
     max-width: 100%;
-    /*border: solid white 1px;*/
 }
 
 .GoalStateButton:hover {
     color: white;
     background-color: #D9853B;
-    /*border: solid #D9853B 1px;*/
 }
 
 .GoalStateButton.active {
     color: white;
-    /*border: solid #558C89 1px;*/
-    background-color: #558C89; /*darkgrey;*/
+    background-color: #558C89;
 }
 
 .GoalStateButton.active:hover {
     background-color: #D9853B;
     color: white;
-    /*border: solid #D9853B 1px;*/
 }
 
 
@@ -785,6 +780,10 @@ circle.container, circle.label {
     font-size: 18px;
     vertical-align: middle;
 }
+.GoalTitleCompact.Leaf {
+    color: #9e9e9e;
+    font-size: 14.5px;
+}
 .GoalTitleCompactMobile {
     color: #558C89;
     font-size: 18px;
@@ -792,6 +791,10 @@ circle.container, circle.label {
     margin-top:10px;
     margin-bottom:15px;
     text-align: center;
+}
+.GoalTitleCompactMobile.Leaf {
+    color: #9e9e9e;
+    font-size: 14.5px;
 }
 
 .row .col.GoalSummaryContainer {
@@ -961,7 +964,7 @@ circle.container, circle.label {
 
 .TaskGoalStateCompleted {
     color: white;
-    background-color: #46BFBD;
+    background-color: #74AFAD; /* #46BFBD;*/
     line-height: 11px;
     font-size: 11px;
     padding: 2px;
@@ -1037,7 +1040,7 @@ circle.container, circle.label {
 
 .summaryCardIcon {
     font-size: 1rem !important;
-    cursor: hand !important;
+    cursor: pointer !important;
     padding-left: 10px;
     /*color: slategray !important; /* #558C89 !important;*/
 }
