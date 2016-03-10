@@ -30,7 +30,9 @@ MyTeam = React.createClass({
 			var orgId = this.state.orgId ? this.state.orgId : this.data.contributorOrgId;
 			return (
 				<div className="section">
-					<ObjectSearch onClick={this.handleSearch} findOrganizations={true} findContributors={false}/>
+					<ObjectSearch onClick={this.handleSearch}
+								  findOrganizations={true} findContributors={false}
+								  notFoundLabel="Please type the name of an existing organization."/>
 					<GoalsForOrganization objectId={orgId}/>
 					<div>
 						<Organization objectId={org} roleMode={true} roleModeVisible={true} searchVisible={false}/>

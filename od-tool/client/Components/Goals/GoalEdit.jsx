@@ -5,7 +5,7 @@ GoalEdit = React.createClass({
 	getInitialState() {
 		let d = this.props.goal ? this.props.goal.dueDate : null;
 		return {
-			datePickerId: "picker" + Math.floor(1 + Math.random()*100000),
+			datePickerId: "picker" + Teal.newId(),
 			keyObjectives: this.props.goal ? _.clone(this.props.goal.keyObjectives) : [],
 			doneCriteria: this.props.goal ? _.clone(this.props.goal.doneCriteria) : [],
 			name: this.props.goal ? _.clone(this.props.goal.name) : "",
@@ -150,12 +150,7 @@ GoalEdit = React.createClass({
 	},
 
 	componentDidMount() {
-		$input = $('#'+this.state.datePickerId).pickadate({
-			format: 'yyyy-mm-dd',
-			onSet: function(contex) {
-				console.log(this.$node[0].value);
-			}
-		});
+		$input = $('#'+this.state.datePickerId).pickadate({format: Teal.DateFormat.toLowerCase()});
 	},
 
 	render() {
@@ -182,7 +177,7 @@ GoalEdit = React.createClass({
 							</div>
 							<div className="">
 								<label className="text-main1 GoalSubtitle" htmlFor="dueDateInput">Estimated Completion</label>
-								<input id={this.state.datePickerId} type="date" className="datepicker"
+								<input id={this.state.datePickerId} type="date" className="datepicker text-main5"
 									   data-value={this.state.dueDate}
 									   readOnly/>
 							</div>

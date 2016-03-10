@@ -3,24 +3,28 @@ RoleEdit = React.createClass({
 		role : React.PropTypes.object,
 	},
 	getInitialState() {
-		let d = this.props.goal ? this.props.goal.dueDate : null;
+		return this.loadStateFromProps(this.props);
+	},
+	
+	loadStateFromProps(props) {
 		return {
-			_id: this.props.goal ? this.props.goal._id : null,
-			accountabilities: this.props.role ? _.clone(this.props.role.accountabilities) : [],
-			label: this.props.label ? _.clone(this.props.goal.label) : "",
-			organization: this.props.role ? this.props.role.organization : "",
-			organizationId: this.props.role ? this.props.role.organizationId : null,
-			contributor: this.props.role ? this.props.role.contributor : "",
-			contributorId: this.props.role ? this.props.role.contributorId : null,
+			_id: props.role ? props.role._id : null,
+			accountabilities: props.role ? _.clone(props.role.accountabilities) : [],
+			accountabilityLevel: props.role ? props.role.accountabilityLevel : '', // intermediate
+			label: props.role ? _.clone(props.role.label) : "",
+			organization: props.role ? props.role.organization : "",
+			organizationId: props.role ? props.role.organizationId : null,
+			contributor: props.role ? props.role.contributor : "",
+			contributorId: props.role ? props.role.contributorId : null,
 			startDatePickerId: "picker" + Teal.newId(),
 			endDatePickerId: "picker" + Teal.newId(),
 			newAccountability: "",
-			startDate : this.props.role ? this.props.role.startDate : moment().format(Teal.DateFormat),
-			endDate : this.props.role ? this.props.role.endDate : null,
-			isExternal : this.props.role ? this.props.role.isExternal : false,
-			isLeadNode : this.props.role ? this.props.role.isLeadNode : false,
+			startDate : props.role ? props.role.startDate : moment().format(Teal.DateFormat),
+			endDate : props.role ? props.role.endDate : null,
+			isExternal : props.role ? props.role.isExternal : false,
+			isLeadNode : props.role ? props.role.isLeadNode : false,
 			//TODO: add other fields
-		}
+		};
 	},
 
 	getInputs() {
@@ -86,8 +90,29 @@ RoleEdit = React.createClass({
 	},
 
 	componentDidMount() {
-		$('#'+this.state.startDatePickerId).pickadate({format: Teal.DateFormat});
-		$('#'+this.state.endDatePickerId).pickadate({format: Teal.DateFormat});
+		$('#'+this.state.startDatePickerId).pickadate({format: Teal.DateFormat.toLowerCase()});
+		$('#'+this.state.endDatePickerId).pickadate({format: Teal.DateFormat.toLowerCase()});
+	},
+
+	componentWillReceiveProps(nextProps, nextState) {
+		this.setState(this.loadStateFromProps(nextProps));
+	},
+
+	onOrganizationSelected(org) {
+		this.setState({organization:org});
+	},
+
+	onContributorSelected(contributor) {
+		this.setState({contributor:contributor});
+	},
+
+	onRoleLabelSelected(label) {
+		this.setState({label:label});
+	},
+
+	onAccountabilityLevelSelected(level) {
+		console.log(level);
+		this.setState({accountabilityLevel:level});
 	},
 
 	render() {
@@ -95,58 +120,51 @@ RoleEdit = React.createClass({
 			<div className="card-content GoalContainer">
 				<div className="row">
 					<div className="GoalTitle center" style={{marginTop:this.props.goal? "0px":"15px"}}>
-						{this.props.goal ? "Edit Role" : "New Role"}
+						{this.props.role ? "Edit Role" : "New Role"}
 					</div>
 				</div>
 				<div className="row">
-					<div className="col m6 s12 GoalContaine input-field">
-
-						<label className="text-main1 validate" htmlFor="label_input">Role Label</label>
-						<input className="text-main5 validate"
-							   key="new_label" type="text"
-							   onChange={this.handleNameChange}
-							   value={this.state.name}
-							   id="label_input">
-						</input>
+					<div className="col m6 s12 GoalContainer">
+						<label className="text-main1 GoalSubtitle">Role Label</label>
+						<ObjectSearch
+							onClick={this.onRoleLabelSelected} findRoleLabels={true}
+							initialValue={this.state.label}
+							notFoundLabel="Please type the name of an existing role label."/>
 					</div>
-					<div className="col m6 s12 GoalContainer input-field">
-						<label className="text-main1 validate" htmlFor="seniority_input">Seniority Level</label>
-						<input className="text-main5 validate"
-							   key="new_label" type="text"
-							   onChange={this.handleNameChange}
-							   value={this.state.name}
-							   id="seniority_input">
-						</input>
+					<div className="col m6 s12 GoalContainer">
+						<label className="text-main1 GoalSubtitle">Accountability Level</label>
+						<ObjectSearch
+							onClick={this.onAccountabilityLevelSelected} findAccountabilityLevels={true}
+							initialValue={this.state.accountabilityLevel}
+							notFoundLabel="Please type the name of an existing accountability level."/>
 					</div>
-					<div className="col m6 s12 GoalContainer input-field">
-						<label className="text-main1" htmlFor="dueDateInput">Contributor</label>
-						<input className="text-main5 validate"
-							   key="new_label" type="text"
-							   onChange={this.handleNameChange}
-							   value={this.state.name}
-							   id="contributor_input">
-						</input>
+					<div className="col m6 s12 GoalContainer">
+						<label className="text-main1 GoalSubtitle">Contributor</label>
+						<ObjectSearch
+							onClick={this.onContributorSelected} findContributors={true}
+							initialValue={this.state.contributor}
+							notFoundLabel="Please type the name of an existing contributor."/>
 					</div>
-					<div className="col m6 s12 GoalContainer input-field">
-						<label className="text-main1">Organization</label>
-						<input key="new_label" type="text"
-							   className="text-main5 validate"
-							   onChange={this.handleNameChange}
-							   value={this.state.name}
-							   id="roleLabelInput">
-						</input>
+					<div className="col m6 s12 GoalContainer">
+						<label className="text-main1 GoalSubtitle">Organization</label>
+						<ObjectSearch
+							onClick={this.onOrganizationSelected} findOrganizations={true}
+							initialValue={this.state.organization}
+							notFoundLabel="Please type the name of an existing organization."/>
 					</div>
 				</div>
 				<div className="row">
 					<div className="col m4 s6 GoalContainer">
-						<label className="text-main1 GoalSubtitle" htmlFor="dueDateInput">Start Date</label>
-						<input id={this.state.startDatePickerId} type="date" className="datepicker"
+						<label className="text-main1 GoalSubtitle" htmlFor={this.state.startDatePickerId}>Start Date</label>
+						<input key={Teal.newId()}
+							   id={this.state.startDatePickerId} type="date" className="datepicker text-main5"
 							   data-value={this.state.startDate}
 							   readOnly/>
 					</div>
 					<div className="col m4 s6 GoalContainer">
-						<label className="text-main1 GoalSubtitle" htmlFor="dueDateInput">End Date</label>
-						<input id={this.state.endDatePickerId} type="date" className="datepicker"
+						<label className="text-main1 GoalSubtitle" htmlFor={this.state.endDatePickerId}>End Date</label>
+						<input key={Teal.newId()}
+							   id={this.state.endDatePickerId} type="date" className="datepicker text-main5"
 							   data-value={this.state.endDate}
 							   readOnly/>
 					</div>

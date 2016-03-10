@@ -25,13 +25,13 @@ MyOrganization = React.createClass({
 		return <Organization ref="org"
 							 objectId="Miovision" objectType="organization"
 							 roleMode={true} roleModeVisible={true}
-							 searchVisible={true} zoomTo={this.state.zoomTo}/>;
+							 searchVisible={true}
+							 zoomTo={this.state.zoomTo}/>;
 	},
 
 	renderAccountabilities() {
 		// default role is CEO
 		return <GoalTreeByRole />
-		//return <Tree ref="tree" objectId={this.state.objectId} objectType={this.state.objectType}/>;
 	},
 
 	handleAccClicked() {

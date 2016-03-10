@@ -456,7 +456,10 @@ var Chart = (function () {
 
 			Note that this is an additive only method - I need to modify this to remove nodes as well
 		* */
-		loadData: function (data, initiallyZoomedTo) {
+		loadData: function (params) {
+			let data = params.data;
+			let initiallyZoomedTo = params.zoomTo;
+
 			// use the circle packing layout
 			pack = d3.layout.pack()
 				.size([r, r])
@@ -522,10 +525,10 @@ var Chart = (function () {
 					// get role accountability list
 					var roleId = zoomTo._id;
 					var accs = RoleAccountabilitiesCollection.find({id: zoomTo.id}).fetch();
-
-					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + d.photo + "'/></div>";
-					s += '<div id="view_' + roleId + '" class="numGoalsLabel">View Profile</div>';
-					s += '<div id="edit_' + roleId + '" class="numGoalsLabel">Edit Role</div>';
+					var photo = d.photo ? d.photo : "/img/user_avatar_blank.jpg";
+					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + photo + "'/></div>";
+					s += '<div id="view_' + roleId + '" class="numGoalsLabel">View Profile&nbsp;<i class="material-icons" style="font-size:13px">search</i></div>';
+					s += '<div id="edit_' + roleId + '" class="numGoalsLabel">Edit Role&nbsp;<i class="material-icons" style="font-size:13px">edit</i></div>';
 
 					// bucketize the accountabilities
 					var accountabilityBuckets = {};
@@ -581,8 +584,20 @@ var Chart = (function () {
 						if ($editLink) {
 							$editLink.onclick = function(evt) {
 								evt.stopPropagation();
-								$modal = $('#editRoleModal');
-								$modal.openModal();
+								var roleId = evt.currentTarget.id ? evt.currentTarget.id.replace('edit_', '') : null;
+								params.onRoleEdit.call(params._this, roleId);
+							}
+						} else {
+							console.error("Couldn't find edit link with id: " + id);
+						}
+
+						// delete role link
+						$editLink = $('#edit_' + roleId)[0];
+						if ($editLink) {
+							$editLink.onclick = function(evt) {
+								evt.stopPropagation();
+								var roleId = evt.currentTarget.id ? evt.currentTarget.id.replace('edit_', '') : null;
+								params.onRoleEdit.call(params._this, roleId);
 							}
 						} else {
 							console.error("Couldn't find edit link with id: " + id);
@@ -652,6 +667,9 @@ Organization = React.createClass({
 
 	handleSearch(o) {
 		Chart.zoomToOrg(o);
+	},
+	handleRoleEditOn(roleId) {
+		this.refs.editRoleModal.show(roleId);
 	},
 
 	// TODO: move some of this log into server-side methods
@@ -778,6 +796,7 @@ Organization = React.createClass({
 	},
 
 	updateOrganizationGraph() {
+		let _this = this;
 		if (this.data.doneLoading) {
 			var org = this.data.organization; // as loaded from the db
 			var zoomTo = this.props.objectType === 'contributor' ? this.props.objectId : this.props.zoomTo;
@@ -785,7 +804,7 @@ Organization = React.createClass({
 			// this is super FUCKED
 			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
 			setTimeout(function () {
-				Chart.loadData(org, zoomTo);
+				Chart.loadData({ data:org, zoomTo:zoomTo, _this:_this, onRoleEdit: _this.handleRoleEditOn} );
 			}, 0);
 		}
 	},
@@ -825,14 +844,18 @@ Organization = React.createClass({
 		if (this.props.searchVisible) {
 			return (
 				<div>
-					<ObjectSearch onClick={this.handleSearch} findContributors={true} findOrganizations={true}/>
+					<ObjectSearch onClick={this.handleSearch}
+								  findContributors={true} findOrganizations={true}
+								  notFoundLabel="Please type the name of an existing person or organization."/>
 				</div>
 			);
 		}
 	},
 
 	newRoleOnClick() {
-		$('#editRoleModal').openModal();
+		if (this.refs.editRoleModal) {
+			this.refs.editRoleModal.show();
+		}
 	},
 
 	componentDidMount() {
@@ -845,7 +868,7 @@ Organization = React.createClass({
 
 		return (
 			<div className="">
-				<RoleEditModal id="editRoleModal"/>
+				<RoleEditModal id="editRoleModal" ref="editRoleModal"/>
 				<div className="center">
 
 					{this.renderRoleModeSwitch()}

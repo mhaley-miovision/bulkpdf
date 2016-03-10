@@ -20,6 +20,10 @@ RolesSummary = React.createClass({
 		Materialize.toast( "Not implemented yet, stay tuned!", 1000);
 	},
 
+	roleEditShow(evt) {
+		this.refs.roleEditModal.show(evt.currentTarget.id);
+	},
+
 	renderRolesControls(r) {
 		let controls = [];
 
@@ -42,7 +46,7 @@ RolesSummary = React.createClass({
 
 		// edit
 		controls.push(
-			<a key={r._id+"4"} onClick={this.notImplemented} className="secondary-content">
+			<a key={r._id+"4"} id={r._id} onClick={this.roleEditShow} className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">edit</i>
 			</a>
 		);
@@ -84,6 +88,7 @@ RolesSummary = React.createClass({
 						<li className="collection-header summaryCardHeader" key={_.escape(this.props.email)+"_roles"}>Roles</li>
 						{this.renderRoles()}
 					</ul>
+					<RoleEditModal id="rolesSummaryRoleEditModal" ref="roleEditModal"/>
 				</div>
 			);
 		} else {

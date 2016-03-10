@@ -6,23 +6,33 @@ ObjectSearch = React.createClass({
 		findOrganizations: React.PropTypes.bool,
 		findContributors: React.PropTypes.bool,
 		findRoles: React.PropTypes.bool,
+		findRoleLabels: React.PropTypes.bool,
+		findAccountabilityLevels: React.PropTypes.bool,
 		onClick: React.PropTypes.any.isRequired,
 		notFoundLabel: React.PropTypes.string,
+		initialValue: React.PropTypes.string,
 	},
 
 	getDefaultProps() {
 		return {
 			width: screen.width < 700 ? 330 : "100%",
-			findContributors: true,
-			findOrganizations: true,
+			findContributors: false,
+			findOrganizations: false,
+			findRoles: false,
+			findRoleLabels: false,
+			findAccountabilityLevels: false,
+			initialValue: '',
 		};
 	},
 
 	getMeteorData() {
 		var handle1 = Meteor.subscribe('teal.organizations');
 		var handle2 = Meteor.subscribe('teal.contributors');
+		var handle3 = Meteor.subscribe('teal.roles');
+		var handle4 = Meteor.subscribe('teal.role_labels');
+		var handle5 = Meteor.subscribe('teal.accountability_levels');
 
-		if (handle1.ready() && handle2.ready()) {
+		if (handle1.ready() && handle2.ready() && handle3.ready() && handle4.ready() && handle5.ready()) {
 			if (this.state.query && this.state.query !== '') {
 
 				var q = {name: {$regex: new RegExp('.*' + this.state.query + '.*', "i")}};
@@ -41,18 +51,28 @@ ObjectSearch = React.createClass({
 					{ email: {$regex: new RegExp('.*' + this.state.query + '.*', "i")} },
 					{ fields: {accountabilityLabel: 1, email:1, contributor:1}, sort: {accountabilityLabel: 1} }
 				).fetch() : {};
+				var roleLabelMatches = this.props.findRoleLabels ? RoleLabelsCollection.find(
+					q,
+					{ fields: {name: 1}, sort: {name: 1} }).fetch() : {};
+				var accountabilityLevelMatches = this.props.findAccountabilityLevels ? AccountabilityLevelsCollection.find(
+					q,
+					{ fields: {name: 1}, sort: {name: 1} }).fetch() : {};
 
-				return {contributors: contributorMatches, organizations: organizationMatches, roles: roleMatches};
+				return {
+					isLoading: false,
+					contributors: contributorMatches, organizations: organizationMatches,
+					roles: roleMatches, roleLabels: roleLabelMatches, accountabilityLevels: accountabilityLevelMatches};
 			}
 		}
-		return { contributors: [], organizations: [], roles: []};
+		return { isLoading: true, contributors: [], organizations: [], roles: [], roleLabels: [], accountabilityLevels: []};
 	},
 
 	getInitialState() {
+		console.log(this.props);
 		return {
 			showList: false,
 			searchResults: [],
-			query: "",
+			query: this.props.initialValue,
 			contributors: [],
 			organization: [],
 		};
@@ -77,32 +97,60 @@ ObjectSearch = React.createClass({
 		this.toggleDropdown(true);
 	},
 
-	handleOrganizationClick: function(e) {
+	// TODO: these methods need refactoring
+
+	handleOrganizationClick(e) {
 		e.preventDefault();
 		e.stopPropagation();
+		this.setState({inputValue:e.currentTarget.text});
 		if (this.props.onClick) {
-			this.props.onClick(e.target.text, 'organization', e.target.id);
+			this.props.onClick(e.currentTarget.text, 'organization', e.currentTarget.id);
 		}
 	},
 
-	handleContributorClick: function(e) {
+	handleContributorClick(e) {
 		e.preventDefault();
 		e.stopPropagation();
+		this.setState({inputValue:e.currentTarget.text});
 		if (this.props.onClick) {
-			this.props.onClick(e.target.id, 'contributor', e.target.id);
+			this.props.onClick(e.currentTarget.text, 'contributor', e.currentTarget.id);
 		}
 	},
 
-	handleRoleClick: function(e) {
+	handleRoleClick(e) {
 		e.preventDefault();
 		e.stopPropagation();
+		this.setState({inputValue:e.currentTarget.text});
 		if (this.props.onClick) {
-			this.props.onClick(e.target.id, 'role', e.target.id);
+			this.props.onClick(e.currentTarget.id, 'role', e.currentTarget.id);
+		}
+	},
+
+	handleRoleLabelClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.setState({inputValue:e.currentTarget.text});
+		if (this.props.onClick) {
+			this.props.onClick(e.currentTarget.text, 'role_label', e.currentTarget.id);
+		}
+	},
+
+	handleAccountabilityLevelClick(e) {
+		console.log(e);
+		e.preventDefault();
+		e.stopPropagation();
+		this.setState({inputValue:e.currentTarget.text});
+		if (this.props.onClick) {
+			this.props.onClick(e.currentTarget.text, 'accountability_level', e.currentTarget.id);
 		}
 	},
 
 	renderDropdownItems() {
-		if (this.data.contributors.length > 0 || this.data.organizations.length > 0 || this.data.roles.length > 0) {
+		if (   this.data.contributors.length > 0
+			|| this.data.organizations.length > 0
+			|| this.data.roles.length > 0
+			|| this.data.roleLabels.length > 0
+			|| this.data.accountabilityLevels.length > 0) {
 			var collection = [];
 			var i = 0;
 			if (this.data.contributors.length > 0) {
@@ -132,19 +180,25 @@ ObjectSearch = React.createClass({
 					);
 				})
 			}
+			if (this.data.roleLabels.length > 0) {
+				this.data.roleLabels.forEach(r => {
+					collection.push(
+						<a className="collection-item" key={r._id} id={r._id} object={r} style={{cursor:"pointer"}}
+						   onClick={ this.handleRoleLabelClick }>{r.name}</a>
+					);
+				})
+			}
+			if (this.data.accountabilityLevels.length > 0) {
+				this.data.accountabilityLevels.forEach(r => {
+					collection.push(
+						<a className="collection-item" key={r._id} id={r._id} object={r} style={{cursor:"pointer"}}
+						   onClick={ this.handleAccountabilityLevelClick }>{r.name}</a>
+					);
+				})
+			}
 			return collection;
 		} else {
-			var s = "people or organizations";
-			if (this.props.notFoundLabel) {
-				s = this.props.notFoundLabel;
-			} else {
-				if (!this.props.findContributors) {
-					s = "organizations";
-				} else if (!this.props.findOrganizations) {
-					s = "people";
-				}
-			}
-			return <a href="#!" className="collection-item" onClick={this.onBlur}>No matching {s} found.</a>
+			return <a href="#!" className="collection-item" onClick={this.onBlur}>{this.props.notFoundLabel}</a>
 		}
 	},
 
@@ -152,24 +206,19 @@ ObjectSearch = React.createClass({
 		this.setState({ query: this.refs.textInput.value });
 	},
 
-	render: function() {
-		var s = "a person or an organization";
-		if (this.props.label) {
-			s = this.props.label;
-		} else {
-			if (!this.props.findContributors) {
-				s = "an organization";
-			} else if (!this.props.findOrganizations) {
-				s = "a person";
-			}
-			s = "Click here to search for a " + s;
+	componentWillReceiveProps(nextProps, nextState) {
+		if (nextProps.initialValue) {
+			this.setState({query:nextProps.initialValue});
 		}
+	},
 
+	render: function() {
 		return (
 			<div style={{width:this.props.width}}>
-				<input className="button" type="text" id="orgSelection" ref="textInput"
-					   onChange={this.onInputChange} placeholder={s}
-						onBlur={this.onBlur} onSelect={this.onSelected}/>
+				<input className="text-main5" type="text" id="orgSelection" ref="textInput"
+					   onChange={this.onInputChange}
+					   placeholder={this.state.query ? '' : this.props.label} value={this.state.query}
+					   onBlur={this.onBlur} onSelect={this.onSelected}/>
 				<label htmlFor="orgSelection"/>
 
 				<div id='dropdown1' className={this.getDropdownClasses()}>

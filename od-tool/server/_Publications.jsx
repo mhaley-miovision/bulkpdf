@@ -15,6 +15,10 @@ Meteor.publish("teal.role_accountabilities", function () {
 
 	return RoleAccountabilitiesCollection.find({});
 });
+Meteor.publish("teal.accountability_levels", function () {
+
+	return AccountabilityLevelsCollection.find({});
+});
 Meteor.publish("teal.role_labels", function () {
 
 	return RoleLabelsCollection.find({});
