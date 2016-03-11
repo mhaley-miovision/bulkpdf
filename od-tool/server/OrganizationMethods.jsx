@@ -1,23 +1,69 @@
 Meteor.methods({
-	"teal.orgs.addOrganization": function(name, parentOrgId, startDate, endDate) {
-		// Make sure the user is logged in before inserting a task
+	"teal.orgs.updateOrInsertOrg": function(orgId, name, parentOrgId, startDate, endDate) {
+		//TODO:perm check!!
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
 
-		// first check if there is another conflicting role
-		var existing = OrganizationsCollection.findOne({name: name});
-		if (existing) {
-			throw new Meteor.Error("duplicate");
+		// find the existing org
+		let org = {};
+		let newOrg = true;
+		if (!!orgId) {
+			org = OrganizationsCollection.findOne({_id:orgId});
+			if (!org) {
+				throw new Meteor.Error("not-found");
+			}
+			newOrg = false;
+		} else {
+			org.createdOn = Teal.newDateTime();
+			org.createdBy = Meteor.userId();
 		}
 
-		OrganizationsCollection.insert({
-			name: name,
-			startDate: startDate,
-			endDate: endDate,
-			createdAt: new Date(),
-			createdBy: Meteor.user()._id,
-		});
+		if (!!parentOrgId) {
+			parentOrg = OrganizationsCollection.findOne({_id:parentOrgId});
+			if (!parentOrg) {
+				throw new Meteor.Error("parent-not-found");
+			}
+		} else {
+			throw new Meteor.Error("missing-parent-org");
+		}
+
+		org.name = name;
+		org.startDate = startDate;
+		org.endDate = endDate;
+		org.parentId = parentOrgId;
+		org.parent = parentOrg.name;
+		org.type = 'organization';
+
+		if (newOrg) {
+			org._id = OrganizationsCollection.insert(org);
+		} else {
+			OrganizationsCollection.update(orgId, org);
+		}
+
+		Meteor.call("teal.orgs.updateCachedOrgValues", org._id);
+	},
+
+	"teal.orgs.updateCachedOrgValues": function(orgId) {
+		let o = OrganizationsCollection.findOne({_id: orgId});
+		let path = [];
+		while (o.parentId) {
+			let p = OrganizationsCollection.findOne({_id: o.parentId});
+			path.push(o.parentId);
+			o = p; // traverse upwards
+		}
+		path.reverse();
+
+		OrganizationsCollection.update(orgId, {$set: { path: path}});
+	},
+
+	"teal.orgs.renameOrganization": function(organizationId, name) {
+		//TODO:perm check!!
+		if (!Meteor.userId()) {
+			throw new Meteor.Error("not-authorized");
+		}
+
+		OrganizationsCollection.update(organizationId, {$set: {name: name}});
 	},
 
 	"teal.orgs.removeOrganization": function(organizationId) {
@@ -58,32 +104,4 @@ Meteor.methods({
 			throw new Meteor.Error("missing");
 		}
 	},
-
-	"teal.orgs.renameOrganization": function(organizationId, name) {
-		// Make sure the user is logged in before inserting a task
-		if (!Meteor.userId()) {
-			throw new Meteor.Error("not-authorized");
-		}
-
-		// first check if there is another conflicting role
-		var existing = OrganizationsCollection.findOne({name: name});
-		if (existing) {
-			throw new Meteor.Error("duplicate");
-		}
-
-		OrganizationsCollection.update(organizationId, {$set: {name: name}});
-	},
-
-	"teal.orgs.rgSearch": function(query) {
-		if (query && query !== '') {
-			find = {name: {$regex: new RegExp('.*' + query + '.*', "i")}};
-		} else {
-			find = {}
-		}
-
-		// TODO: nosql injection risk here!?
-		return OrganizationsCollection.find(
-			find,
-			{fields: {name: 1, _id: 1, id: 1}}).fetch();
-	}
 });

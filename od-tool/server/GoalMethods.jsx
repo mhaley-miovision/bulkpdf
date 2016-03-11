@@ -1,23 +1,6 @@
 Meteor.methods({
-	"teal.goals.addGoal": function(text) {
-		// Make sure the user is logged in before inserting a task
-		if (!Meteor.userId()) {
-			throw new Meteor.Error("not-authorized");
-		}
-
-		var goal = GoalsCollection.insert({
-			description: text,
-			createdAt: Teal.newDateTime(),
-			createdBy: Meteor.userId(),
-			owner: Meteor.user()._id,
-			username: Meteor.user().profile.name
-		});
-
-		return goal; // to retrieve the ID
-	},
-
 	"teal.goals.removeGoal": function(goalId) {
-		// Make sure the user is logged in before inserting a task
+		//TODO: perm check
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}

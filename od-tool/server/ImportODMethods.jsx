@@ -14,6 +14,7 @@ function importHelper_transformOrganization(x) {
 	x.name = x.name.trim();
 	x.createdAt  = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
+	x.path = [];
 	x.rootOrgId = rootOrgId;
 	return x;
 }
@@ -265,20 +266,18 @@ Meteor.methods({
 			}
 		}
 
-		OrganizationsCollection.find({rootOrgId: rootOrgId}).forEach(org => {
-			// find the parent chain
-			var o = OrganizationsCollection.findOne({name: org.name});
-			var parentId = null;
-			var path = [];
-			while (o.parent) {
-				var p = OrganizationsCollection.findOne({name: o.parent});
-				parentId = p._id;
-				path.push(parentId);
-				o = p; // traverse upwards
+		OrganizationsCollection.find({rootOrgId: rootOrgId}).forEach(o => {
+			var p = OrganizationsCollection.findOne({name: o.parent});
+			if (!p) {
+				console.log("no parent found for organization: " + o.name);
+			} else {
+				OrganizationsCollection.update(o._id, {$set: {parentId: p._id}});
 			}
-			path.reverse();
+		});
 
-			OrganizationsCollection.update(org._id, {$set: {parentId: parentId, path: path}});
+		OrganizationsCollection.find({rootOrgId: rootOrgId}).forEach(o => {
+			Meteor.call("teal.orgs.updateCachedOrgValues", o._id);
+			var x = OrganizationsCollection.findOne({_id:o._id});
 		});
 
 		//==============================================================================================================
