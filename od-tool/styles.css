@@ -631,6 +631,9 @@ circle.container, circle.label {
     margin: 5px;
     border: solid 2px white;
 }
+.zoomedInRolePhoto:hover {
+    border: solid 2px #D9853B;
+}
 
 .goalItemPhoto:hover {
     border: solid 2px #D9853B;
@@ -787,6 +790,7 @@ circle.container, circle.label {
 }
 .GoalTitleCompactMobile {
     color: #558C89;
+    font-size: 18px;
     font-size: 18px;
     vertical-align: middle;
     margin-top:10px;

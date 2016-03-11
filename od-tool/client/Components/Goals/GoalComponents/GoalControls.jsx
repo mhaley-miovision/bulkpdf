@@ -26,7 +26,7 @@ GoalControls = React.createClass({
 		$('#' + this.props.subGoalsModalId).openModal();
 	},
 	tipId() {
-		return "ct_" + this.props.goal._i;
+		return "ct_" + this.props.goal._id;
 	},
 
 	render() {

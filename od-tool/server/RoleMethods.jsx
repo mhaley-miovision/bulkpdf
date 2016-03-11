@@ -111,5 +111,28 @@ Meteor.methods({
 
 		console.log("Final role:");
 		console.log(role);
+	},
+
+	"teal.roles.removeRole": function(roleId) {
+		//TODO: perm check!!!
+		if (!Meteor.userId()) {
+			throw new Meteor.Error("not-authorized");
+		}
+		if (!!roleId) {
+			// remove from all goal instances
+			GoalsCollection.update({ownerRoles: {$elemMatch: {_id: roleId}}}, {$pull: {ownerRoles: {_id: roleId}}});
+			GoalsCollection.update({contributorRoles: {$elemMatch: {_id: roleId}}}, {$pull: {contributorRoles: {_id: roleId}}});
+
+			// TODO: detach from contributor?
+
+			// remove the role
+			RolesCollection.remove({_id: roleId});
+		} else {
+			throw new Meteor.Error("missing-roleid");
+		}
+	},
+
+	"teal.roles.removeRoleAssignment": function(roleId) {
+
 	}
 });

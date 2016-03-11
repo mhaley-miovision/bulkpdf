@@ -18,6 +18,8 @@ var Chart = (function () {
 		zoomed,
 		loaded,
 		zoomedToObject,
+		onZoomedToObjectCallback, // to be called once zoomed to a particular object
+		containingComponentThisContext, // reference to the "this" of the component to call the callback in
 		color = d3.scale.linear()
 			.domain([-1, 18])
 			.range(["hsl(0,0%,100%)", "hsl(228,30%,40%)"])
@@ -355,23 +357,17 @@ var Chart = (function () {
 				}
 				zoomed = true;
 				Chart.setRoleDetailHeight();
+
+				// call the zoomed callback, if defined
+				if (onZoomedToObjectCallback && containingComponentThisContext) {
+					onZoomedToObjectCallback.call(containingComponentThisContext, zoomTo._id, zoomTo.type, zoomTo);
+				}
 			});
 			zoomCircles(t, k);
 
 			var fos = t.selectAll(".foreign-object");
 			zoomFos(fos, zf, 1, 6, zf.foreignObjSize);
 			zf.setOpacity(fos);
-
-			/*
-			var fos = t.selectAll(".foreign-object");
-			var labelFos = t.selectAll('.foreign-object.label');
-			zoomFos(labelFos, zf, 3, 2.5, zf.labelWidth);
-			zf.setOpacity(labelFos);
-
-			var fos = t.selectAll(".foreign-object");
-			var roleFos = t.selectAll('.foreign-object.role');
-			zoomFos(roleFos, zf, 1, 6, zf.foreignObjSize);
-			zf.setOpacity(roleFos);*/
 
 			node = zoomTo;
 			d3.event && d3.event.stopPropagation();
@@ -459,6 +455,8 @@ var Chart = (function () {
 		loadData: function (params) {
 			let data = params.data;
 			let initiallyZoomedTo = params.zoomTo;
+			onZoomedToObjectCallback = params.onZoomedToObject;
+			containingComponentThisContext = params._this;
 
 			// use the circle packing layout
 			pack = d3.layout.pack()
@@ -522,13 +520,34 @@ var Chart = (function () {
 				var zoomTo = node === d ? root : d;
 
 				function loadRoleDetails() {
+					//TODO: ewww! - clean up this string html nastiness
+
+					let role = zoomTo;
+					let photo = d.photo ? d.photo : "/img/user_avatar_blank.jpg";
+					let s = '<div id="view_' + role._id +
+						'" style="text-align:center; padding-bottom:10px"><img class="zoomedInRolePhoto" src="' + photo + '"/></div>';
+
+					if (role.accountabilities.length > 0) {
+						s += '<div class="text-main1"><b>Accountabilities</b></div>';
+						s += '<ul style="margin-left: 15px">';
+						role.accountabilities.forEach(a => {
+							s += '<li style="list-style-type: circle">' + a.name + '</li>';
+						});
+						s += '</ul>';
+					} else {
+						s += "<div>No accountabilities defined for this role yet.</div>";
+					}
+					s += '</div>';
+
+					/*
 					// get role accountability list
 					var roleId = zoomTo._id;
 					var accs = RoleAccountabilitiesCollection.find({id: zoomTo.id}).fetch();
 					var photo = d.photo ? d.photo : "/img/user_avatar_blank.jpg";
-					var s = "<div style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + photo + "'/></div>";
-					s += '<div id="view_' + roleId + '" class="numGoalsLabel">View Profile&nbsp;<i class="material-icons" style="font-size:13px">search</i></div>';
-					s += '<div id="edit_' + roleId + '" class="numGoalsLabel">Edit Role&nbsp;<i class="material-icons" style="font-size:13px">edit</i></div>';
+					var s = "<div id='view_" + roleId + "' style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + photo + "'/></div>";
+					//s += '<div id="view_' + roleId + '" class="numGoalsLabel">View Profile&nbsp;<i class="material-icons" style="font-size:13px">search</i></div>';
+
+					//s += '<div id="edit_' + roleId + '" class="numGoalsLabel">Edit Role&nbsp;<i class="material-icons" style="font-size:13px">edit</i></div>';
 
 					// bucketize the accountabilities
 					var accountabilityBuckets = {};
@@ -561,14 +580,14 @@ var Chart = (function () {
 							s += "<div>No accountabilities defined for this role yet.</div>";
 						}
 					}
-					s += '</div>';
+					s += '</div>';*/
 
 					// has to do with update thread (but WTFFFF)
 					setTimeout(function() {
 						$roleDetails.html(s);
 
 						// view profile link
-						$viewLink = $('#view_' + roleId)[0];
+						$viewLink = $('#view_' +  role._id)[0];
 						if ($viewLink) {
 							$viewLink.onclick = function(evt) {
 								evt.stopPropagation();
@@ -579,6 +598,7 @@ var Chart = (function () {
 							console.error("Couldn't find edit link with id: " + id);
 						}
 
+						/*
 						// edit role link
 						$editLink = $('#edit_' + roleId)[0];
 						if ($editLink) {
@@ -601,15 +621,12 @@ var Chart = (function () {
 							}
 						} else {
 							console.error("Couldn't find edit link with id: " + id);
-						}
+						}*/
 
 						$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
 						Chart.setRoleDetailHeight();
 					}, 100);
 				}
-
-				console.log("zoomTo.type:" + zoomTo.type);
-
 				if (zoomTo.type === 'role' || zoomTo.type === 'contributor') {
 					loadRoleDetails(zoomTo);
 				}
@@ -638,7 +655,6 @@ var Chart = (function () {
 
 Organization = React.createClass({
 	mixins: [ReactMeteorData],
-
 	propTypes: {
 		objectId : React.PropTypes.string.isRequired,
 		objectType : React.PropTypes.string,
@@ -647,6 +663,7 @@ Organization = React.createClass({
 		roleModeVisible : React.PropTypes.bool,
 		searchVisible : React.PropTypes.bool,
 	},
+
 	getDefaultProps() {
 		return {
 			roleMode: true,
@@ -658,21 +675,30 @@ Organization = React.createClass({
 		return {
 			initialLoad: true,
 			roleMode : this.props.roleMode,
-			currentOrg : null,
-			currentOrgId : null,
 		}
 	},
+
 	handleRoleModeChanged(event) {
 		this.setState( {roleMode: !this.refs.roleMode.checked });
 	},
-
-
 	handleSearch(o) {
 		console.log("Organization.handleSearch:" + o);
 		Chart.zoomToOrg(o);
 	},
 	handleRoleEditOn(roleId) {
 		this.refs.editRoleModal.show(roleId);
+	},
+	handleOnZoomedTo(objectId, objectType, object) {
+		console.log("!!!handleOnZoomedTo!!! --- objectId:"+objectId+", objectType:"+objectType);
+		console.log(object);
+		if (this.refs.controlsContainer) {
+			this.refs.controlsContainer.update(objectId, objectType, object);
+		}
+	},
+	handeRoleOnClick() {
+		if (this.refs.editRoleModal) {
+			this.refs.editRoleModal.show();
+		}
 	},
 
 	// TODO: move some of this log into server-side methods
@@ -790,9 +816,6 @@ Organization = React.createClass({
 				attachOrgLabels(org);
 
 				data.organization = org;
-
-				this.state.currentOrg = org.name;
-				this.state.currentOrgId = org._id;
 			} else {
 				Materialize.toast("Could not find organization: " + objectId, 3000);
 				return {};
@@ -802,23 +825,25 @@ Organization = React.createClass({
 	},
 
 	updateOrganizationGraph() {
+		console.log("updateOrganizationGraph called!");
 		let _this = this;
 		if (this.data.doneLoading) {
 			var org = this.data.organization; // as loaded from the db
 			var zoomTo = this.props.objectType === 'contributor' ? this.props.objectId : this.props.zoomTo;
 
-			// update the current org
-
-
 			// this is super FUCKED
 			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
 			setTimeout(function () {
-				Chart.loadData({ data:org, zoomTo:zoomTo, _this:_this, onRoleEdit: _this.handleRoleEditOn} );
+				Chart.loadData({ data:org, zoomTo:zoomTo, _this:_this,
+					onRoleEdit: _this.handleRoleEditOn, onZoomedToObject: _this.handleOnZoomedTo } );
 			}, 0);
 		}
 	},
 
+	componentDidMount() {
+	},
 	componentWillUpdate(nextProps, nextState) {
+		console.log("componentWillUpdate");
 		this.updateOrganizationGraph();
 	},
 
@@ -831,7 +856,6 @@ Organization = React.createClass({
 			);
 		}
 	},
-
 	renderRoleModeSwitch() {
 		if (this.props.roleModeVisible) {
 			return (
@@ -848,7 +872,6 @@ Organization = React.createClass({
 			);
 		}
 	},
-
 	renderSearch() {
 		if (this.props.searchVisible) {
 			return (
@@ -861,15 +884,6 @@ Organization = React.createClass({
 		}
 	},
 
-	newRoleOnClick() {
-		if (this.refs.editRoleModal) {
-			this.refs.editRoleModal.show();
-		}
-	},
-
-	componentDidMount() {
-	},
-
 	render() {
 		var divStyle = {
 			height: h = screen.width < 700 ? chartHeightMobile : chartHeight,
@@ -877,19 +891,15 @@ Organization = React.createClass({
 
 		return (
 			<div className="">
-				<RoleEditModal id="editRoleModal" ref="editRoleModal"
-							   organization={this.state.currentOrg} organizationId={this.state.currentOrgId}/>
 				<div className="center">
-
 					{this.renderRoleModeSwitch()}
 					{this.renderSearch()}
 					{this.renderLoading()}
 					<div className="chartContainer" style={divStyle}>
 					</div>
 					<div className="clear-block"/>
-
-					{ this.data.doneLoading ? <a className="btn" onClick={this.newRoleOnClick}>New Role</a> : '' }
 				</div>
+				<ControlsContainer ref="controlsContainer"/>
 			</div>
 		);
 	}

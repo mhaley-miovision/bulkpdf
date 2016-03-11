@@ -3,12 +3,7 @@ RoleEditModal = React.createClass({
 	propTypes: {
 		organization: React.PropTypes.string,
 		organizationId: React.PropTypes.string,
-	},
-
-	getInitialState() {
-		return {
-			role: null,
-		}
+		role: React.PropTypes.object,
 	},
 
 	handleSave() {
@@ -43,14 +38,8 @@ RoleEditModal = React.createClass({
 		$('#' + this.props.id).closeModal();
 	},
 
-	show(roleId) {
+	show() {
 		this.refs.roleEdit.clearInputs();
-		if (roleId) {
-			let r = RolesCollection.findOne({_id:roleId});
-			this.setState({role:r});
-		} else {
-			this.setState({role:null});
-		}
 		$('#' + this.props.id).openModal();
 	},
 
@@ -58,7 +47,7 @@ RoleEditModal = React.createClass({
 		return (
 			<div id={this.props.id} className="modal modal-fixed-footer">
 				<div className="modal-content" style={{padding:0}}>
-					<RoleEdit role={this.state.role}
+					<RoleEdit role={this.props.role}
 							  organization={this.props.organization}
 							  organizationId={this.props.organizationId}
 							  ref="roleEdit"/>
