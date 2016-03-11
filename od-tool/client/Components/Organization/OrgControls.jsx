@@ -38,6 +38,9 @@ OrgControls = React.createClass({
 	handleNewRole() {
 		this.refs.orgNewRoleModal.show();
 	},
+	handleRemoveOrg() {
+		Meteor.call("teal.orgs.removeOrganization", this.props.org._id);
+	},
 
 	render() {
 		return (
@@ -48,7 +51,7 @@ OrgControls = React.createClass({
 				<div className="center">
 					<i data-for={this.tipId()} data-tip="Remove organization"
 					   className="material-icons GreyButton"
-					   onClick={this.notImplemented}>delete</i>
+					   onClick={this.handleRemoveOrg}>delete</i>
 					<i data-for={this.tipId()} data-tip="Add role"
 					   className="material-icons GreyButton"
 					   onClick={this.handleNewRole}>add</i>

@@ -21,15 +21,20 @@ Meteor.methods({
 	},
 
 	"teal.orgs.removeOrganization": function(organizationId) {
-		// Make sure the user is logged in before inserting a task
+		// TODO: perm check!!
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
-
-		// Remove all roles associated with this organization
-
-		// Remove the org itself
-		OrganizationsCollection.remove(organizationId);
+		if (!!organizationId) {
+			// Remove all roles associated with this organization
+			let roles = RolesCollection.find({organizationId: organizationId}).forEach(r => {
+				Meteor.call("teal.roles.removeRole", r._id);
+			});
+			// Remove the org itself
+			OrganizationsCollection.remove({_id: organizationId});
+		} else {
+			throw new Meteor.Error("missing-orgid");
+		}
 	},
 
 	"teal.orgs.getOrganizationTree": function(organizationName) {
