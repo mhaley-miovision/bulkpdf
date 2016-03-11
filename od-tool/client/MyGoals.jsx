@@ -4,8 +4,8 @@ MyGoals = React.createClass({
 		return {objectId:null};
 	},
 
-	handleSearch(c) {
-		this.setState({objectId:c});
+	handleSearch(name, type, id) {
+		this.setState({objectId:id});
 	},
 
 	render() {

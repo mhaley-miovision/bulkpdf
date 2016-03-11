@@ -774,6 +774,7 @@ circle.container, circle.label {
     color: #558C89;
     font-size: 18px;
     vertical-align: middle;
+    margin-bottom: 15px;
 }
 .GoalTitleCompact {
     color: #558C89;
@@ -975,8 +976,8 @@ circle.container, circle.label {
 }
 
 .TaskGoalStateInProgress {
-    color: grey;
-    background-color: #ffe166;
+    color: white;
+    background-color: #FFC870; /*#ffe166;*/
     line-height: 11px;
     font-size: 11px;
     padding: 2px;

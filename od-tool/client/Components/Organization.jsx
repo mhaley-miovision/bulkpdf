@@ -658,6 +658,8 @@ Organization = React.createClass({
 		return {
 			initialLoad: true,
 			roleMode : this.props.roleMode,
+			currentOrg : null,
+			currentOrgId : null,
 		}
 	},
 	handleRoleModeChanged(event) {
@@ -666,6 +668,7 @@ Organization = React.createClass({
 
 
 	handleSearch(o) {
+		console.log("Organization.handleSearch:" + o);
 		Chart.zoomToOrg(o);
 	},
 	handleRoleEditOn(roleId) {
@@ -787,6 +790,9 @@ Organization = React.createClass({
 				attachOrgLabels(org);
 
 				data.organization = org;
+
+				this.state.currentOrg = org.name;
+				this.state.currentOrgId = org._id;
 			} else {
 				Materialize.toast("Could not find organization: " + objectId, 3000);
 				return {};
@@ -800,6 +806,9 @@ Organization = React.createClass({
 		if (this.data.doneLoading) {
 			var org = this.data.organization; // as loaded from the db
 			var zoomTo = this.props.objectType === 'contributor' ? this.props.objectId : this.props.zoomTo;
+
+			// update the current org
+
 
 			// this is super FUCKED
 			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
@@ -868,7 +877,8 @@ Organization = React.createClass({
 
 		return (
 			<div className="">
-				<RoleEditModal id="editRoleModal" ref="editRoleModal"/>
+				<RoleEditModal id="editRoleModal" ref="editRoleModal"
+							   organization={this.state.currentOrg} organizationId={this.state.currentOrgId}/>
 				<div className="center">
 
 					{this.renderRoleModeSwitch()}
@@ -878,7 +888,7 @@ Organization = React.createClass({
 					</div>
 					<div className="clear-block"/>
 
-					<a className="btn" onClick={this.newRoleOnClick}>New Role</a>
+					{ this.data.doneLoading ? <a className="btn" onClick={this.newRoleOnClick}>New Role</a> : '' }
 				</div>
 			</div>
 		);

@@ -7,7 +7,8 @@ Meteor.methods({
 
 		var goal = GoalsCollection.insert({
 			description: text,
-			createdAt: new Date(),
+			createdAt: Teal.newDateTime(),
+			createdBy: Meteor.userId(),
 			owner: Meteor.user()._id,
 			username: Meteor.user().profile.name
 		});
@@ -253,10 +254,10 @@ Meteor.methods({
 
 			// populate role goal stats
 			ownerRoles.forEach(r => {
-				Meteor.call("teal.goals.updateContributorTopLevelGoals", r._id);
+				Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
 			});
 			contributorRoles.forEach(r => {
-				Meteor.call("teal.goals.updateContributorTopLevelGoals", r._id);
+				Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
 			});
 
 		} else {

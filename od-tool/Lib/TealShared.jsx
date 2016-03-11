@@ -102,6 +102,11 @@ Teal = {
 	// The date format to use throughout Teal
 	DateFormat: "YYYY-MM-DD",
 
+	// Create a new timestamp
+	newDateTime() {
+		return moment().format(Teal.DateFormat);
+	},
+
 	// Create a new ID
 	newId() {
 		return new Mongo.Collection.ObjectID()._str;

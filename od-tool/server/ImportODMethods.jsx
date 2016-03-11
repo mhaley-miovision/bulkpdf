@@ -4,7 +4,7 @@ let rootOrgId = "miovision-root";
 
 function importHelper_transformApplication(x) {
 	x.type = 'application';
-	x.createdAt = new Date();
+	x.createdAt = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
 	return x;
@@ -12,14 +12,14 @@ function importHelper_transformApplication(x) {
 function importHelper_transformOrganization(x) {
 	x.type = "organization";
 	x.name = x.name.trim();
-	x.createdAt = new Date();
+	x.createdAt  = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
 	return x;
 }
 function importHelper_transformRole(x) {
 	x.type = 'role';
-	x.createdAt = new Date();
+	x.createdAt = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
 	x.primaryAccountability = x.primaryAccountability === 'TRUE';
@@ -27,7 +27,7 @@ function importHelper_transformRole(x) {
 }
 function importHelper_transformOrgAccountability(x) {
 	x.type = 'org_accountability';
-	x.createdAt = new Date();
+	x.createdAt = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
 	return x;
@@ -35,7 +35,7 @@ function importHelper_transformOrgAccountability(x) {
 function importHelper_transformJobAccountability(x, id) {
 	x.id = id;
 	x.type = 'role_accountability';
-	x.createdAt = new Date();
+	x.createdAt = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
 	return x;
@@ -46,7 +46,7 @@ function importHelper_transformContributor(x) {
 		x.email = x.email.replace(/ /g, "");
 	}
 	x.name = x.name.trim();
-	x.createdAt = new Date();
+	x.createdAt = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
 	return x;
@@ -54,7 +54,7 @@ function importHelper_transformContributor(x) {
 function importHelper_transformRoleLabel(x) {
 	x.type = 'role_label';
 	x.name = x.name.trim();
-	x.createdAt = new Date();
+	x.createdAt = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
 	return x;
@@ -65,7 +65,9 @@ function sanitizeCell(cellContent) {
 	}
 	return null;
 }
-
+//======================================================================================================================
+// SKILLS
+//======================================================================================================================
 var url = "https://spreadsheets.google.com/feeds/worksheets/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/public/basic?alt=json";
 var skillsCellFeed = "https://spreadsheets.google.com/feeds/cells/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/ov5rkqr/public/basic?alt=json";
 function processSkillsJson(json) {
@@ -102,9 +104,52 @@ function processSkillsJson(json) {
 
 	return skills;
 }
+//======================================================================================================================
+// ACCOUNTABILITIES
+//======================================================================================================================
+var url = "https://spreadsheets.google.com/feeds/worksheets/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/public/basic?alt=json";
+var accountabilitiesCellFeed = "https://spreadsheets.google.com/feeds/cells/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/o4k261s/public/basic?alt=json";
+function processAccountabilitiesJson(json) {
+	var cellItems = json.feed.entry;
 
+	var res = [];
+	for (e in cellItems) {
+		var o = cellItems[e];
+		res[o.title.$t] = o.content.$t;
+	}
+
+	c = res;
+
+	var startRow = 2;
+	var blankRowCount = 0;
+	var r = startRow;
+
+	var accountabilities = [];
+
+	while (r++ < 2000) {
+		// stop if exceeded blank row count
+		if (typeof(c["C"+r]) === 'undefined') {
+			if (blankRowCount++ > 10) {
+				break;
+			}
+			continue;
+		}
+		accountabilities.push({
+			job : sanitizeCell(res['B'+r]),
+			jobId : sanitizeCell(res['C'+r]),
+			contrib : sanitizeCell(res['D'+r]),
+			acc : sanitizeCell(res['E'+r]),
+			app : sanitizeCell(res['F'+r]),
+			rating : sanitizeCell(res['G'+r]),
+			type : sanitizeCell(res['H'+r]),
+		});
+	}
+	return accountabilities;
+}
+//======================================================================================================================
+// ROLES
+//======================================================================================================================
 var rolesCellFeed = "https://spreadsheets.google.com/feeds/cells/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/oz844tv/public/basic?alt=json";
-
 function processRolesJson(json) {
 	var cellItems = json.feed.entry;
 
@@ -144,6 +189,7 @@ function processRolesJson(json) {
 			endDate: sanitizeCell(res['P' + r]),
 			isExternal: sanitizeCell(res['Q' + r]),
 			isLeadNode: sanitizeCell(res['R' + r]) === 'TRUE',
+			_oldId: sanitizeCell(res['C' + r]),
 		};
 		roles.push(role);
 	}
@@ -298,14 +344,6 @@ Meteor.methods({
 		}
 
 		//==============================================================================================================
-		// Role Accountabilities
-		//==============================================================================================================
-
-		for (var x in jobAccountabilities.data) {
-			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[x], x));
-		}
-
-		//==============================================================================================================
 		// Roles
 		//==============================================================================================================
 
@@ -366,6 +404,50 @@ Meteor.methods({
 			}
 		});
 
+
+		//==============================================================================================================
+		// Role Accountabilities
+		//==============================================================================================================
+
+		//TODO: remove this
+		for (var x in jobAccountabilities.data) {
+			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[x], x));
+		}
+
+		// get accountabilties, bypassing v1 of tool
+		var response = HTTP.call('GET', accountabilitiesCellFeed);
+		var result = processAccountabilitiesJson(response.data);
+		if (result && result.length > 0) {
+
+			// attach to corresponding roles
+			RolesCollection.find({rootOrgId:rootOrgId}).forEach(r => {
+
+				// find the accountabilities that belong
+				let accountabilities = [];
+
+				let accs = _.where(result, { jobId: r._oldId });
+				if (accs.length > 0) {
+					accs.forEach(a => {
+						accountabilities.push({
+							_id: Teal.newId(),
+							name: a.acc,
+							accountabilityType: a.type,
+						});
+					});
+				}
+
+				// apply them to the role, and unset the old id
+				RolesCollection.update(r._id, {$set: { accountabilities: accountabilities }});
+				RolesCollection.update(r._id, {$unset: { _oldId: 1 }});
+
+				if (accs.length > 0) {
+					console.log("Successfully attached " + accs.length + " accountabilities to role " + r.accountabilityLabel);
+				}
+			});
+		} else {
+			console.error("Could not find any accountabilities!");
+		}
+
 		//==============================================================================================================
 		// Role Labels
 		//==============================================================================================================
@@ -402,3 +484,4 @@ Meteor.methods({
 		}
 	}
 })
+

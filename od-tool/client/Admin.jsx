@@ -20,6 +20,11 @@ Admin = React.createClass({
 							<h3 className="center header text-main1">Data Import</h3>
 						</header>
 						<div className="row">
+							<div className="col s12 m4 offset-m4">
+								<ImportPanel id="importODPanel" label="Import All Data" method="teal.import.importAllData"/>
+							</div>
+						</div>
+						<div className="row">
 							<div className="col s12 m4">
 								<ImportPanel id="importODPanel" label="Import OD info" method="teal.import.v1ImportDatabase"/>
 							</div>

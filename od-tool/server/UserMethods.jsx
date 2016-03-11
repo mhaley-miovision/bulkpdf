@@ -75,7 +75,6 @@ if (Meteor.isServer) {
 								r.photo = o.thumbnailPhotoUrl;
 							}
 						});
-						console.log(g);
 						GoalsCollection.update(g._id, g);
 					});
 
@@ -113,26 +112,6 @@ if (Meteor.isServer) {
 				return "/img/user_avatar_blank.jpg";
 			}
 		},
-
-		// TODO: this needs to be publication
-		"teal.users.getPhotoUrlByUserEmail": function(email) {
-			// Make sure the user is logged in before inserting a task
-			if (!Meteor.userId()) {
-				throw new Meteor.Error("not-authorized");
-			}
-
-			var c = ContributorsCollection.findOne({email: email});
-
-			console.log(email);
-			console.log(c);
-			console.log(c.photo);
-
-			if (c && c.photo) {
-				return c.photo;
-			} else {
-				return "/img/user_avatar_blank.jpg";
-			}
-		}
 	});
 }
 

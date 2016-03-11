@@ -68,7 +68,6 @@ ObjectSearch = React.createClass({
 	},
 
 	getInitialState() {
-		console.log(this.props);
 		return {
 			showList: false,
 			searchResults: [],
@@ -136,7 +135,6 @@ ObjectSearch = React.createClass({
 	},
 
 	handleAccountabilityLevelClick(e) {
-		console.log(e);
 		e.preventDefault();
 		e.stopPropagation();
 		this.setState({inputValue:e.currentTarget.text});

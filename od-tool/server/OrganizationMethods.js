@@ -33,8 +33,6 @@ Meteor.methods({
 	},
 
 	"teal.orgs.getOrganizationTree": function(organizationName) {
-		console.log("organizationName: " + organizationName);
-
 		// first check if it exists
 		var existing = OrganizationsCollection.findOne({name: organizationName});
 		if (existing) {
