@@ -150,7 +150,7 @@ Meteor.methods({
 		// find all nodes with this role as owner or contributor, sorted by depth
 		let goals = GoalsCollection.find(
 			{$or: [{ownerRoles: {$elemMatch: {_id: roleId}}}, {contributorRoles: {$elemMatch: {_id: roleId}}}]},
-			{sort: {depth: 1}, fields: {_id: 1, path: 1}}).fetch();
+			{sort: {depth: 1}, fields: {_id: 1, path: 1, depth: 1}}).fetch();
 
 		// remove all nodes which are sub-children
 		let i = 0;

@@ -28,33 +28,14 @@ GoalsForIndividual = React.createClass({
 			let prefix = this.props.objectId ? ContributorsCollection.findOne({email: this.props.objectId}).name + "'s " : "My ";
 			this.state.contributorPrefix = prefix;
 
-			// find all nodes with this contributor as owner, sorted by depth
-			let goals = GoalsCollection.find({$or: [
-					{ ownerRoles: { $elemMatch : {email: objectId} }},
-					{ contributorRoles: { $elemMatch : {email: objectId} }}
-			]}, {sort: {depth:1}}).fetch();
+			let allRolestopGoals = RolesCollection.find({email:objectId},{fields:{topGoals:1}}).map(x => {return x.topGoals});
+			let goalIds = [];
+			allRolestopGoals.forEach(topGoalsForRole => {
+				goalIds = goalIds.concat(topGoalsForRole);
+			});
+			let goals = GoalsCollection.find( {_id: {$in: goalIds} }).fetch();
+			console.log(goals);
 
-			// remove all nodes which are sub-children
-			let i = 0;
-			while (i < goals.length) {
-				let g = goals[i];
-				if (g.depth === 0) {
-					goals.splice(j, 1);
-					continue;
-				}
-
-				// remove all sub children, i.e. that contain this id in their path
-				let j = i+1;
-				while (j < goals.length) {
-					if (goals[j].path.indexOf(g._id) >= 0) {
-						goals.splice(j, 1);
-					} else {
-						j++; // only increment if we didn't remove the element
-					}
-				}
-				// next top level node
-				i++;
-			}
 			return { goals: goals, doneLoading: true };
 		} else {
 			return { doneLoading : false };

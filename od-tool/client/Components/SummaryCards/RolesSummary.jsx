@@ -21,7 +21,9 @@ RolesSummary = React.createClass({
 	},
 
 	roleEditShow(evt) {
-		this.refs.roleEditModal.show(evt.currentTarget.id);
+		console.log(this.refs);
+		console.log('m'+evt.currentTarget.id);
+		this.refs['m'+evt.currentTarget.id].show();
 	},
 
 	renderRolesControls(r) {
@@ -51,6 +53,7 @@ RolesSummary = React.createClass({
 			</a>
 		);
 
+		/*
 		controls.push(
 			<a key={r._id+"2"} onClick={this.notImplemented} className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">thumb_down</i>
@@ -61,6 +64,7 @@ RolesSummary = React.createClass({
 				<i className="material-icons summaryCardIcon grey-text">thumb_up</i>
 			</a>
 		);
+		*/
 
 		return controls;
 	},
@@ -80,15 +84,26 @@ RolesSummary = React.createClass({
 		}
 	},
 
+	renderModals() {
+		if (this.data.doneLoading) {
+			return this.data.roles.map(r => {
+				return <RoleEditModal key={r._id} role={r} ref={'m'+r._id} id={'m'+r._id}/>
+			});
+		}
+		return false;
+	},
+
 	render() {
 		if (this.data.doneLoading) {
 			return (
 				<div>
 					<ul className="collection with-header">
-						<li className="collection-header summaryCardHeader" key={_.escape(this.props.email)+"_roles"}>Roles</li>
+						<li className="collection-header summaryCardHeader" key={_.escape(this.props.email)+"_roles"}>
+							Roles
+						</li>
 						{this.renderRoles()}
 					</ul>
-					<RoleEditModal id="rolesSummaryRoleEditModal" ref="roleEditModal"/>
+					{this.renderModals()}
 				</div>
 			);
 		} else {

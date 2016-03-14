@@ -195,7 +195,7 @@ GoalsSummary = React.createClass({
 					<div className="collection-item-text">{this.data.goals.length} Goals
 						(<a className="tealLink" onClick={ this.showGoalsModal }>view all</a>)
 					</div>
-					<a className="secondary-content" href={url}>
+					<a className="secondary-content" onClick={ this.showGoalsModal }>
 						<i className="material-icons summaryCardIcon grey-text">search</i>
 					</a>
 				</li>

@@ -4,6 +4,7 @@ var googleAuth = Meteor.npmRequire('google-auth-library');
 var readline = Meteor.npmRequire('readline');
 var google = Meteor.npmRequire('googleapis');
 var SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly'];
+var doneLoadingCacheCallBack = null;
 
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) + '/.credentials/';
 try {
@@ -49,6 +50,9 @@ function updateGoogleAdminCache(auth) {
 	}, Meteor.bindEnvironment(function(err, response) {
 		if (err) {
 			console.log('The API returned an error: ' + err);
+			if (doneLoadingCacheCallBack) {
+				doneLoadingCacheCallBack(err);
+			}
 			return;
 		}
 		var users = response.users;
@@ -64,6 +68,9 @@ function updateGoogleAdminCache(auth) {
 				var user = users[i];
 				GoogleUserCacheCollection.insert(user);
 			}
+		}
+		if (doneLoadingCacheCallBack) {
+			doneLoadingCacheCallBack();
 		}
 	}));
 }
@@ -87,7 +94,8 @@ function authorize(credentials, callback) {
 }
 
 Meteor.methods({
-	"teal.users.updateGoogleAdminCache" : function() {
+	"teal.users.updateGoogleAdminCache" : function(callback) {
+		doneLoadingCacheCallBack = callback;
 		var content = Assets.getText('clientSecret.json');
 		authorize(JSON.parse(content), updateGoogleAdminCache);
 	}

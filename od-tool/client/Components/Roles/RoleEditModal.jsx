@@ -6,6 +6,12 @@ RoleEditModal = React.createClass({
 		role: React.PropTypes.object,
 	},
 
+	getInitialState() {
+		return {
+			role: null,
+		}
+	},
+
 	handleSave() {
 		let inputs = this.refs.roleEdit.getInputs();
 		Meteor.call("teal.roles.updateOrInsertRole",
@@ -38,8 +44,15 @@ RoleEditModal = React.createClass({
 		$('#' + this.props.id).closeModal();
 	},
 
-	show() {
-		this.refs.roleEdit.clearInputs();
+	show(roleId) {
+		//debugger;
+		if (roleId) {
+			//let r = RolesCollection.findOne({_id:roleId});
+			//this.setState({role:r});
+		} else {
+			this.setState({role:null});
+		}
+		//this.refs.roleEdit.clearInputs();
 		$('#' + this.props.id).openModal();
 	},
 
@@ -47,7 +60,7 @@ RoleEditModal = React.createClass({
 		return (
 			<div id={this.props.id} className="modal modal-fixed-footer">
 				<div className="modal-content" style={{padding:0}}>
-					<RoleEdit role={this.props.role}
+					<RoleEdit role={this.props.role ? this.props.role : this.state.role}
 							  organization={this.props.organization}
 							  organizationId={this.props.organizationId}
 							  ref="roleEdit"/>
