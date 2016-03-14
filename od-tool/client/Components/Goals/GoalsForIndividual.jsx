@@ -34,7 +34,6 @@ GoalsForIndividual = React.createClass({
 				goalIds = goalIds.concat(topGoalsForRole);
 			});
 			let goals = GoalsCollection.find( {_id: {$in: goalIds} }).fetch();
-			console.log(goals);
 
 			return { goals: goals, doneLoading: true };
 		} else {

@@ -36,63 +36,70 @@ if (Meteor.isServer) {
 				throw new Meteor.Error("not-authorized");
 			}
 
-			Meteor.call("teal.users.updateGoogleAdminCache", function() {
-				// now we have populated a user cache we can pull data from
-				var notFoundString = "";
-				var noPhotoString = "";
-				var updatedString = "";
-				var updatedCount = 0;
-				var notFoundCount = 0;
-				GoogleUserCacheCollection.find({}).forEach(o => {
-					// update the corresponding contributor
-					let c = ContributorsCollection.findOne({email: o.primaryEmail});
-					if (!c) {
-						notFoundString += o.primaryEmail + "\n";
-						notFoundCount++;
-					} else if (o.thumbnailPhotoUrl) {
-						// attach to this contributor
-						ContributorsCollection.update(c._id, {$set: {photo: o.thumbnailPhotoUrl}});
+			Meteor.call("teal.users.updateGoogleAdminCache");
 
-						// also attach photo to all roles tied to this user
-						RolesCollection.update({email: c.email}, {$set: {photo: o.thumbnailPhotoUrl}}, {multi: true});
+			// now we have populated a user cache we can pull data from
+			var notFoundString = "";
+			var noPhotoString = "";
+			var updatedString = "";
+			var updatedCount = 0;
+			var notFoundCount = 0;
 
-						// also attach photo to all roles cached to goals
-						GoalsCollection.find(
-							{
-								$or: [{ownerRoles: {$elemMatch: {email: c.email}}},
-									{contributorRoles: {$elemMatch: {email: c.email}}}
-								]
-							}).forEach(g => {
+			console.log("About to update the OD model with photo info...");
 
-							g.ownerRoles.forEach(r => {
-								if (r.email === c.email) {
-									r.photo = o.thumbnailPhotoUrl;
-								}
-							});
-							g.contributorRoles.forEach(r => {
-								if (r.email === c.email) {
-									r.photo = o.thumbnailPhotoUrl;
-								}
-							});
-							GoalsCollection.update(g._id, g);
+			Meteor.call("teal.users.updateGoogleAdminCache");
+
+			GoogleUserCacheCollection.find({}).forEach(o => {
+
+				// update the corresponding contributor
+				let c = ContributorsCollection.findOne({email: o.primaryEmail});
+				if (!c) {
+					notFoundString += o.primaryEmail + "\n";
+					notFoundCount++;
+				} else if (o.thumbnailPhotoUrl) {
+					// attach to this contributor
+					ContributorsCollection.update(c._id, {$set: {photo: o.thumbnailPhotoUrl}});
+
+					// also attach photo to all roles tied to this user
+					RolesCollection.update({email: c.email}, {$set: {photo: o.thumbnailPhotoUrl}}, {multi: true});
+
+					// also attach photo to all roles cached to goals
+					GoalsCollection.find(
+						{
+							$or: [{ownerRoles: {$elemMatch: {email: c.email}}},
+								{contributorRoles: {$elemMatch: {email: c.email}}}
+							]
+						}).forEach(g => {
+
+						g.ownerRoles.forEach(r => {
+							if (r.email === c.email) {
+								r.photo = o.thumbnailPhotoUrl;
+							}
 						});
+						g.contributorRoles.forEach(r => {
+							if (r.email === c.email) {
+								r.photo = o.thumbnailPhotoUrl;
+							}
+						});
+						GoalsCollection.update(g._id, g);
+					});
 
-						updatedString += o.primaryEmail + "\n";
-						updatedCount++;
-					} else {
-						noPhotoString += o.primaryEmail + "\n";
-					}
-				});
+					updatedString += o.primaryEmail + "\n";
+					updatedCount++;
+				} else {
+					noPhotoString += o.primaryEmail + "\n";
+				}
+			});
 
-				var email = "Updated " + updatedCount + " photo urls.\n\n\nUpdated:" + updatedString
-					+ "\n\n\nUnknown contributors:\n\n" + notFoundString
-					+ "\n\nContributors without a photo:\n\n" + noPhotoString;
-				Email.send({
-					from: "teal@miovision.com",
-					to: "vleipnik@miovision.com",
-					subject: "User photos imported, " + notFoundCount + " unknown",
-					text: email
-				});
+			var email = "Updated " + updatedCount + " photo urls.\n\n\nUpdated:" + updatedString
+				+ "\n\n\nUnknown contributors:\n\n" + notFoundString
+				+ "\n\nContributors without a photo:\n\n" + noPhotoString;
+			console.log(email);
+			Email.send({
+				from: "teal@miovision.com",
+				to: "vleipnik@miovision.com",
+				subject: "User photos imported, " + notFoundCount + " unknown",
+				text: email
 			});
 
 			return true;

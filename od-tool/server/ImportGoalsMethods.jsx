@@ -297,7 +297,7 @@ Meteor.methods({
 				var i = 0;
 				while (p) {
 					// find the parent object
-					p = GoalsCollection.findOne({_id: p});
+					p = GoalsCollection.findOne({ _id: p});
 
 					// store the parent id
 					path.push(p._id);

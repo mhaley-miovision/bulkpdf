@@ -41,6 +41,7 @@ function recurringCronJob() {
 // TODO: this maxes out at 500 users; fix this if (when :) it becomes a bottle neck
 function updateGoogleAdminCache(auth) {
 	var service = google.admin('directory_v1');
+	var future = new Future();
 	service.users.list({
 		auth: auth,
 		domain: 'miovision.com',
@@ -50,15 +51,50 @@ function updateGoogleAdminCache(auth) {
 	}, Meteor.bindEnvironment(function(err, response) {
 		if (err) {
 			console.log('The API returned an error: ' + err);
-			if (doneLoadingCacheCallBack) {
-				doneLoadingCacheCallBack(err);
-			}
-			return;
+			future.throw(err);
 		}
 		var users = response.users;
+		future.return({users:response.users});
+	}));
+	return future.wait();
+}
+
+function authorize(credentials) {
+	var clientSecret = credentials.installed.client_secret;
+	var clientId = credentials.installed.client_id;
+	var redirectUrl = credentials.installed.redirect_uris[0];
+	var auth = new googleAuth();
+	var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+	var future = new Future();
+
+	// Check if we have previously stored a token.
+	fs.readFile(TOKEN_PATH, Meteor.bindEnvironment(function(err, token) {
+		if (err) {
+			console.error("Failed to find token at: " + TOKEN_PATH);
+			future.throw(err);
+		} else {
+			oauth2Client.credentials = JSON.parse(token);
+			future.return({
+				oauth2Client:oauth2Client
+			});
+			//callback(oauth2Client);
+		}
+	}));
+	return future.wait();
+}
+
+Meteor.methods({
+	"teal.users.updateGoogleAdminCache" : function() {
+		var content = Assets.getText('clientSecret.json');
+		console.log('About to authorize with Google...');
+		var results = authorize(JSON.parse(content));
+		console.log('About to retrieve users...');
+		var users = updateGoogleAdminCache(results.oauth2Client).users;
 		if (users.length == 0) {
 			console.log('No users in the domain.');
 		} else {
+			console.log('Found ' + users.length + ' users on the domain.');
+
 			GoogleUserCacheCollection.remove({});
 
 			if (users.length === 500) {
@@ -69,34 +105,5 @@ function updateGoogleAdminCache(auth) {
 				GoogleUserCacheCollection.insert(user);
 			}
 		}
-		if (doneLoadingCacheCallBack) {
-			doneLoadingCacheCallBack();
-		}
-	}));
-}
-
-function authorize(credentials, callback) {
-	var clientSecret = credentials.installed.client_secret;
-	var clientId = credentials.installed.client_id;
-	var redirectUrl = credentials.installed.redirect_uris[0];
-	var auth = new googleAuth();
-	var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
-
-	// Check if we have previously stored a token.
-	fs.readFile(TOKEN_PATH, Meteor.bindEnvironment(function(err, token) {
-		if (err) {
-			console.error("Failed to find token at: " + TOKEN_PATH);
-		} else {
-			oauth2Client.credentials = JSON.parse(token);
-			callback(oauth2Client);
-		}
-	}));
-}
-
-Meteor.methods({
-	"teal.users.updateGoogleAdminCache" : function(callback) {
-		doneLoadingCacheCallBack = callback;
-		var content = Assets.getText('clientSecret.json');
-		authorize(JSON.parse(content), updateGoogleAdminCache);
 	}
 });
