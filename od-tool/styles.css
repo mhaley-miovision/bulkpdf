@@ -777,7 +777,7 @@ circle.container, circle.label {
     color: #558C89;
     font-size: 18px;
     vertical-align: middle;
-    margin-bottom: 15px;
+    /*margin-bottom: 15px;*/
 }
 .GoalTitleCompact {
     color: #558C89;

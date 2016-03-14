@@ -9,13 +9,15 @@ GoalsSummary = React.createClass({
 		let handle = Meteor.subscribe("teal.goals");
 
 		if (handle.ready()) {
-			let goals = GoalsCollection.find({
-					$or: [
-						{ownerRoles: {$elemMatch: {email: this.props.objectId}}},
-						{contributorRoles: {$elemMatch: {email: this.props.objectId}}},
-					]
-				},
-				{sort:{depth:1}}).fetch();
+			// get this person's top goals
+			let allRolestopGoals = RolesCollection.find(
+				{email:this.props.objectId},
+				{fields:{topGoals:1}}).map(x => {return x.topGoals});
+			let goalIds = [];
+			allRolestopGoals.forEach(topGoalsForRole => {
+				goalIds = goalIds.concat(topGoalsForRole);
+			});
+			let goals = GoalsCollection.find( {_id: {$in: goalIds} }).fetch();
 
 			// summarize late goals, and sum up totals
 			let notStarted = 0, inProgress = 0, completed = 0;
