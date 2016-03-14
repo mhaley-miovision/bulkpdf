@@ -1,5 +1,6 @@
 OrgEdit = React.createClass({
 	propTypes: {
+		// TODO: these names are terrible. please do something.
 		org : React.PropTypes.object,
 		parentOrg : React.PropTypes.string,
 		parentOrgId : React.PropTypes.string,
@@ -11,11 +12,44 @@ OrgEdit = React.createClass({
 	loadStateFromProps(props) {
 		console.log("loadStateFromProps: ");
 		console.log(props);
+
+		// parent id and name
+		let parentId = null;
+		let parent = null;
+		if (this.props.org) {
+			// TODO: clean this up. currently it's an artiface of the rendering logic, which i don't have time to change
+			// TODO; ideally the object can expect to have a proper parentid
+			if (this.props.org.parent) {
+				if (this.props.org.parent._id) {
+					// in this case it's an object...
+					parentId = this.props.org.parent._id;
+					parent = this.props.org.parent.name;
+				} else {
+					// in this case it's not... ughh
+					if (!!this.props.org.parentId) {
+						parentId = this.props.org.parentId;
+					} else {
+						console.error("Expected to find a parentId on org!");
+						console.error(this.props.org);
+					}
+					parent = this.props.org.parent;
+				}
+			}
+		} else {
+			if (!!this.props.parentOrgId) {
+				parentId = this.props.parentOrgId;
+			} else {
+				console.error("Expected to find a corresponding parentOrgId for org " + this.props.parentOrg);
+				console.error(this.props.org);
+			}
+			parent = this.props.parentOrg;
+		}
+
 		return {
 			_id: props.org ? props.org._id : null,
 			name: props.org ? props.org.name : '',
-			parentOrg: props.org ? props.org.parent : this.props.parentOrg ? this.props.parentOrg : '',
-			parentOrgId: props.org ? props.org.parentId : this.props.parentOrgId ? this.props.parentOrgId : null,
+			parentOrg: parent ? parent : '',
+			parentOrgId: parentId ? parentId : null,
 			startDatePickerId: 'picker' + Teal.newId(),
 			endDatePickerId: 'picker' + Teal.newId(),
 			startDate : props.role ? props.role.startDate : moment().format(Teal.DateFormat),
@@ -36,8 +70,8 @@ OrgEdit = React.createClass({
 	handleNameChange(event) {
 		this.setState({name:event.target.value});
 	},
-	onOrganizationSelected(org,type,id) {
-		this.setState({parentOrg:org,parentOrgId:id});
+	onOrganizationSelected(orgName,type,id) {
+		this.setState({parentOrg:orgName,parentOrgId:id});
 	},
 
 	componentDidMount() {
@@ -53,7 +87,7 @@ OrgEdit = React.createClass({
 		return (
 			<div className="card-content GoalContainer">
 				<div className="row">
-					<div className="GoalTitle center" style={{marginTop:this.props.goal? "0px":"15px"}}>
+					<div className="GoalTitle center" style={{marginTop:"15px"}}>
 						{this.props.org ? "Edit Organization" : "New Organization"}
 					</div>
 					<div className="divider"></div>
@@ -62,7 +96,7 @@ OrgEdit = React.createClass({
 					<div className="col m6 s12 GoalContainer">
 						<label className="text-main1 GoalSubtitle">Organization Name</label>
 						<input type="text" className="text-main5"
-							   initialValue={this.state.name} placeholder={this.state.name ? '' : 'Enter the name of the organization...'}
+							   value={this.state.name} placeholder={this.state.name ? '' : 'Enter the name of the organization...'}
 						       onChange={this.handleNameChange}/>
 					</div>
 					<div className="col m6 s12 GoalContainer">

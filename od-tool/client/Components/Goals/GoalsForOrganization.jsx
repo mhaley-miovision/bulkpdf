@@ -2,7 +2,7 @@ GoalsForOrganization = React.createClass({
 	mixins: [ReactMeteorData],
 
 	propTypes: {
-		objectId: React.PropTypes.string.isRequired
+		orgId: React.PropTypes.string.isRequired
 	},
 
 	getMeteorData() {
@@ -10,7 +10,7 @@ GoalsForOrganization = React.createClass({
 		if (handle.ready()) {
 			// find all nodes with this contributor as owner, sorted by depth
 			let roleIds = RolesCollection.find(
-				{ organizationId: this.props.objectId}, {sort: {depth:1}, fields: { _id:1 }}).map(r => {return r._id});
+				{ organizationId: this.props.orgId}, {sort: {depth:1}, fields: { _id:1 }}).map(r => {return r._id});
 
 			// find all goals with these role as owners or contributors, sorted by depth
 			let goals = GoalsCollection.find({$or: [
@@ -45,7 +45,7 @@ GoalsForOrganization = React.createClass({
 	},
 
 	shouldComponentUpdate(nextProps, nextState) {
-		if (nextProps.objectId !== this.props.objectId) {
+		if (nextProps.orgId !== this.props.orgId) {
 			return true;
 		}
 		return false;

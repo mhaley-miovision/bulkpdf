@@ -117,6 +117,7 @@ Teal = {
 		if (!!Meteor.user()) {
 			return Meteor.user().rootOrgId;
 		} else {
+			console.error("Teal.UndefinedRootOrganization was resolved!");
 			return Teal.UndefinedRootOrganization; // do not return null in case it enables matching all queries
 		}
 	},

@@ -34,6 +34,7 @@ Meteor.methods({
 		role.organizationId = organizationId;
 		role.topGoals = [];
 		role.type = 'role';
+		role.rootOrgId = Teal.rootOrgIg();
 
 		// cached role values
 		//TODO: extract this into a method

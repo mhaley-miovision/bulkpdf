@@ -12,7 +12,8 @@ MyTeam = React.createClass({
 
 		if (handle.ready() && handle2.ready()) {
 			var c = ContributorsCollection.findOne({email:Meteor.user().email});
-			return {isLoading:false, contributorOrg: c ? c.physicalTeam : "", contributorOrgId : c ? c.physicalOrgId : "" };
+			var o = OrganizationsCollection.findOne({_id: c.physicalOrgId});
+			return {isLoading:false, contributorOrg: o ? o.name : '', contributorOrgId : c ? c.physicalOrgId : '' };
 		} else {
 			return {isLoading:true};
 		}
@@ -33,11 +34,11 @@ MyTeam = React.createClass({
 					<ObjectSearch onClick={this.handleSearch}
 								  findOrganizations={true} findContributors={false}
 								  notFoundLabel="Please type the name of an existing organization."/>
-					<GoalsForOrganization objectId={orgId}/>
+					<GoalsForOrganization orgId	={orgId}/>
 					<div>
 						<Organization objectId={org} roleMode={true} roleModeVisible={true} searchVisible={false}/>
 					</div>
-					<TeamSkillsSummary orgName={org}/>
+					<TeamSkillsSummary orgId={org}/>
 				</div>
 			);
 		} else {

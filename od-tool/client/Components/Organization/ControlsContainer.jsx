@@ -8,6 +8,9 @@ ControlsContainer = React.createClass({
 	},
 
 	update(id, type, object) {
+		if (object && type == 'organization') {
+			console.log(object.parent);
+		}
 		this.setState({id:id,type:type,object:object});
 	},
 

@@ -19,21 +19,22 @@ Meteor.methods({
 			org.createdBy = Meteor.userId();
 		}
 
+		org.name = name;
+		org.startDate = startDate;
+		org.endDate = endDate;
+		org.parentId = parentOrgId;
+		org.type = 'organization';
+		org.rootOrgId = Teal.rootOrgIg();
+
 		if (!!parentOrgId) {
-			parentOrg = OrganizationsCollection.findOne({_id:parentOrgId});
+			let parentOrg = OrganizationsCollection.findOne({_id:parentOrgId});
+			org.parent = parentOrg.name;
 			if (!parentOrg) {
 				throw new Meteor.Error("parent-not-found");
 			}
 		} else {
 			throw new Meteor.Error("missing-parent-org");
 		}
-
-		org.name = name;
-		org.startDate = startDate;
-		org.endDate = endDate;
-		org.parentId = parentOrgId;
-		org.parent = parentOrg.name;
-		org.type = 'organization';
 
 		if (newOrg) {
 			org._id = OrganizationsCollection.insert(org);
@@ -72,6 +73,12 @@ Meteor.methods({
 			throw new Meteor.Error("not-authorized");
 		}
 		if (!!organizationId) {
+			// First, remove all the children
+			let children = OrganizationsCollection.find({parentId:organizationId});
+			children.forEach(c => {
+				Meteor.call("teal.orgs.removeOrganization", c._id);
+			});
+
 			// Remove all roles associated with this organization
 			let roles = RolesCollection.find({organizationId: organizationId}).forEach(r => {
 				Meteor.call("teal.roles.removeRole", r._id);

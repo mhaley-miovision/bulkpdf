@@ -277,7 +277,6 @@ Meteor.methods({
 
 		OrganizationsCollection.find({rootOrgId: rootOrgId}).forEach(o => {
 			Meteor.call("teal.orgs.updateCachedOrgValues", o._id);
-			var x = OrganizationsCollection.findOne({_id:o._id});
 		});
 
 		//==============================================================================================================

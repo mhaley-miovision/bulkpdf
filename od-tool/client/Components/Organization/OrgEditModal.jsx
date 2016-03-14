@@ -1,13 +1,14 @@
 OrgEditModal = React.createClass({
 
 	propTypes: {
-		organization: React.PropTypes.string,
+		org: React.PropTypes.object,
 		parentOrg: React.PropTypes.string,
 		parentOrgId: React.PropTypes.string,
 	},
 
 	handleSave() {
 		let inputs = this.refs.orgEdit.getInputs();
+		debugger;
 		Meteor.call("teal.orgs.updateOrInsertOrg",
 			inputs._id,
 			inputs.name,
@@ -16,7 +17,7 @@ OrgEditModal = React.createClass({
 			inputs.endDate,
 			function(err) {
 				if (err) {
-					Materialize.toast("Error creating organization: " + err, 1000);
+					Materialize.toast("Error creating organization: " + err, 2000);
 				} else {
 					Materialize.toast("Organization successfully saved!", 1000);
 				}
@@ -41,7 +42,7 @@ OrgEditModal = React.createClass({
 		return (
 			<div id={this.props.id} className="modal modal-fixed-footer">
 				<div className="modal-content" style={{padding:0}}>
-					<OrgEdit organization={this.props.organization}
+					<OrgEdit org={this.props.org}
 							 parentOrg={this.props.parentOrg}
 							 parentOrgId={this.props.parentOrgId}
 							 ref="orgEdit"/>

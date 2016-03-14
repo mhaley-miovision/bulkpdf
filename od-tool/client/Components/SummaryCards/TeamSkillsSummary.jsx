@@ -2,7 +2,7 @@ TeamSkillsSummary = React.createClass({
 	mixins: [ReactMeteorData],
 
 	propTypes: {
-		orgName: React.PropTypes.string.isRequired,
+		orgId: React.PropTypes.string.isRequired,
 	},
 
 	getMeteorData() {
@@ -11,11 +11,8 @@ TeamSkillsSummary = React.createClass({
 		let handle3 = Meteor.subscribe("teal.organizations");
 
 		if (handle.ready() && handle2.ready() && handle3.ready()) {
-			// get organization id
-			let org = OrganizationsCollection.findOne({name:this.props.orgName});
-
 			// get unique user emails
-			let users = _.uniq(RolesCollection.find({orgPath:org._id}, {email: 1}).fetch().map(function(x) {
+			let users = _.uniq(RolesCollection.find({_id:this.props.orgId}, {email: 1}).fetch().map(function(x) {
 				return x.email;
 			}), true);
 
@@ -107,7 +104,7 @@ TeamSkillsSummary = React.createClass({
 			return (
 				<div className="grey-text">
 					<p style={{textAlign:"center"}}>
-						{this.props.orgName} has no skills defined yet.
+						This organization has no skills defined yet.
 					</p>
 				</div>
 			);

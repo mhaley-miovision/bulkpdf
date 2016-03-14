@@ -726,7 +726,7 @@ Organization = React.createClass({
 				// for building an org tree
 				let populateOrgChildren = function (o) {
 					o.children = [];
-					var query = OrganizationsCollection.find({parent: o.name}); // find the children
+					var query = OrganizationsCollection.find({parentId: o._id}); // find the children
 					if (query.count() > 0) {
 						var r = query.fetch();
 
@@ -747,7 +747,7 @@ Organization = React.createClass({
 					}
 
 					// get all immediate roles attached to this org
-					let q = RolesCollection.find({organization: o.name});
+					let q = RolesCollection.find({organizationId: o._id});
 					if (q.count() > 0) {
 						var r = q.fetch();
 						for (var x in r) {
@@ -762,7 +762,7 @@ Organization = React.createClass({
 						o.children = [];
 					}
 					o.children.forEach(c => attachOrgContributors(c));
-					let q = ContributorsCollection.find({physicalTeam: o.name});
+					let q = ContributorsCollection.find({physicalOrgId: o.Id});
 					if (q.count() > 0) {
 						var r = q.fetch();
 						for (var x in r) {
