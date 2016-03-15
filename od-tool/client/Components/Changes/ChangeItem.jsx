@@ -28,7 +28,7 @@ ChangeItem = React.createClass({
 
 				<span data-tip={changeParams}>{changedString}</span>
 
-				<span className="text-main5"> - {moment(c.createdAt, Teal.DateTimeFormat).fromNow()}</span>
+				<span className="text-main5"> - {moment(c.createdAt).fromNow()}</span>
 			</div>
 		);
 	},
