@@ -369,11 +369,11 @@ Teal = {
 
 	// Create a new timestamp
 	newDate() {
-		return moment().format(Teal.DateFormat);
+		return moment(Meteor.call("teal.getServerDate")).format(Teal.DateFormat);
 	},
 	// Create a new timestamp
 	newDateTime() {
-		return moment().format(Teal.DateTimeFormat);
+		return moment(Meteor.call("teal.getServerDate")).format(Teal.DateTimeFormat);
 	},
 
 	// Create a new ID
