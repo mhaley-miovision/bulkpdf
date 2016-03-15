@@ -38,11 +38,9 @@ RoleLabels = React.createClass({
 		// Find the text field via the React ref
 		var text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
 
-		Meteor.call("teal.roles.addRoleLabel", text, function(err, data) {
-			if (err && err.error == "duplicate") {
-				Materialize.toast("That label already exists, item was not added.", 3000);
-			}
-		});
+		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.NewRoleLabel, Teal.ObjectTypes.RoleLabel,
+			"teal.roles.addRoleLabel", [ this.props.roleLabel._id, this.state.newLabel ]);
+		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
 
 		// Clear form
 		ReactDOM.findDOMNode(this.refs.textInput).value = "";

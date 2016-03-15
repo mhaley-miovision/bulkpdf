@@ -1,4 +1,15 @@
 Navbar = React.createClass({
+	mixins: [ReactMeteorData],
+
+	getMeteorData() {
+		var h = Meteor.subscribe("teal.changes")
+		if (h.ready()) {
+			return { changesCount: ChangesCollection.find().count() };
+		}
+		return {};
+	},
+
+
 	handleFeedbackClick() {
 		this.refs.enps.showDialog();
 	},
@@ -19,6 +30,13 @@ Navbar = React.createClass({
 		);
 	},
 
+	renderChangesCount() {
+		if (this.data.changesCount) {
+			//darken-3 orange
+			return <span className="new badge background-main1 white-text">{this.data.changesCount}</span>;
+		}
+	},
+
 	renderListIems(id, className) {
 		//<li className={FlowHelpers.currentRoute("home")}><a href="/">Home</a></li>
 		//<li className={FlowHelpers.currentRoute("tasks")}><a href="/tasks">Tasks</a></li>
@@ -33,7 +51,7 @@ Navbar = React.createClass({
 					</li>
 					: ''
 				}
-				<li className={FlowHelpers.currentRoute("requests")}><a href="/requests">Requests<span className="new badge darken-3 orange white-text">4</span></a></li>
+				<li className={FlowHelpers.currentRoute("requests")}><a href="/requests">Changes{this.renderChangesCount()}</a></li>
 				{
 					Permissions.isAdmin() ?
 						<li className={FlowHelpers.currentRoute("admin")}><a href="/admin">Admin</a></li>

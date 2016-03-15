@@ -185,11 +185,11 @@ Goal = React.createClass({
 		this.setState({isEditing:false});
 		if (this.refs.obj) {
 			let inputs = this.refs.obj.getInputs();
-			Meteor.call("teal.goals.updateOrInsertGoal",
-				inputs._id, null, inputs.name, inputs.keyObjectives, inputs.doneCriteria,
-				inputs.ownerRoles, inputs.contributorRoles, inputs.state, inputs.dueDate);
-			// TODO: goal state
-			Materialize.toast("Goal saved!", 1000);
+			let changeObject = Teal.createChangeObject(Teal.ChangeTypes.UpdateGoal, Teal.ObjectTypes.Goal,
+				"teal.goals.updateOrInsertGoal", [
+					inputs._id, null, inputs.name, inputs.keyObjectives, inputs.doneCriteria,
+					inputs.ownerRoles, inputs.contributorRoles, inputs.state, inputs.dueDate ]);
+			Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
 		}
 	},
 
@@ -200,13 +200,9 @@ Goal = React.createClass({
 	},
 
 	handleDeleteClicked() {
-		Meteor.call("teal.goals.deleteGoal", this.props.goal._id, function(err) {
-			if (err) {
-				Materialize.toast("Failed to delete goal: " + err, 1000);
-			} else {
-				Materialize.toast("Goal deleted!", 1000);
-			}
-		});
+		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.RemoveGoal, Teal.ObjectTypes.Goal,
+			"teal.goals.deleteGoal", [ this.props.goal._id ]);
+		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
 	},
 
 	getNewGoalModalId() {

@@ -232,7 +232,7 @@ function processGoalsJson(json) {
 				contributors: contributors,
 				doneCriteria: doneCriteria,
 				keyObjectives: keyObjectives,
-				status: c["M" + r],
+				status: c["I" + r],
 				dueDate: processDate(c["J" + r]),
 				isLeaf: false
 			};
@@ -345,9 +345,11 @@ Meteor.methods({
 				//n.stats = { completed:0, inProgress:0, notStarted:1 };
 				n.state = 0;
 			} else {
-				//console.log("leaf goal node " + n.name + " has undefined status");
+				console.log("leaf goal node " + n.name + " has undefined status");
 				n.state = 0;
 			}
+
+			console.log(n.name + " --- status:" + n.status + " --- state: " + n.state);
 
 			n.stats = { completed:0, inProgress:0, notStarted:0 };
 

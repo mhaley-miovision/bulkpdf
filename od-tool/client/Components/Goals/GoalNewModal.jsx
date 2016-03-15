@@ -6,10 +6,13 @@ GoalNewModal = React.createClass({
 
 	handleSave() {
 		let g = this.refs.newGoal.getInputs();
-		Meteor.call("teal.goals.updateOrInsertGoal",
-			null, this.props.parentGoalId, g.name, g.keyObjectives, g.doneCriteria, g.ownerRoles,
-				g.contributorRoles, g.state, g.dueDate);
-		Materialize.toast("Goal created!", 1000);
+
+		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.NewGoal, Teal.ObjectTypes.Goal,
+			"teal.goals.updateOrInsertGoal", [
+				null, this.props.parentGoalId, g.name, g.keyObjectives, g.doneCriteria, g.ownerRoles,
+				g.contributorRoles, g.state, g.dueDate ]);
+		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
+
 		this.refs.newGoal.clearInputs();
 		$('#' + this.props.id).closeModal();
 	},

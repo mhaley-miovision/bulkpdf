@@ -61,6 +61,9 @@ Meteor.methods({
 			throw new Meteor.Error("not-authorized");
 		}
 
+		// create the change object
+		//Teal.createChangeObject(Teal.ChangeTypes.)
+
 		// update the goal
 		let g = GoalsCollection.findOne({_id: goalId });
 		let prevState = g.state;

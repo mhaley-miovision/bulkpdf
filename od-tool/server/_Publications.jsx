@@ -35,7 +35,6 @@ Meteor.publish("teal.contributors", function () {
 
 // Only publish users if the client is an admin
 Meteor.publish("users", function () {
-
 	return Meteor.users.find({},
 		{ 'fields': {
 			'user': 1,
@@ -50,7 +49,7 @@ Meteor.publish("users", function () {
 		}});
 });
 
-// Only publish goals that are public
+//TODO: implemented filtering here
 Meteor.publish("teal.goals", function () {
 
 	return GoalsCollection.find({
@@ -60,8 +59,7 @@ Meteor.publish("teal.goals", function () {
 	});
 });
 
-
-// Only publish tasks that are public or belong to the current user
+//TODO: implemented filtering here
 Meteor.publish("teal.tasks", function () {
 
 	return TasksCollection.find({
@@ -72,8 +70,12 @@ Meteor.publish("teal.tasks", function () {
 	});
 });
 
-// Only publish tasks that are public or belong to the current user
+//TODO: implemented filtering here
 Meteor.publish("teal.skills", function () {
-
 	return SkillsCollection.find({});
 });
+
+//TODO: implemented filtering here
+Meteor.publish("teal.changes", function() {
+	return ChangesCollection.find({});
+})

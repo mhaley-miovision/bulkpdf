@@ -1,32 +1,35 @@
 .background-main1 {
-     background-color: #558C89;
+     background-color: #558C89 !important;
 }
 .background-main2 {
-    background-color: #74AFAD;
+    background-color: #74AFAD !important;
 }
 .background-main3 {
-    background-color: #D9853B;
+    background-color: #D9853B !important;
 }
 .background-main4 {
-    background-color: #ECECEA;
+    background-color: #ECECEA !important;
+}
+.background-main5 {
+    background-color: #558C89 !important;
 }
 .text-main1 {
-    color: #558C89;
+    color: #558C89 !important;
 }
 .text-main2 {
-    color: #74AFAD;
+    color: #74AFAD !important;
 }
 .text-main3 {
-    color: #D9853B;
+    color: #D9853B !important;
 }
 .text-main4 {
-    color: #ECECEA;
+    color: #ECECEA !important;
 }
 .text-main5 {
-    color: #9e9e9e;
+    color: #9e9e9e !important;
 }
 .text-main6 {
-    color: #d4d4d4;
+    color: #d4d4d4 !important;
 }
 
 .tealLink {

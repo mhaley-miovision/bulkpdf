@@ -39,7 +39,9 @@ OrgControls = React.createClass({
 		this.refs.orgNewRoleModal.show();
 	},
 	handleRemoveOrg() {
-		Meteor.call("teal.orgs.removeOrganization", this.props.org._id);
+		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.RemoveOrganization, Teal.ObjectTypes.Organization,
+			"teal.orgs.removeOrganization", [ this.props.org._id ]);
+		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
 	},
 	handleAddOrg() {
 		this.refs.orgNewOrgModal.show();

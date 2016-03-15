@@ -12,5 +12,5 @@ RolesCollection = new Mongo.Collection("teal.roles");
 TasksCollection = new Mongo.Collection("teal.tasks");
 SkillsCollection = new Mongo.Collection("teal.skills");
 GoogleUserCacheCollection = new Mongo.Collection("teal.googleUsersCache");
-RequestsCollection = new Mongo.Collection("teal.requests");
+ChangesCollection = new Mongo.Collection("teal.changes");
 AccountabilityLevelsCollection = new Mongo.Collection("teal.accountability_levels");
