@@ -5,9 +5,9 @@ GoalDoneCriterion = React.createClass({
 
 	toggleCompleted() {
 		// Set the checked property to the opposite of its current value
-		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.UpdateGoalProgress, Teal.ObjectTypes.Goal,
-			"teal.goals.setDoneCriterion", [ this.props.goalCriterion._id, !this.props.goalCriterion.completed ]);
-		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
+		let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.UpdateGoalProgress, Teal.ObjectTypes.Goal,
+			"teal.goals.setDoneCriterion", [ this.props.goalCriterion._id, !this.props.goalCriterion.completed ], this.props.goalCriterion);
+		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	},
 
 	render() {

@@ -4,9 +4,9 @@ GoalState = React.createClass({
 	},
 
 	handleOnClick(evt) {
-		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.UpdateGoalProgress, Teal.ObjectTypes.Goal,
-			"teal.goals.setGoalState", [ this.props.goal._id, this.incrementState(this.props.goal.state) ]);
-		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
+		let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.UpdateGoalProgress, Teal.ObjectTypes.Goal,
+			"teal.goals.setGoalState", [ this.props.goal._id, this.incrementState(this.props.goal.state) ], this.props.goal);
+		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 
 		evt.stopPropagation();
 	},

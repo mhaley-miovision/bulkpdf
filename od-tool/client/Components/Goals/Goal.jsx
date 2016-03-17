@@ -80,116 +80,109 @@ Goal = React.createClass({
 			return <GoalEdit ref="obj"
 							 goal={this.props.goal}/>
 		} else {
-			if (this.props.goal.path.length == 0) {
-				// this is a root level goal
-				return this.renderRootLevelGoal();
-			} else {
-				let numSummaryItems = 1;
-				numSummaryItems += this.props.goal.ownerRoles.length > 0 ? 1 : 0;
-				numSummaryItems += this.props.goal.contributorRoles.length > 0 ? 1 : 0;
+			let numSummaryItems = 1;
+			numSummaryItems += this.props.goal.ownerRoles.length > 0 ? 1 : 0;
+			numSummaryItems += this.props.goal.contributorRoles.length > 0 ? 1 : 0;
 
-				let subGoalsLabel =
-					(this.props.goal.stats.completed + this.props.goal.stats.notStarted + this.props.goal.stats.inProgress)
-					+ " Subgoals";
+			let subGoalsLabel =
+				(this.props.goal.stats.completed + this.props.goal.stats.notStarted + this.props.goal.stats.inProgress)
+				+ " Subgoals";
 
-				if (this.props.compactViewMode) {
-					// Render the goal body when viewing in compact mode
-					return (
-						<div className='' onClick={this.props.onClicked}>
-							<div className="row" style={{marginBottom:0}}>
+			if (this.props.compactViewMode) {
+				// Render the goal body when viewing in compact mode
+				return (
+					<div className='' onClick={this.props.onClicked}>
+						<div className="row" style={{marginBottom:0}}>
 
-								<div className={"col m" + (12 - numSummaryItems * 2)
-									+ " hide-on-small-only GoalTitleCompact" + (this.props.goal.isLeaf ? ' Leaf' : '')}>
-									{this.props.goal.name}
-								</div>
-								<div className={"col s12 hide-on-med-and-up GoalTitleCompactMobile"
-									+ (this.props.goal.isLeaf ? ' Leaf' : '')}>
-									{this.props.goal.name}
-								</div>
-
-								{ this.props.goal.ownerRoles.length > 0 ?
-									<div className={"col m2 s4 GoalContainerCompact center " + this.outputSmallOffsetCompactModeString(0)}>
-										<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
-														   list={this.props.goal.ownerRoles}
-														   heading="Owner"/>
-									</div>
-									: ''
-								}
-								{ this.props.goal.ownerRoles.length > 0 ?
-									<div className={"col m2 s4 of GoalContainerCompact center " + this.outputSmallOffsetCompactModeString(1)}>
-										<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
-														   list={this.props.goal.contributorRoles}
-														   heading="Contributor"/>
-									</div>
-									: ''
-								}
-								<div className={"col m2 s4 GoalContainerCompact center " + this.outputSmallOffsetCompactModeString(2)}>
-									<div className="GoalOwnersSection GoalSummaryHeading hide-on-small-only">{subGoalsLabel}</div>
-									<div className="GoalOwnersSectionMobile GoalSummaryHeading hide-on-med-and-up">{subGoalsLabel}</div>
-									<GoalState goal={this.props.goal}/>
-									<br/>
-									<GoalDueDateLabel goal={this.props.goal}/>
-								</div>
+							<div className={"col m" + (12 - numSummaryItems * 2)
+								+ " hide-on-small-only GoalTitleCompact" + (this.props.goal.isLeaf ? ' Leaf' : '')}>
+								{this.props.goal.name}
 							</div>
-						</div>
-					);
-				} else {
-					// Render the goal body when viewing in normal, card based mode
-					return (
-						<div className='card-content' onClick={this.props.onClicked}>
-							<div className={"row " + Teal.whenNotSmall("GoalContainer")}>
-								<div className={"col m9 s12"}>
-									{this.renderGoalTitle()}
-									{this.renderGoalBodyContents()}
-								</div>
-								<div className={"col m3 s12 center"}>
+							<div className={"col s12 hide-on-med-and-up GoalTitleCompactMobile"
+								+ (this.props.goal.isLeaf ? ' Leaf' : '')}>
+								{this.props.goal.name}
+							</div>
+
+							{ this.props.goal.ownerRoles.length > 0 ?
+								<div className={"col m2 s4 GoalContainerCompact center " + this.outputSmallOffsetCompactModeString(0)}>
 									<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
 													   list={this.props.goal.ownerRoles}
 													   heading="Owner"/>
+								</div>
+								: ''
+							}
+							{ this.props.goal.ownerRoles.length > 0 ?
+								<div className={"col m2 s4 of GoalContainerCompact center " + this.outputSmallOffsetCompactModeString(1)}>
 									<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
 													   list={this.props.goal.contributorRoles}
 													   heading="Contributor"/>
-
-									{ this.props.goal.isLeaf ? '' : <br/> }
-									{ this.props.goal.isLeaf ? '' :
-										<div
-											className="GoalOwnersSection GoalSummaryHeading hide-on-small-only">{subGoalsLabel}</div>
-									}
-									{ this.props.goal.isLeaf ? '' :
-										<div
-											className="GoalOwnersSectionMobile GoalSummaryHeading hide-on-med-and-up">{subGoalsLabel}</div>
-									}
-									<GoalState goal={this.props.goal}/>
-									{ this.props.goal.isLeaf ? '' :
-										<GoalsStatsDonut goal={this.props.goal} width="60px" height="60px"/>
-									}
-									{ this.props.goal.isLeaf ? <br/> : '' }
-									<GoalDueDateLabel goal={this.props.goal}/>
 								</div>
+								: ''
+							}
+							<div className={"col m2 s4 GoalContainerCompact center " + this.outputSmallOffsetCompactModeString(2)}>
+								<div className="GoalOwnersSection GoalSummaryHeading hide-on-small-only">{subGoalsLabel}</div>
+								<div className="GoalOwnersSectionMobile GoalSummaryHeading hide-on-med-and-up">{subGoalsLabel}</div>
+								<GoalState goal={this.props.goal}/>
+								<br/>
+								<GoalDueDateLabel goal={this.props.goal}/>
 							</div>
 						</div>
-					);
-				}
+					</div>
+				);
+			} else {
+				// Render the goal body when viewing in normal, card based mode
+				return (
+					<div className='card-content' onClick={this.props.onClicked}>
+						<div className={"row " + Teal.whenNotSmall("GoalContainer")}>
+							<div className={"col m9 s12"}>
+								{this.renderGoalTitle()}
+								{this.renderGoalBodyContents()}
+							</div>
+							<div className={"col m3 s12 center"}>
+								<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
+												   list={this.props.goal.ownerRoles}
+												   heading="Owner"/>
+								<GoalUserPhotoList compactViewMode={this.props.compactViewMode}
+												   list={this.props.goal.contributorRoles}
+												   heading="Contributor"/>
+
+								{ this.props.goal.isLeaf ? '' : <br/> }
+								{ this.props.goal.isLeaf ? '' :
+									<div
+										className="GoalOwnersSection GoalSummaryHeading hide-on-small-only">{subGoalsLabel}</div>
+								}
+								{ this.props.goal.isLeaf ? '' :
+									<div
+										className="GoalOwnersSectionMobile GoalSummaryHeading hide-on-med-and-up">{subGoalsLabel}</div>
+								}
+								<GoalState goal={this.props.goal}/>
+								{ this.props.goal.isLeaf ? '' :
+									<GoalsStatsDonut goal={this.props.goal} width="60px" height="60px"/>
+								}
+								{ this.props.goal.isLeaf ? <br/> : '' }
+								<GoalDueDateLabel goal={this.props.goal}/>
+							</div>
+						</div>
+					</div>
+				);
 			}
 		}
 	},
 
 	handleEditClicked() {
 		this.setState({isEditing:true});
-		if (this.refs.obj) {
-
-		}
 	},
 
 	handleSaveClicked() {
 		this.setState({isEditing:false});
 		if (this.refs.obj) {
 			let inputs = this.refs.obj.getInputs();
-			let changeObject = Teal.createChangeObject(Teal.ChangeTypes.UpdateGoal, Teal.ObjectTypes.Goal,
-				"teal.goals.updateOrInsertGoal", [
-					inputs._id, null, inputs.name, inputs.keyObjectives, inputs.doneCriteria,
-					inputs.ownerRoles, inputs.contributorRoles, inputs.state, inputs.dueDate ]);
-			Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
+			let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.UpdateGoal, Teal.ObjectTypes.Goal,
+				"teal.goals.updateOrInsertGoal", [ TealFactory.createGoal(
+					inputs._id, null, inputs.name, inputs.keyObjectives,
+					inputs.doneCriteria, inputs.ownerRoles,
+					inputs.contributorRoles, inputs.state, inputs.dueDate) ], this.props.goal);
+			Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 		}
 	},
 
@@ -200,9 +193,9 @@ Goal = React.createClass({
 	},
 
 	handleDeleteClicked() {
-		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.RemoveGoal, Teal.ObjectTypes.Goal,
-			"teal.goals.deleteGoal", [ this.props.goal._id ]);
-		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
+		let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.RemoveGoal, Teal.ObjectTypes.Goal,
+			"teal.goals.deleteGoal", [ this.props.goal._id ], this.props.goal);
+		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	},
 
 	getNewGoalModalId() {

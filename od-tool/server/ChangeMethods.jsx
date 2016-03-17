@@ -8,7 +8,9 @@ Meteor.methods({
 
 		c.createdBy = Meteor.userId();
 
-		let contributor = ContributorsCollection.findOne({_id:Meteor.userId()});
+		let u = Meteor.users.findOne({_id:Meteor.userId()});
+		let email = u.email;
+		let contributor = ContributorsCollection.findOne({email:email});
 		c.createdByName = contributor.name;
 		c.photo = contributor.photo;
 		c.createdAt = Teal.newDateTime();

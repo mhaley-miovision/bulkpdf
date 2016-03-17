@@ -1,12 +1,4 @@
 Meteor.methods({
-	"teal.goals.removeGoal": function(goalId) {
-		//TODO: perm check
-		if (!Meteor.userId()) {
-			throw new Meteor.Error("not-authorized");
-		}
-		GoalsCollection.remove(goalId);
-	},
-
 	// note: this function recurses up the goal tree
 	"teal.goals.updateGoalStats": function (goalId) {
 		// Make sure the user is logged in before inserting a task
@@ -62,7 +54,7 @@ Meteor.methods({
 		}
 
 		// create the change object
-		//Teal.createChangeObject(Teal.ChangeTypes.)
+		//TealChanges.Teal.createChangeObject(Teal.ChangeTypes.)
 
 		// update the goal
 		let g = GoalsCollection.findOne({_id: goalId });
@@ -194,43 +186,42 @@ Meteor.methods({
 		RolesCollection.update(roleId, {$set: { topGoals: goalIds }});
 	},
 
-	"teal.goals.updateOrInsertGoal": function(goalId, goalParentId, name, keyObjectives,
-											  doneCriteria, ownerRoles, contributorRoles,
-											  state, dueDate) {
+	"teal.goals.updateOrInsertGoal": function(goal) {
+
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
 
 		let newGoal = false;
-		let g = goalId ? GoalsCollection.findOne({_id:goalId}) : null;
+		let g = goal._id ? GoalsCollection.findOne({_id:goal._id}) : null;
 		if (!g) {
 			g = {}; // new goal!
 			newGoal = true;
 		}
-		g.name = name;
-		g.keyObjectives = keyObjectives;
-		g.doneCriteria = doneCriteria;
-		g.ownerRoles = ownerRoles;
-		g.contributorRoles = contributorRoles;
-		g.state = state;
-		g.dueDate = dueDate;
+		g.name = goal.name;
+		g.keyObjectives = goal.keyObjectives;
+		g.doneCriteria = goal.doneCriteria;
+		g.ownerRoles = goal.ownerRoles;
+		g.contributorRoles = goal.contributorRoles;
+		g.state = goal.state;
+		g.dueDate = goal.dueDate;
 
 		let _id = null; // either new or existing
 
 		if (newGoal) {
 			// build path to this node
 			let p = null;
-			if (goalParentId) {
-				p = GoalsCollection.findOne({_id: goalParentId});
-				GoalsCollection.update({_id: goalParentId}, {$set: {isLeaf:false}}); // no longer a leaf
+			if (goal.parent) {
+				p = GoalsCollection.findOne({_id: goal.parent});
+				GoalsCollection.update({_id: goal.parent}, {$set: {isLeaf:false}}); // no longer a leaf
 				g.path = _.clone(p.path);
 				g.path.push(p._id);
 				g.depth = p.depth + 1;
 				g.rootOrgId = p.rootOrgId;
 				g.rootGoalName = p.rootGoalName;
 				g.rootGoalId = p.rootGoalId;
-				g.parent = goalParentId; // attach to parent
+				g.parent = goal.parent; // attach to parent
 				g.isLeaf = true;
 				g.stats = { notStarted: 0, inProgress: 0, completed: 0 };
 			}
@@ -246,12 +237,11 @@ Meteor.methods({
 				Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
 			});
 
-		} else {
 			_id = g._id;
-			if (goalParentId != null) {
+			if (goal.parentId != null) {
 				console.error("moving around goal branches around not yet supported!")
 			} else {
-				GoalsCollection.update(goalId, g);
+				GoalsCollection.update(goal._id, g);
 			}
 		}
 		// update goal stats

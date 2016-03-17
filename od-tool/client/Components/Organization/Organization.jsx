@@ -691,8 +691,19 @@ Organization = React.createClass({
 	handleOnZoomedTo(objectId, objectType, object) {
 		console.log("!!!handleOnZoomedTo!!! --- objectId:"+objectId+", objectType:"+objectType);
 		console.log(object);
+
+		// TODO: hack here - this is a version the object that's been bastardized for d3 display purposes
+		// TODO: clean stuff up or nasty things happen down the road (EJSON infinite recursive calls for example)
+		let clonedObject = _.clone(object);
+		clonedObject.children = null;
+		if (clonedObject.parent && clonedObject.parent.name) {
+			clonedObject.parent = clonedObject.parent.name;
+		} else {
+			clonedObject.parent = null;
+		}
+
 		if (this.refs.controlsContainer) {
-			this.refs.controlsContainer.update(objectId, objectType, object);
+			this.refs.controlsContainer.update(objectId, objectType, clonedObject);
 		}
 	},
 	handeRoleOnClick() {

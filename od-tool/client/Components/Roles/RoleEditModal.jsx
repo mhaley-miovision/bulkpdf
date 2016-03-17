@@ -15,7 +15,7 @@ RoleEditModal = React.createClass({
 	handleSave() {
 		let inputs = this.refs.roleEdit.getInputs();
 
-		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.UpdateRole, Teal.ObjectTypes.Role,
+		let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.UpdateRole, Teal.ObjectTypes.Role,
 			"teal.roles.updateOrInsertRole", [
 				inputs._id,
 				inputs.organizationId,
@@ -28,8 +28,8 @@ RoleEditModal = React.createClass({
 				inputs.isLeadNode,
 				inputs.isPrimaryAccountabilty,
 				inputs.accountabilities,
-			]);
-		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
+			], this.props.role);
+		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 
 		this.refs.roleEdit.clearInputs();
 		$('#' + this.props.id).closeModal();

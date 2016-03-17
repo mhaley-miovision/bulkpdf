@@ -3,6 +3,10 @@ ChangeItem = React.createClass({
 		change: React.PropTypes.object.isRequired,
 	},
 
+	getInitialState() {
+		return { modalId: Teal.newId() };
+	},
+
 	gotoUserProfile(e) {
 		let id = e.currentTarget.id;
 		let c = ContributorsCollection.findOne({_id:id});
@@ -14,11 +18,14 @@ ChangeItem = React.createClass({
 		}
 	},
 
+	showModal() {
+		$('#'+this.state.modalId).openModal();
+	},
+
 	render() {
 		var c = this.props.change;
 		let photoUrl = c.photo ? c.photo : "/img/user_avatar_blank.jpg";
-		let changedString = c.createdByName + " " + Teal.changeObjectToString(c);
-		let changeParams = c.changeParams.join('<br/>');
+		let changedString = c.createdByName + " " + TealChanges.changeObjectToString(c);
 		return (
 			<div className="collection-item">
 				<img id={c.createdBy} key={c._id} className="goalItemPhoto" src={photoUrl}
@@ -26,7 +33,7 @@ ChangeItem = React.createClass({
 
 				&nbsp;&nbsp;
 
-				<span data-tip={changeParams}>{changedString}</span>
+				<span data-tip={TealChanges.getChangeSummaryHtml(this.props.change)}>{changedString}</span>
 
 				<span className="text-main5"> - {moment(c.createdAt).fromNow()}</span>
 			</div>

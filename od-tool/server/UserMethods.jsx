@@ -131,6 +131,7 @@ Meteor.publish("teal.user", function() {
 	}
 })
 
+/*
 Meteor.startup(function() {
 	Meteor.users._ensureIndex( {"email": 1 }, { unique: true } );
 
@@ -141,11 +142,5 @@ Meteor.startup(function() {
 			Meteor.users.update(u._id, {$set:{roles:['enabled','admin']}});
 		}
 	}
-	// useful when doing a full DB drop
-	u = Meteor.users.findOne({email:"leipnik@gmail.com"});
-	if (u) {
-		if (!u.roles) {
-			Meteor.users.update(u._id, {$set:{roles:['enabled']}});
-		}
-	}
 });
+*/

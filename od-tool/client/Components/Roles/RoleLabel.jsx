@@ -14,15 +14,15 @@ RoleLabel = React.createClass({
 	},
 
 	deleteThisRoleLabel() {
-		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.RemoveRoleLabel, Teal.ObjectTypes.RoleLabel,
-			"teal.roles.removeRoleLabel", [ this.props.role._id ]);
-		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
+		let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.RemoveRoleLabel, Teal.ObjectTypes.RoleLabel,
+			"teal.roles.removeRoleLabel", [ this.props.role._id ], this.props.role);
+		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	},
 
 	renameThisRoleLabel() {
-		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.RenameRoleLabel, Teal.ObjectTypes.RoleLabel,
-			"teal.roles.renameRoleLabel", [ this.props.roleLabel._id, this.state.newLabel ]);
-		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
+		let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.RenameRoleLabel, Teal.ObjectTypes.RoleLabel,
+			"teal.roles.renameRoleLabel", [ this.props.roleLabel._id, this.state.newLabel ], this.props.roleLabel);
+		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	},
 
 	handleSubmit(event) {

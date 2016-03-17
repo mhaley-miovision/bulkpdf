@@ -52,7 +52,7 @@ Requests = React.createClass({
 
 					<br/>
 
-					<ReactTooltip multiline={true} place="bottom"/>
+					<ReactTooltip html={true} multiline={true} place="bottom"/>
 				</div>
 			);
 		} else {

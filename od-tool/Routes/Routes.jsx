@@ -162,3 +162,10 @@ FlowRouter.route( '/enps', {
 		ReactLayout.render( App, { yield: <ENPS />  } );
 	}
 });
+
+FlowRouter.route( '/designer', {
+	name: 'designer',
+	action() {
+		ReactLayout.render( App, { yield: <NotImplementedYet />  } );
+	}
+});

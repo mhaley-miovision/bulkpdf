@@ -39,9 +39,9 @@ RoleControls = React.createClass({
 		this.refs.editRoleModal.show(this.props.role);
 	},
 	handleDeleteRole() {
-		let changeObject = Teal.createChangeObject(Teal.ChangeTypes.RemoveRole, Teal.ObjectTypes.Role,
-			"teal.roles.removeRole", [ this.props.role._id ]);
-		Meteor.call("teal.changes.create", changeObject, Teal.notifyChangeResult);
+		let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.RemoveRole, Teal.ObjectTypes.Role,
+			"teal.roles.removeRole", [ this.props.role._id ], this.props.role);
+		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	},
 
 	render() {

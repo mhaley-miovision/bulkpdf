@@ -286,26 +286,9 @@ Meteor.methods({
 		for (let x in contributors.data) {
 			let processed = importHelper_transformContributor(contributors.data[x]);
 
-			// also add to the users table, with appropriate roles
-			var existing = Meteor.users.findOne({email: processed.email});
-			var userId = null;
-			if (!existing) {
-				userId = Meteor.users.insert({
-					email: processed.email,
-					profile: {name: processed.name}
-				});
-			} else {
-				userId = existing._id;
-			}
-			// make sure userIds == contributorIds
-			processed._id = userId;
-
 			// insert the contributor
 			var c_id = ContributorsCollection.insert(processed);
 			var c = ContributorsCollection.findOne({_id: c_id});
-
-			// attach Teal-specific user information
-			Meteor.users.update(userId, {$set: {rootOrgId: rootOrgId }});
 
 			// look up actual id instead of name
 			let o = OrganizationsCollection.findOne({name: c.physicalTeam});
@@ -313,23 +296,6 @@ Meteor.methods({
 				ContributorsCollection.update(c_id, {$set: {physicalOrgId: o._id}});
 			} else {
 				console.warn("Couldn't find physical team for: " + c.name);
-			}
-
-			var userEmail = c.email ? c.email : c.services ? c.services.google ? c.services.google.email : null : null;
-
-			// enable all miovision users by default + extras
-			var enabledUsers = ['leipnik@gmail.com'];
-			if (c.email.indexOf("@miovision.com" >= 0) || userEmail && enabledUsers.indexOf(userEmail) >= 0) {
-				Roles.addUsersToRoles(userId, 'enabled'); //TODO:fix groups to work properly , rootOrgId);
-			}
-
-			// admins
-			var adminUsers = ['vleipnik@miovision.com', 'jreeve@miovision.com',
-				'jwincey@miovision.com', 'jbhavnani@miovision.com', 'lgreig@miovision.com', 'kmcbride@miovision.com',
-				'tbrijpaul@miovision.com', 'ndumond@miovision.com', 'dbullock@miovision.com', 'bward@miovision.com',
-				'bpeters@miovision.com'];
-			if (adminUsers.indexOf(c.email) >= 0) {
-				Roles.addUsersToRoles(userId, 'admin'); //TODO:fix groups to work properly , rootOrgId);
 			}
 		}
 
@@ -351,11 +317,6 @@ Meteor.methods({
 		if (result && result.length > 0) {
 			result.forEach(r => {
 				var processed = importHelper_transformRole(r);
-
-				// is this a lead role? if so, this will enable designer features
-				if (processed.isLeadNode || processed.email === 'vleipnik@miovision.com') { // person backdoor hack
-					Roles.addUsersToRoles(userId, 'designer'); //TODO:fix groups to work properly , rootOrgId);
-				}
 
 				// user info
 				var c = ContributorsCollection.findOne({name: processed.contributor});
