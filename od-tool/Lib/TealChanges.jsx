@@ -532,6 +532,22 @@ TealChanges = {
 		return "Unknown change type!";
 	},
 
+	changeObjectToDescriptorString(o) {
+		let d = '';
+		// org changes
+		if (o.oldValue && o.oldValue.name) {
+			d = o.oldValue.name;
+		} else if (o.changeParams.length == 1 && o.changeParams[0].name) {
+			d = o.changeParams[0].name;
+		} // role changes
+		else if (o.oldValue && o.oldValue.accountabilityLabel) {
+			d = o.oldValue.accountabilityLabel;
+		} else if (o.changeParams.length == 1 && o.changeParams[0].label && o.changeParams[0].organization ) {
+			d = o.changeParams[0].label + ", " + o.changeParams[0].organization;
+		}
+		return d;
+	},
+
 	//TODO: implement this
 	changeObjectToLink(changeObject) {
 		let c = changeObject;
