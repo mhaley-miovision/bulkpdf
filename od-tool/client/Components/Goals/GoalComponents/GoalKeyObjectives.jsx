@@ -4,8 +4,9 @@ GoalKeyObjectives = React.createClass({
 	},
 
 	renderKeyObjectivesItems() {
+		let _this = this;
 		return this.props.goal.keyObjectives.map(function(o,i) {
-			return <GoalKeyObjective key={o._id} keyObjective={o}/>;
+			return <GoalKeyObjective key={o._id} keyObjective={o} goal={_this.props.goal}/>;
 		});
 	},
 

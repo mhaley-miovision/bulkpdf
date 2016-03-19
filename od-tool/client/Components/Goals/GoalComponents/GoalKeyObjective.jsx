@@ -1,12 +1,15 @@
 GoalKeyObjective = React.createClass({
 	propTypes: {
-		keyObjective: React.PropTypes.object.isRequired
+		keyObjective: React.PropTypes.object.isRequired,
+		goal: React.PropTypes.object.isRequired,
 	},
 
 	toggleCompleted() {
 		// Set the checked property to the opposite of its current value
-		let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.UpdateGoalProgress, Teal.ObjectTypes.Goal,
-			"teal.goals.setKeyObjective", [ this.props.keyObjective._id, !this.props.keyObjective.completed ], this.props.keyObjective);
+		let keyObjective = _.clone(this.props.keyObjective);
+		keyObjective.completed = !keyObjective.completed;
+		let changeObject = TealChanges.createChangeObject(TealChanges.Types.KeyObjectiveCompleted, Teal.ObjectTypes.Goal,
+			"teal.goals.setKeyObjective", [ keyObjective ], this.props.goal);
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	},
 

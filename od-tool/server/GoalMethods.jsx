@@ -53,9 +53,6 @@ Meteor.methods({
 			throw new Meteor.Error("not-authorized");
 		}
 
-		// create the change object
-		//TealChanges.Teal.createChangeObject(Teal.ChangeTypes.)
-
 		// update the goal
 		let g = GoalsCollection.findOne({_id: goalId });
 		let prevState = g.state;
@@ -121,24 +118,24 @@ Meteor.methods({
 		return populatedGoals;
 	},
 
-	"teal.goals.setKeyObjective": function(keyObjectiveId, isCompleted) {
+	"teal.goals.setKeyObjective": function(keyObjective) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
 		GoalsCollection.update(
-			{ "keyObjectives._id" : keyObjectiveId} ,
-			{ $set: { "keyObjectives.$.completed" : isCompleted } });
+			{ "keyObjectives._id" : keyObjective._id} ,
+			{ $set: { "keyObjectives.$.completed" : keyObjective.completed } });
 	},
 
-	"teal.goals.setDoneCriterion": function(doneCriterionId, isCompleted) {
+	"teal.goals.setDoneCriterion": function(doneCriterion) {
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
 		GoalsCollection.update(
-			{ "doneCriteria._id" : doneCriterionId} ,
-			{ $set: { "doneCriteria.$.completed" : isCompleted } });
+			{ "doneCriteria._id" : doneCriterion._id} ,
+			{ $set: { "doneCriteria.$.completed" : doneCriterion.completed } });
 	},
 
 	"teal.goals.getRoleTopLevelGoals": function(roleId) {

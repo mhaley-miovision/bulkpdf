@@ -1,37 +1,4 @@
 Teal = {
-	// These are what types of changes we track and approve/reject/apply throughout the system
-	// They operate on the basic basic building blocks of the organizational model
-	ChangeTypes: {
-
-		// Role operations
-		NewRole:'new_role',
-		NewRoleAccountability:'new_accountability',
-		RemoveRoleAccountability:'remove_accountability',
-		RemoveRole:'remove_role',
-		AssignRoleContributor:'assign_role_contributor',
-		RemoveRoleContributor:'remove_role_contributor',
-		UpdateRole:'update_role',
-
-		// Role label operations
-		NewRoleLabel:'add_role_label',
-		RenameRoleLabel:'rename_role_label',
-		RemoveRoleLabel:'remove_role_label',
-
-		// Organization operations
-		NewOrganization:'new_organization',
-		RemoveOrganization:'remove_organization',
-		MoveOrganization:'move_organization', // the concept of promoting or demoting is implied here
-		UpdateOrganization:'update_organization',
-
-		// Goal operations
-		NewGoal:'new_goal',
-		AssignRoleGoal:'assign_role_goal',
-		RemoveGoal:'remove_goal',
-		RemoveRoleGoal:'remove_role_goal',
-		UpdateGoal:'update_goal',
-		UpdateGoalProgress:'update_goal_progress', // things like checking off done criteria and key objectives
-	},
-
 	ObjectTypes: {
 		Goal:'goal',
 		Role:'role',
@@ -44,9 +11,6 @@ Teal = {
 	ApplyTypes: {
 		Request:'request',
 		Immediate:'immediate',
-	},
-
-	getGoalAsString(goal) {
 	},
 
 	//TODO: this should be a method on a goal class
@@ -63,6 +27,10 @@ Teal = {
 
 	getCheckableItemState(state) {
 		return state ? "Done" : "Not Done";
+	},
+
+	getRoleContributorAsString(contributor) {
+		return contributor ? contributor : "unassigned";
 	},
 
 	currentUserEmail() {
@@ -92,7 +60,7 @@ Teal = {
 
 		// If the user is an owner, the goal can be added immediately, else it's a request
 		Teal._businessRules.push({
-				type: Teal.ChangeTypes.NewGoal,
+				type: TealChanges.Types.NewGoal,
 				func: function(user, parameters) {
 					if (!!parameters.parentGoal) {
 						// user is an owner
@@ -109,7 +77,7 @@ Teal = {
 
 		// If the user is an owner, the goal can be added immediately
 		Teal._businessRules.push({
-			type: Teal.ChangeTypes.AssignRoleContributor,
+			type: TealChanges.Types.AssignRoleContributor,
 			func: function(user, parameters) {
 				if (!!parameters.parentGoal) {
 					if (g.ownerRoles) {
@@ -159,7 +127,7 @@ Teal = {
 
 	// Is this a valid change type?
 	isAllowedChangeType(changeType) {
-		return _.indexOf(_.values(Teal.ChangeTypes), changeType) >= 0;
+		return _.indexOf(_.values(TealChanges.Types), changeType) >= 0;
 	},
 
 	// Return the list of lead nodes for this organization, for this user

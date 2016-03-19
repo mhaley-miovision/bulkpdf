@@ -4,8 +4,9 @@ GoalDoneCriteria = React.createClass({
 	},
 
 	renderDoneCriteriaItems() {
+		let _this = this;
 		return this.props.goal.doneCriteria.map(function(o,i) {
-			return <GoalDoneCriterion key={o._id} goalCriterion={o}/>
+			return <GoalDoneCriterion key={o._id} doneCriterion={o} goal={_this.props.goal}/>
 		});
 	},
 

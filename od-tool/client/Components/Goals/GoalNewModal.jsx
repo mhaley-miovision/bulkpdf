@@ -7,7 +7,7 @@ GoalNewModal = React.createClass({
 	handleSave() {
 		let g = this.refs.newGoal.getInputs();
 
-		let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.NewGoal, Teal.ObjectTypes.Goal,
+		let changeObject = TealChanges.createChangeObject(TealChanges.Types.NewGoal, Teal.ObjectTypes.Goal,
 			"teal.goals.updateOrInsertGoal", [ TealFactory.createGoal(
 				null, this.props.parentGoalId, g.name, g.keyObjectives, g.doneCriteria, g.ownerRoles,
 				g.contributorRoles, g.state, g.dueDate) ], null);

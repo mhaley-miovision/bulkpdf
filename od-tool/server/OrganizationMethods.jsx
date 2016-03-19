@@ -1,16 +1,19 @@
 Meteor.methods({
-	"teal.orgs.updateOrInsertOrg": function(orgId, name, parentOrgId, startDate, endDate) {
+	"teal.orgs.updateOrInsertOrg": function(org) {
 		//TODO:perm check!!
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
+		if (!org) {
+			throw new Meteor.Error("invalid-org");
+		}
 
 		// find the existing org
-		let org = {};
 		let newOrg = true;
-		if (!!orgId) {
-			org = OrganizationsCollection.findOne({_id:orgId});
-			if (!org) {
+		if (!!org._id) {
+			// TODO: perform some validation here
+			let oldOrg = OrganizationsCollection.findOne({_id:org._id});
+			if (!oldOrg) {
 				throw new Meteor.Error("not-found");
 			}
 			newOrg = false;
@@ -19,17 +22,11 @@ Meteor.methods({
 			org.createdBy = Meteor.userId();
 		}
 
-		org.name = name;
-		org.startDate = startDate;
-		org.endDate = endDate;
-		org.parentId = parentOrgId;
-		org.type = 'organization';
-		org.rootOrgId = Teal.rootOrgIg();
-
-		if (!!parentOrgId) {
-			let parentOrg = OrganizationsCollection.findOne({_id:parentOrgId});
-			org.parent = parentOrg.name;
-			if (!parentOrg) {
+		if (!!org.parentId) {
+			let parent = OrganizationsCollection.findOne({_id:org.parentId});
+			if (!!parent) {
+				org.parent = parent.name;
+			} else {
 				throw new Meteor.Error("parent-not-found");
 			}
 		} else {
@@ -37,9 +34,10 @@ Meteor.methods({
 		}
 
 		if (newOrg) {
+			delete org._id;
 			org._id = OrganizationsCollection.insert(org);
 		} else {
-			OrganizationsCollection.update(orgId, org);
+			OrganizationsCollection.update(org._id, org);
 		}
 
 		Meteor.call("teal.orgs.updateCachedOrgValues", org._id);

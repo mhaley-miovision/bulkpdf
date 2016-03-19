@@ -1,14 +1,41 @@
 TealChanges = {
+	// These are what types of changes we track and approve/reject/apply throughout the system
+	// They operate on the basic basic building blocks of the organizational model
+	Types: {
+
+		// Role operations
+		NewRole:'new_role',
+		NewRoleAccountability:'new_accountability',
+		RemoveRoleAccountability:'remove_accountability',
+		RemoveRole:'remove_role',
+		AssignRoleContributor:'assign_role_contributor',
+		RemoveRoleContributor:'remove_role_contributor',
+		UpdateRole:'update_role',
+
+		// Role label operations
+		NewRoleLabel:'add_role_label',
+		RenameRoleLabel:'rename_role_label',
+		RemoveRoleLabel:'remove_role_label',
+
+		// Organization operations
+		NewOrganization:'new_organization',
+		RemoveOrganization:'remove_organization',
+		MoveOrganization:'move_organization', // the concept of promoting or demoting is implied here
+		UpdateOrganization:'update_organization',
+
+		// Goal operations
+		NewGoal:'new_goal',
+		AssignRoleGoal:'assign_role_goal',
+		RemoveGoal:'remove_goal',
+		RemoveRoleGoal:'remove_role_goal',
+		UpdateGoal:'update_goal',
+		KeyObjectiveCompleted:'completed_key_objective',
+		DoneCriteriaCompleted:'done_criteria_objective',
+		GoalStateChanged:'goal_state_change', // things like checking off done criteria and key objectives
+	},
+
 	diffGoals(oldGoal, newGoal) {
 		let changes = [];
-
-		/*
-		// GOAL PARENT
-		if (oldGoal.parent !== newGoal.parent) {
-			let p1 = GoalsCollection.findOne({_id:oldGoal.parent});
-			let p2 = GoalsCollection.findOne({_id:newGoal.parent});
-			changes.push(`Changed parent from '${p1}' to '${p2}'`);
-		}*/
 
 		// GOAL NAME
 		if (oldGoal.name !== newGoal.name) {
@@ -74,7 +101,6 @@ TealChanges = {
 		}
 		return changes;
 	},
-
 	diffCheckableItemsList(oldList, newList) {
 		let removedItems = _.filter(oldList, o => {
 			let exists = _.where(newList, {_id: o._id}).length > 0;
@@ -106,7 +132,6 @@ TealChanges = {
 		});
 		return { added: addedItems, removed: removedItems, updated:updatedItems, checked:checkItems };
 	},
-
 	diffRoleList(oldList, newList) {
 		let removedItems = _.filter(oldList, o => {
 			let exists = _.where(newList, {_id: o._id}).length > 0;
@@ -118,43 +143,135 @@ TealChanges = {
 		});
 		return { added: addedItems, removed: removedItems };
 	},
+	diffRoles(oldRole, newRole) {
+		let changes = [];
 
+		// ROLE LABEL
+		if (oldRole.label !== newRole.label) {
+			changes.push(`Renamed from '${oldRole.label}' to '${newRole.label}'`);
+		}
+
+		// ROLE ACCOUNTABILITY LEVEL
+		if (oldRole.accountabilityLevel !== newRole.accountabilityLevel) {
+			changes.push(`Renamed from '${oldRole.accountabilityLevel}' to '${newRole.accountabilityLevel}'`);
+		}
+
+		// ROLE CONTRIBUTOR
+		if (oldRole.contributor !== newRole.contributor) {
+			changes.push(`Changed from '${Teal.getRoleContributorAsString(oldRole.contributor)}' to '${Teal.getRoleContributorAsString(newRole.contributor)}'`);
+		}
+
+		// ROLE CONTRIBUTOR
+		if (oldRole.organization !== newRole.organization) {
+			changes.push(`Moved from '${oldRole.organization}' to '${newRole.organization}'`);
+		}
+
+		// ROLE ACCOUNTABILITIES
+		let accDiffs = TealChanges.diffCheckableItemsList(oldRole.accountabilities, newRole.accountabilities);
+		accDiffs.added.forEach(a => {
+			changes.push(`Added accountability '${a.name}'`);
+		});
+		accDiffs.removed.forEach(a => {
+			changes.push(`Removed accountability '${a.name}'`);
+		});
+		accDiffs.updated.forEach(a => {
+			changes.push(`Changed accountability '${a.name}' to '${a.newName}'`);
+		});
+
+		// START/END DATES
+		if (oldRole.startDate !== newRole.startDate) {
+			changes.push(`Changed start date from '${oldRole.startDate}' to '${newRole.startDate}'`);
+		}
+		if (oldRole.endDate !== newRole.endDate) {
+			changes.push(`Changed end date from '${oldRole.endDate}' to '${newRole.endDate}'`);
+		}
+
+		// OTHER FLAGS
+		if (oldRole.isExternal !== newRole.isExternal) {
+			let y = function(x) { return x ? 'external' : 'internal'; };
+			changes.push(`Changed from '${y(oldRole.isExternal)}' to '${y(newRole.isExternal)}' role.`);
+		}
+		if (oldRole.isExternal !== newRole.isExternal) {
+			let y = function(x) { return x ? 'lead node' : 'regular node'; };
+			changes.push(`Changed role '${y(oldRole.isLeadNode)}' to '${y(newRole.isLeadNode)}'.`);
+		}
+		if (oldRole.isExternal !== newRole.isExternal) {
+			let y = function(x) { return x ? 'primary accountability' : 'auxiliary accountability'; };
+			changes.push(`Changed from '${y(oldRole.isPrimaryAccountability)}' to '${y(newRole.isPrimaryAccountability)}' role.`);
+		}
+
+		return changes;
+	},
 	diffOrganizations(oldOrg, newOrg) {
 		let changes = [];
 
+		// PARENTS
 		if (oldOrg.parent !== newOrg.parent) {
 			changes.push(`Changed parent from '${oldOrg.parent}' to '${newOrg.parent}'`);
 		}
 
+		// START/END DATES
 		if (oldOrg.startDate !== newOrg.startDate) {
-
+			changes.push(`Changed start date from '${oldOrg.startDate}' to '${newOrg.startDate}'`);
 		}
-
 		if (oldOrg.endDate !== newOrg.endDate) {
-
+			changes.push(`Changed end date from '${oldOrg.endDate}' to '${newOrg.endDate}'`);
 		}
+
+		return changes;
 	},
 
 	getChangeSummaryHtml(c) {
 		let t = c.type;
 		let r = "";
 		let changeObj = c.changeParams[0];
-		if (t === Teal.ChangeTypes.NewGoal) {
+		if (t === TealChanges.Types.NewGoal) {
 			return TealChanges.getGoalSummaryHtml(changeObj);
-		} else if (t === Teal.ChangeTypes.UpdateGoal) {
+		}  else if (t === TealChanges.Types.RemoveGoal) {
+			return TealChanges.getGoalSummaryHtml(c.oldValue);
+		} else if (t === TealChanges.Types.NewOrganization) {
+			return TealChanges.getOrgSummaryHtml(changeObj);
+		}	else if (t === TealChanges.Types.RemoveOrganization) {
+			return TealChanges.getOrgSummaryHtml(c.oldValue);
+		}  else if (t === TealChanges.Types.NewRole) {
+			return TealChanges.getRoleSummaryHtml(changeObj);
+		} else if (t === TealChanges.Types.RemoveRole) {
+			return TealChanges.getRoleSummaryHtml(c.oldValue);
+		} else if (t === TealChanges.Types.UpdateGoal) {
 			r = "<p><strong>Goal changes:</strong></p>";
 			r += "<ul>";
 			// this assumes change params have a 1 length item with the new goal in it.
 			let diffs = TealChanges.diffGoals(c.oldValue,changeObj);
 			diffs.forEach(d => { r += `<li style='list-style-type: circle; margin-left:20px'>${_.escape(d)}</li>`; });
 			r += "</ul>";
+		} else if (t === TealChanges.Types.UpdateRole) {
+			r = "<p><strong>Role changes:</strong></p>";
+			r += "<ul>";
+			// this assumes change params have a 1 length item with the new goal in it.
+			let diffs = TealChanges.diffRoles(c.oldValue,changeObj);
+			diffs.forEach(d => { r += `<li style='list-style-type: circle; margin-left:20px'>${_.escape(d)}</li>`; });
+			r += "</ul>";
+		} else if (t === TealChanges.Types.UpdateOrganization) {
+			r = "<p><strong>Organization changes:</strong></p>";
+			r += "<ul>";
+			// this assumes change params have a 1 length item with the new goal in it.
+			let diffs = TealChanges.diffOrganizations(c.oldValue,changeObj);
+			diffs.forEach(d => { r += `<li style='list-style-type: circle; margin-left:20px'>${_.escape(d)}</li>`; });
+			r += "</ul>";
+		} else if (t === TealChanges.Types.KeyObjectiveCompleted) {
+			return `Set key objective '${changeObj.name}' to '${Teal.getCheckableItemState(changeObj.completed)}'`;
+		} else if (t === TealChanges.Types.DoneCriteriaCompleted) {
+			return `Set done criteria '${changeObj.name}' to '${Teal.getCheckableItemState(changeObj.completed)}'`;
+		} else if (t === TealChanges.Types.GoalStateChanged) {
+			// here change params 1 is the state... don't love the inconsistency, but it's a tradeoff against sending the entire goal
+			return `Changed goal state to '${Teal.getGoalReadableState(c.changeParams[1])}'`;
 		}
 		return r;
 	},
 
 	//TODO: attach this to a goal class
 	getGoalSummaryHtml(goal) {
-		r = "<p><strong>Goal:</strong></p>";
+		let r = "<p><strong>Goal:</strong></p>";
 		r += `<ul>
 				<li syle='list-style-type: circle; margin-left:20px'>Name: ${goal.name}</li>
 				<li syle='list-style-type: circle; margin-left:20px'>State: ${Teal.getGoalReadableState(goal)}</li>
@@ -179,7 +296,7 @@ TealChanges = {
 			r += `<li syle='list-style-type: circle; margin-left:20px'><strong>Owners</strong></li>`;
 			r += "<ul>";
 			goal.ownerRoles.forEach(o => {
-				r += `<li syle='list-style-type: circle; margin-left:40px'>${o.label} (${o.contributor ? o.contributor : "unassigned"})</li>`;
+				r += `<li syle='list-style-type: circle; margin-left:40px'>${o.label} (${Teal.getRoleContributorAsString(o.contributor)})</li>`;
 			});
 			r += "</ul>";
 		}
@@ -187,14 +304,43 @@ TealChanges = {
 			r += `<li syle='list-style-type: circle; margin-left:20px'><strong>Contributors</strong></li>`;
 			r += "<ul>";
 			goal.contributorRoles.forEach(o => {
-				r += `<li syle='list-style-type: circle; margin-left:40px'>${o.label} (${o.contributor ? o.contributor : "unassigned"})</li>`;
+				r += `<li syle='list-style-type: circle; margin-left:40px'>${o.label} (${Teal.getRoleContributorAsString(o.contributor)})</li>`;
 			});
 			r += "</ul>";
 		}
 		r += "</ul>";
 		return r;
 	},
-
+	//TODO: attach this to an org class
+	getOrgSummaryHtml(org) {
+		let r = "<p><strong>Organization:</strong></p>";
+		r += `<ul>
+				<li syle='list-style-type: circle; margin-left:20px'>Name: ${org.name}</li>
+				<li syle='list-style-type: circle; margin-left:20px'>Start date: ${org.startDate}</li>
+				<li syle='list-style-type: circle; margin-left:20px'>End date: ${org.endDate}</li>`;
+		r += "</ul>";
+		return r;
+	},
+	//TODO: attach this to a role class
+	getRoleSummaryHtml(role) {
+		let r = "<p><strong>Role:</strong></p>";
+		r += `<ul>
+				<li syle='list-style-type: circle; margin-left:20px'>Label: ${role.label}</li>
+				<li syle='list-style-type: circle; margin-left:20px'>Accountability Level: ${role.accountabilityLevel}</li>
+				<li syle='list-style-type: circle; margin-left:20px'>Contributor: ${Teal.getRoleContributorAsString(role.contributor)}</li>
+				<li syle='list-style-type: circle; margin-left:20px'>Start date: ${role.startDate}</li>
+				<li syle='list-style-type: circle; margin-left:20px'>Start date: ${role.endDate}</li>`;
+		if (role.accountabilities.length > 0) {
+			r += `<li syle='list-style-type: circle; margin-left:20px'><strong>Accountabilities</strong></li>`;
+			r += "<ul>";
+			role.accountabilities.forEach(o => {
+				r += `<li syle='list-style-type: circle; margin-left:40px'>${o.name}</li>`;
+			});
+			r += "</ul>";
+		}
+		r += "</ul>";
+		return r;
+	},
 	// factory for change objects - allows the caller to inspect the type of change expected
 	// TODO: consider transitioning all methods to this type of factory/method pattern
 	createChangeObject(type, targetObjectType, changeMethod, changeParams, oldValue) {
@@ -220,155 +366,167 @@ TealChanges = {
 
 	changeObjectToString(changeObject) {
 		let c = changeObject;
-		if (c.type === Teal.ChangeTypes.AssignRoleContributor) {
+		if (c.type === TealChanges.Types.AssignRoleContributor) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "assigned a new role contributor";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a new role contributor to be assigned";
 			}
-		} else if (c.type === Teal.ChangeTypes.AssignRoleGoal) {
+		} else if (c.type === TealChanges.Types.AssignRoleGoal) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "assigned a new role goal";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a new role goal to be assigned";
 			}
-		} else if (c.type === Teal.ChangeTypes.MoveOrganization) {
+		} else if (c.type === TealChanges.Types.MoveOrganization) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "moved an organization";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested an organization to be moved";
 			}
-		} else if (c.type === Teal.ChangeTypes.NewGoal) {
+		} else if (c.type === TealChanges.Types.NewGoal) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "created a new goal";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a new goal to be created";
 			}
-		} else if (c.type === Teal.ChangeTypes.NewOrganization) {
+		} else if (c.type === TealChanges.Types.NewOrganization) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "created a new organization";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a new organization to be created";
 			}
-		} else if (c.type === Teal.ChangeTypes.NewRole) {
+		} else if (c.type === TealChanges.Types.NewRole) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "created a new role";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a new role to be created";
 			}
-		} else if (c.type === Teal.ChangeTypes.NewRoleAccountability) {
+		} else if (c.type === TealChanges.Types.NewRoleAccountability) {
 			if (c.type === Teal.ApplyTypes.Immediate) {
 				return "assigned a new role accountability";
 			} else if (c.type === Teal.ApplyTypes.Request) {
 				return "requested a new role accountability to be assigned";
 			}
-		} else if (c.type === Teal.ChangeTypes.NewRoleLabel) {
+		} else if (c.type === TealChanges.Types.NewRoleLabel) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "created a new role label";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a new role label to be created";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveOrganization) {
+		} else if (c.type === TealChanges.Types.RemoveOrganization) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "removed an organization";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a new organization to be created";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveRole) {
+		} else if (c.type === TealChanges.Types.RemoveRole) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "removed a role";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a new role to be created";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleAccountability) {
+		} else if (c.type === TealChanges.Types.RemoveRoleAccountability) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "removed a role accountability";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a role accountability to be removed";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleContributor) {
+		} else if (c.type === TealChanges.Types.RemoveRoleContributor) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "unassigned a role contributor";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a role contributor to be unassigned";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveGoal) {
+		} else if (c.type === TealChanges.Types.RemoveGoal) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "removed a goal";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a goal to be removed";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleGoal) {
+		} else if (c.type === TealChanges.Types.RemoveRoleGoal) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "assigned a role goal";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a new role goal to be assigned";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleLabel) {
+		} else if (c.type === TealChanges.Types.RemoveRoleLabel) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "removed a role label";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a role label to be removed";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveOrganization) {
+		} else if (c.type === TealChanges.Types.RemoveOrganization) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "removed an organization";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested an organization to be removed";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveRole) {
+		} else if (c.type === TealChanges.Types.RemoveRole) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "removed a role";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a role to be removed";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleAccountability) {
+		} else if (c.type === TealChanges.Types.RemoveRoleAccountability) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "removed a role accountability";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a role accountability to be removed";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleContributor) {
+		} else if (c.type === TealChanges.Types.RemoveRoleContributor) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "unassigned a role contributor";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a role contributor to be unassigned";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleGoal) {
+		} else if (c.type === TealChanges.Types.RemoveRoleGoal) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "unassigned a role goal";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a role goal to be unassigned";
 			}
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleLabel) {
+		} else if (c.type === TealChanges.Types.RemoveRoleLabel) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "removed a role label";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a role label to be removed";
 			}
-		} else if (c.type === Teal.ChangeTypes.UpdateGoal) {
+		} else if (c.type === TealChanges.Types.UpdateGoal) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "updated a goal";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a goal to be updated";
 			}
-		} else if (c.type === Teal.ChangeTypes.UpdateGoalProgress) {
-			if (c.apply === Teal.ApplyTypes.Immediate) {
-				return "updated a goal's progress";
-			} else if (c.apply === Teal.ApplyTypes.Request) {
-				return "requested a goal's progress to be updated";
-			}
-		} else if (c.type === Teal.ChangeTypes.UpdateOrganization) {
+		} else if (c.type === TealChanges.Types.UpdateOrganization) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "updated an organization";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested an organization to be updated";
 			}
-		} else if (c.type === Teal.ChangeTypes.UpdateRole) {
+		} else if (c.type === TealChanges.Types.UpdateRole) {
 			if (c.apply === Teal.ApplyTypes.Immediate) {
 				return "updated a role";
 			} else if (c.apply === Teal.ApplyTypes.Request) {
 				return "requested a role to be updated";
+			}
+		} else if (c.type === TealChanges.Types.KeyObjectiveCompleted) {
+			if (c.apply === Teal.ApplyTypes.Immediate) {
+				return "updated a goal's key objective";
+			} else if (c.apply === Teal.ApplyTypes.Request) {
+				return "requested a goal's key objective to be updated";
+			}
+		} else if (c.type === TealChanges.Types.DoneCriteriaCompleted) {
+			if (c.apply === Teal.ApplyTypes.Immediate) {
+				return "updated a goal's done criteria";
+			} else if (c.apply === Teal.ApplyTypes.Request) {
+				return "requested a goal's done criteria to be updated";
+			}
+		} else if (c.type === TealChanges.Types.GoalStateChanged) {
+			if (c.apply === Teal.ApplyTypes.Immediate) {
+				return "updated a goal's state";
+			} else if (c.apply === Teal.ApplyTypes.Request) {
+				return "requested a goal's state to be updated";
 			}
 		}
 		return "Unknown change type!";
@@ -377,55 +535,55 @@ TealChanges = {
 	//TODO: implement this
 	changeObjectToLink(changeObject) {
 		let c = changeObject;
-		if (c.type === Teal.ChangeTypes.AssignRoleContributor) {
+		if (c.type === TealChanges.Types.AssignRoleContributor) {
 
-		} else if (c.type === Teal.ChangeTypes.AssignRoleGoal) {
+		} else if (c.type === TealChanges.Types.AssignRoleGoal) {
 
-		} else if (c.type === Teal.ChangeTypes.MoveOrganization) {
+		} else if (c.type === TealChanges.Types.MoveOrganization) {
 
-		} else if (c.type === Teal.ChangeTypes.NewGoal) {
+		} else if (c.type === TealChanges.Types.NewGoal) {
 
-		} else if (c.type === Teal.ChangeTypes.NewOrganization) {
+		} else if (c.type === TealChanges.Types.NewOrganization) {
 
-		} else if (c.type === Teal.ChangeTypes.NewRole) {
+		} else if (c.type === TealChanges.Types.NewRole) {
 
-		} else if (c.type === Teal.ChangeTypes.NewRoleAccountability) {
+		} else if (c.type === TealChanges.Types.NewRoleAccountability) {
 
-		} else if (c.type === Teal.ChangeTypes.NewRoleLabel) {
+		} else if (c.type === TealChanges.Types.NewRoleLabel) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveOrganization) {
+		} else if (c.type === TealChanges.Types.RemoveOrganization) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveRole) {
+		} else if (c.type === TealChanges.Types.RemoveRole) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleAccountability) {
+		} else if (c.type === TealChanges.Types.RemoveRoleAccountability) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleContributor) {
+		} else if (c.type === TealChanges.Types.RemoveRoleContributor) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveGoal) {
+		} else if (c.type === TealChanges.Types.RemoveGoal) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleGoal) {
+		} else if (c.type === TealChanges.Types.RemoveRoleGoal) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleLabel) {
+		} else if (c.type === TealChanges.Types.RemoveRoleLabel) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveOrganization) {
+		} else if (c.type === TealChanges.Types.RemoveOrganization) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveRole) {
+		} else if (c.type === TealChanges.Types.RemoveRole) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleAccountability) {
+		} else if (c.type === TealChanges.Types.RemoveRoleAccountability) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleContributor) {
+		} else if (c.type === TealChanges.Types.RemoveRoleContributor) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleGoal) {
+		} else if (c.type === TealChanges.Types.RemoveRoleGoal) {
 
-		} else if (c.type === Teal.ChangeTypes.RemoveRoleLabel) {
+		} else if (c.type === TealChanges.Types.RemoveRoleLabel) {
 
-		} else if (c.type === Teal.ChangeTypes.UpdateGoal) {
+		} else if (c.type === TealChanges.Types.UpdateGoal) {
 
-		} else if (c.type === Teal.ChangeTypes.UpdateGoalProgress) {
+		} else if (c.type === TealChanges.Types.UpdateGoalProgress) {
 
-		} else if (c.type === Teal.ChangeTypes.UpdateOrganization) {
+		} else if (c.type === TealChanges.Types.UpdateOrganization) {
 
-		} else if (c.type === Teal.ChangeTypes.UpdateRole) {
+		} else if (c.type === TealChanges.Types.UpdateRole) {
 
 		}
 		return "Unknown change type!";

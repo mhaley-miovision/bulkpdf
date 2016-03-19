@@ -177,7 +177,7 @@ Goal = React.createClass({
 		this.setState({isEditing:false});
 		if (this.refs.obj) {
 			let inputs = this.refs.obj.getInputs();
-			let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.UpdateGoal, Teal.ObjectTypes.Goal,
+			let changeObject = TealChanges.createChangeObject(TealChanges.Types.UpdateGoal, Teal.ObjectTypes.Goal,
 				"teal.goals.updateOrInsertGoal", [ TealFactory.createGoal(
 					inputs._id, null, inputs.name, inputs.keyObjectives,
 					inputs.doneCriteria, inputs.ownerRoles,
@@ -193,7 +193,7 @@ Goal = React.createClass({
 	},
 
 	handleDeleteClicked() {
-		let changeObject = TealChanges.createChangeObject(Teal.ChangeTypes.RemoveGoal, Teal.ObjectTypes.Goal,
+		let changeObject = TealChanges.createChangeObject(TealChanges.Types.RemoveGoal, Teal.ObjectTypes.Goal,
 			"teal.goals.deleteGoal", [ this.props.goal._id ], this.props.goal);
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	},

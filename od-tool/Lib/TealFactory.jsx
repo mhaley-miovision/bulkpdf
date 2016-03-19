@@ -3,6 +3,7 @@ TealFactory = {
 		// TODO: parameter validation, for now we only get the abstraction benefits
 		return {
 			type:Teal.ObjectTypes.Goal,
+			rootOrgId:Teal.rootOrgIg(),
 			_id:_id,
 			parent:parent,
 			name:name,
@@ -16,11 +17,13 @@ TealFactory = {
 		}
 	},
 
-	createOrganization(_id, parent, parentId, startDate, endDate) {
+	createOrganization(_id, name, parent, parentId, startDate, endDate) {
 		// TODO: parameter validation, for now we only get the abstraction benefits
 		return {
 			type:Teal.ObjectTypes.Organization,
+			rootOrgId:Teal.rootOrgIg(),
 			_id:_id,
+			name:name,
 			parent:parent,
 			parentId:parentId,
 			startDate:startDate,
@@ -29,5 +32,25 @@ TealFactory = {
 		}
 	},
 
-	//createRole(_id, label,)
+	createRole(_id, label, accountabilityLevel, organization, organizationId, contributor, contributorId, startDate,
+			   endDate, isExternal, isLeadNode, isPrimaryAccountabilty, accountabilities) {
+		// TODO: parameter validation, for now we only get the abstraction benefits
+		return {
+			type: Teal.ObjectTypes.Role,
+			rootOrgId:Teal.rootOrgIg(),
+			_id: _id,
+			label: label,
+			accountabilityLevel: accountabilityLevel,
+			organization: organization,
+			organizationId: organizationId,
+			contributor: contributor,
+			contributorId: contributorId,
+			startDate: startDate,
+			endDate: endDate,
+			isExternal: isExternal,
+			isLeadNode: isLeadNode,
+			isPrimaryAccountabilty: isPrimaryAccountabilty,
+			accountabilities: accountabilities
+		};
+	}
 };

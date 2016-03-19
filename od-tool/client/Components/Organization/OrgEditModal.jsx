@@ -8,16 +8,17 @@ OrgEditModal = React.createClass({
 
 	handleSave() {
 		let inputs = this.refs.orgEdit.getInputs();
-
 		let changeObject = TealChanges.createChangeObject(
-			inputs._id ? Teal.ChangeTypes.UpdateOrganization : Teal.ChangeTypes.NewOrganization,
+			inputs._id ? TealChanges.Types.UpdateOrganization : TealChanges.Types.NewOrganization,
 			Teal.ObjectTypes.Organization,
 			"teal.orgs.updateOrInsertOrg", [
-				inputs._id,
-				inputs.name,
-				inputs.parentOrgId,
-				inputs.startDate,
-				inputs.endDate ]
+				TealFactory.createOrganization(
+					inputs._id,
+					inputs.name,
+					inputs.parentOrg,
+					inputs.parentOrgId,
+					inputs.startDate,
+					inputs.endDate) ]
 			, this.props.org);
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 

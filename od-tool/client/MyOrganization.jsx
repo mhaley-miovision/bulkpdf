@@ -30,7 +30,6 @@ MyOrganization = React.createClass({
 	},
 
 	renderAccountabilities() {
-		// default role is CEO
 		return <GoalTreeByRole />
 	},
 

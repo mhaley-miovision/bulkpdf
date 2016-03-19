@@ -1,47 +1,33 @@
 Meteor.methods({
 
-	"teal.roles.updateOrInsertRole": function(
-		//TODO: consider doing single object versus individual params? read up more on this
-		roleId, organizationId, label, accountabilityLevel, contributorId, startDate, endDate,
-		isLeadNode, isExternal, isPrimaryAccountability, accountabilities)
+	"teal.roles.updateOrInsertRole": function(role)
 	{
 		// Make sure the user is logged in before inserting a task
 		//TODO: perm check!!!
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
-
-		// Is there an existing role?
-		let newRole = false;
-		let role = RolesCollection.findOne({_id:roleId});
 		if (!role) {
-			role = {};
-			newRole = true;
+			throw new Meteor.Error("invalid-role");
 		}
 
-		// set values
-		role.label = label;
-		role.accountabilityLevel = accountabilityLevel;
-		role.contributorId = null; // determine actual id below
-		role.startDate = startDate;
-		role.endDate = endDate;
-		role.isLeadNode = isLeadNode;
-		role.isExternal = isExternal;
-		role.isPrimaryAccountability = isPrimaryAccountability;
-		role.accountabilities = accountabilities;
-		role.createdAt = Teal.newDateTime();
-		role.createdBy = Meteor.userId();
-		role.organizationId = organizationId;
-		role.topGoals = [];
-		role.type = 'role';
-		role.rootOrgId = Teal.rootOrgIg();
+		// Is there an existing role?
+		let newRole = true;
+		if (!!role._id) {
+			// TODO: perform some validation here
+			let oldRole = RolesCollection.findOne({_id:role._id});
+			if (!oldRole) {
+				throw new Meteor.Error("not-found");
+			}
+			newRole = false;
+		}
 
 		// cached role values
 		//TODO: extract this into a method
 
 		// organization cached info
-		if (!!organizationId) {
-			var org = OrganizationsCollection.findOne({_id:organizationId});
+		if (!!role.organizationId) {
+			var org = OrganizationsCollection.findOne({_id:role.organizationId});
 			if (!org) {
 				throw new Meteor.Error("organization-not-found");
 			}
@@ -58,13 +44,12 @@ Meteor.methods({
 			throw new Meteor.Error("missing-organization");
 		}
 		// contributor cached info
-		if (!!contributorId) {
-			let contributor = ContributorsCollection.findOne({$or: [ {_id: contributorId}, {email: contributorId} ]});
+		if (!!role.contributorId) {
+			let contributor = ContributorsCollection.findOne({$or: [ {_id: role.contributorId}, {email: role.contributorId} ]});
 			if (!contributor) {
 				throw new Meteor.Error("contributor-not-found");
 			}
-			// copy contributor info into the role
-			role.contributorId = contributor._id;
+			// copy contributor info into_id; // ensure this is not set to null the role
 			role.contributor = contributor.name;
 			role.email = contributor.email;
 			role.photo = contributor.photo;
@@ -72,6 +57,7 @@ Meteor.methods({
 
 		// update or create!
 		if (newRole) {
+			delete role._id; // ensure this is not set to null
 			let r_id = RolesCollection.insert(role);
 			role._id = r_id;
 		} else {
