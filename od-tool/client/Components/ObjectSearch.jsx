@@ -34,8 +34,8 @@ ObjectSearch = React.createClass({
 
 		if (handle1.ready() && handle2.ready() && handle3.ready() && handle4.ready() && handle5.ready()) {
 			if (this.state.query && this.state.query !== '') {
-
-				var q = {name: {$regex: new RegExp('.*' + this.state.query + '.*', "i")}};
+				var caseInsensitiveMatch = {$regex: new RegExp('.*' + this.state.query + '.*', "i")};
+				var q = {name: caseInsensitiveMatch};
 
 				// TODO: nosql injection risk here!?
 
@@ -48,8 +48,8 @@ ObjectSearch = React.createClass({
 					q,
 					{ fields: {name: 1, _id: 1, id: 1, email: 1}, sort: {name: 1} }).fetch() : {};
 				var roleMatches = this.props.findRoles ? RolesCollection.find(
-					{ email: {$regex: new RegExp('.*' + this.state.query + '.*', "i")} },
-					{ fields: {accountabilityLabel: 1, email:1, contributor:1}, sort: {accountabilityLabel: 1} }
+					{ $or: [{ contributor: caseInsensitiveMatch }, { accountabilityLabel: caseInsensitiveMatch }] },
+					{ fields: { _id: 1, accountabilityLabel: 1, email:1, contributor:1 }, sort: { accountabilityLabel: 1 } }
 				).fetch() : {};
 				var roleLabelMatches = this.props.findRoleLabels ? RoleLabelsCollection.find(
 					q,
@@ -103,7 +103,10 @@ ObjectSearch = React.createClass({
 		e.stopPropagation();
 		this.setState({inputValue:e.currentTarget.text});
 		if (this.props.onClick) {
-			this.props.onClick(e.currentTarget.text, 'organization', e.currentTarget.id);
+			// undo what the list creation did. it's nasty but at least contained within this component
+			let o = e.currentTarget.text;
+			o = o.substr(o.indexOf(" ") + 1);
+			this.props.onClick(o, 'organization', e.currentTarget.id);
 		}
 	},
 
@@ -112,7 +115,10 @@ ObjectSearch = React.createClass({
 		e.stopPropagation();
 		this.setState({inputValue:e.currentTarget.text});
 		if (this.props.onClick) {
-			this.props.onClick(e.currentTarget.text, 'contributor', e.currentTarget.id);
+			// undo what the list creation did. it's nasty but at least contained within this component
+			let o = e.currentTarget.text;
+			o = o.substr(o.indexOf(" ") + 1);
+			this.props.onClick(o, 'contributor', e.currentTarget.id);
 		}
 	},
 
@@ -156,7 +162,7 @@ ObjectSearch = React.createClass({
 					var o = this.data.contributors[c];
 					collection.push(
 						<a href="#!" className="collection-item" key={i} id={o.email} object={o} style={{cursor:"pointer"}}
-						   onClick={ this.handleContributorClick }>{o.name}</a>);
+						   onClick={ this.handleContributorClick }><span className="ProjectTag">contributor</span> {o.name}</a>);
 					i++;
 				}
 			}
@@ -165,7 +171,7 @@ ObjectSearch = React.createClass({
 					var o = this.data.organizations[c];
 					collection.push(
 						<a href="#!" className="collection-item" key={i} id={o._id} object={o} style={{cursor:"pointer"}}
-						   onClick={  this.handleOrganizationClick }>{o.name}</a>);
+						   onClick={  this.handleOrganizationClick }><span className="ProjectTag">organization</span> {o.name}</a>);
 					i++;
 				}
 			}
@@ -174,7 +180,7 @@ ObjectSearch = React.createClass({
 					let l = (r.contributor ? r.contributor : "&lt;Unfilled%gt;") + " - " + r.accountabilityLabel;
 					collection.push(
 						<a className="collection-item" key={r._id} id={r._id} object={r} style={{cursor:"pointer"}}
-						   onClick={ this.handleRoleClick }>{l}</a>
+						   onClick={ this.handleRoleClick }><span className="ProjectTag">role</span> {l}</a>
 					);
 				})
 			}

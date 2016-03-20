@@ -14,7 +14,7 @@ MyOrganization = React.createClass({
 			objectId: "",
 			zoomTo: "",
 			objectType: "role",
-			mode: 'acc',
+			mode: 'comp',
 		}
 	},
 

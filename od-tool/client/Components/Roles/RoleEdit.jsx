@@ -7,8 +7,6 @@ RoleEdit = React.createClass({
 	},
 	
 	loadStateFromProps(props) {
-		console.log("loadStateFromProps: ");
-		console.log(props);
 		return {
 			_id: props.role ? props.role._id : null,
 			accountabilities: props.role ? _.clone(props.role.accountabilities) : [],

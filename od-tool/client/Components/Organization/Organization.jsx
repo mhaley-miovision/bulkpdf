@@ -310,28 +310,31 @@ var Chart = (function () {
 			}
 		},
 
-		zoomToOrg: function (zoomToObject, shouldAnimate = true) {
-			if (zoomToObject) {
-				if (this.objectIdToNode[zoomToObject]) {
-					this.highlightRoles([]);
-					this.zoom(this.objectIdToNode[zoomToObject], true);
-				} else {
-					// TODO: hack - try finding as a contributor if an email was specified
-					var c = ContributorsCollection.findOne({email: zoomToObject});
-					if (c) {
-						// see if multiple matches occured
-						var roles = this.getRolesForContributorEmail(zoomToObject);
-						var commonParent = this.getLowestCommonParent(roles, root);
-						this.highlightRoles(roles);
+		zoomToOrg: function (object, objectType, objectId, shouldAnimate = true) {
+			if (objectType === Teal.ObjectTypes.Contributor) {
+				// possibility of having multiple matches
+				var c = ContributorsCollection.findOne({email: objectId});
+				if (c) {
+					// see if multiple matches occured
+					var roles = this.getRolesForContributorEmail(objectId);
+					var commonParent = this.getLowestCommonParent(roles, root);
+					this.highlightRoles(roles);
 
-						// zoom to the closest containing parent
-						this.zoom(commonParent, shouldAnimate);
-					} else {
-						console.log("this.objectIdToNode[zoomToObject] is undefined");
-					}
+					// zoom to the closest containing parent
+					this.zoom(commonParent, shouldAnimate);
 				}
 			} else {
-				console.log("zoomToObject is undefined");
+				// only one match, so search by id
+				if (this.objectIdToNode[objectId]) {
+					if (this.objectType === Teal.ObjectTypes.Role) {
+						this.highlightRoles([this.objectIdToNode[objectId]]);
+					} else {
+						this.highlightRoles([]);
+					}
+					this.zoom(this.objectIdToNode[objectId], true);
+				} else {
+					console.log(`this.objectIdToNode['${objectId}'] is undefined`);
+				}
 			}
 		},
 
@@ -420,7 +423,7 @@ var Chart = (function () {
 			} else if (b.type === 'organization' && a.type === 'role' && b.type === 'contributor') {
 				return -1
 			}
-			return 0
+			return 0;
 		},
 
 		getRolesForContributorEmail(contributorEmail) {
@@ -495,16 +498,16 @@ var Chart = (function () {
 			var circles = vis.selectAll("organization").data(nodes).enter().append("svg:circle");
 			initCircles(circles);
 
-			// create map of orgname and contributorname -> node
+			// create an id lookup table into our tree
 			this.objectIdToNode = [];
-			nodes.filter(n => n.type == "organization").forEach(n => this.objectIdToNode[n.name] = n);
+			nodes.filter(n => n.type == "organization").forEach(n => this.objectIdToNode[n._id] = n);
 
 			// this will fail for multiple matches!
 			// TODO: make this work for multiple matches
-			nodes.filter(n => n.type == "role").forEach(n => this.objectIdToNode[n.contributor] = n);
+			nodes.filter(n => n.type == "role").forEach(n => this.objectIdToNode[n._id] = n);
 
 			// contributors
-			nodes.filter(n => n.type == "contributor").forEach(n => this.objectIdToNode[n.name] = n);
+			nodes.filter(n => n.type == "contributor").forEach(n => this.objectIdToNode[n._id] = n);
 
 			// don't add these object to organizations, since we use the label object instead for them, as a circle
 			var foreignObjects = vis.selectAll(".foreign-object")
@@ -520,7 +523,7 @@ var Chart = (function () {
 				var zoomTo = node === d ? root : d;
 
 				function loadRoleDetails() {
-					//TODO: ewww! - clean up this string html nastiness
+					//TODO: look into doing this a better way
 
 					let role = zoomTo;
 					let photo = d.photo ? d.photo : "/img/user_avatar_blank.jpg";
@@ -538,49 +541,6 @@ var Chart = (function () {
 						s += "<div>No accountabilities defined for this role yet.</div>";
 					}
 					s += '</div>';
-
-					/*
-					// get role accountability list
-					var roleId = zoomTo._id;
-					var accs = RoleAccountabilitiesCollection.find({id: zoomTo.id}).fetch();
-					var photo = d.photo ? d.photo : "/img/user_avatar_blank.jpg";
-					var s = "<div id='view_" + roleId + "' style='text-align:center; padding-bottom:10px'><img class='zoomedInRolePhoto' src='" + photo + "'/></div>";
-					//s += '<div id="view_' + roleId + '" class="numGoalsLabel">View Profile&nbsp;<i class="material-icons" style="font-size:13px">search</i></div>';
-
-					//s += '<div id="edit_' + roleId + '" class="numGoalsLabel">Edit Role&nbsp;<i class="material-icons" style="font-size:13px">edit</i></div>';
-
-					// bucketize the accountabilities
-					var accountabilityBuckets = {};
-					var j = 0;
-					s += "<div style='margin-left:20px; margin-top:20px; overflow: auto; height: 200px'>";
-					if (accs.length > 0) {
-						while (accs[0][j]) {
-							var a = accs[0][j];
-							if (a) {
-								if (typeof(accountabilityBuckets[a.accountabilityType]) === 'undefined') {
-									accountabilityBuckets[a.accountabilityType] = [];
-								}
-								accountabilityBuckets[a.accountabilityType].push(a);
-							}
-							j++;
-						}
-						// output them to the html
-						for (var k in Object.keys(accountabilityBuckets)) {
-							var key = Object.keys(accountabilityBuckets)[k];
-							s += '<div><b>' + key + '</b></div>';
-							s += '<ul>';
-							for (var i in accountabilityBuckets[key]) {
-								var a = accountabilityBuckets[key][i];
-								s += '<li>' + a.label + '</li>';
-							}
-							s += '</ul>';
-						}
-					} else {
-						if (zoomTo.type === 'role') {
-							s += "<div>No accountabilities defined for this role yet.</div>";
-						}
-					}
-					s += '</div>';*/
 
 					// has to do with update thread (but WTFFFF)
 					setTimeout(function() {
@@ -681,9 +641,11 @@ Organization = React.createClass({
 	handleRoleModeChanged(event) {
 		this.setState( {roleMode: !this.refs.roleMode.checked });
 	},
-	handleSearch(o) {
-		console.log("Organization.handleSearch:" + o);
-		Chart.zoomToOrg(o);
+	handleSearch(object, objectType, objectId) {
+		console.log("Organization.handleSearch - object: " + object);
+		console.log("Organization.handleSearch - objectType: " + objectType);
+		console.log("Organization.handleSearch - objectId: " + objectId);
+		Chart.zoomToOrg(object, objectType, objectId);
 	},
 	handleRoleEditOn(roleId) {
 		this.refs.editRoleModal.show(roleId);
@@ -888,7 +850,7 @@ Organization = React.createClass({
 			return (
 				<div>
 					<ObjectSearch onClick={this.handleSearch}
-								  findContributors={true} findOrganizations={true}
+								  findContributors={true} findOrganizations={true} findRoles={true}
 								  notFoundLabel="Please type the name of an existing person or organization."/>
 				</div>
 			);
@@ -904,7 +866,11 @@ Organization = React.createClass({
 			<div className="">
 				<div className="center">
 					{this.renderRoleModeSwitch()}
+				</div>
+				<div>
 					{this.renderSearch()}
+				</div>
+				<div className="center">
 					{this.renderLoading()}
 					<div className="chartContainer" style={divStyle}>
 					</div>

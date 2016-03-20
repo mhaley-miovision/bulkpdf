@@ -10,9 +10,6 @@ OrgEdit = React.createClass({
 	},
 
 	loadStateFromProps(props) {
-		console.log("loadStateFromProps: ");
-		console.log(props);
-
 		// parent id and name
 		let parentId = null;
 		let parent = null;
