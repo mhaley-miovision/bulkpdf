@@ -15,7 +15,6 @@ ObjectSearch = React.createClass({
 
 	getDefaultProps() {
 		return {
-			width: screen.width < 700 ? 330 : "100%",
 			findContributors: false,
 			findOrganizations: false,
 			findRoles: false,
@@ -218,7 +217,7 @@ ObjectSearch = React.createClass({
 
 	render: function() {
 		return (
-			<div style={{width:this.props.width}}>
+			<div>
 				<input className="text-main5" type="text" id="orgSelection" ref="textInput"
 					   onChange={this.onInputChange}
 					   placeholder={this.state.query ? '' : this.props.label} value={this.state.query}

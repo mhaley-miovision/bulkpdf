@@ -42,7 +42,7 @@ var Chart = (function () {
 		classes.push(d.type === "contributor" ? "role" : d.type);
 		if (d.type === 'role' || d.type === 'contributor') {
 			classes.push(d.contributor || d.type == "contributor" ? "filled" : "unfilled");
-			if (d.numGoals > 0) {
+			if (d.topGoals && d.topGoals.length > 0) {
 				classes.push("hasGoals");
 			}
 		}
@@ -851,6 +851,7 @@ Organization = React.createClass({
 				<div>
 					<ObjectSearch onClick={this.handleSearch}
 								  findContributors={true} findOrganizations={true} findRoles={true}
+								  label="Type the name of an existing contributor, role or organization..."
 								  notFoundLabel="Please type the name of an existing person or organization."/>
 				</div>
 			);
