@@ -317,6 +317,7 @@ Meteor.methods({
 		if (result && result.length > 0) {
 			result.forEach(r => {
 				var processed = importHelper_transformRole(r);
+				processed.rootOrgId = rootOrgId;
 
 				// user info
 				var c = ContributorsCollection.findOne({name: processed.contributor});
@@ -330,9 +331,9 @@ Meteor.methods({
 				// organization info
 				var org = OrganizationsCollection.findOne({name: r.organization});
 				if (org) {
-					path = _.clone(org.path);
+					let path = _.clone(org.path);
 					path.push(org._id); // full path includes this org as a parent
-					processed.path = path
+					processed.path = path;
 					processed.organizationId = org._id;
 				} else {
 					console.error("Couldn't find organization for role: " + processed.accountabilityLabel);
