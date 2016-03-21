@@ -529,7 +529,7 @@ TealChanges = {
 				return "requested a goal's state to be updated";
 			}
 		}
-		return "Unknown change type!";
+		return '';
 	},
 
 	changeObjectToDescriptorString(o) {

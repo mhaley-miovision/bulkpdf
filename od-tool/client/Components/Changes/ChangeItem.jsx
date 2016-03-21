@@ -31,8 +31,9 @@ ChangeItem = React.createClass({
 
 	render() {
 		var c = this.props.change;
-		let photoUrl = c.photo ? c.photo : "/img/user_avatar_blank.jpg";
-		let changedString = c.createdByName + " " + TealChanges.changeObjectToString(c);
+		let photoUrl = c.photo ? c.photo : '/img/user_avatar_blank.jpg';
+		let changeDesc = TealChanges.changeObjectToString(c);
+		let changedString = c.createdByName + ' ' + (changeDesc ? changeDesc : 'made a change');
 
 		return (
 			<div className="collection-item">
