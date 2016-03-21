@@ -342,8 +342,79 @@ var Chart = (function () {
 			zoomedToObject = zoomTo;
 			zoomed = false;
 			loaded = false;
+
+			console.log(zoomedToRole);
+
 			if (zoomedToRole) {
 				Chart.leaveRole(zoomedToRole);
+			}
+
+			function loadRoleDetails(d) {
+				//TODO: look into doing this a better way
+				let role = zoomTo;
+				let photo = d.photo ? d.photo : "/img/user_avatar_blank.jpg";
+				let s = '<div id="view_' + role._id +
+					'" style="text-align:center; padding-bottom:10px"><img class="zoomedInRolePhoto" src="' + photo + '"/></div>';
+
+				if (role.accountabilities.length > 0) {
+					s += '<div class="text-main1"><b>Accountabilities</b></div>';
+					s += '<ul style="margin-left: 15px">';
+					role.accountabilities.forEach(a => {
+						s += '<li style="list-style-type: circle">' + a.name + '</li>';
+					});
+					s += '</ul>';
+				} else {
+					s += "<div>No accountabilities defined for this role yet.</div>";
+				}
+				s += '</div>';
+
+				// has to do with update thread (but WTFFFF)
+				setTimeout(function() {
+					$roleDetails.html(s);
+
+					// view profile link
+					$viewLink = $('#view_' +  role._id)[0];
+					if ($viewLink) {
+						$viewLink.onclick = function(evt) {
+							evt.stopPropagation();
+							var goalsUrl = FlowRouter.path("profile", {}, { objectId: d.email });
+							FlowRouter.go(goalsUrl);
+						}
+					} else {
+						console.error("Couldn't find edit link with id: " + id);
+					}
+
+					/*
+					 // edit role link
+					 $editLink = $('#edit_' + roleId)[0];
+					 if ($editLink) {
+					 $editLink.onclick = function(evt) {
+					 evt.stopPropagation();
+					 var roleId = evt.currentTarget.id ? evt.currentTarget.id.replace('edit_', '') : null;
+					 params.onRoleEdit.call(params._this, roleId);
+					 }
+					 } else {
+					 console.error("Couldn't find edit link with id: " + id);
+					 }
+
+					 // delete role link
+					 $editLink = $('#edit_' + roleId)[0];
+					 if ($editLink) {
+					 $editLink.onclick = function(evt) {
+					 evt.stopPropagation();
+					 var roleId = evt.currentTarget.id ? evt.currentTarget.id.replace('edit_', '') : null;
+					 params.onRoleEdit.call(params._this, roleId);
+					 }
+					 } else {
+					 console.error("Couldn't find edit link with id: " + id);
+					 }*/
+
+					$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
+					Chart.setRoleDetailHeight();
+				}, 100);
+			}
+			if (zoomTo.type === 'role' || zoomTo.type === 'contributor') {
+				loadRoleDetails(zoomTo);
 			}
 
 			var k = r / zoomTo.r / 2;
@@ -521,75 +592,6 @@ var Chart = (function () {
 
 			circles.on("click", function (d) {
 				var zoomTo = node === d ? root : d;
-
-				function loadRoleDetails() {
-					//TODO: look into doing this a better way
-
-					let role = zoomTo;
-					let photo = d.photo ? d.photo : "/img/user_avatar_blank.jpg";
-					let s = '<div id="view_' + role._id +
-						'" style="text-align:center; padding-bottom:10px"><img class="zoomedInRolePhoto" src="' + photo + '"/></div>';
-
-					if (role.accountabilities.length > 0) {
-						s += '<div class="text-main1"><b>Accountabilities</b></div>';
-						s += '<ul style="margin-left: 15px">';
-						role.accountabilities.forEach(a => {
-							s += '<li style="list-style-type: circle">' + a.name + '</li>';
-						});
-						s += '</ul>';
-					} else {
-						s += "<div>No accountabilities defined for this role yet.</div>";
-					}
-					s += '</div>';
-
-					// has to do with update thread (but WTFFFF)
-					setTimeout(function() {
-						$roleDetails.html(s);
-
-						// view profile link
-						$viewLink = $('#view_' +  role._id)[0];
-						if ($viewLink) {
-							$viewLink.onclick = function(evt) {
-								evt.stopPropagation();
-								var goalsUrl = FlowRouter.path("profile", {}, { objectId: d.email });
-								FlowRouter.go(goalsUrl);
-							}
-						} else {
-							console.error("Couldn't find edit link with id: " + id);
-						}
-
-						/*
-						// edit role link
-						$editLink = $('#edit_' + roleId)[0];
-						if ($editLink) {
-							$editLink.onclick = function(evt) {
-								evt.stopPropagation();
-								var roleId = evt.currentTarget.id ? evt.currentTarget.id.replace('edit_', '') : null;
-								params.onRoleEdit.call(params._this, roleId);
-							}
-						} else {
-							console.error("Couldn't find edit link with id: " + id);
-						}
-
-						// delete role link
-						$editLink = $('#edit_' + roleId)[0];
-						if ($editLink) {
-							$editLink.onclick = function(evt) {
-								evt.stopPropagation();
-								var roleId = evt.currentTarget.id ? evt.currentTarget.id.replace('edit_', '') : null;
-								params.onRoleEdit.call(params._this, roleId);
-							}
-						} else {
-							console.error("Couldn't find edit link with id: " + id);
-						}*/
-
-						$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
-						Chart.setRoleDetailHeight();
-					}, 100);
-				}
-				if (zoomTo.type === 'role' || zoomTo.type === 'contributor') {
-					loadRoleDetails(zoomTo);
-				}
 				Chart.zoom(zoomTo, true);
 			});
 
