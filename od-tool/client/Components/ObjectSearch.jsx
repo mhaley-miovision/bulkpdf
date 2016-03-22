@@ -88,11 +88,15 @@ ObjectSearch = React.createClass({
 
 	onBlur() {
 		var _this = this;
-		setTimeout(function() { _this.toggleDropdown(false); }, 150); // TODO HACK: to facilitate clicking first
+		setTimeout(function() {
+			_this.toggleDropdown(false);
+			_this.setState({showClose:false});
+		}, 150); // TODO HACK: to facilitate clicking first
 	},
 
 	onSelected() {
 		this.toggleDropdown(true);
+		this.setState({showClose:true});
 	},
 
 	// TODO: these methods need refactoring
@@ -209,6 +213,13 @@ ObjectSearch = React.createClass({
 		this.setState({ query: this.refs.textInput.value });
 	},
 
+	handleClear() {
+		this.setState({inputValue:'',query:''});
+		if (this.props.onClick) {
+			this.props.onClick('', '', null);
+		}
+	},
+
 	componentWillReceiveProps(nextProps, nextState) {
 		if (nextProps.initialValue) {
 			this.setState({query:nextProps.initialValue});
@@ -218,12 +229,14 @@ ObjectSearch = React.createClass({
 	render: function() {
 		return (
 			<div>
-				<input className="text-main5" type="text" id="orgSelection" ref="textInput"
-					   onChange={this.onInputChange}
-					   placeholder={this.state.query ? '' : this.props.label} value={this.state.query}
-					   onBlur={this.onBlur} onSelect={this.onSelected}/>
-				<label htmlFor="orgSelection"/>
+				<div className="GoalEditItemInput center">
+					<input className="text-main5" type="text" id="orgSelection" ref="textInput"
+						   onChange={this.onInputChange}
+						   placeholder={this.state.query ? '' : this.props.label} value={this.state.query}
+						   onBlur={this.onBlur} onSelect={this.onSelected}/>
 
+					{ this.state.showClose ? <i className="material-icons GreyButton" style={{fontSize:"13px"}} onClick={this.handleClear}>close</i> : '' }
+				</div>
 				<div id='dropdown1' className={this.getDropdownClasses()}>
 					{this.renderDropdownItems()}
 				</div>

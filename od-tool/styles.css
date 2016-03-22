@@ -900,6 +900,7 @@ circle.container, circle.label {
 }
 
 .GoalEditItemInput {
+    width:95%;
     margin-bottom: 0;
     position:relative;
 }

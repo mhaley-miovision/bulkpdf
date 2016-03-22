@@ -42,7 +42,7 @@ var Chart = (function () {
 		classes.push(d.type === "contributor" ? "role" : d.type);
 		if (d.type === 'role' || d.type === 'contributor') {
 			classes.push(d.contributor || d.type == "contributor" ? "filled" : "unfilled");
-			if (d.topGoals && d.topGoals.length > 0) {
+			if (d.contributor && d.topGoals && d.topGoals.length > 0) {
 				classes.push("hasGoals");
 			}
 		}
