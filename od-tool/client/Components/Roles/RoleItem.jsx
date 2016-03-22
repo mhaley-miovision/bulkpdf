@@ -13,7 +13,7 @@ RoleItem = React.createClass({
 				<a href={ FlowRouter.path("profile", {}, {objectId: r.email}) } >
 					<img src={ r.photo ? r.photo : "/img/user_avatar_blank.jpg"}/>
 				</a>
-				{ r.contributor ? r.contributor : "&lt;unfilled&gt;" }
+				{ r.contributor ? r.contributor : "<unfilled>" }
 				<i className="material-icons " onClick={this.props.onDeleteClicked} id={"r_"+r._id}>close</i>
 			</div>
 		);

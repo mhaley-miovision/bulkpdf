@@ -180,7 +180,7 @@ ObjectSearch = React.createClass({
 			}
 			if (this.data.roles.length > 0) {
 				this.data.roles.forEach(r => {
-					let l = (r.contributor ? r.contributor : "&lt;Unfilled%gt;") + " - " + r.accountabilityLabel;
+					let l = (r.contributor ? r.contributor : "<unfilled>") + " - " + r.accountabilityLabel;
 					collection.push(
 						<a className="collection-item" key={r._id} id={r._id} object={r} style={{cursor:"pointer"}}
 						   onClick={ this.handleRoleClick }><span className="ProjectTag">role</span> {l}</a>
