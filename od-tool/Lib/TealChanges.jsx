@@ -48,7 +48,7 @@ TealChanges = {
 			changes.push(`Added new key objective '${ko.name}'`);
 		});
 		koDiffs.removed.forEach(ko => {
-			changes.push(`Added removed key objective '${ko.name}'`);
+			changes.push(`Removed key objective '${ko.name}'`);
 		});
 		koDiffs.updated.forEach(ko => {
 			changes.push(`Changed key objective '${ko.name}' to '${ko.newName}'`);
@@ -63,7 +63,7 @@ TealChanges = {
 			changes.push(`Added new done criteria '${dc.name}'`);
 		});
 		dcDiffs.removed.forEach(dc => {
-			changes.push(`Added removed done criteria '${dc.name}'`);
+			changes.push(`Removed done criteria '${dc.name}'`);
 		});
 		dcDiffs.updated.forEach(dc => {
 			changes.push(`Changed done criteria '${dc.name}' to '${dc.newName}'`);

@@ -204,8 +204,6 @@ Meteor.methods({
 		g.state = goal.state;
 		g.dueDate = goal.dueDate;
 
-		let _id = null; // either new or existing
-
 		if (newGoal) {
 			// build path to this node
 			let p = null;
@@ -224,7 +222,7 @@ Meteor.methods({
 			}
 
 			// actually insert the goal
-			_id = GoalsCollection.insert(g);
+			g._id = GoalsCollection.insert(g);
 
 			// populate role goal stats
 			ownerRoles.forEach(r => {
@@ -233,16 +231,15 @@ Meteor.methods({
 			contributorRoles.forEach(r => {
 				Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
 			});
-
-			_id = g._id;
-			if (goal.parentId != null) {
-				console.error("moving around goal branches around not yet supported!")
-			} else {
-				GoalsCollection.update(goal._id, g);
-			}
+		} else {
+			GoalsCollection.update(g._id, g);
 		}
+
+		console.log("teal.goals.updateOrInsertGoal (new="+newGoal+"):");
+		console.log(g);
+
 		// update goal stats
-		Meteor.call("teal.goals.updateGoalStats", _id);
+		Meteor.call("teal.goals.updateGoalStats", g._id);
 	},
 
 	"teal.goals.deleteGoal" : function(goalId) {
