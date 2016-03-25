@@ -36,7 +36,7 @@ Profile = React.createClass({
 					<div>
 						<div className="section center">
 							<ProfileImage width="128px" height="128px"
-										  url={this.data.contributor.photo ? this.data.contributor.photo : "/img/user_avatar_blank.jpg"}/>
+										  url={Teal.userPhotoUrl(this.data.contributor.photo)}/>
 							<h5 className="text-main1">{this.data.contributor.name}</h5>
 						</div>
 						<div className="divider"></div>

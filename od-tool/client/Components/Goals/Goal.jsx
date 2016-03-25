@@ -5,7 +5,7 @@ Goal = React.createClass({
 	propTypes: {
 		goal: React.PropTypes.object.isRequired,
 		compactViewMode: React.PropTypes.bool,
-		onClicked: React.PropTypes.any,
+		onClicked: React.PropTypes.func,
 	},
 
 	getInitialState() {
@@ -198,10 +198,23 @@ Goal = React.createClass({
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	},
 
+	handleNewGoalClicked() {
+		$('#' + this.getNewGoalModalId()).openModal();
+	},
+	handleSubGoalsClicked() {
+		$('#' + this.getSubGoalsModalId()).openModal();
+	},
+	handleCommentsClicked() {
+		if (this.refs && this.refs.commentsModal) {
+			this.refs.commentsModal.show();
+		} else {
+			console.error("commentsModal not mounted yet");
+		}
+	},
+
 	getNewGoalModalId() {
 		return this.props.goal._id+"_new";
 	},
-
 	getSubGoalsModalId() {
 		return this.props.goal._id+"_sub";
 	},
@@ -222,17 +235,22 @@ Goal = React.createClass({
 				<div>
 					<div className='card hoverable' style={{marginBottom: "40px"}}>
 						{ this.renderGoalBody() }
-						<GoalControls newModalId= {this.getNewGoalModalId()}
-									  subGoalsModalId={this.getSubGoalsModalId()}
-									  isEditing={this.state.isEditing}
+						<GoalControls isEditing={this.state.isEditing}
 									  goal={this.props.goal}
+									  onNewClicked={this.handleNewGoalClicked}
+									  onSubgoalsClicked={this.handleSubGoalsClicked}
 									  onEditClicked={this.handleEditClicked}
 									  onSaveClicked={this.handleSaveClicked}
 									  onDeleteClicked={this.handleDeleteClicked}
-									  onCancelClicked={this.handleCancelClicked}/>
+									  onCancelClicked={this.handleCancelClicked}
+									  onCommentsClicked={this.handleCommentsClicked}/>
 					</div>
 					<GoalNewModal id={this.getNewGoalModalId()} parentGoalId={this.props.goal._id}/>
 					<SubGoalsModal id={this.getSubGoalsModalId()} parentGoalId={this.props.goal._id}/>
+					<CommentsModal ref="commentsModal"
+								   comments={this.props.goal.comments ? this.props.goal.comments : []}
+								   objectId={this.props.goal._id}
+								   objectType={Teal.ObjectTypes.Goal}/>
 				</div>
 			);
 		}

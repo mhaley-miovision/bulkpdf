@@ -37,6 +37,13 @@ Teal = {
 		return Meteor.user().email;
 	},
 
+	userPhotoUrl(photoUrl) {
+		if (photoUrl) {
+			return photoUrl;
+		}
+		return '/img/user_avatar_blank.jpg';
+	},
+
 	// Each business rule can assume the following context
 	// user = Acting user
 	// operation = Activity to perform

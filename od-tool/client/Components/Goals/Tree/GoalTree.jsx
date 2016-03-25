@@ -64,8 +64,7 @@ var D3TreeView = (function() {
 	function htmlForTreeNode(d) {
 		var ownersHtmlString = '';
 		for (var i in d.ownerRoles) {
-			ownersHtmlString += '<img class="treeItemProfilePhoto" src="'
-				+ (d.ownerRoles[i].photo ? d.ownerRoles[i].photo : "/img/user_avatar_blank.jpg")
+			ownersHtmlString += '<img class="treeItemProfilePhoto" src="' + Teal.userPhotoUrl(d.ownerRoles[i].photo)
 				+ '" title="' + d.ownerRoles[i].accountabilityLabel + '"/>';
 		}
 

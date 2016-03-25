@@ -4,7 +4,7 @@ GoalSubGoals = React.createClass({
 
 	propTypes: {
 		compactViewMode: React.PropTypes.bool,
-		onGoalClicked: React.PropTypes.any,
+		onGoalClicked: React.PropTypes.func,
 	},
 
 	getDefaultProps() {

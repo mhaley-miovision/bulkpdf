@@ -111,13 +111,8 @@ if (Meteor.isServer) {
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
 			}
-
 			var c = ContributorsCollection.findOne({name: userName});
-			if (c && c.photo) {
-				return c.photo;
-			} else {
-				return "/img/user_avatar_blank.jpg";
-			}
+			return Teal.userPhotoUrl(c.photo);
 		},
 	});
 }
@@ -132,7 +127,7 @@ Meteor.publish("teal.user", function() {
 })
 
 /*
-Meteor.startup(function() {
+ Meteor.startup(function() {
 	Meteor.users._ensureIndex( {"email": 1 }, { unique: true } );
 
 	// useful when doing a full DB drop

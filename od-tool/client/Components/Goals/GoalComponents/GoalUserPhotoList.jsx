@@ -17,12 +17,8 @@ GoalUserPhotoList = React.createClass({
 
 	renderPhotos() {
 		return this.props.list.map(item => {
-			//TODO: CSS Positioning horrible hack - no friggin clue why the
-			//let horribleHack = this.props.compactViewMode && this.props.list.length == 1 ? "13px" : "0";
-
-			let photoUrl = item.photo ? item.photo : "/img/user_avatar_blank.jpg";
 			return (
-				<img id={item.email} key={item._id} className="goalItemPhoto" src={photoUrl}
+				<img id={item.email} key={item._id} className="goalItemPhoto" src={Teal.userPhotoUrl(item.photo)}
 				 data-for={this.state.tipId} data-tip={item.accountabilityLabel} onClick={this.gotoUserProfile}/>
 			);
 		});

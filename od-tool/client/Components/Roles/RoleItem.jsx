@@ -2,7 +2,7 @@ RoleItem = React.createClass({
 	propTypes: {
 		role: React.PropTypes.object.isRequired,
 		isEditing: React.PropTypes.bool,
-		onDeleteClicked: React.PropTypes.any.isRequired,
+		onDeleteClicked: React.PropTypes.func.isRequired,
 	},
 
 	render() {
@@ -11,7 +11,7 @@ RoleItem = React.createClass({
 			<div className="TealChip" style={{cursor:"pointer"}}
 				 data-tip={this.props.role.accountabilityLabel}>
 				<a href={ FlowRouter.path("profile", {}, {objectId: r.email}) } >
-					<img src={ r.photo ? r.photo : "/img/user_avatar_blank.jpg"}/>
+					<img src={ Teal.userPhotoUrl(r.photo) }/>
 				</a>
 				{ r.contributor ? r.contributor : "<unfilled>" }
 				<i className="material-icons " onClick={this.props.onDeleteClicked} id={"r_"+r._id}>close</i>

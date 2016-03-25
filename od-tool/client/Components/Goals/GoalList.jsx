@@ -2,7 +2,7 @@ GoalList = React.createClass({
 	propTypes: {
 		goalList: React.PropTypes.array.isRequired,
 		compactViewMode: React.PropTypes.bool,
-		onGoalClicked: React.PropTypes.any,
+		onGoalClicked: React.PropTypes.func,
 	},
 
 	renderGoals() {

@@ -8,7 +8,7 @@ ObjectSearch = React.createClass({
 		findRoles: React.PropTypes.bool,
 		findRoleLabels: React.PropTypes.bool,
 		findAccountabilityLevels: React.PropTypes.bool,
-		onClick: React.PropTypes.any.isRequired,
+		onClick: React.PropTypes.func.isRequired,
 		notFoundLabel: React.PropTypes.string,
 		initialValue: React.PropTypes.string,
 	},
@@ -230,6 +230,7 @@ ObjectSearch = React.createClass({
 		return (
 			<div>
 				<div className="GoalEditItemInput center">
+
 					<input className="text-main5" type="text" id="orgSelection" ref="textInput"
 						   onChange={this.onInputChange}
 						   placeholder={this.state.query ? '' : this.props.label} value={this.state.query}

@@ -3,10 +3,10 @@ OrgControls = React.createClass({
 		org : React.PropTypes.object.isRequired,
 		/*
 		isEditing: React.PropTypes.bool.isRequired,
-		onEditClicked: React.PropTypes.any.isRequired,
-		onSaveClicked: React.PropTypes.any.isRequired,
-		onCancelClicked: React.PropTypes.any.isRequired,
-		onDeleteClicked: React.PropTypes.any.isRequired,
+		onEditClicked: React.PropTypes.func.isRequired,
+		onSaveClicked: React.PropTypes.func.isRequired,
+		onCancelClicked: React.PropTypes.func.isRequired,
+		onDeleteClicked: React.PropTypes.func.isRequired,
 		newModalId: React.PropTypes.string.isRequired,
 		subGoalsModalId: React.PropTypes.string.isRequired,
 		*/

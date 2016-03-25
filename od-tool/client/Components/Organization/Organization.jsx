@@ -352,9 +352,9 @@ var Chart = (function () {
 			function loadRoleDetails(d) {
 				//TODO: look into doing this a better way
 				let role = zoomTo;
-				let photo = d.photo ? d.photo : "/img/user_avatar_blank.jpg";
-				let s = '<div id="view_' + role._id +
-					'" style="text-align:center; padding-bottom:10px"><img class="zoomedInRolePhoto" src="' + photo + '"/></div>';
+				let s = '<div id="view_' + role._id
+					+ '" style="text-align:center; padding-bottom:10px"><img class="zoomedInRolePhoto" src="'
+					+ Teal.userPhotoUrl(d.photo) + '"/></div>';
 
 				if (role.accountabilities.length > 0) {
 					s += '<div class="text-main1"><b>Accountabilities</b></div>';
