@@ -11,9 +11,12 @@ MyTeam = React.createClass({
 		var handle2 = Meteor.subscribe("users");
 
 		if (handle.ready() && handle2.ready()) {
-			var c = ContributorsCollection.findOne({email:Meteor.user().email});
-			var o = OrganizationsCollection.findOne({_id: c.physicalOrgId});
-			return {isLoading:false, contributorOrg: o ? o.name : '', contributorOrgId : c ? c.physicalOrgId : '' };
+			var c = ContributorsCollection.findOne({email: Meteor.user().email});
+			var o = null;
+			if (c) {
+				o = OrganizationsCollection.findOne({_id: c.physicalOrgId});
+			}
+			return {isLoading:false, contributor:c, contributorOrg: o ? o.name : '', contributorOrgId : c ? c.physicalOrgId : '' };
 		} else {
 			return {isLoading:true};
 		}
@@ -26,7 +29,7 @@ MyTeam = React.createClass({
 	render() {
 		if (this.data.isLoading) {
 			return <Loading/>;
-		} else if (this.state.orgName || this.data.contributorOrg) {
+		} else if (this.data.contributor && (this.state.orgName || this.data.contributorOrg)) {
 			var org = this.state.orgName ? this.state.orgName : this.data.contributorOrg;
 			var orgId = this.state.orgId ? this.state.orgId : this.data.contributorOrgId;
 			return (

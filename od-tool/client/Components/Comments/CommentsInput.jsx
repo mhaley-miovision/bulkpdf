@@ -81,7 +81,12 @@ CommentsInput = React.createClass({
 	},
 
 	handleChange: function(e) {
-		this.state.value = e.target.value;
+		let v = e.target.value;
+		this.state.value = v;
+
+		if (v && v.length > 0 && v.charAt(v.length - 1) === '@') {
+
+		}
 	},
 	handleSubmit: function(e) {
 		if (e) {
@@ -112,10 +117,6 @@ CommentsInput = React.createClass({
 	},
 
 	componentDidUpdate() {
-	},
-
-	onChange(e) {
-		this.setState({newComment:e})
 	},
 
 	render: function() {

@@ -17,6 +17,7 @@ MyGoals = React.createClass({
 					<ObjectSearch
 						onClick={this.handleSearch}
 						findContributors={true} findOrganizations={false}
+						label="Type here to search for a contributor..."
 						notFoundLabel="Please type the name of an existing contributor."/>
 				</div>
 				<GoalsForIndividual objectId={this.state.objectId} />

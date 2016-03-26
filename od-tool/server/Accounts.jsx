@@ -1,9 +1,8 @@
 
 // Validate username, sending a specific error message on failure.
 Accounts.validateNewUser(function (user) {
+	console.log("--==( Accounts.validateNewUser )==--");
 	if (user) {
-		console.log("Accounts.validateNewUser");
-
 		// for now just Google sign in is permitted
 		let u = user;
 		if (u && !u.email && u.services && u.services.google.email) {
@@ -17,7 +16,7 @@ Accounts.validateNewUser(function (user) {
 			}
 
 			// custom enabled users
-			var enabledUsers = ['leipnik@gmail.com'];
+			var enabledUsers = ['ryan.burgio@gmail.com','leipnik@gmail.com','darlenescott78@gmail.com'];
 			if (enabledUsers.indexOf(email) >= 0) {
 				console.log(`Accounts.validateNewUser('${u._id}') - used part of custom enabled users - '${email}'`);
 				return true;
@@ -31,6 +30,17 @@ Accounts.validateNewUser(function (user) {
 		}
 	}
 	console.error("Accounts.validateNewUser FAILED");
-	console.error(user);
+	console.error(JSON.stringify(user, null, '\t'));
+
+	/*
+	Meteor.call("teal.email.sendEmail",
+	{
+		to:"vleipnik@miovision.com",
+		from:"teal@miovision.com",
+		subject: "Unauthorized user attempted login!",
+		text:"User: " + JSON.stringify(user),
+		html:""
+	});*/
+
 	throw new Meteor.Error(403, "This user is not enabled.");
 });
