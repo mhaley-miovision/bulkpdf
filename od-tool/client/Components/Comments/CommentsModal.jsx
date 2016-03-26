@@ -40,7 +40,7 @@ CommentsModal = React.createClass({
 
 	render() {
 		return (
-			<div id={this.getId()} className="modal modal-fixed-footer" style={{width:600,height:300}}>
+			<div id={this.getId()} className="modal modal-fixed-footer" style={{width:600}}>
 				<div className="modal-content" style={{padding:0}}>
 					<CommentsList
 						ref="commentsList"

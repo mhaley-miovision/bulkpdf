@@ -26,8 +26,8 @@ CommentsList = React.createClass({
 
 	renderInputBox() {
 		if (this.props.showAddInput) {
-			return <CommentsInputBox key={Teal.newId()} ref="commentsInputBox"
-									 objectId={this.props.objectId} objectType={this.props.objectType} />
+			return <CommentsInput key={Teal.newId()} ref="commentsInputBox"
+								  objectId={this.props.objectId} objectType={this.props.objectType} />
 		}
 	},
 

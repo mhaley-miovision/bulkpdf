@@ -210,6 +210,9 @@ ObjectSearch = React.createClass({
 	},
 
 	onInputChange() {
+		if (this.refs.textInput.value === '') {
+			this.props.onClick('', '', null);
+		}
 		this.setState({ query: this.refs.textInput.value });
 	},
 

@@ -1,12 +1,7 @@
-CommentsInputBox = React.createClass({
+CommentsInput = React.createClass({
 	mixins: [ReactMeteorData],
 
 	propTypes: {
-		displayTransform: React.PropTypes.func,
-		onKeyDown: React.PropTypes.func,
-		onSelect: React.PropTypes.func,
-		onBlur: React.PropTypes.func,
-		onChange: React.PropTypes.func,
 		objectId: React.PropTypes.string.isRequired,
 		objectType: React.PropTypes.string.isRequired,
 	},
@@ -19,38 +14,41 @@ CommentsInputBox = React.createClass({
 	},
 	getInitialState() {
 		return {
-			value:"",
+			newComment:'',
 			atMentions:[],
 		};
 	},
 	initialize() {
-		$('#' + this.getEditableInputId()).text('');
+		console.log("initialize triggered!");
+		//$('#' + this.getEditableInputId()).text('');
+		this.focusOnInput();
+	},
+	focusOnInput() {
 		let _this = this;
 		setTimeout(function() { $('#' + _this.getEditableInputId()).focus(); },50);
 	},
+
+	_atModeTerminatorKeys: [
+		13, // enter
+		27, // esc
+		9, // tab
+	],
 
 	getMeteorData() {
 		var handle = Meteor.subscribe('teal.contributors');
 		if (handle.ready()) {
 			if (this.state.query && this.state.query !== '') {
 				var caseInsensitiveMatch = {$regex: new RegExp('.*' + this.state.query + '.*', "i")};
-
 				let contributors = ContributorsCollection.find(
 					{rootOrgId:Teal.rootOrgIg(), name: caseInsensitiveMatch},
 					{fields: {name:1,email:1,_id:1}}
-				);
+				).fetch();
 				return { doneLoading: true, contributors: contributors };
 			}
 		}
 		return { doneLoading: false, contributors: [] };
 	},
 
-	handleKeyDown(evt) {
-		console.log(evt.type + ", " + evt.which);
-		if (evt.type === 'keydown' && evt.which === 13){ // enter key
-			this.handleCommentSave();
-		}
-	},
 	handleContributorClick(evt) {
 		let n = evt.currentTarget.value;
 		let id = evt.currentTarget.id;
@@ -62,51 +60,48 @@ CommentsInputBox = React.createClass({
 		this.handleAtModeTerminated();
 	},
 	handleCommentSave() {
-		if (this.state.value != '') {
+		if (this.state.value && this.state.value !== '') {
 			Meteor.call("teal.comments.addComment",
 				this.props.objectId, this.props.objectType, this.state.value, this.state.atMentions);
 			this.initialize();
 		}
 	},
-	handleAtModeInitiatied(position) {
-		this.setState({atMode:true, atPosition:position});
+	handleAtModeInitiated(position) {
+		this.state.atMode = true;
+		this.state.atPosition = position;
 	},
 	handleAtModeTerminated() {
-		this.setState({atMode:false});
+		this.state.atMode = false;
 	},
-	handleChange: function(ev) {
-		this.state.value = $('#'+this.getEditableInputId()).text();
-		let s = this.state.value;
-		if (s && s != '') {
-			if (this.state.atMode) {
-				if (s.indexOf("@") == this.state.atPosition) {
-					// build the @ query
-					let atQuery = s.substring(this.state.atPosition + 1);
-					this.setState({query: atQuery})
-				} else {
-					this.handleAtModeTerminated();
-				}
-			} else {
-				let lastChar = s.charAt(s.length - 1);
-				if (lastChar === '@') {
-					console.log("Initiating @ mode!");
-					this.handleAtModeInitiatied(position);
-				}
-			}
+
+	handleKeyDown(evt) {
+		if (evt.keyCode === 13){ // enter key
+			this.handleCommentSave();
 		}
+	},
+
+	handleChange: function(e) {
+		this.state.value = e.target.value;
+	},
+	handleSubmit: function(e) {
+		if (e) {
+			e.preventDefault();
+		}
+		this.handleCommentSave();
 	},
 
 	renderContributorListItems() {
 		if (this.data.doneLoading) {
 			return this.data.contributors.map(c => {
-				return <a className="collection-item" key={c._id} id={c.email} object={c} style={{cursor:"pointer"}}
-						  onClick={ this.handleContributorClick }>{c.name}</a>
+				return <div className="collection-item" key={c._id} id={c.email} object={c}
+						  onClick={ this.handleContributorClick }>{c.name}</div>
 			})
 		}
 	},
 	renderContributorList() {
 		return (
-			<div style={{position:"absolute", display:this.state.atMode ? "block" : "none"}}>
+			//display:this.state.atMode ? "block" : "none"
+			<div className="CommentsAtMentionList">
 				{this.renderContributorListItems()}
 			</div>
 		);
@@ -117,19 +112,20 @@ CommentsInputBox = React.createClass({
 	},
 
 	componentDidUpdate() {
-		console.log("CommentsInputBox - componentDidUpdate");
+	},
+
+	onChange(e) {
+		this.setState({newComment:e})
 	},
 
 	render: function() {
 		return (
 			<div className="CommentRow">
-				{this.renderContributorList()}
 				<div key={Teal.newId()} className="valign-wrapper">
-					<img className="CommentItemProfileImg left valign" src={ Teal.userPhotoUrl(Meteor.user().services.google.picture) }/>
-					<p id={this.getEditableInputId()}
-					   className="CommentInput me valign" contentEditable="true" style={{cursor:"pointer"}}
-					   onKeyDown={this.handleKeyDown} onInput={this.handleChange}>
-					</p>
+					<form onSubmit={this.handleSubmit} style={{width:"100%"}}>
+						<input autofocus placeholder="Enter new comment and press enter..."  id={this.getEditableInputId()}
+							   type="text" className="CommentInput me valign" onChange={this.handleChange}/>
+					</form>
 				</div>
 			</div>
 		);
