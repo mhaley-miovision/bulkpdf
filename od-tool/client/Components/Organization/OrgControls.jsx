@@ -63,19 +63,10 @@ OrgControls = React.createClass({
 				<OrgEditModal id="orgEditOrgModal" ref="orgEditOrgModal" org={this.props.org}/>
 
 				<div className="center">
-					<i data-for={this.tipId()} data-tip="Remove organization"
-					   className="material-icons GreyButton"
-					   onClick={this.handleRemoveOrg}>delete</i>
-					<i data-for={this.tipId()} data-tip="Add role"
-					   className="material-icons GreyButton"
-					   onClick={this.handleNewRole}>add</i>
-					<i data-for={this.tipId()} data-tip="Add organization"
-					   className="material-icons GreyButton"
-					   onClick={this.handleAddOrg}>add_circle_outline</i>
-					<i data-for={this.tipId()} data-tip="Edit organization"
-					   className="material-icons GreyButton"
-					   onClick={this.handleEditOrg}>edit</i>
-
+					<ControlIconButton onClicked={this.handleRemoveOrg} icon="delete" tip="Remove organization" tipId={this.tipId()}/>
+					<ControlIconButton onClicked={this.handleNewRole} icon="add" tip="Add role" tipId={this.tipId()}/>
+					<ControlIconButton onClicked={this.handleAddOrg} icon="add_circle_outline" tip="Add organization" tipId={this.tipId()}/>
+					<ControlIconButton onClicked={this.handleEditOrg} icon="edit" tip="Edit organization" tipId={this.tipId()}/>
 					<ReactTooltip id={this.tipId()} place="bottom"/>
 				</div>`
 			</div>

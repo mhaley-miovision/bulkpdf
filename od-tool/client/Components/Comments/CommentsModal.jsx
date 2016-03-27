@@ -19,6 +19,9 @@ CommentsModal = React.createClass({
 	getId() {
 		return this.props.objectId + "_comments";
 	},
+	getTipId() {
+		return this.props.objectId + "_tip";
+	},
 
 	handleDismiss() {
 		$('#' + this.getId()).closeModal();
@@ -51,11 +54,10 @@ CommentsModal = React.createClass({
 				</div>
 				<div className="modal-footer">
 					<div className="center">
-						<i className="material-icons GreyButton" onClick={this.handleDelete}
-						   style={{float:"none",marginTop:"7px"}}>delete</i>
-						<i className="material-icons GreyButton" onClick={this.handleDismiss}
-						   style={{float:"none",marginTop:"7px"}}>check</i>
+						<ControlIconButton onClicked={this.handleDelete} icon="delete"/>
+						<ControlIconButton onClicked={this.handleDismiss} icon="check"/>
 					</div>
+					<ReactTooltip id={this.getTipId()}/>
 				</div>
 			</div>
 		);

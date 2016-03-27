@@ -30,12 +30,15 @@ GoalById = React.createClass({
 				<div>
 					<div className="section center">
 						{this.props.showBackButton ?
-							<i className="material-icons GreyButton" onClick={this.goBack}>undo</i> : ''}
+							<ControlIconButton onClicked={this.goBack}
+											   icon="undo" tip="Up to parent goal"/>
+							: ''}
 					</div>
 					<div className="divider"></div>
 					<div className="section">
 						{this.data.goal ? <Goal goal={this.data.goal}/> : <NotFound/>}
 					</div>
+					<ReactTooltip/>
 				</div>
 			)
 		} else {

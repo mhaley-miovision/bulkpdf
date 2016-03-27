@@ -50,12 +50,8 @@ RoleControls = React.createClass({
 				<RoleEditModal id="editRoleModal" ref="editRoleModal" role={this.props.role}/>
 
 				<div className="center">
-					<i data-for={this.tipId()} data-tip="Delete role"
-					   className="material-icons GreyButton"
-					   onClick={this.handleDeleteRole}>delete</i>
-					<i data-for={this.tipId()} data-tip="Edit role"
-					   className="material-icons GreyButton"
-					   onClick={this.handleEditRole}>edit</i>
+					<ControlIconButton onClicked={this.handleDeleteRole} icon="delete" tip="Delete role" tipId={this.tipId()}/>
+					<ControlIconButton onClicked={this.handleEditRole} icon="edit" tip="Edit role" tipId={this.tipId()}/>
 					<ReactTooltip id={this.tipId()} place="bottom"/>
 				</div>
 			</div>

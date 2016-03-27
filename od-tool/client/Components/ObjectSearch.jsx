@@ -210,9 +210,6 @@ ObjectSearch = React.createClass({
 	},
 
 	onInputChange() {
-		if (this.refs.textInput.value === '') {
-			this.props.onClick('', '', null);
-		}
 		this.setState({ query: this.refs.textInput.value });
 	},
 
@@ -239,7 +236,8 @@ ObjectSearch = React.createClass({
 						   placeholder={this.state.query ? '' : this.props.label} value={this.state.query}
 						   onBlur={this.onBlur} onSelect={this.onSelected}/>
 
-					{ this.state.showClose ? <i className="material-icons GreyButton" style={{fontSize:"13px"}} onClick={this.handleClear}>close</i> : '' }
+					{ this.state.showClose ? <i className="material-icons GreyButton ClearGreyButton"
+												onClick={this.handleClear}>close</i> : '' }
 				</div>
 				<div id='dropdown1' className={this.getDropdownClasses()}>
 					{this.renderDropdownItems()}

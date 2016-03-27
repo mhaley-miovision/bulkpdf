@@ -25,8 +25,7 @@ GoalListModal = React.createClass({
 				</div>
 				<div className="modal-footer">
 					<div className="center">
-						<i className="material-icons GreyButton" onClick={this.handleClose}
-						   style={{float:"none",marginTop:"7px"}}>check</i>
+						<ControlIconButton onClicked={this.handleClose} icon="check"/>
 					</div>
 				</div>
 			</div>

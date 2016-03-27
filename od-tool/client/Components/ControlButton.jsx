@@ -5,6 +5,7 @@ ControlIconButton = React.createClass({
 		tip: React.PropTypes.string,
 		tipId: React.PropTypes.string,
 		countBadgeValue: React.PropTypes.number,
+		small: React.PropTypes.bool,
 	},
 
 	renderCountBadge() {
@@ -15,7 +16,7 @@ ControlIconButton = React.createClass({
 
 	render() {
 		return (
-			<div className="ControlButton GreyButton"
+			<div className={"ControlButton GreyButton" + (this.props.small ? 'Small' : '')}
 				 data-tip={this.props.tip} data-for={this.props.tipId}>
 				<i className="material-icons" onClick={this.props.onClicked}>{this.props.icon}</i>
 				{this.renderCountBadge()}

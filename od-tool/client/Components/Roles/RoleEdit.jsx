@@ -85,8 +85,7 @@ RoleEdit = React.createClass({
 							   placeholder={o.name ? '' : "Enter accountability..."}
 							   value={o.name}>
 						</input>
-						<i key={"r_" + o._id} className="material-icons GreyButton" id={"r_" + o._id}
-						   style={{fontSize:"13px"}}
+						<i key={"r_" + o._id} className="material-icons GreyButton ClearGreyButton" id={"r_" + o._id}
 						   onClick={_this.handleRemoveAccountability}>close</i>
 					</div>
 				);

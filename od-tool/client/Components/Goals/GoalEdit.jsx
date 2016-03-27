@@ -114,8 +114,7 @@ GoalEdit = React.createClass({
 							   placeholder={o.name ? '' : "Enter key objective..."}
 							   value={o.name}>
 						</input>
-						<i key={"r_" + o._id} className="material-icons GreyButton" id={"r_" + o._id}
-						   style={{fontSize:"13px", marginLeft:"12px"}}
+						<i key={"r_" + o._id} className="material-icons GreyButton ClearGreyButton" id={"r_" + o._id}
 						   onClick={_this.handleRemoveDoneCriteria}>close</i>
 					</div>
 				);
@@ -138,8 +137,7 @@ GoalEdit = React.createClass({
 							   placeholder={o.name ? '' : "Enter key objective..."}
 							   value={o.name}>
 						</input>
-						<i key={"r_" + o._id} className="material-icons GreyButton" id={"r_" + o._id}
-						   style={{fontSize:"13px", marginLeft:"12px"}}
+						<i key={"r_" + o._id} className="material-icons GreyButton ClearGreyButton" id={"r_" + o._id}
 						   onClick={_this.handleRemoveKeyObjective}>close</i>
 					</div>
 				);

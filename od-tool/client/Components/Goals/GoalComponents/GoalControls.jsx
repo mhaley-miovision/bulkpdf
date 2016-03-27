@@ -20,8 +20,8 @@ GoalControls = React.createClass({
 		if (this.props.isEditing) {
 			return (
 				<div className="card-action center-align">
-					<i data-for={this.tipId()} data-tip="Cancel" className="material-icons GreyButton" onClick={this.props.onCancelClicked}>close</i>
-					<i data-for={this.tipId()} data-tip="Save" className="material-icons GreyButton" onClick={this.props.onSaveClicked}>check</i>
+					<ControlIconButton onClicked={this.props.onCancelClicked} icon="close" tip="Cancel" tipId={this.tipId()}/>
+					<ControlIconButton onClicked={this.props.onSaveClicked} icon="check" tip="Save" tipId={this.tipId()}/>
 					<ReactTooltip id={this.tipId()} place="bottom"/>
 				</div>
 			);
