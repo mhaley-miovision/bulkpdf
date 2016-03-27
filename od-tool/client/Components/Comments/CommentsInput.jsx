@@ -88,9 +88,17 @@ CommentsInput = React.createClass({
 
 		}
 	},
+	handleKeyDown(e) {
+		if (e.keyCode === 13) {
+			e.preventDefault();
+			e.stopPropagation();
+			this.handleCommentSave();
+		}
+	},
 	handleSubmit: function(e) {
 		if (e) {
 			e.preventDefault();
+			e.stopPropagation();
 		}
 		this.handleCommentSave();
 	},
@@ -123,10 +131,9 @@ CommentsInput = React.createClass({
 		return (
 			<div className="CommentRow">
 				<div key={Teal.newId()} className="valign-wrapper">
-					<form onSubmit={this.handleSubmit} style={{width:"100%"}}>
-						<input autofocus placeholder="Enter new comment and press enter..."  id={this.getEditableInputId()}
-							   type="text" className="CommentInput me valign" onChange={this.handleChange}/>
-					</form>
+					<input autofocus placeholder="Enter new comment and press enter..."  id={this.getEditableInputId()}
+						   type="text" className="CommentInput me valign" onChange={this.handleChange}
+							onKeyDown={this.handleKeyDown}/>
 				</div>
 			</div>
 		);

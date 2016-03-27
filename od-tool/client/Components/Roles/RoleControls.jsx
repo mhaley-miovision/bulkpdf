@@ -43,15 +43,36 @@ RoleControls = React.createClass({
 			"teal.roles.removeRole", [ this.props.role._id ], this.props.role);
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	},
+	handleCommentsClicked(evt) {
+		if (evt) {
+			console.log(evt);
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
+
+		if (this.refs && this.refs.commentsModal) {
+			this.refs.commentsModal.show();
+		} else {
+			console.error("commentsModal not mounted yet");
+		}
+	},
 
 	render() {
 		return (
 			<div>
 				<RoleEditModal id="editRoleModal" ref="editRoleModal" role={this.props.role}/>
+				<CommentsModal ref="commentsModal"
+							   comments={this.props.role.comments ? this.props.role.comments : []}
+							   objectId={this.props.role._id}
+							   objectType={Teal.ObjectTypes.Role}/>
 
 				<div className="center">
 					<ControlIconButton onClicked={this.handleDeleteRole} icon="delete" tip="Delete role" tipId={this.tipId()}/>
 					<ControlIconButton onClicked={this.handleEditRole} icon="edit" tip="Edit role" tipId={this.tipId()}/>
+					<ControlIconButton countBadgeValue={this.props.role.comments && this.props.role.comments.length > 0 ?
+														 this.props.role.comments.length : null}
+									   onClicked={this.handleCommentsClicked}
+									   icon="comment" tip="Comments" tipId={this.tipId()}/>
 					<ReactTooltip id={this.tipId()} place="bottom"/>
 				</div>
 			</div>

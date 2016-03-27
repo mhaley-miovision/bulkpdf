@@ -41,11 +41,12 @@ GoalControls = React.createClass({
 							<ControlIconButton onClicked={this.props.onSubgoalsClicked}
 											   icon="list" tip="List subgoals" tipId={this.tipId()}/>
 						}
+						<ControlIconButton onClicked={this.props.onNewClicked}
+										   icon="add" tip="Add subgoal" tipId={this.tipId()}/>
+
 						<ControlIconButton countBadgeValue={this.props.commentCount}
 										   onClicked={this.props.onCommentsClicked}
 										   icon="comment" tip="Comments" tipId={this.tipId()}/>
-						<ControlIconButton onClicked={this.props.onNewClicked}
-										   icon="add" tip="Add subgoal" tipId={this.tipId()}/>
 						<ReactTooltip id={this.tipId()} place="bottom"/>
 					</div>
 				</div>

@@ -803,6 +803,7 @@ Organization = React.createClass({
 		console.log("updateOrganizationGraph called!");
 		let _this = this;
 		if (this.data.doneLoading) {
+			console.log("done loading, rendering");
 			var org = this.data.organization; // as loaded from the db
 			var zoomTo = this.props.objectType === 'contributor' ? this.props.objectId : this.props.zoomTo;
 
@@ -812,10 +813,21 @@ Organization = React.createClass({
 				Chart.loadData({ data:org, zoomTo:zoomTo, _this:_this,
 					onRoleEdit: _this.handleRoleEditOn, onZoomedToObject: _this.handleOnZoomedTo } );
 			}, 0);
+		} else {
+			// try again, in a little bit
+			console.log("not done loading, waiting a little bit...");
+			setTimeout(function() {_this.updateOrganizationGraph() }, 100);
 		}
 	},
 
 	componentDidMount() {
+		this.updateOrganizationGraph();
+	},
+	shouldComponentUpdate(nextProps, nextState) {
+		console.log("*****///// shouldComponentUpdate ////*****");
+		console.log(nextProps);
+		console.log(nextState);
+		return true;
 	},
 	componentWillUpdate(nextProps, nextState) {
 		console.log("componentWillUpdate");
