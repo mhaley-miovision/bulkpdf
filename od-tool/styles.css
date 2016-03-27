@@ -1050,8 +1050,11 @@ circle.container, circle.label {
     margin-left: 5px;
 }
 .GreyButton {
+    position:relative;
+    display:inline-block;
+    width:32px;
+    height:32px;
     font-size: 20px;
-    margin-left: 5px;
     background-color: #e4e4e4;
     border-radius: 50%;
     color: rgba(0, 0, 0, 0.6);
@@ -1062,28 +1065,20 @@ circle.container, circle.label {
     transition: all .15s ease-in-out;
 }
 
-.ControlButton {
-    position:relative;
-    display:inline-block;
-    font-size: 20px;
-    width:28px;
-    height:28px;
-}
-
-.GreyButton .CountBadge {
+.CountBadge {
     position:absolute;    /* This breaks the div from the normal HTML document. */
     top: -6px;
     right:-6px;
     padding:1px 2px 1px 2px;
     background-color:#558C89; /* you could use a background image if you'd like as well */
     color:white;
-    font-weight:bold;
+   /* font-weight:bold;*/
     font-size:0.55em;
 
     /* The following is CSS3, but isn't crucial for this technique to work. */
     /* Keep in mind that if a browser doesn't support CSS3, it's fine! They just won't have rounded borders and won't have a box shadow effect. */
     /* You can always use a background image to produce the same effect if you want to, and you can use both together so browsers without CSS3 still have the rounded/shadow look. */
-    border-radius:5px;
+    border-radius:30px;
     box-shadow:1px 1px 1px gray;
 }
 .GreyButton:hover {

@@ -243,7 +243,9 @@ Goal = React.createClass({
 									  onSaveClicked={this.handleSaveClicked}
 									  onDeleteClicked={this.handleDeleteClicked}
 									  onCancelClicked={this.handleCancelClicked}
-									  onCommentsClicked={this.handleCommentsClicked}/>
+									  onCommentsClicked={this.handleCommentsClicked}
+									  commentCount={this.props.goal && this.props.goal.comments.length > 0 ? this.props.goal.comments.length : null }
+						/>
 					</div>
 					<GoalNewModal id={this.getNewGoalModalId()} parentGoalId={this.props.goal._id}/>
 					<SubGoalsModal id={this.getSubGoalsModalId()} parentGoalId={this.props.goal._id}/>

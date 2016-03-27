@@ -9,6 +9,7 @@ GoalControls = React.createClass({
 		onCancelClicked: React.PropTypes.func.isRequired,
 		onDeleteClicked: React.PropTypes.func.isRequired,
 		onCommentsClicked: React.PropTypes.func.isRequired,
+		commentCount: React.PropTypes.number,
 	},
 
 	tipId() {
@@ -29,16 +30,22 @@ GoalControls = React.createClass({
 				<div className="card-action">
 					<div className="center-align">
 						{  this.props.goal.isLeaf ?
-							<i data-for={this.tipId()} data-tip="Delete goal" className="material-icons GreyButton" onClick={this.props.onDeleteClicked}>delete</i>
+							<ControlIconButton onClicked={this.props.onDeleteClicked}
+											   icon="delete" tip="Delete goal" tipId={this.tipId()}/>
 							: ''
 						}
-						<i data-for={this.tipId()} data-tip="Edit goal" className="material-icons GreyButton" onClick={this.props.onEditClicked}>edit</i>
-						{	this.props.goal.isLeaf ? '' :
+						<ControlIconButton onClicked={this.props.onEditClicked}
+										   icon="edit" tip="Edit goal" tipId={this.tipId()}/>
 
-							<i data-for={this.tipId()} data-tip="List subgoals" className="material-icons GreyButton" onClick={this.props.onSubgoalsClicked}>list</i>
+						{	this.props.goal.isLeaf ? '' :
+							<ControlIconButton onClicked={this.props.onSubgoalsClicked}
+											   icon="list" tip="List subgoals" tipId={this.tipId()}/>
 						}
-						<i data-for={this.tipId()} data-tip="Comments" className="material-icons GreyButton" onClick={this.props.onCommentsClicked}>comment</i>
-						<i data-for={this.tipId()} data-tip="Add subgoal" className="material-icons GreyButton" onClick={this.props.onNewClicked}>add</i>
+						<ControlIconButton countBadgeValue={this.props.commentCount}
+										   onClicked={this.props.onCommentsClicked}
+										   icon="comment" tip="Comments" tipId={this.tipId()}/>
+						<ControlIconButton onClicked={this.props.onNewClicked}
+										   icon="add" tip="Add subgoal" tipId={this.tipId()}/>
 						<ReactTooltip id={this.tipId()} place="bottom"/>
 					</div>
 				</div>
