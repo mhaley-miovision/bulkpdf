@@ -24,7 +24,6 @@ function processGoalsJson(json) {
 	var goals = [];
 	var projects = [];
 	var tasks = [];
-	var lastKeyObjective = null;
 	var lastProject = null;
 	var lastGoal = null;
 	var lookup = {
@@ -345,11 +344,11 @@ Meteor.methods({
 				//n.stats = { completed:0, inProgress:0, notStarted:1 };
 				n.state = 0;
 			} else {
-				console.log("leaf goal node " + n.name + " has undefined status");
+				//console.log("leaf goal node " + n.name + " has undefined status");
 				n.state = 0;
 			}
 
-			console.log(n.name + " --- status:" + n.status + " --- state: " + n.state);
+			//console.log(n.name + " --- status:" + n.status + " --- state: " + n.state);
 
 			n.stats = { completed:0, inProgress:0, notStarted:0 };
 
@@ -389,8 +388,9 @@ Meteor.methods({
 
 		// email about unmatched
 		var s = "Imported " + goals.length + " goals successfully.\n\n";
-		s += "Unmatched owner strings:\n" + result.unmatched.join(",");
 		console.log(s);
+		s += "Unmatched owner strings:\n" + result.unmatched.join(",");
+
 
 		/*
 		Email.send({

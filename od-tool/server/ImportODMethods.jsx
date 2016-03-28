@@ -1,6 +1,7 @@
 // globals for this file
 let rootOrgName = "Miovision";
 let rootOrgId = "miovision-root";
+let MAX_ROW_COUNT = 2000;
 
 function importHelper_transformApplication(x) {
 	x.type = 'application';
@@ -10,7 +11,7 @@ function importHelper_transformApplication(x) {
 	return x;
 }
 function importHelper_transformOrganization(x) {
-	x.type = "organization";
+	x.type = Teal.ObjectTypes.Organization;
 	x.name = x.name.trim();
 	x.createdAt  = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
@@ -19,7 +20,7 @@ function importHelper_transformOrganization(x) {
 	return x;
 }
 function importHelper_transformRole(x) {
-	x.type = 'role';
+	x.type = Teal.ObjectTypes.Role;
 	x.createdAt = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
@@ -27,7 +28,7 @@ function importHelper_transformRole(x) {
 	return x;
 }
 function importHelper_transformOrgAccountability(x) {
-	x.type = 'org_accountability';
+	x.type = Teal.ObjectTypes.Accountability;
 	x.createdAt = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
@@ -35,14 +36,14 @@ function importHelper_transformOrgAccountability(x) {
 }
 function importHelper_transformJobAccountability(x, id) {
 	x.id = id;
-	x.type = 'role_accountability';
+	x.type = Teal.ObjectTypes.Accountability;
 	x.createdAt = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
 	x.rootOrgId = rootOrgId;
 	return x;
 }
 function importHelper_transformContributor(x) {
-	x.type = 'contributor';
+	x.type = Teal.ObjectTypes.Contributor;
 	if (x.email.indexOf(" ") > 0) {
 		x.email = x.email.replace(/ /g, "");
 	}
@@ -53,7 +54,7 @@ function importHelper_transformContributor(x) {
 	return x;
 }
 function importHelper_transformRoleLabel(x) {
-	x.type = 'role_label';
+	x.type = Teal.ObjectTypes.RoleLabel;
 	x.name = x.name.trim();
 	x.createdAt = Teal.newDateTime();
 	x.createdBy = Meteor.userId;
@@ -69,28 +70,24 @@ function sanitizeCell(cellContent) {
 //======================================================================================================================
 // SKILLS
 //======================================================================================================================
-var url = "https://spreadsheets.google.com/feeds/worksheets/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/public/basic?alt=json";
-var skillsCellFeed = "https://spreadsheets.google.com/feeds/cells/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/ov5rkqr/public/basic?alt=json";
-function processSkillsJson(json) {
-	var cellItems = json.feed.entry;
-
+function parseSkills(sheedFeedUrl) {
+	var input = HTTP.call('GET', sheedFeedUrl);
 	var res = [];
-	for (e in cellItems) {
-		var o = cellItems[e];
+	for (var e in input.data.feed.entry) {
+		var o = input.data.feed.entry[e];
 		res[o.title.$t] = o.content.$t;
 	}
+	var c = res;
 
-	c = res;
-
-	var startRow = 2;
+	var startRow = 1;
 	var blankRowCount = 0;
 	var r = startRow;
 
 	var skills = [];
 
-	while (r++ < 2000) {
+	while (r++ < MAX_ROW_COUNT) {
 		// stop if exceeded blank row count
-		if (typeof(c["C"+r]) === 'undefined') {
+		if (typeof(c["B"+r]) === 'undefined') {
 			if (blankRowCount++ > 10) {
 				break;
 			}
@@ -108,26 +105,21 @@ function processSkillsJson(json) {
 //======================================================================================================================
 // ACCOUNTABILITIES
 //======================================================================================================================
-var url = "https://spreadsheets.google.com/feeds/worksheets/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/public/basic?alt=json";
-var accountabilitiesCellFeed = "https://spreadsheets.google.com/feeds/cells/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/o4k261s/public/basic?alt=json";
-function processAccountabilitiesJson(json) {
-	var cellItems = json.feed.entry;
-
+function parseAccountabilities(sheedFeedUrl) {
+	var input = HTTP.call('GET', sheedFeedUrl);
 	var res = [];
-	for (e in cellItems) {
-		var o = cellItems[e];
+	for (var e in input.data.feed.entry) {
+		var o = input.data.feed.entry[e];
 		res[o.title.$t] = o.content.$t;
 	}
+	var c = res;
 
-	c = res;
-
-	var startRow = 2;
+	var startRow = 1;
 	var blankRowCount = 0;
 	var r = startRow;
-
 	var accountabilities = [];
 
-	while (r++ < 2000) {
+	while (r++ < MAX_ROW_COUNT) {
 		// stop if exceeded blank row count
 		if (typeof(c["C"+r]) === 'undefined') {
 			if (blankRowCount++ > 10) {
@@ -150,25 +142,21 @@ function processAccountabilitiesJson(json) {
 //======================================================================================================================
 // ROLES
 //======================================================================================================================
-var rolesCellFeed = "https://spreadsheets.google.com/feeds/cells/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/oz844tv/public/basic?alt=json";
-function processRolesJson(json) {
-	var cellItems = json.feed.entry;
-
+function parseRoles(sheedFeedUrl) {
+	var input = HTTP.call('GET', sheedFeedUrl);
 	var res = [];
-	for (e in cellItems) {
-		var o = cellItems[e];
+	for (var e in input.data.feed.entry) {
+		var o = input.data.feed.entry[e];
 		res[o.title.$t] = o.content.$t;
 	}
+	var c = res;
 
-	c = res;
-
-	var startRow = 2;
+	var startRow = 1;
 	var blankRowCount = 0;
 	var r = startRow;
-
 	var roles = [];
 
-	while (r++ < 2000) {
+	while (r++ < MAX_ROW_COUNT) {
 		// stop if exceeded blank row count
 		if (typeof(c["C" + r]) === 'undefined') {
 			if (blankRowCount++ > 10) {
@@ -197,15 +185,138 @@ function processRolesJson(json) {
 
 	return roles;
 }
+//======================================================================================================================
+// ORGANIZATIONS
+//======================================================================================================================
+function parseOrganizations(sheedFeedUrl) {
+	var input = HTTP.call('GET', sheedFeedUrl);
+	var res = [];
+	for (var e in input.data.feed.entry) {
+		var o = input.data.feed.entry[e];
+		res[o.title.$t] = o.content.$t;
+	}
+	var c = res;
+
+	var startRow = 1;
+	var blankRowCount = 0;
+	var r = startRow;
+	var organizations = [];
+
+	while (r++ < MAX_ROW_COUNT) {
+		// stop if exceeded blank row count
+		if (typeof(c["B"+r]) === 'undefined') {
+			if (blankRowCount++ > 10) {
+				break;
+			}
+			continue;
+		}
+		organizations.push({
+			name : sanitizeCell(res['B'+r]),
+			parent : sanitizeCell(res['C'+r]),
+			startDate : sanitizeCell(res['H'+r]),
+			endDate : sanitizeCell(res['I'+r]),
+		});
+	}
+	return organizations;
+}
+//======================================================================================================================
+// CONTRIBUTORS
+//======================================================================================================================
+function parseContributors(sheedFeedUrl) {
+	var input = HTTP.call('GET', sheedFeedUrl);
+	var res = [];
+
+	for (var e in input.data.feed.entry) {
+		var o = input.data.feed.entry[e];
+		res[o.title.$t] = o.content.$t;
+	}
+	var c = res;
+
+	var startRow = 1;
+	var blankRowCount = 0;
+	var r = startRow;
+	var contributors = [];
+
+	while (r++ < MAX_ROW_COUNT) {
+		// stop if exceeded blank row count
+		if (typeof(c["B"+r]) === 'undefined') {
+			if (blankRowCount++ > 10) {
+				break;
+			}
+			continue;
+		}
+		contributors.push({
+			lastName : sanitizeCell(res['B'+r]),
+			firstName : sanitizeCell(res['C'+r]),
+			name : sanitizeCell(res['D'+r]),
+			isActive : sanitizeCell(res['E'+r]),
+			startDate : sanitizeCell(res['F'+r]),
+			endDate : sanitizeCell(res['G'+r]),
+			email : sanitizeCell(res['H'+r]),
+			physicalTeam : sanitizeCell(res['I'+r]),
+			employeeStatus : sanitizeCell(res['J'+r])
+		});
+	}
+	return contributors;
+}
+
+function readSheetFeedUrls(sheedFeedUrl) {
+	// Use API to retrieve OD datavar response = HTTP.call('GET', accountabilitiesCellFeed);
+	var input = HTTP.call('GET', sheedFeedUrl);
+	let cellsFeedLookup = [];
+	var parsed = JSON.parse(input.content);
+	var x = _.map(parsed.feed.entry,
+		function(x) {
+			return {
+				title: x.title.$t,
+				cellsFeedUrl: ( _.find(x.link, function (y) { return y.rel.indexOf('#cellsfeed') >= 0; }).href + "?alt=json" )
+			};
+		});
+	_.each(x, function(z) { cellsFeedLookup[z.title.toLowerCase()] = z.cellsFeedUrl; });
+	return cellsFeedLookup;
+}
+
+//======================================================================================================================
+// ROLE LABELS
+//======================================================================================================================
+function parseRoleLabels(sheedFeedUrl) {
+	var input = HTTP.call('GET', sheedFeedUrl);
+	var res = [];
+	for (var e in input.data.feed.entry) {
+		var o = input.data.feed.entry[e];
+		res[o.title.$t] = o.content.$t;
+	}
+	var c = res;
+
+	var startRow = 1;
+	var blankRowCount = 0;
+	var r = startRow;
+	var roleLabels = [];
+
+	while (r++ < MAX_ROW_COUNT) {
+		// stop if exceeded blank row count
+		if (typeof(c["B"+r]) === 'undefined') {
+			if (blankRowCount++ > 10) {
+				break;
+			}
+			continue;
+		}
+		roleLabels.push({
+			name : sanitizeCell(res['B'+r])
+		});
+	}
+	return roleLabels;
+}
 
 Meteor.methods({
-	"teal.import.v1ImportDatabase": function () {
+	"teal.import.importGoogleSpreadsheetDatabase": function () {
+		//TODO: make this a parameter
+		var sheedFeedUrl = "https://spreadsheets.google.com/feeds/worksheets/1hsCRYiuW9UquI1uQBsAc6fMfEnQYCjeE716h8FwAdaQ/public/basic?alt=json";
+
 		// Make sure the user is logged in before inserting a task
 		if (!Meteor.userId()) {
 			throw new Meteor.Error("not-authorized");
 		}
-
-		var v1BaseURL = "http://ec2-54-152-211-94.compute-1.amazonaws.com/";
 
 		// find the root org if it exists already, and if not, insert it
 		var rootOrg = OrganizationsCollection.findOne({name: rootOrgName});
@@ -238,33 +349,22 @@ Meteor.methods({
 		}
 
 		// Use API to retrieve OD data
-		var contributors = Meteor.http.call("GET", v1BaseURL + "contributors");
-		var roleLabels = Meteor.http.call("GET", v1BaseURL + "roles");
-		var applications = Meteor.http.call("GET", v1BaseURL + "applications");
-		var jobAccountabilities = Meteor.http.call("GET", v1BaseURL + "jobAccountabilities");
-		var organizations = Meteor.http.call("GET", v1BaseURL + "organizations");
-		var orgAccountabilities = Meteor.http.call("GET", v1BaseURL + "orgAccountabilities");
-		var roles = Meteor.http.call("GET", v1BaseURL + "jobs");
-
-		//==============================================================================================================
-		// Applications
-		//==============================================================================================================
-
-		for (var x in applications.data) {
-			ApplicationsCollection.insert(importHelper_transformApplication(applications.data[x]));
-		}
+		let cellsFeedLookup = readSheetFeedUrls(sheedFeedUrl);
 
 		//==============================================================================================================
 		// Organizations
 		//==============================================================================================================
 
+		var organizations = parseOrganizations(cellsFeedLookup['organizations']);
+
 		// organization import
-		for (var x in organizations.data) {
+		for (var x in organizations) {
 			// do not re-insert root org
-			if (organizations.data[x] !== rootOrgName) {
-				OrganizationsCollection.insert(importHelper_transformOrganization(organizations.data[x]));
+			if (organizations[x].name !== rootOrgName) {
+				OrganizationsCollection.insert(importHelper_transformOrganization(organizations[x]));
 			}
 		}
+		console.log("Imported " + organizations.length + " organizations.");
 
 		OrganizationsCollection.find({rootOrgId: rootOrgId}).forEach(o => {
 			var p = OrganizationsCollection.findOne({name: o.parent});
@@ -283,9 +383,9 @@ Meteor.methods({
 		// Contributors
 		//==============================================================================================================
 
-		for (let x in contributors.data) {
-			let processed = importHelper_transformContributor(contributors.data[x]);
-
+		var contributors = parseContributors(cellsFeedLookup['contributors']);
+		contributors.forEach(x => {
+			let processed = importHelper_transformContributor(x);
 			// insert the contributor
 			var c_id = ContributorsCollection.insert(processed);
 			var c = ContributorsCollection.findOne({_id: c_id});
@@ -297,60 +397,55 @@ Meteor.methods({
 			} else {
 				console.warn("Couldn't find physical team for: " + c.name);
 			}
-		}
+		});
 
-		//==============================================================================================================
-		// Org Accountabilities
-		//==============================================================================================================
+		// overwrite contributor link
+		// WARNING: assumes to name collisions within same root org id
+		Meteor.users.find({rootOrgId:rootOrgId}).forEach(u => {
+			var c = ContributorsCollection.findOne( { email: u.email });
+			Meteor.users.update( {email: u.email}, {$set: {contributorId: c._id}}, {multi:true} );
+		});
 
-		for (var x in orgAccountabilities.data) {
-			OrgAccountabilitiesCollection.insert(importHelper_transformOrgAccountability(orgAccountabilities.data[x]));
-		}
+		console.log("Imported " + contributors.length + " contributors.");
 
 		//==============================================================================================================
 		// Roles
 		//==============================================================================================================
 
-		// get skills also, bypassing v1 of tool
-		var response = HTTP.call('GET', rolesCellFeed);
-		var result = processRolesJson(response.data);
-		if (result && result.length > 0) {
-			result.forEach(r => {
-				var processed = importHelper_transformRole(r);
-				processed.rootOrgId = rootOrgId;
+		var roles = parseRoles(cellsFeedLookup['jobs']);
+		roles.forEach(r => {
+			var processed = importHelper_transformRole(r);
+			processed.rootOrgId = rootOrgId;
 
-				// user info
-				var c = ContributorsCollection.findOne({name: processed.contributor});
-				if (c) {
-					processed.email = c.email;
-					processed.contributorId = c._id;
-				} else {
-					console.error("Couldn't find contributor for role: " + processed.accountabilityLabel);
-				}
+			// user info
+			var c = ContributorsCollection.findOne({name: processed.contributor});
+			if (c) {
+				processed.email = c.email;
+				processed.contributorId = c._id;
+			} else {
+				console.error("Couldn't find contributor for role: " + processed.accountabilityLabel);
+			}
 
-				// organization info
-				var org = OrganizationsCollection.findOne({name: r.organization});
-				if (org) {
-					let path = _.clone(org.path);
-					path.push(org._id); // full path includes this org as a parent
-					processed.path = path;
-					processed.organizationId = org._id;
-				} else {
-					console.error("Couldn't find organization for role: " + processed.accountabilityLabel);
-				}
+			// organization info
+			var org = OrganizationsCollection.findOne({name: r.organization});
+			if (org) {
+				let path = _.clone(org.path);
+				path.push(org._id); // full path includes this org as a parent
+				processed.path = path;
+				processed.organizationId = org._id;
+			} else {
+				console.error("Couldn't find organization for role: " + processed.accountabilityLabel);
+			}
 
-				// finally insert  the role
-				var r_id = RolesCollection.insert(processed);
+			// finally insert  the role
+			var r_id = RolesCollection.insert(processed);
 
-				// append primary role id to contributor
-				if (c && r.primaryAccountability) {
-					ContributorsCollection.update({_id: c._id}, {$set: {primaryRoleId: r_id}});
-				}
-			});
-			console.log("Successfully imported " + result.length + " role entries.");
-		} else {
-			console.error("Could not find any roles!");
-		}
+			// append primary role id to contributor
+			if (c && r.primaryAccountability) {
+				ContributorsCollection.update({_id: c._id}, {$set: {primaryRoleId: r_id}});
+			}
+		});
+		console.log("Imported " + roles.length + " roles.");
 
 		// any contributor without a primary role identified can be filled in automatically
 		ContributorsCollection.find({primaryRoleId: {$exists: false}}).forEach(c => {
@@ -369,52 +464,44 @@ Meteor.methods({
 		// Role Accountabilities
 		//==============================================================================================================
 
-		//TODO: remove this
-		for (var x in jobAccountabilities.data) {
-			RoleAccountabilitiesCollection.insert(importHelper_transformJobAccountability(jobAccountabilities.data[x], x));
-		}
+		var accountabilities = parseAccountabilities(cellsFeedLookup['job accountabilities']);
 
-		// get accountabilties, bypassing v1 of tool
-		var response = HTTP.call('GET', accountabilitiesCellFeed);
-		var result = processAccountabilitiesJson(response.data);
-		if (result && result.length > 0) {
+		// attach to corresponding roles
+		RolesCollection.find({rootOrgId:rootOrgId}).forEach(r => {
 
-			// attach to corresponding roles
-			RolesCollection.find({rootOrgId:rootOrgId}).forEach(r => {
+			// find the accountabilities that belong
+			let roleAccountabilities = [];
 
-				// find the accountabilities that belong
-				let accountabilities = [];
-
-				let accs = _.where(result, { jobId: r._oldId });
-				if (accs.length > 0) {
-					accs.forEach(a => {
-						accountabilities.push({
-							_id: Teal.newId(),
-							name: a.acc,
-							accountabilityType: a.type,
-						});
+			let accs = _.where(accountabilities, { jobId: r._oldId });
+			if (accs.length > 0) {
+				accs.forEach(a => {
+					roleAccountabilities.push({
+						_id: Teal.newId(),
+						name: a.acc,
+						accountabilityType: a.type,
 					});
-				}
+				});
+			}
 
-				// apply them to the role, and unset the old id
-				RolesCollection.update(r._id, {$set: { accountabilities: accountabilities }});
-				RolesCollection.update(r._id, {$unset: { _oldId: 1 }});
+			// apply them to the role, and unset the old id
+			RolesCollection.update(r._id, {$set: { accountabilities: roleAccountabilities }});
+			RolesCollection.update(r._id, {$unset: { _oldId: 1 }});
 
-				if (accs.length > 0) {
-					console.log("Successfully attached " + accs.length + " accountabilities to role " + r.accountabilityLabel);
-				}
-			});
-		} else {
-			console.error("Could not find any accountabilities!");
-		}
+			if (accs.length > 0) {
+				console.log("Successfully attached " + accs.length + " accountabilities to role " + r.accountabilityLabel);
+			}
+		});
+		console.log("Imported " + accountabilities.length + " accountabilities.");
 
 		//==============================================================================================================
 		// Role Labels
 		//==============================================================================================================
 
-		for (var x in roleLabels.data) {
-			RoleLabelsCollection.insert(importHelper_transformRoleLabel(roleLabels.data[x]));
-		}
+		var roleLabels = parseRoleLabels(cellsFeedLookup['roles']);
+		roleLabels.forEach(rl => {
+			RoleLabelsCollection.insert(importHelper_transformRoleLabel(rl));
+		});
+		console.log("Imported " + roleLabels.length + " role labels.");
 
 		//==============================================================================================================
 		// Accountability Labels
@@ -425,23 +512,19 @@ Meteor.methods({
 		levels.forEach(l => {
 			AccountabilityLevelsCollection.insert({name:l, rootOrgId:rootOrgId});
 		});
+		console.log("Imported " + levels.length + " accountability levels.");
 
 		//==============================================================================================================
 		// Skills
 		//==============================================================================================================
 
 		// get skills also, bypassing v1 of tool
-		var response = HTTP.call('GET', skillsCellFeed);
-		var result = processSkillsJson(response.data);
-		if (result && result.length > 0) {
-			result.forEach(s => {
-				s.rootOrgId = rootOrgId;
-				SkillsCollection.insert(s)
-			});
-			console.log("Successfully imported " + result.length + " skill entries.");
-		} else {
-			console.error("Could not find any skills!");
-		}
+		var skills = parseSkills(cellsFeedLookup['skills']);
+		skills.forEach(s => {
+			s.rootOrgId = rootOrgId;
+			SkillsCollection.insert(s)
+		});
+		console.log("Imported " + skills.length + " skills.");
 	}
 })
 

@@ -103,8 +103,6 @@ Meteor.methods({
 	},
 
 	"teal.goals.loadGoalTreeForRole": function(roleId = null) {
-		//console.log("Goaltree for roleId: '" + roleId + "'");
-
 		if (roleId == null) {
 			let currentUser = Meteor.users.findOne({_id: Meteor.userId()});
 			roleId = currentUser.primaryRoleId;

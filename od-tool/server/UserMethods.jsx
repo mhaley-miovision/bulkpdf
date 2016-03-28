@@ -94,7 +94,8 @@ if (Meteor.isServer) {
 			var email = "Updated " + updatedCount + " photo urls.\n\n\nUpdated:" + updatedString
 				+ "\n\n\nUnknown contributors:\n\n" + notFoundString
 				+ "\n\nContributors without a photo:\n\n" + noPhotoString;
-			console.log(email);
+			console.log("Updated " + updatedCount + " photo urls.");
+
 			Email.send({
 				from: "teal@miovision.com",
 				to: "vleipnik@miovision.com",
