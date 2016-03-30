@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
 export const RoleAccountabilitiesCollection = new Mongo.Collection("teal.role_accountabilities");

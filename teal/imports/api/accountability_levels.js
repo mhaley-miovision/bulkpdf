@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
 export const AccountabilityLevelsCollection = new Mongo.Collection("teal.accountability_levels");
