@@ -8,8 +8,6 @@ import App from '../../ui/App.jsx'
 FlowRouter.route( '/', {
     name: '',
     action() {
-		console.log("hollaaa");
-
         mount(Layout, {
             content: (<App/>)
         })

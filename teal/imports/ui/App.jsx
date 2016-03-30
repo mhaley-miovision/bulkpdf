@@ -5,6 +5,8 @@ import { TasksCollection } from '../api/tasks.js'
 
 import Task from './components/Task.jsx';
 
+import Teal from '../shared/Teal.js'
+
 // App component - represents the whole app
 class App extends Component {
 	renderTasks() {
