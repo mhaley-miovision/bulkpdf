@@ -1,4 +1,4 @@
-import Teal from './Teal.js';
+import Teal from './Teal';
 import { Meteor } from 'meteor/meteor';
 
 export default {

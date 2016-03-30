@@ -1,13 +1,15 @@
+import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
+import AccountsUIWrapper from './components/accounts/AccountsUIWrapper.jsx';
 
-import { TasksCollection } from '../api/tasks.js'
+import { TasksCollection } from '../api/tasks'
+import Teal from '../shared/Teal'
+import Permissions from '../api/permissions';
 
 import Task from './components/Task.jsx';
 
-import Teal from '../shared/Teal.js'
-
-// App component - represents the whole app
+// Represents the whole app
 class App extends Component {
 	renderTasks() {
 		return this.props.tasks.map((task) => (
@@ -18,7 +20,10 @@ class App extends Component {
 	render() {
 		return (
 			<div className="container">
-				<header>
+
+				<AccountsUIWrapper />
+
+				<header id="test">
 					<h1>Todo List</h1>
 				</header>
 
@@ -38,5 +43,19 @@ export default createContainer(() => {
 	Meteor.subscribe('teal.tasks');
 	return {
 		tasks: TasksCollection.find({}).fetch(),
+		loggingIn: Meteor.loggingIn(),
+		hasUser: !!Meteor.user() && Permissions.isEnabled(),
+
+		isPublic( route ) {
+			let publicRoutes = [
+				'login'
+			];
+
+			return publicRoutes.indexOf( route ) > -1;
+		},
+
+		canView() {
+			return this.isPublic( FlowRouter.current().route.name ) || !!Meteor.user();
+		}
 	};
 }, App);

@@ -11,7 +11,7 @@ import '../imports/api/goals.js';
 import '../imports/api/googleUsersCache.js';
 import '../imports/api/notifications.js';
 import '../imports/api/organizations.js';
-import '../imports/api/permissions.jsx';
+import '../imports/api/permissions.js';
 import '../imports/api/role_accountabilities.js';
 import '../imports/api/role_labels.js';
 import '../imports/api/roles.js';
