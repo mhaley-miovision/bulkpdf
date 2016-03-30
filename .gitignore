@@ -52,7 +52,6 @@ jshint-results.xml
 
 #DB Backups
 backups/
-db_backups/
 
 *.sublime-project
 *.sublime-workspace

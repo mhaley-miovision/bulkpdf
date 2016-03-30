@@ -1,0 +1,15 @@
+{
+  "name": "teal",
+  "private": true,
+  "scripts": {
+    "start": "meteor run"
+  },
+  "dependencies": {
+    "materialize-css": "^0.97.5",
+    "meteor-node-stubs": "~0.2.0",
+    "react": "^0.14.8",
+    "react-addons-pure-render-mixin": "^0.14.8",
+    "react-dom": "^0.14.8",
+    "react-mounter": "^1.1.0"
+  }
+}
