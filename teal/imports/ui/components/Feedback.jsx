@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-class FeedbackComponent  extends Component {
+export default class FeedbackComponent  extends Component {
 	constructor() {
 		super();
 		this.state = {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-class Login extends Component {
+export default class Login extends Component {
 	componentDidMount() {
 		console.log(Meteor.user());
 

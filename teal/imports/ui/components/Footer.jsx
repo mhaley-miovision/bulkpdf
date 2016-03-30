@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-class Footer extends Component {
+import FeedbackComponent from './Feedback.jsx';
+
+export default class Footer extends Component {
 	handleFeedbackClick() {
 		this.refs.feedback.showDialog();
 	}

@@ -50,7 +50,7 @@ export default {
 	},
 
 	userPhotoUrl(photoUrl) {
-		if (photoUrl) {
+		if (!!photoUrl) {
 			return photoUrl;
 		}
 		return '/img/user_avatar_blank.jpg';

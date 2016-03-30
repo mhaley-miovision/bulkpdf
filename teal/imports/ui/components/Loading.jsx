@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-class Loading extends Compoent {
+export default class Loading extends Compoent {
 	constructor() {
 		super();
 		this.props = {

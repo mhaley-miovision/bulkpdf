@@ -4,6 +4,11 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Permissions from '../../api/permissions';
 import Routing from '../../api/routing';
+import { ChangesCollection } from '../../api/changes';
+import Teal from '../../shared/Teal';
+
+import AccountsUIWrapper from './accounts/AccountsUIWrapper.jsx';
+import ProfileImage from './profile/ProfileImage.jsx';
 
 class Navbar extends Component {
 	handleFeedbackClick() {
@@ -27,9 +32,9 @@ class Navbar extends Component {
 	}
 
 	renderChangesCount() {
-		if (this.data.changesCount) {
+		if (this.props.changesCount) {
 			//darken-3 orange
-			return <span className="new badge background-main1 white-text">{this.data.changesCount}</span>;
+			return <span className="new badge background-main1 white-text">{this.props.changesCount}</span>;
 		}
 	}
 

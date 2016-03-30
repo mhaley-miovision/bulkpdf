@@ -7,29 +7,22 @@ import { TasksCollection } from '../api/tasks'
 import Teal from '../shared/Teal'
 import Permissions from '../api/permissions';
 
-import Task from './components/Task.jsx';
+import Navbar from './components/Navbar.jsx';
+import Footer from './components/Footer.jsx';
 
 // Represents the whole app
 class App extends Component {
-	renderTasks() {
-		return this.props.tasks.map((task) => (
-			<Task key={task._id} task={task} />
-		));
-	}
-
+	/*
+	 <div className="container">
+	 {this.props.loggingIn ? <Loading /> : this.props.view}
+	 </div>
+	 */
 	render() {
 		return (
-			<div className="container">
+			<div className="app-root">
+				<Navbar hasUser={this.props.hasUser}/>
 
-				<AccountsUIWrapper />
-
-				<header id="test">
-					<h1>Todo List</h1>
-				</header>
-
-				<ul>
-					{this.renderTasks()}
-				</ul>
+				<Footer hasUser={this.props.hasUser}/>
 			</div>
 		);
 	}
@@ -39,12 +32,13 @@ App.propTypes = {
 	tasks: React.PropTypes.array.isRequired,
 };
 
-export default createContainer(() => {
-	Meteor.subscribe('teal.tasks');
+export default createContainer((view) => {
+
 	return {
 		tasks: TasksCollection.find({}).fetch(),
 		loggingIn: Meteor.loggingIn(),
 		hasUser: !!Meteor.user() && Permissions.isEnabled(),
+		view: view,
 
 		isPublic( route ) {
 			let publicRoutes = [
