@@ -6,8 +6,25 @@ import { ContributorsCollection } from './contributors';
 import { GoogleUserCacheCollection } from './googleUsersCache';
 
 if (Meteor.isServer) {
+
+	Meteor.publish("users", function () {
+		console.log("publishing users!");
+
+		return Meteor.users.find({},
+			{ 'fields': {
+				'user': 1,
+				'services.google.email': 1,
+				'services.google.name': 1,
+				'services.google.given_name': 1,
+				'services.google.family_name': 1,
+				'services.google.picture': 1,
+				'services.google.gender': 1,
+				'rootOrgId': 1,
+				'email': 1,
+			}});
+	});
+
 	Meteor.methods({
-		// TODO: this needs to be publication
 		"teal.users.getMyOrganization": function () {
 			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {

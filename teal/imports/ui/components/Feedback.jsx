@@ -8,6 +8,10 @@ export default class FeedbackComponent  extends Component {
 			feedback: null,
 			submitted: false
 		};
+
+		this.showDialog = this.showDialog.bind(this);
+		this.handleChange = this.handleChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
 	showDialog() {

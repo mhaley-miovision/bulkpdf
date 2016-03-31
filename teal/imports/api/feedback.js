@@ -24,7 +24,7 @@ if (Meteor.isServer) {
 
 			// also send notification
 			let n = {type: "feedback.received", payload: o};
-			Meteor.call("teal.notification.createNotification", n);
+			Meteor.call("teal.notifications.createNotification", n);
 		}
 	});
 }

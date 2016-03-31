@@ -11,12 +11,6 @@ import AccountsUIWrapper from './accounts/AccountsUIWrapper.jsx';
 import ProfileImage from './profile/ProfileImage.jsx';
 
 class Navbar extends Component {
-	handleFeedbackClick() {
-		this.refs.enps.showDialog();
-	}
-
-	componentDidMount() {
-	}
 
 	renderPublic() {
 		return (
@@ -100,7 +94,9 @@ class Navbar extends Component {
 export default createContainer(() => {
 	var h = Meteor.subscribe("teal.changes")
 	if (h.ready()) {
-		return { changesCount: ChangesCollection.find().count() };
+		return {
+			changesCount: ChangesCollection.find().count()
+		};
 	}
 	return {};
 }, Navbar);

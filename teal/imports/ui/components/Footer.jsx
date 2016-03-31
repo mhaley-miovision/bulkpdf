@@ -4,6 +4,12 @@ import React, { Component } from 'react';
 import FeedbackComponent from './Feedback.jsx';
 
 export default class Footer extends Component {
+	constructor() {
+		super();
+
+		this.handleFeedbackClick = this.handleFeedbackClick.bind(this);
+	}
+
 	handleFeedbackClick() {
 		this.refs.feedback.showDialog();
 	}

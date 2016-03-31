@@ -33,7 +33,6 @@ App.propTypes = {
 };
 
 export default createContainer((view) => {
-
 	return {
 		tasks: TasksCollection.find({}).fetch(),
 		loggingIn: Meteor.loggingIn(),
