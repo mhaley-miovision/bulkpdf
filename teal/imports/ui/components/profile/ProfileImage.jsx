@@ -31,24 +31,29 @@ class ProfileImage extends Component {
 			textAlign: this.props.textAlign
 		};
 
-		return (
-			<img style={divStyle} className="profileImg" src={this.props.profilePhotoUrl}/>
-		);
+		if (this.props.doneLoading) {
+			return (
+				<img style={divStyle} className="profileImg" src={this.props.profilePhotoUrl}/>
+			);
+		} else {
+			return false;
+		}
 	}
 }
 
-export default createContainer((profilePhotoUrl) => {
+export default createContainer(() => {
 	"use strict";
 
-	var handle = Meteor.subscribe("users");
-	if (!handle.ready()) {
+	var handle = Meteor.subscribe("teal.user_data");
+	if (handle.ready()) {
 		var usr = Meteor.users.findOne({ _id : Meteor.user()._id });
 		console.log("usr:");
 		console.log(usr);
+		console.log(usr.services.google);
 
 		if (usr && usr.services) {
-			return { profilePhotoUrl: usr.services.google.picture };
+			return { doneLoading: true, profilePhotoUrl: usr.services.google.picture };
 		}
 	}
-	return { profilePhotoUrl: Teal.userPhotoUrl(null) };
+	return { doneLoading: false, profilePhotoUrl: Teal.userPhotoUrl(null) };
 }, ProfileImage);

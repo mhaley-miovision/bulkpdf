@@ -5,6 +5,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 export default class SubGoalsModal extends Component {
 	constructor() {
+		super();
 		this.handleClose = this.handleClose.bind(this);
 		this.handleGoalClicked = this.handleGoalClicked.bind(this);
 	}

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 
 export default class RoleListEdit extends Component {
 	constructor() {
+		super();
 		this.state = { roles: _.clone(this.props.roleList) };
 		this.handleOnDelete = this.handleOnDelete.bind(this);
 	}

@@ -5,6 +5,7 @@ import TealChanges from '../../../shared/TealChanges'
 
 export default class GoalKeyObjective extends Component {
 	constructor() {
+		super();
 		this.toggleCompleted = this.toggleCompleted.bind(this);
 	}
 

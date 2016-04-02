@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
+import { createContainer } from 'meteor/react-meteor-data';
 
 class Profile extends Component {
 	render() {
@@ -51,7 +52,7 @@ export default createContainer(() => {
 	"use strict";
 
 	let handle = Meteor.subscribe("teal.contributors");
-	let handle2 = Meteor.subscribe("users");
+	let handle2 = Meteor.subscribe("teal.users");
 	if (handle.ready() && handle2.ready()) {
 		// default is current user
 		let email = this.props.objectId;

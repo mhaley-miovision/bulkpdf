@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
+import { createContainer } from 'meteor/react-meteor-data';
 
 import FeedbackComponent from './Feedback.jsx';
 
@@ -56,3 +57,14 @@ export default class Footer extends Component {
 		);
 	}
 }
+
+
+export default createContainer(() => {
+	var h = Meteor.subscribe("teal.users")
+	if (h.ready()) {
+		return {
+			hasUser: !!Meteor.user()
+		};
+	}
+	return {};
+}, Footer);

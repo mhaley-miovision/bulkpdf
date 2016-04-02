@@ -12,18 +12,9 @@ import Footer from './components/Footer.jsx';
 
 // Represents the whole app
 class App extends Component {
-	/*
-	 <div className="container">
-	 {this.props.loggingIn ? <Loading /> : this.props.view}
-	 </div>
-	 */
 	render() {
 		return (
-			<div className="app-root">
-				<Navbar hasUser={this.props.hasUser}/>
-
-				<Footer hasUser={this.props.hasUser}/>
-			</div>
+			<div>This is a test</div>
 		);
 	}
 }

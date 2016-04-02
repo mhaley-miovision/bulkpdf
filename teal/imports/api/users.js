@@ -8,8 +8,6 @@ import { GoogleUserCacheCollection } from './googleUsersCache';
 if (Meteor.isServer) {
 
 	Meteor.publish("users", function () {
-		console.log("publishing users!");
-
 		return Meteor.users.find({},
 			{ 'fields': {
 				'user': 1,
@@ -22,6 +20,25 @@ if (Meteor.isServer) {
 				'rootOrgId': 1,
 				'email': 1,
 			}});
+	});
+
+	Meteor.publish("teal.user_data", function () {
+		console.log("publishing current user data!");
+
+		console.log(Meteor.users.findOne({_id: this.userId}));
+
+		return Meteor.users.find({_id: this.userId},
+		{ 'fields': {
+			'user': 1,
+			'services.google.email': 1,
+			'services.google.name': 1,
+			'services.google.given_name': 1,
+			'services.google.family_name': 1,
+			'services.google.picture': 1,
+			'services.google.gender': 1,
+			'rootOrgId': 1,
+			'email': 1,
+		}});
 	});
 
 	Meteor.methods({
