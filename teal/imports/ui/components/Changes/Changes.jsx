@@ -1,14 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
+var ReactTooltip = require("react-tooltip");
+
+import { ChangesCollection } from '../../../api/changes'
 
 import Teal from '../../../shared/Teal'
 import TealChanges from '../../../shared/TealChanges'
 import Permissions from '../../../api/permissions'
 
 import Loading from '../Loading.jsx'
+import ChangeItem from '../changes/ChangeItem.jsx'
 
-class Requests extends Component {
+class MyChanges extends Component {
 
 	renderChanges() {
 		if (this.props.doneLoading) {
@@ -71,4 +75,4 @@ export default createContainer(() => {
 	}
 	return { doneLoading: false };
 
-}, Requests);
+}, MyChanges);

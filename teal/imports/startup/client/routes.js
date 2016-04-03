@@ -4,8 +4,9 @@ import { mount } from 'react-mounter'
 import { Layout } from '../../ui/layouts/layout.jsx'
 
 import Admin from '../../ui/pages/Admin.jsx'
-import ENPS from '../../ui/pages/ENPS.jsx'
+import MyENPS from '../../ui/pages/MyENPS.jsx'
 import MyGoals from '../../ui/pages/MyGoals.jsx'
+import MyChanges from '../../ui/pages/MyChanges.jsx'
 import MyOrganization from '../../ui/pages/MyOrganization.jsx'
 import MyProfile from '../../ui/pages/MyProfile.jsx'
 import MyTeam from '../../ui/pages/MyTeam.jsx'
@@ -170,11 +171,11 @@ FlowRouter.route( '/organization/view', {
 	}
 });
 
-FlowRouter.route( '/requests', {
-	name: 'requests',
+FlowRouter.route( '/changes', {
+	name: 'changes',
 	action() {
 		mount(Layout, {
-			content: ( <Requests /> )
+			content: ( <MyChanges /> )
 		});
 	}
 });
@@ -192,7 +193,7 @@ FlowRouter.route( '/enps', {
 	name: 'enps',
 	action() {
 		mount(Layout, {
-			content: ( <ENPS /> )
+			content: ( <MyENPS /> )
 		});
 	}
 });

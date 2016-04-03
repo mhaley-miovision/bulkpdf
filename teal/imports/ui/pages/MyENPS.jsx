@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-export default class ENPS extends Component {
+export default class MyENPS extends Component {
 	constructor() {
 		super();
 

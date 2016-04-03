@@ -49,7 +49,7 @@ class Navbar extends Component {
 					</li>
 					: ''
 				}
-				<li className={Routing.currentRoute("requests")}><a href="/requests">Changes{this.renderChangesCount()}</a></li>
+				<li className={Routing.currentRoute("changes")}><a href="/changes">Changes{this.renderChangesCount()}</a></li>
 				{
 					Permissions.isAdmin() ?
 						<li className={Routing.currentRoute("admin")}><a href="/admin">Admin</a></li>
