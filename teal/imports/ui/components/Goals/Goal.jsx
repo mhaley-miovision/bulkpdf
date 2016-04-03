@@ -4,7 +4,16 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 
-const TOAST_DURATION = 1000;
+import GoalUpToParentButton from './goal_components/GoalUpToParentButton.jsx'
+import GoalDoneCriteria from './goal_components/GoalDoneCriteria.jsx'
+import GoalKeyObjectives from './goal_components/GoalKeyObjective.jsx'
+import GoalUserPhotoList from './goal_components/GoalUserPhotoList.jsx'
+import GoalState from './goal_components/GoalState.jsx'
+import GoalDueDateLabel from './goal_components/GoalDueDateLabel.jsx'
+import GoalControls from './goal_components/GoalControls.jsx'
+import GoalNewModal from './GoalNewModal.jsx'
+import SubGoalsModal from './SubGoalsModal.jsx'
+import CommentsModal from '../comments/CommentsModal.jsx'
 
 // Role component - represents a single role
 export default class Goal extends Component {

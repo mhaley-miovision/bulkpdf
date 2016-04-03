@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-class NotOnAnyTeam extends Component {
+export default class NotOnAnyTeam extends Component {
 	render() {
 		return (
 			<div className="row centeredCard">

@@ -4,6 +4,9 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 
+import ControlIconButton from '../ControlButtonIcon.jsx'
+import OrgEdit from './OrgEdit.jsx'
+
 export default class OrgEditModal extends Component {
 	constructor() {
 		super();

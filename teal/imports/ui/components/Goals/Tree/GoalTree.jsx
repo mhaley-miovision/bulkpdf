@@ -386,8 +386,8 @@ export default class GoalTree extends Component {
 	}
 
 	updateTreeView() {
-		// this is super FUCKED
-		// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
+		// TODO: weirdness alert - this needs to relinquish control - must be related to React rendering lifecycle
+		// look into this as to why it's happening
 		let _this = this;
 		setTimeout(function () {
 			D3TreeView.loadData(_this.props.goalsRoot);

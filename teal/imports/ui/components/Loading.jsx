@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-export default class Loading extends Compoent {
+export default class Loading extends Component {
+
 	constructor() {
 		super();
 		this.props = {
-			spinner: false,
+			spinner: false
 		}
 	}
 

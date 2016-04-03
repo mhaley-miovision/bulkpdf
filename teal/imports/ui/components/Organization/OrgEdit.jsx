@@ -4,6 +4,8 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 
+import ObjectSearch from '../ObjectSearch.jsx'
+
 export default class OrgEdit extends Component {
 	constructor() {
 		super();

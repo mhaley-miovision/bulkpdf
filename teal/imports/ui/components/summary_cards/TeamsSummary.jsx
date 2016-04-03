@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import Loading from '../Loading.jsx'
+
 class TeamsSummary extends Component {
 
 	renderOrgControls(o) {

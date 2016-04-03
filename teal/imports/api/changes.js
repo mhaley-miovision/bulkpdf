@@ -1,6 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
+import Teal from '../shared/Teal'
+import TealChanges from '../shared/TealChanges'
+
+import {ContributorsCollection} from './contributors'
+
 export const ChangesCollection = new Mongo.Collection("teal.changes");
 
 if (Meteor.isServer) {
@@ -12,7 +17,7 @@ if (Meteor.isServer) {
 
 		"teal.changes.create" : function(c) {
 			// allowed request types
-			if (!Teal.isAllowedChangeType(c.type)) {
+			if (!TealChanges.isAllowedChangeType(c.type)) {
 				throw new Meteor.Error("not-allowed");
 			}
 
@@ -21,19 +26,24 @@ if (Meteor.isServer) {
 			let u = Meteor.users.findOne({_id:Meteor.userId()});
 			let email = u.email;
 			let contributor = ContributorsCollection.findOne({email:email});
-			c.createdByName = contributor.name;
-			c.photo = contributor.photo;
-			c.createdAt = Teal.newDateTime();
-			c.executedAt = null;
-			c.approvedBy = null;
 
-			let changeId = ChangesCollection.insert(c);
-			c._id = changeId;
+			if (!!contributor) {
+				c.createdByName = contributor.name;
+				c.photo = contributor.photo;
+				c.createdAt = Teal.newDateTime();
+				c.executedAt = null;
+				c.approvedBy = null;
 
-			if (c.apply === Teal.ApplyTypes.Immediate) {
-				Meteor.call("teal.changes.execute", changeId);
+				let changeId = ChangesCollection.insert(c);
+				c._id = changeId;
+
+				if (c.apply === Teal.ApplyTypes.Immediate) {
+					Meteor.call("teal.changes.execute", changeId);
+				}
+				return c;
+			} else {
+				throw new Meteor.Error("contributor-not-found");
 			}
-			return c;
 		},
 
 		"teal.changes.execute": function(changeId) {

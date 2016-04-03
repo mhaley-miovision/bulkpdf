@@ -1,8 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+import { createContainer } from 'meteor/react-meteor-data'
+var ReactTooltip = require("react-tooltip")
 
 import Teal from '../../../shared/Teal'
+
+import Loading from '../Loading.jsx'
 
 // Role component - represents a single role
 class GoalById extends Component {

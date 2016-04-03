@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 
 import Teal from '../../../shared/Teal'
 
+import CommentsInput from './CommentsInput.jsx'
+import CommentItem from './CommentItem.jsx'
+
 export default class CommentsList extends Component {
 
 	//TODO: encapsulation fail

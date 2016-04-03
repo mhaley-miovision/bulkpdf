@@ -14,7 +14,6 @@ if (Meteor.isServer) {
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
 			}
-
 			// first check if there is another conflicting role
 			var existing = RoleLabelsCollection.findOne({name: name});
 			if (existing) {

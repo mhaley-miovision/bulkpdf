@@ -1,7 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
 
 import Teal from '../../../shared/Teal'
+
+import RoleListEdit from '../roles/RoleListEdit.jsx'
+import GoalStateControls from './goal_components/GoalStateControls.jsx'
 
 export default class GoalEdit extends Component {
 	constructor() {

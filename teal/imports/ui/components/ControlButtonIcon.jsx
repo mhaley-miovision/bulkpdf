@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-class ControlIconButton extends Component {
+export default class ControlIconButton extends Component {
 
 	renderCountBadge() {
 		if (!!this.props.countBadgeValue) {

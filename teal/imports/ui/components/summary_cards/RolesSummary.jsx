@@ -4,6 +4,9 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 
+import Loading from '../Loading.jsx'
+import RoleEditModal from '../roles/RoleEditModal.jsx'
+
 class RolesSummary extends Component {
 	notImplemented() {
 		Materialize.toast( "Not implemented yet, stay tuned!", 1000);

@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
+import GoalKeyObjective from './GoalKeyObjective.jsx'
+
 export default class GoalKeyObjectives extends Component {
 
 	renderKeyObjectivesItems() {

@@ -4,6 +4,9 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 
+import GoalList from './GoalList.jsx'
+import ControlIconButton from '../ControlButtonIcon.jsx'
+
 export default class GoalListModal extends Component {
 	constructor() {
 		super();

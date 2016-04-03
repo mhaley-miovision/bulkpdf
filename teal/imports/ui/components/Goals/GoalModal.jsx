@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
+import Goal from './Goal.jsx'
+import ControlIconButton from '../ControlButtonIcon.jsx'
+
 export default class GoalModal extends Component {
 	constructor() {
 		super();

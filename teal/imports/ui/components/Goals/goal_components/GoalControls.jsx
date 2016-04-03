@@ -1,5 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+var ReactTooltip = require("react-tooltip")
+
+import ControlIconButton from '../../ControlButtonIcon.jsx'
 
 export default class GoalControls extends Component {
 

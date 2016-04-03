@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
-import TealChanges from '../../../shared/TealChanges'
+import TealChanges from '../../../../shared/TealChanges'
 
-export default class GoalDoneCriterion extends Compoent {
+export default class GoalKeyObjective extends Component {
 	constructor() {
 		super();
 		this.toggleCompleted = this.toggleCompleted.bind(this);
@@ -11,15 +11,15 @@ export default class GoalDoneCriterion extends Compoent {
 
 	toggleCompleted() {
 		// Set the checked property to the opposite of its current value
-		let doneCriterion = _.clone(this.props.doneCriterion);
-		doneCriterion.completed = !doneCriterion.completed;
-		let changeObject = TealChanges.createChangeObject(TealChanges.Types.DoneCriteriaCompleted, Teal.ObjectTypes.Goal,
-			"teal.goals.setDoneCriterion", [ doneCriterion ], this.props.goal);
+		let keyObjective = _.clone(this.props.keyObjective);
+		keyObjective.completed = !keyObjective.completed;
+		let changeObject = TealChanges.createChangeObject(TealChanges.Types.KeyObjectiveCompleted, Teal.ObjectTypes.Goal,
+			"teal.goals.setKeyObjective", [ keyObjective ], this.props.goal);
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	}
 
 	render() {
-		let o = this.props.doneCriterion;
+		var o = this.props.keyObjective;
 		return (
 			<li key={o._id} className="ProjectGoalKeyObjective">
 				<input id={o._id} type="checkbox" readOnly={true} checked={o.completed} onClick={this.toggleCompleted}/>
@@ -29,7 +29,7 @@ export default class GoalDoneCriterion extends Compoent {
 	}
 }
 
-GoalDoneCriterion.propTypes = {
-	doneCriterion : React.PropTypes.object.isRequired,
+GoalKeyObjective.propTypes = {
+	keyObjective: React.PropTypes.object.isRequired,
 		goal: React.PropTypes.object.isRequired,
 };

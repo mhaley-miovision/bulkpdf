@@ -5,15 +5,15 @@
     "start": "meteor run"
   },
   "dependencies": {
+    "fibers": "^1.0.10",
     "google-auth-library": "^0.9.7",
-    "googleapis": "^4.0.0",
     "jquery": "^2.2.2",
-    "materialize-css": "^0.97.5",
     "meteor-node-stubs": "~0.2.0",
     "react": "^0.14.8",
     "react-addons-pure-render-mixin": "^0.14.8",
     "react-dom": "^0.14.8",
     "react-mounter": "^1.1.0",
+    "react-tooltip": "^1.1.4",
     "readline": "^1.3.0"
   }
 }

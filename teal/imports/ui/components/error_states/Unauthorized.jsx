@@ -1,4 +1,7 @@
-Unauthorized = React.createClass({
+import { Meteor } from 'meteor/meteor';
+import React, { Component } from 'react';
+
+export default class Unauthorized extends Component {
 	render() {
 		return (
 			<div className="container centeredCard center">
@@ -10,4 +13,4 @@ Unauthorized = React.createClass({
 			</div>
 		);
 	}
-})
+}

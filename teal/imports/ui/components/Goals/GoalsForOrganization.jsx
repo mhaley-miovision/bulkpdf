@@ -1,6 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
+
+import GoalList from './GoalList.jsx'
+import Loading from '../Loading.jsx'
 
 class GoalsForOrganization extends Component {
 	constructor() {

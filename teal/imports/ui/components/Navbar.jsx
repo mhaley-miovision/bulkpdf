@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import { FlowRouter } from 'meteor/kadira:flow-router'
+
 import Permissions from '../../api/permissions';
 import Routing from '../../api/routing';
 import { ChangesCollection } from '../../api/changes';
@@ -11,6 +13,9 @@ import AccountsUIWrapper from './accounts/AccountsUIWrapper.jsx';
 import ProfileImage from './profile/ProfileImage.jsx';
 
 class Navbar extends Component {
+	constructor(props) {
+		super(props);
+	}
 
 	renderPublic() {
 		return (
@@ -33,8 +38,6 @@ class Navbar extends Component {
 	}
 
 	renderListIems(id, className) {
-		//<li className={FlowHelpers.currentRoute("home")}><a href="/">Home</a></li>
-		//<li className={FlowHelpers.currentRoute("tasks")}><a href="/tasks">Tasks</a></li>
 		return (
 			<ul id={id} className={className}>
 				<li className={Routing.currentRoute("profile")}><a href="/">Profile</a></li>
@@ -93,10 +96,13 @@ class Navbar extends Component {
 
 export default createContainer(() => {
 	var h = Meteor.subscribe("teal.changes")
+	// note placing FlowRouter.getRouteName() here is important vs. in the component since it can be re-rendered via
+	// props update (within render it's not reactive!)
 	if (h.ready()) {
 		return {
-			changesCount: ChangesCollection.find().count()
+			changesCount: ChangesCollection.find().count(),
+			currentRoute: FlowRouter.getRouteName(),
 		};
 	}
-	return {};
+	return { currentRoute: FlowRouter.getRouteName() };
 }, Navbar);

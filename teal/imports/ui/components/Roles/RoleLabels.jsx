@@ -1,33 +1,47 @@
 import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
+import React, {Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import Teal from '../../../shared/Teal'
 import TealChanges from '../../../shared/TealChanges'
 
+import Collections from '../../../api/collections'
+
+import Loading from '../Loading.jsx'
+import RoleLabel from './RoleLabel.jsx'
+
 class RoleLabels extends Component {
-
-	renderRoleLabels() {
-		return this.props.roleLabels.map((roleLabel) => {
-			const currentUserId = this.props.currentUser && this.props.currentUser.profile._id;
-
-			return <RoleLabel
-				key={roleLabel._id}
-				roleLabel={roleLabel}/>;
-		});
+	constructor() {
+		super();
+		this.state = { newLabel: '' };
+		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
 	handleSubmit(event) {
 		event.preventDefault();
 
-		// Find the text field via the React ref
-		var text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
+		const text = this.refs.textInput.value.trim();
 
 		let changeObject = TealChanges.createChangeObject(TealChanges.Types.NewRoleLabel, Teal.ObjectTypes.RoleLabel,
-			"teal.roles.addRoleLabel", [this.props.roleLabel._id, this.state.newLabel], null);
+			"teal.roles.addRoleLabel", [text]);
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 
-		// Clear form
-		ReactDOM.findDOMNode(this.refs.textInput).value = "";
+		this.refs.textInput.value = "";
+	}
+
+	handleNewLabelChange(e) {
+		console.log(e.target.value);
+		console.log(this);
+		this.setState({newLabel: e.target.value});
+		console.log(this.state);
+	}
+
+	renderRoleLabels() {
+		return this.props.roleLabels.map((roleLabel) => {
+			return <RoleLabel
+				key={roleLabel._id}
+				roleLabel={roleLabel}/>;
+		});
 	}
 
 	renderBody() {
@@ -50,12 +64,13 @@ class RoleLabels extends Component {
 				</header>
 
 				{
-					this.data.currentUser ?
+					this.props.currentUser ?
 						<form className="new-task" onSubmit={this.handleSubmit}>
 							<input
 								type="text"
 								ref="textInput"
-								placeholder="Type to add new role labels"/>
+								placeholder="Type to add new role labels"
+								onChange={this.handleNewLabelChange.bind(this)}/>
 						</form> : ''
 				}
 
@@ -73,11 +88,11 @@ export default createContainer(() => {
 
 	var handle = Meteor.subscribe("teal.role_labels");
 	if (handle.ready()) {
-		var roleLabels = RoleLabelsCollection.find({}, {sort: {name: 1}}).fetch();
+		var roleLabels = Collections.RoleLabels.find({}, {sort: {name: 1}}).fetch();
 		return {
 			roleLabels: roleLabels,
 			currentUser: Meteor.user(),
-			doneLoading:true,
+			doneLoading:true
 		};
 	} else {
 		return { doneLoading:false };

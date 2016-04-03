@@ -1,30 +1,15 @@
-TaskList = React.createClass({
-	// This mixin makes the getMeteorData method work
-	mixins: [ReactMeteorData],
+import { Meteor } from 'meteor/meteor';
+import React, { Component } from 'react';
+import { createContainer } from 'meteor/react-meteor-data';
 
-	// Loads items from the Tasks collection and puts them on this.data.tasks
-	getMeteorData() {
-		Meteor.subscribe("teal.tasks");
-
-		let query = {};
-
-		if (this.state.hideCompleted) {
-			// If hide completed is checked, filter tasks
-			query = {checked: {$ne: true}};
-		}
-
-		return {
-			tasks: TasksCollection.find(query, {sort: {createdAt: -1}}).fetch(),
-			incompleteCount: TasksCollection.find({checked: {$ne: true}}).count(),
-			currentUser: Meteor.user()
-		}
-	},
-
-	getInitialState() {
-		return {
+class TaskList extends Component {
+	constructor() {
+		super();
+		this.state = {
 			hideCompleted: false
-		}
-	},
+		};
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
 
 	renderTasks() {
 		// Get tasks from this.data.tasks
@@ -37,8 +22,7 @@ TaskList = React.createClass({
 				task={task}
 				showPrivateButton={showPrivateButton}/>;
 		});
-	},
-
+	}
 	handleSubmit(event) {
 		event.preventDefault();
 
@@ -49,43 +33,63 @@ TaskList = React.createClass({
 
 		// Clear form
 		ReactDOM.findDOMNode(this.refs.textInput).value = "";
-	},
-
+	}
 	toggleHideCompleted() {
 		this.setState({
 			hideCompleted: !this.state.hideCompleted
 		});
-	},
+	}
 
 	render() {
 		return (
-		<div>
+			<div>
 
-			<br/>
-			<header>
-				<h3 className="center header text-main1">My Tasks</h3>
-			</header>
+				<br/>
+				<header>
+					<h3 className="center header text-main1">My Tasks</h3>
+				</header>
 
-			<label className="btn-small">
-				<input
-					type="checkbox"
-					readOnly={true}
-					checked={this.state.hideCompleted}
-					onClick={this.toggleHideCompleted} />
-				Hide Completed Tasks
-			</label>
-
-			{ this.data.currentUser ?
-				<form className="new-task" onSubmit={this.handleSubmit} >
+				<label className="btn-small">
 					<input
-						type="text"
-						ref="textInput"
-						placeholder="Type to add new tasks" />
-				</form> : ''
-			}
+						type="checkbox"
+						readOnly={true}
+						checked={this.state.hideCompleted}
+						onClick={this.toggleHideCompleted}/>
+					Hide Completed Tasks
+				</label>
 
-			<ul className="collection">
-				{this.renderTasks()}
-			</ul>
-		</div>
-)}});
+				{ this.data.currentUser ?
+					<form className="new-task" onSubmit={this.handleSubmit}>
+						<input
+							type="text"
+							ref="textInput"
+							placeholder="Type to add new tasks"/>
+					</form> : ''
+				}
+
+				<ul className="collection">
+					{this.renderTasks()}
+				</ul>
+			</div>
+		)
+	}
+}
+
+export default createContainer(() => {
+	"use strict";
+
+	Meteor.subscribe("teal.tasks");
+
+	let query = {};
+
+	if (this.state.hideCompleted) {
+		// If hide completed is checked, filter tasks
+		query = {checked: {$ne: true}};
+	}
+
+	return {
+		tasks: TasksCollection.find(query, {sort: {createdAt: -1}}).fetch(),
+		incompleteCount: TasksCollection.find({checked: {$ne: true}}).count(),
+		currentUser: Meteor.user()
+	}
+}, TaskList);

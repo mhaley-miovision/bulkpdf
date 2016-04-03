@@ -4,6 +4,9 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 
+import GoalList from './GoalList.jsx'
+import Loading from '../Loading.jsx'
+
 class GoalsForRole extends Component {
 
 	shouldComponentUpdate(nextProps, nextState) {

@@ -6,7 +6,10 @@ import Teal from '../../../shared/Teal'
 import TealChanges from '../../../shared/TealChanges'
 import TealFactory from '../../../shared/TealFactory'
 
-export default class RoleEditModal extends Component() {
+import RoleEdit from './RoleEdit.jsx'
+import ControlIconButton from '../ControlButtonIcon.jsx'
+
+export default class RoleEditModal extends Component {
 	constructor() {
 		super();
 		this.state = { role: null };

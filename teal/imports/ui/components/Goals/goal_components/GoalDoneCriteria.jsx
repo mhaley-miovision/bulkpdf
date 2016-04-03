@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
+import GoalDoneCriterion from './GoalDoneCriterion.jsx'
+
 export default class GoalDoneCriteria extends Component {
 
 	renderDoneCriteriaItems() {

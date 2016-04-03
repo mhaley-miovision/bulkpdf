@@ -1,5 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+var ReactTooltip = require("react-tooltip")
+
+import TealChanges from '../../../../shared/TealChanges'
 
 export default class GoalState extends Component {
 	constructor() {

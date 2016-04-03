@@ -2,6 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import Loading from '../Loading.jsx'
+import GoalList from './GoalList.jsx'
+
 class GoalsForIndividual extends Component {
 	constructor() {
 		super();

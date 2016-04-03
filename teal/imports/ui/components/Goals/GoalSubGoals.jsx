@@ -4,6 +4,9 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 
+import Loading from '../Loading.jsx';
+import GoalList from './GoalList.jsx'
+
 class GoalSubGoals extends Component {
 	constructor() {
 		super();

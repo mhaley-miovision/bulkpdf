@@ -2,6 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import '../third_party/Chart'
+
+import Loading from '../Loading.jsx'
+
 class TeamSkillsSummary extends Component {
 
 	updateChart() {

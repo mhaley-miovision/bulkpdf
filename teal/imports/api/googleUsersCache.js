@@ -1,22 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
+export const GoogleUserCacheCollection = new Mongo.Collection("teal.google_users_cache");
+
+/*
+var Future = require('fibers/future');
 var googleAuth = require('google-auth-library');
 var readline = require('readline');
-var google = require('googleapis');
+var fs = require('fs');
+var google = Npm.require('googleapis');
 
-export const GoogleUserCacheCollection = new Mongo.Collection("teal.google_users_cache");
 
 if (Meteor.isServer) {
 	Meteor.publish('teal.google_users_cache', function() {
 		return GoogleUserCacheCollection.find({});
 	});
 
-	var fs = Npm.require('fs');
-	var Future = Npm.require('fibers/future');
-
-	var SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly'];
-	var doneLoadingCacheCallBack = null;
+	//var SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly'];
 
 	var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) + '/.credentials/';
 	try {
@@ -25,7 +25,7 @@ if (Meteor.isServer) {
 
 		// Is it a directory?
 		if (stats.isDirectory()) {
-			var TOKEN_DIR = '/home/ubuntu/.credentials/';
+			TOKEN_DIR = '/home/ubuntu/.credentials/';
 		}
 	}
 	catch (e) {
@@ -40,19 +40,6 @@ if (Meteor.isServer) {
 	var tokenVerified = false;
 
 	// TODO [MAJOR]: this still relies on the script in /private to init the auth token
-
-	// TODO: implement a recurring job to update this cache, or even better enable this domain to be able to receive push
-	// notifications from Google
-	/*
-	 Meteor.startup(function() {
-	 initCronJob();
-	 })
-
-	 function recurringCronJob() {
-	 if (tokenVerified) {
-
-	 }
-	 }*/
 
 	// TODO: this maxes out at 500 users; fix this if (when :) it becomes a bottle neck
 	function updateGoogleAdminCache(auth) {
@@ -124,3 +111,4 @@ if (Meteor.isServer) {
 		}
 	});
 }
+*/

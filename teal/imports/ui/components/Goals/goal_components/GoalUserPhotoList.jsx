@@ -1,8 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor'
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import React, { Component } from 'react'
+import { createContainer } from 'meteor/react-meteor-data'
+var ReactTooltip = require("react-tooltip")
 
-import Teal from '../../../shared/Teal'
+import Teal from '../../../../shared/Teal'
 
 export default class GoalUserPhotoList extends Component {
 	constructor() {

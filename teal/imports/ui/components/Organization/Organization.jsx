@@ -4,6 +4,10 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 
+import ObjectSearch from '../ObjectSearch.jsx'
+import Loading from '../Loading.jsx'
+import ControlsContainer from './ControlsContainer.jsx'
+
 var chartHeight = 700;
 var chartHeightMobile = 303;
 var chartWidth = 1024;

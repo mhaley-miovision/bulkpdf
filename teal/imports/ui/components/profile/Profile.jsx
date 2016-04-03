@@ -2,6 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import Loading from '../Loading.jsx'
+import ProfileImage from './ProfileImage.jsx'
+import RolesSummary from '../summary_cards/RolesSummary.jsx'
+import GoalsSummary from '../summary_cards/GoalsSummary.jsx'
+import TeamsSummary from '../summary_cards/TeamsSummary.jsx'
+import SkillsSummary from '../summary_cards/TeamSkillsSummary.jsx'
+
 class Profile extends Component {
 	render() {
 		if (this.props.doneLoading) {

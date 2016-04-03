@@ -1,5 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+
+import Goal from './Goal.jsx'
 
 export default class GoalList extends Component {
 

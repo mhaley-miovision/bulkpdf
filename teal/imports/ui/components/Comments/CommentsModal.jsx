@@ -1,7 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+var ReactTooltip = require("react-tooltip")
 
 import Teal from '../../../shared/Teal'
+
+import CommentsList from './CommentsList.jsx'
+import ControlIconButton from '../ControlButtonIcon.jsx'
 
 export default class CommentsModal extends Component {
 	constructor() {

@@ -1,9 +1,15 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+var ReactTooltip = require("react-tooltip")
+import { createContainer } from 'meteor/react-meteor-data'
 
 import Teal from '../../../shared/Teal'
 import TealChanges from '../../../shared/TealChanges'
+
+import RoleEditModal from '../roles/RoleEditModal.jsx'
+import OrgEditModal from './OrgEditModal.jsx'
+import CommentsModal from '../comments/CommentsModal.jsx'
+import ControlIconButton from '../ControlButtonIcon.jsx'
 
 export default class OrgControls extends Component {
 	constructor() {

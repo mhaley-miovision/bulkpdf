@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
+import ObjectSearch from '../ObjectSearch.jsx'
+
 export default class RoleListEdit extends Component {
 	constructor() {
 		super();

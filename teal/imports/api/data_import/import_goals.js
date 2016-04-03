@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { GoalsCollection } from '../goals.js';
 import { RolesCollection } from '../roles.js';
+import Teal from '../../shared/Teal'
 
 var key = '1cCbZtpGdPhfaM3Y-sBcfoKMR2_jIP_rXgooqZQ5CtbE';
 var url = "https://spreadsheets.google.com" + "/feeds/worksheets/" + key + "/public/basic?alt=json";

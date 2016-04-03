@@ -6,6 +6,8 @@ import Teal from '../../../shared/Teal'
 import TealChanges from '../../../shared/TealChanges'
 import Permissions from '../../../api/permissions'
 
+import Loading from '../Loading.jsx'
+
 class Requests extends Component {
 
 	renderChanges() {

@@ -23,10 +23,6 @@ if (Meteor.isServer) {
 	});
 
 	Meteor.publish("teal.user_data", function () {
-		console.log("publishing current user data!");
-
-		console.log(Meteor.users.findOne({_id: this.userId}));
-
 		return Meteor.users.find({_id: this.userId},
 		{ 'fields': {
 			'user': 1,

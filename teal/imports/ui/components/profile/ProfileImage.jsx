@@ -47,10 +47,6 @@ export default createContainer(() => {
 	var handle = Meteor.subscribe("teal.user_data");
 	if (handle.ready()) {
 		var usr = Meteor.users.findOne({ _id : Meteor.user()._id });
-		console.log("usr:");
-		console.log(usr);
-		console.log(usr.services.google);
-
 		if (usr && usr.services) {
 			return { doneLoading: true, profilePhotoUrl: usr.services.google.picture };
 		}

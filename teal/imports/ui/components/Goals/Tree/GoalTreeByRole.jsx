@@ -2,7 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
-import Teal from '../../../shared/Teal'
+import Teal from '../../../../shared/Teal'
+
+import Loading from '../../Loading.jsx'
+import ObjectSearch from '../../ObjectSearch.jsx'
+import GoalTree from './GoalTree.jsx'
 
 class GoalTreeByRole extends Component {
 	constructor() {

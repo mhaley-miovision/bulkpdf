@@ -1,6 +1,6 @@
 import Teal from './Teal';
 
-export default {
+var TealChanges = {
 
 	// These are what types of changes we track and approve/reject/apply throughout the system
 	// They operate on the basic basic building blocks of the organizational model
@@ -367,7 +367,7 @@ export default {
 	// TODO: consider transitioning all methods to this type of factory/method pattern
 	createChangeObject(type, targetObjectType, changeMethod, changeParams, oldValue) {
 
-		if (!Teal.isAllowedChangeType(type)) {
+		if (!TealChanges.isAllowedChangeType(type)) {
 			throw new Meteor.Error("not-allowed");
 		}
 
@@ -800,3 +800,5 @@ export default {
 		console.log("================================================");
 	}
 };
+
+export default TealChanges;

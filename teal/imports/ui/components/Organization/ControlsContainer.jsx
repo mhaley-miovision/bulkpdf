@@ -1,6 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
+import OrgControls from '../organization/OrgControls.jsx'
+import CommentsList from '../comments/CommentsList.jsx'
+import RoleControls from '../roles/RoleControls.jsx'
+
 export default class ControlsContainer extends Component {
 	constructor() {
 		super();

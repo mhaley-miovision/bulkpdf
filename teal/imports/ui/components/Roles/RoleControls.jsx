@@ -1,7 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
+var ReactTooltip = require("react-tooltip")
 
 import TealChanges from '../../../shared/TealChanges'
+
+import RoleEditModal from './RoleEditModal.jsx'
+import CommentsModal from '../comments/CommentsModal.jsx'
+import ControlIconButton from '../ControlButtonIcon.jsx'
 
 export default class RoleControls extends Component {
 	constructor() {

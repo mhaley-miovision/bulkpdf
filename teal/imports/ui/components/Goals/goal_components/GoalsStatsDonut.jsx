@@ -1,7 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
 
-// TODO: import chartjs
+import Teal from '../../../../shared/Teal'
+
+import '../../third_party/Chart'
 
 export default class GoalsStatsDonut extends Component {
 	constructor() {
