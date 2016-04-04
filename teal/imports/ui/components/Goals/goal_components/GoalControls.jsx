@@ -38,7 +38,7 @@ export default class GoalControls extends Component {
 						<ControlIconButton onClicked={this.props.onNewClicked.bind(this)}
 										   icon="add" tip="Add subgoal" tipId={this.tipId()}/>
 
-						<ControlIconButton countBadgeValue={this.props.commentCount.bind(this)}
+						<ControlIconButton countBadgeValue={this.props.commentCount}
 										   onClicked={this.props.onCommentsClicked.bind(this)}
 										   icon="comment" tip="Comments" tipId={this.tipId()}/>
 						<ReactTooltip id={this.tipId()} place="bottom"/>

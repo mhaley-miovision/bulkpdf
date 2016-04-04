@@ -144,19 +144,10 @@ var SearchResultsComponent = createContainer((params) => {
 export default class ObjectSearch extends Component {
 	constructor(props) {
 		super(props);
-
-		this.props = {
-			findContributors: false,
-			findOrganizations: false,
-			findRoles: false,
-			findRoleLabels: false,
-			findAccountabilityLevels: false,
-			initialValue: '',
-		};
 		this.state = {
 			showList: false,
 			searchResults: [],
-			query: this.props.initialValue,
+			query: props.initialValue
 		};
 
 		this.handleOrganizationClick = this.handleOrganizationClick.bind(this);
@@ -277,7 +268,16 @@ ObjectSearch.propTypes = {
 	findAccountabilityLevels: React.PropTypes.bool,
 	onClick: React.PropTypes.func.isRequired,
 	notFoundLabel: React.PropTypes.string,
-	initialValue: React.PropTypes.string,
+	initialValue: React.PropTypes.string
+};
+
+ObjectSearch.defaultProps = {
+	findContributors: false,
+	findOrganizations: false,
+	findRoles: false,
+	findRoleLabels: false,
+	findAccountabilityLevels: false,
+	initialValue: ''
 };
 
 

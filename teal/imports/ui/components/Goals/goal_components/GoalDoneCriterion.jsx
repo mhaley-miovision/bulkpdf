@@ -5,8 +5,8 @@ import Teal from '../../../../shared/Teal'
 import TealChanges from '../../../../shared/TealChanges'
 
 export default class GoalDoneCriterion extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.toggleCompleted = this.toggleCompleted.bind(this);
 	}
 

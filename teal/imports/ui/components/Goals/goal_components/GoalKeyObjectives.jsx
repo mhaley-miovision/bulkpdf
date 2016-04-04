@@ -4,9 +4,13 @@ import React, { Component } from 'react';
 import GoalKeyObjective from './GoalKeyObjective.jsx'
 
 export default class GoalKeyObjectives extends Component {
+	constructor(props) {
+		super(props);
+	}
 
 	renderKeyObjectivesItems() {
 		let _this = this;
+
 		return this.props.goal.keyObjectives.map(function(o,i) {
 			return <GoalKeyObjective key={o._id} keyObjective={o} goal={_this.props.goal}/>;
 		});

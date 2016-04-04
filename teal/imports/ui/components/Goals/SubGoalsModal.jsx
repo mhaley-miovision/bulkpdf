@@ -6,8 +6,8 @@ import GoalSubGoals from './GoalSubGoals.jsx'
 import ControlIconButton from '../ControlButtonIcon.jsx'
 
 export default class SubGoalsModal extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.handleClose = this.handleClose.bind(this);
 		this.handleGoalClicked = this.handleGoalClicked.bind(this);
 	}
@@ -43,5 +43,5 @@ export default class SubGoalsModal extends Component {
 
 SubGoalsModal.propTypes = {
 	parentGoalId: React.PropTypes.string.isRequired,
-	id: React.PropTypes.string.isRequired,
-}
+	id: React.PropTypes.string.isRequired
+};

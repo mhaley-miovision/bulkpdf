@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 
 export default class GoalStateControls extends Component {
 
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
-			state: this.props.goal ? this.props.goal.state : 0
+			state: props && props.goal ? props.goal.state : 0
 		};
 		this.handleNotStartedClicked = this.handleNotStartedClicked.bind(this);
 		this.handleInProgressClicked = this.handleInProgressClicked.bind(this);

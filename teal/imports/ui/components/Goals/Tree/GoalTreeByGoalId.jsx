@@ -4,9 +4,8 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 class GoalTreeByGoalId extends Component {
 
-	constructor() {
-		super();
-		this.props = { searchVisible: true };
+	constructor(props) {
+		super(props);
 	}
 
 	render() {
@@ -23,7 +22,11 @@ class GoalTreeByGoalId extends Component {
 }
 
 GoalTreeByGoalId.propTypes = {
-	goalId: React.PropTypes.string.isRequired,
+	goalId: React.PropTypes.string.isRequired
+};
+
+GoalTreeByGoalId.defaultProps = {
+	searchVisible: true
 };
 
 export default createContainer(() => {
@@ -37,8 +40,7 @@ export default createContainer(() => {
 
 		// append children for tree accessibility
 		goals.forEach(g => {
-			var children = _.where(goals, {parent: goalId});
-			g.children = children;
+			g.children = _.where(goals, {parent: goalId});
 		});
 
 		// return the root

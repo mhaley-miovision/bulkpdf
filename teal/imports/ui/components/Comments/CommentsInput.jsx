@@ -4,14 +4,11 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 
+import { ContributorsCollection } from '../../../api/contributors'
+
 class CommentsInput extends Component {
-	constructor() {
-		super();
-		this.props = {
-			onKeyDown: () => null,
-			onSelect: () => null,
-			onBlur: () => null,
-		};
+	constructor(props) {
+		super(props);
 		this.state = {
 			newComment:'',
 			atMentions:[],
@@ -124,8 +121,14 @@ class CommentsInput extends Component {
 
 CommentsInput.propTypes = {
 	objectId: React.PropTypes.string.isRequired,
-		objectType: React.PropTypes.string.isRequired,
-}
+		objectType: React.PropTypes.string.isRequired
+};
+
+CommentsInput.defaultProps = {
+	onKeyDown: () => null,
+	onSelect: () => null,
+	onBlur: () => null,
+};
 
 CommentsInput._atModeTerminatorKeys = [
 	13, // enter
@@ -138,6 +141,9 @@ export default createContainer(() => {
 
 	var handle = Meteor.subscribe('teal.contributors');
 	if (handle.ready()) {
+		let contributors = ContributorsCollection.find({rootOrgId:Teal.rootOrgIg()}, {fields: {email:1,name:1}}).fetch();
+		return { doneLoading: true, contributors: contributors };
+		/*
 		if (this.state.query && this.state.query !== '') {
 			var caseInsensitiveMatch = {$regex: new RegExp('.*' + this.state.query + '.*', "i")};
 			let contributors = ContributorsCollection.find(
@@ -145,7 +151,7 @@ export default createContainer(() => {
 				{fields: {name:1,email:1,_id:1}}
 			).fetch();
 			return { doneLoading: true, contributors: contributors };
-		}
+		}*/
 	}
 	return { doneLoading: false, contributors: [] };
 }, CommentsInput);

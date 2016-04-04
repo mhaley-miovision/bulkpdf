@@ -7,8 +7,11 @@ import RoleListEdit from '../roles/RoleListEdit.jsx'
 import GoalStateControls from './goal_components/GoalStateControls.jsx'
 
 export default class GoalEdit extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
+		if (!props) {
+			props = {};
+		}
 		this.state = {
 			datePickerId: "picker" + Teal.newId(),
 			keyObjectives: this.props.goal ? _.clone(this.props.goal.keyObjectives) : [],

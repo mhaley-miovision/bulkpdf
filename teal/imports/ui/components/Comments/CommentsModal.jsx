@@ -8,11 +8,9 @@ import CommentsList from './CommentsList.jsx'
 import ControlIconButton from '../ControlButtonIcon.jsx'
 
 export default class CommentsModal extends Component {
-	constructor() {
-		super();
-		this.props = {
-			showAddInput: true
-		}
+	constructor(props) {
+		super(props);
+		this.state = { showAddInput: true };
 		this.handleDismiss = this.handleDismiss.bind(this);
 		this.handleDelete = this.handleDelete.bind(this);
 	}
@@ -51,7 +49,7 @@ export default class CommentsModal extends Component {
 						comments={this.props.comments}
 						objectId={this.props.objectId}
 						objectType={this.props.objectType}
-						showAddInput={this.props.showAddInput}/>
+						showAddInput={this.state.showAddInput}/>
 				</div>
 				<div className="modal-footer">
 					<div className="center">
@@ -67,8 +65,7 @@ export default class CommentsModal extends Component {
 
 CommentsModal.propTypes = {
 	comments: React.PropTypes.array.isRequired,
-		showAddInput: React.PropTypes.bool,
-		title: React.PropTypes.string,
-		objectId: React.PropTypes.string.isRequired,
-		objectType: React.PropTypes.string.isRequired,
-}
+	title: React.PropTypes.string,
+	objectId: React.PropTypes.string.isRequired,
+	objectType: React.PropTypes.string.isRequired,
+};

@@ -3,17 +3,20 @@ import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
+import TealChanges from '../../../shared/TealChanges'
 
-import GoalUpToParentButton from './goal_components/GoalUpToParentButton.jsx'
-import GoalDoneCriteria from './goal_components/GoalDoneCriteria.jsx'
-import GoalKeyObjectives from './goal_components/GoalKeyObjective.jsx'
-import GoalUserPhotoList from './goal_components/GoalUserPhotoList.jsx'
-import GoalState from './goal_components/GoalState.jsx'
-import GoalDueDateLabel from './goal_components/GoalDueDateLabel.jsx'
-import GoalControls from './goal_components/GoalControls.jsx'
+import CommentsModal from '../comments/CommentsModal.jsx'
+import GoalEdit from './GoalEdit.jsx'
 import GoalNewModal from './GoalNewModal.jsx'
 import SubGoalsModal from './SubGoalsModal.jsx'
-import CommentsModal from '../comments/CommentsModal.jsx'
+import GoalUpToParentButton from './goal_components/GoalUpToParentButton.jsx'
+import GoalDoneCriteria from './goal_components/GoalDoneCriteria.jsx'
+import GoalKeyObjectives from './goal_components/GoalKeyObjectives.jsx'
+import GoalUserPhotoList from './goal_components/GoalUserPhotoList.jsx'
+import GoalState from './goal_components/GoalState.jsx'
+import GoalsStatsDonut from './goal_components/GoalsStatsDonut.jsx'
+import GoalDueDateLabel from './goal_components/GoalDueDateLabel.jsx'
+import GoalControls from './goal_components/GoalControls.jsx'
 
 // Role component - represents a single role
 export default class Goal extends Component {

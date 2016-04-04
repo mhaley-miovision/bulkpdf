@@ -3,11 +3,8 @@ import React, { Component } from 'react';
 
 export default class Loading extends Component {
 
-	constructor() {
-		super();
-		this.props = {
-			spinner: false
-		}
+	constructor(props) {
+		super(props);
 	}
 
 	render() {
@@ -50,4 +47,8 @@ export default class Loading extends Component {
 
 Loading.propTypes = {
 	spinner : React.PropTypes.bool,
+};
+
+Loading.defaultProps = {
+	spinner: false
 };

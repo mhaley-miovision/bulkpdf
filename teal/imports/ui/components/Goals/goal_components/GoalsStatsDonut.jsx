@@ -1,15 +1,24 @@
 import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react'
+var ReactTooltip = require('react-tooltip')
 
 import Teal from '../../../../shared/Teal'
 
 import '../../third_party/Chart'
 
 export default class GoalsStatsDonut extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = { chartId: "chart_" + Teal.newId() };
-		this.props = { width: "120px", height: "120px" };
+		if (!props) {
+			props = {};
+		}
+		if (!props.width) {
+			props.width = "120px";
+		}
+		if (!props.height) {
+			props.height = "120px";
+		}
 	}
 
 	updateChart() {
@@ -37,7 +46,7 @@ export default class GoalsStatsDonut extends Component {
 			},
 		];
 
-		var ctx = $('#'+_this.getChartId()).get(0).getContext("2d");
+		var ctx = $('#'+ _this.state.chartId).get(0).getContext("2d");
 		new Chart(ctx).Doughnut(data,{
 			animation:true,
 			animationSteps: 35,
@@ -46,8 +55,8 @@ export default class GoalsStatsDonut extends Component {
 			percentageInnerCutout : 80,
 			segmentShowStroke : false,
 			onAnimationComplete: function() {
-				var canvasWidthvar = $('#'+_this.getChartId()).width();
-				var canvasHeight = $('#'+_this.getChartId()).height();
+				var canvasWidthvar = $('#' + _this.state.chartId).width();
+				var canvasHeight = $('#' + _this.state.chartId).height();
 
 				//this constant base on canvasHeight / 2.8em
 				var constant = 104;
@@ -96,7 +105,7 @@ export default class GoalsStatsDonut extends Component {
 		return (
 			<div style={{width:this.props.width, height: this.props.height, marginBottom: "7px"}}
 				 className="goalDonutChart" data-tip={subGoalsToolTip} data-for={this.state.chartId}>
-				<canvas id={this.getChartId()} width={this.props.width} height={this.props.height}>
+				<canvas id={this.state.chartId} width={this.props.width} height={this.props.height}>
 				</canvas>
 
 				<ReactTooltip id={this.state.chartId} place="bottom"/>
@@ -105,8 +114,8 @@ export default class GoalsStatsDonut extends Component {
 	}
 }
 
-GoalsStatsDonut.ppropTypes = {
+GoalsStatsDonut.propTypes = {
 	goal: React.PropTypes.object.isRequired,
-		width: React.PropTypes.string,
-		height: React.PropTypes.string,
+	width: React.PropTypes.string,
+	height: React.PropTypes.string,
 };

@@ -629,12 +629,6 @@ class Organization extends Component {
 	constructor(props) {
 		super(props);
 
-		this.props =  {
-			roleMode: true,
-			roleModeVisible: true,
-			searchVisible: true,
-		};
-
 		this.state = {
 			initialLoad: true,
 			roleMode : this.props && this.props.roleMode ? this.props.roleMode : true,
@@ -787,7 +781,13 @@ Organization.propTypes = {
 	zoomTo : React.PropTypes.string,
 	roleMode : React.PropTypes.bool,
 	roleModeVisible : React.PropTypes.bool,
-	searchVisible : React.PropTypes.bool,
+	searchVisible : React.PropTypes.bool
+};
+
+Organization.defaultProps =  {
+	roleMode: true,
+	roleModeVisible: true,
+	searchVisible: true
 };
 
 export default createContainer(() => {

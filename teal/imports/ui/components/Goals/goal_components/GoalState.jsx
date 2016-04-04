@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react'
 var ReactTooltip = require("react-tooltip")
 
+import Teal from '../../../../shared/Teal'
 import TealChanges from '../../../../shared/TealChanges'
 
 export default class GoalState extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.handleOnClick = this.handleOnClick.bind(this);
 	}
 

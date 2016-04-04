@@ -5,17 +5,8 @@ import { createContainer } from 'meteor/react-meteor-data';
 import Teal from '../../../shared/Teal';
 
 class ProfileImage extends Component {
-	constructor() {
-		super();
-
-		this.props = {
-			width: '32px',
-			height: '32px',
-			verticalAlign: 'middle',
-			textAlign: 'center',
-			//WebkitFilter: 'opacity(50%)',
-			photoUrl: null
-		};
+	constructor(props) {
+		super(props);
 	}
 	render() {
 		if (!Meteor.userId()) {
@@ -40,6 +31,15 @@ class ProfileImage extends Component {
 		}
 	}
 }
+
+ProfileImage.defaultProps = {
+	width: '32px',
+	height: '32px',
+	verticalAlign: 'middle',
+	textAlign: 'center',
+	//WebkitFilter: 'opacity(50%)',
+	photoUrl: null
+};
 
 export default createContainer(() => {
 	"use strict";

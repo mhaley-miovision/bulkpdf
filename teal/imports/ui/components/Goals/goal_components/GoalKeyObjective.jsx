@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
+import Teal from '../../../../shared/Teal'
 import TealChanges from '../../../../shared/TealChanges'
 
 export default class GoalKeyObjective extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.toggleCompleted = this.toggleCompleted.bind(this);
 	}
 
@@ -31,5 +32,5 @@ export default class GoalKeyObjective extends Component {
 
 GoalKeyObjective.propTypes = {
 	keyObjective: React.PropTypes.object.isRequired,
-		goal: React.PropTypes.object.isRequired,
+	goal: React.PropTypes.object.isRequired,
 };

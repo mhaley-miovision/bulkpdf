@@ -3,20 +3,19 @@ import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
+import { GoalsCollection } from '../../../api/goals'
 
 import Loading from '../Loading.jsx';
 import GoalList from './GoalList.jsx'
 
 class GoalSubGoals extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		var objectId = FlowRouter.getQueryParam("objectId");
 		if (objectId) {
-			this.props = {
-				objectId: objectId
-			}
+			if (!this.props) { this.props = {}; }
+			this.props.objectId = objectId;
 		}
-
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -63,15 +62,17 @@ GoalSubGoals.propTypes = {
 	onGoalClicked: React.PropTypes.func,
 };
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
+
+	const { objectId } = params;
 
 	let handle = Meteor.subscribe("teal.goals");
 	if (handle.ready()) {
-		if (!!this.props.objectId) {
+		if (!!objectId) {
 			// all immediate children of this goal
-			let goals = GoalsCollection.find({parent: this.props.objectId}).fetch();
-			let goalName = GoalsCollection.findOne({_id: this.props.objectId}, {fields: {name: 1}}).name;
+			let goals = GoalsCollection.find({parent: objectId}).fetch();
+			let goalName = GoalsCollection.findOne({_id: objectId}, {fields: {name: 1}}).name;
 			return {goals: goals, doneLoading: true, goalName: goalName};
 		} else {
 			return { isBlank : true };

@@ -2,13 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
 export default class SimpleGoalProgressBar extends Component {
-	constructor() {
-		super();
-		this.props = {
-			width: 70,
-			height: 7,
-			margin: "14px 0 0 0",
-		};
+	constructor(props) {
+		super(props);
 	}
 
 	defaultColorFunction(i) {
@@ -63,5 +58,11 @@ export default class SimpleGoalProgressBar extends Component {
 SimpleGoalProgressBar.propTypes = {
 	goal: React.PropTypes.object.isRequired,
 	width: React.PropTypes.number,
-	height: React.PropTypes.number,
+	height: React.PropTypes.number
+};
+
+SimpleGoalProgressBar.defaultProps = {
+	width: 70,
+	height: 7,
+	margin: "14px 0 0 0"
 };

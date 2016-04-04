@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
 import ObjectSearch from '../ObjectSearch.jsx'
+import RoleItem from '../roles/RoleItem.jsx'
 
 export default class RoleListEdit extends Component {
-	constructor() {
-		super();
-		this.state = { roles: _.clone(this.props.roleList) };
+	constructor(props) {
+		super(props);
+		this.state = { roles: props && props.roleList ? _.clone(props.roleList) : [] };
 		this.handleOnDelete = this.handleOnDelete.bind(this);
 	}
 

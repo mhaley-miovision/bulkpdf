@@ -4,6 +4,9 @@ import React, { Component } from 'react';
 import GoalDoneCriterion from './GoalDoneCriterion.jsx'
 
 export default class GoalDoneCriteria extends Component {
+	constructor(props) {
+		super(props);
+	}
 
 	renderDoneCriteriaItems() {
 		let _this = this;

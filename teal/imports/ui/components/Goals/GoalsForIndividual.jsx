@@ -16,7 +16,7 @@ class GoalsForIndividual extends Component {
 		this.state = { contributorPrefix: "My " };
 		var objectId = FlowRouter.getQueryParam("objectId");
 		if (objectId) {
-			this.props.objectId = objectId;
+			props.objectId = objectId;
 		}
 	}
 	shouldComponentUpdate(nextProps, nextState) {
@@ -51,22 +51,27 @@ class GoalsForIndividual extends Component {
 	}
 }
 
-export default createContainer((objectId) => {
+export default createContainer((params) => {
 	"use strict";
 
 	let handle = Meteor.subscribe("teal.goals");
 	let handle2 = Meteor.subscribe("teal.contributors");
 
 	if (handle.ready() && handle2.ready()) {
-		var contributor = ContributorsCollection.findOne({email: objectId});
+		var { objectId } = params;
+
+		// default is current user
+		var contributor = null;
+		if (!objectId) {
+			var myUser = Meteor.users.findOne({_id: Meteor.userId()});
+			objectId = myUser.email;
+		} else {
+			contributor = ContributorsCollection.findOne({email: objectId});
+		}
 
 		// determine the title prefix
 		let prefix = objectId && contributor ? contributor.name + "'s " : "My ";
-		// default is current user
-		if (objectId == null) {
-			var myUser = Meteor.users.findOne({_id: Meteor.userId()});
-			objectId = myUser.email;
-		}
+
 
 		let allRolesTopGoals = RolesCollection.find({email: objectId}, {fields: {topGoals: 1}}).map(x => {
 			return x.topGoals
