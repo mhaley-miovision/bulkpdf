@@ -8,14 +8,55 @@ import { RolesCollection } from '../../api/roles';
 import { RoleLabelsCollection } from '../../api/role_labels';
 import { AccountabilityLevelsCollection } from '../../api/accountability_levels';
 
+const OBJECT_SEARCH_CLICK_DELAY = 150;
+
 class SearchResults extends Component {
 	constructor(props) {
 		super(props);
+		console.log(props);
+
+		this.handleOrganizationClick = this.handleOrganizationClick.bind(this);
+		this.handleContributorClick = this.handleContributorClick.bind(this);
+		this.handleRoleClick = this.handleRoleClick.bind(this);
+		this.handleRoleLabelClick = this.handleRoleLabelClick.bind(this);
+		this.handleAccountabilityLevelClick = this.handleAccountabilityLevelClick.bind(this);
+	}
+
+	handleOrganizationClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		// undo what the list creation did. it's nasty but at least contained within this component
+		let o = e.currentTarget.text;
+		o = o.substr(o.indexOf(" ") + 1);
+		this.props.onClick(o, o, 'organization', e.currentTarget.id);
+	}
+	handleContributorClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		// undo what the list creation did. it's nasty but at least contained within this component
+		let o = e.currentTarget.text;
+		o = o.substr(o.indexOf(" ") + 1);
+		this.props.onClick(o, o, 'contributor', e.currentTarget.id);
+	}
+	handleRoleClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.onClick(e.currentTarget.text, e.currentTarget.id, 'role', e.currentTarget.id);
+	}
+	handleRoleLabelClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.onClick(e.currentTarget.text, e.currentTarget.text, 'role_label', e.currentTarget.id);
+	}
+	handleAccountabilityLevelClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.onClick(e.currentTarget.text, 'accountability_level', e.currentTarget.id);
 	}
 
 	getDropdownClasses() {
 		var classes = "collection searchDropdown small";
-		if (!this.props.showList) {
+		if (!this.props.showList || this.props.query === '') {
 			classes += " hide";
 		}
 		return classes;
@@ -90,21 +131,13 @@ class SearchResults extends Component {
 var SearchResultsComponent = createContainer((params) => {
 	"use strict";
 
-	const { query } = params;
-
 	var handle1 = Meteor.subscribe('teal.organizations');
 	var handle2 = Meteor.subscribe('teal.contributors');
 	var handle3 = Meteor.subscribe('teal.roles');
 	var handle4 = Meteor.subscribe('teal.role_labels');
 	var handle5 = Meteor.subscribe('teal.accountability_levels');
 
-	/*
-	console.log(handle1.ready());
-	console.log(handle2.ready());
-	console.log(handle3.ready());
-	console.log(handle4.ready());
-	console.log(handle5.ready());
-	*/
+	const { query, findOrganizations, findContributors, findRoles, findRoleLabels, findAccountabilityLevels } = params;
 
 	if (handle1.ready() && handle2.ready() && handle3.ready() && handle4.ready() && handle5.ready()) {
 		if (query && query !== '') {
@@ -115,20 +148,20 @@ var SearchResultsComponent = createContainer((params) => {
 
 			// TODO: filter by owned root organization!!!
 
-			var organizationMatches = this.props.findOrganizations ? OrganizationsCollection.find(
+			var organizationMatches = findOrganizations ? OrganizationsCollection.find(
 				q,
 				{ fields: {name: 1, _id: 1, id: 1}, sort: {name: 1} }).fetch() : {};
-			var contributorMatches = this.props.findContributors ? ContributorsCollection.find(
+			var contributorMatches = findContributors ? ContributorsCollection.find(
 				q,
 				{ fields: {name: 1, _id: 1, id: 1, email: 1}, sort: {name: 1} }).fetch() : {};
-			var roleMatches = this.props.findRoles ? RolesCollection.find(
+			var roleMatches = findRoles ? RolesCollection.find(
 				{ $or: [{ contributor: caseInsensitiveMatch }, { accountabilityLabel: caseInsensitiveMatch }] },
 				{ fields: { _id: 1, accountabilityLabel: 1, email:1, contributor:1 }, sort: { accountabilityLabel: 1 } }
 			).fetch() : {};
-			var roleLabelMatches = this.props.findRoleLabels ? RoleLabelsCollection.find(
+			var roleLabelMatches = findRoleLabels ? RoleLabelsCollection.find(
 				q,
 				{ fields: {name: 1}, sort: {name: 1} }).fetch() : {};
-			var accountabilityLevelMatches = this.props.findAccountabilityLevels ? AccountabilityLevelsCollection.find(
+			var accountabilityLevelMatches = findAccountabilityLevels ? AccountabilityLevelsCollection.find(
 				q,
 				{ fields: {name: 1}, sort: {name: 1} }).fetch() : {};
 
@@ -150,15 +183,11 @@ export default class ObjectSearch extends Component {
 			query: props.initialValue
 		};
 
-		this.handleOrganizationClick = this.handleOrganizationClick.bind(this);
-		this.handleContributorClick = this.handleContributorClick.bind(this);
-		this.handleRoleClick = this.handleRoleClick.bind(this);
-		this.handleRoleLabelClick = this.handleRoleLabelClick.bind(this);
-		this.handleAccountabilityLevelClick = this.handleAccountabilityLevelClick.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleClear = this.handleClear.bind(this);
 		this.handleOnBlur = this.handleOnBlur.bind(this);
 		this.handleOnSelected = this.handleOnSelected.bind(this);
+		this.onClick = this.onClick.bind(this);
 	}
 
 	toggleDropdown(show) {
@@ -172,57 +201,11 @@ export default class ObjectSearch extends Component {
 		setTimeout(function() {
 			_this.toggleDropdown(false);
 			_this.setState({showClose:false});
-		}, 150); // TODO HACK: to facilitate clicking first
+		}, OBJECT_SEARCH_CLICK_DELAY); // TODO HACK: to facilitate clicking first
 	}
 	handleOnSelected() {
 		this.toggleDropdown(true);
 		this.setState({showClose:true});
-	}
-	handleOrganizationClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({inputValue:e.currentTarget.text});
-		if (this.props.onClick) {
-			// undo what the list creation did. it's nasty but at least contained within this component
-			let o = e.currentTarget.text;
-			o = o.substr(o.indexOf(" ") + 1);
-			this.props.onClick(o, 'organization', e.currentTarget.id);
-		}
-	}
-	handleContributorClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({inputValue:e.currentTarget.text});
-		if (this.props.onClick) {
-			// undo what the list creation did. it's nasty but at least contained within this component
-			let o = e.currentTarget.text;
-			o = o.substr(o.indexOf(" ") + 1);
-			this.props.onClick(o, 'contributor', e.currentTarget.id);
-		}
-	}
-	handleRoleClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({inputValue:e.currentTarget.text});
-		if (this.props.onClick) {
-			this.props.onClick(e.currentTarget.id, 'role', e.currentTarget.id);
-		}
-	}
-	handleRoleLabelClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({inputValue:e.currentTarget.text});
-		if (this.props.onClick) {
-			this.props.onClick(e.currentTarget.text, 'role_label', e.currentTarget.id);
-		}
-	}
-	handleAccountabilityLevelClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({inputValue:e.currentTarget.text});
-		if (this.props.onClick) {
-			this.props.onClick(e.currentTarget.text, 'accountability_level', e.currentTarget.id);
-		}
 	}
 	handleInputChange() {
 		this.setState({ query: this.refs.textInput.value });
@@ -240,12 +223,15 @@ export default class ObjectSearch extends Component {
 		}
 	}
 
+	onClick(text, objectId, objectType, obj) {
+		this.setState({inputValue:text});
+		this.props.onClick(objectId, objectType, obj);
+	}
+
 	render() {
 		return (
 			<div>
 				<div className="GoalEditItemInput center">
-					<SearchResultsComponent params={{ query:this.state.query, showList:this.state.showList }}/>
-
 					<input className="text-main5" type="text" id="orgSelection" ref="textInput"
 						   onChange={ this.handleInputChange}
 						   placeholder={ this.state.query ? '' : this.props.label } value={ this.state.query }
@@ -254,6 +240,7 @@ export default class ObjectSearch extends Component {
 					{ this.state.showClose ? <i className="material-icons GreyButton ClearGreyButton"
 												onClick={ this.handleClear }>close</i> : '' }
 				</div>
+				<SearchResultsComponent {...this.props} onClick={this.onClick} query={this.state.query} showList={this.state.showList}/>
 			</div>
 		);
 	}

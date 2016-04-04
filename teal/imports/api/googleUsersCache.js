@@ -9,8 +9,6 @@ if (Meteor.isServer) {
 	var googleAuth = Meteor.npmRequire('google-auth-library');
 	var readline = Meteor.npmRequire('readline');
 	var google = Meteor.npmRequire('googleapis');
-	var SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly'];
-	var doneLoadingCacheCallBack = null;
 
 	var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) + '/.credentials/';
 	try {
@@ -23,7 +21,11 @@ if (Meteor.isServer) {
 		}
 	}
 	catch (e) {
-		console.error(e);
+		if (e.errno == 34) {
+			console.info("Local deployment detected");
+		} else {
+			console.error(e);
+		}
 	}
 	var TOKEN_PATH = TOKEN_DIR + "token.json";
 

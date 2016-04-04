@@ -2,7 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import Teal from '../../../shared/Teal'
 import TealChanges from '../../../shared/TealChanges'
+import TealFactory from '../../../shared/TealFactory'
 
 import GoalEdit from './GoalEdit.jsx'
 import ControlIconButton from '../ControlButtonIcon.jsx'
@@ -50,5 +52,5 @@ export default class GoalNewModal extends Component {
 
 GoalNewModal.propTypes = {
 	parentGoalId: React.PropTypes.string.isRequired,
-	id: React.PropTypes.string.isRequired,
+	id: React.PropTypes.string.isRequired
 };

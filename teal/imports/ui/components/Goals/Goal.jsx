@@ -4,6 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 import TealChanges from '../../../shared/TealChanges'
+import TealFactory from '../../../shared/TealFactory'
 
 import CommentsModal from '../comments/CommentsModal.jsx'
 import GoalEdit from './GoalEdit.jsx'

@@ -5,7 +5,7 @@ export default {
 	createGoal(_id, parent, name, keyObjectives, doneCriteria, ownerRoles, contributorRoles, state, dueDate) {
 		// TODO: parameter validation, for now we only get the abstraction benefits
 		return {
-			type:ObjectTypes.Goal,
+			type:Teal.ObjectTypes.Goal,
 			rootOrgId:Teal.rootOrgIg(),
 			_id:_id,
 			parent:parent,
@@ -16,7 +16,7 @@ export default {
 			contributorRoles:contributorRoles,
 			state:state,
 			dueDate:dueDate,
-			path: [],
+			path: []
 		}
 	},
 	createOrganization(_id, name, parent, parentId, startDate, endDate) {

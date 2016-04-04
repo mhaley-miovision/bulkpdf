@@ -9,21 +9,8 @@ import GoalStateControls from './goal_components/GoalStateControls.jsx'
 export default class GoalEdit extends Component {
 	constructor(props) {
 		super(props);
-		if (!props) {
-			props = {};
-		}
-		this.state = {
-			datePickerId: "picker" + Teal.newId(),
-			keyObjectives: this.props.goal ? _.clone(this.props.goal.keyObjectives) : [],
-			doneCriteria: this.props.goal ? _.clone(this.props.goal.doneCriteria) : [],
-			name: this.props.goal ? _.clone(this.props.goal.name) : "",
-			_id: this.props.goal ? this.props.goal._id : null,
-			newKeyObjective: "",
-			newDoneCriteria: "",
-			ownerRoles: this.props.goal ? _.clone(this.props.goal.ownerRoles)  : [],
-			contributorRoles: this.props.goal ?  _.clone(this.props.goal.contributorRoles) : [],
-			dueDate : this.props.goal ? this.props.goal.dueDate : moment().format(Teal.DateFormat)
-		}
+		this.state = this.loadStateFromProps(props);
+
 		this.handleNameChange = this.handleNameChange.bind(this);
 		this.handleDoneCriteriaChange = this.handleDoneCriteriaChange.bind(this);
 		this.handleKeyObjectiveChange = this.handleKeyObjectiveChange.bind(this);
@@ -31,6 +18,21 @@ export default class GoalEdit extends Component {
 		this.handleNewKeyObjectiveChange = this.handleNewKeyObjectiveChange.bind(this);
 		this.handleRemoveDoneCriteria = this.handleRemoveDoneCriteria.bind(this);
 		this.handleRemoveKeyObjective = this.handleRemoveKeyObjective.bind(this);
+	}
+
+	loadStateFromProps(props) {
+		return {
+			datePickerId: "picker" + Teal.newId(),
+			keyObjectives: props.goal ? _.clone(props.goal.keyObjectives) : [],
+			doneCriteria: props.goal ? _.clone(props.goal.doneCriteria) : [],
+			name: props.goal ? _.clone(props.goal.name) : "",
+			_id: props.goal ? props.goal._id : null,
+			newKeyObjective: "",
+			newDoneCriteria: "",
+			ownerRoles: props.goal ? _.clone(props.goal.ownerRoles) : [],
+			contributorRoles: props.goal ? _.clone(props.goal.contributorRoles) : [],
+			dueDate: props.goal ? props.goal.dueDate : moment().format(Teal.DateFormat)
+		};
 	}
 
 	getInputs() {
@@ -43,7 +45,7 @@ export default class GoalEdit extends Component {
 	}
 
 	clearInputs() {
-		this.setState(this.getInitialState());
+		this.setState(this.loadStateFromProps(this.props));
 	}
 
 	addKeyObjective(event) {
@@ -230,5 +232,5 @@ export default class GoalEdit extends Component {
 }
 
 GoalEdit.propTypes = {
-	goal : React.PropTypes.object,
+	goal : React.PropTypes.object
 };
