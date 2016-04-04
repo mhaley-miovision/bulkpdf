@@ -9,7 +9,7 @@ import ProfileImage from './ProfileImage.jsx'
 import RolesSummary from '../summary_cards/RolesSummary.jsx'
 import GoalsSummary from '../summary_cards/GoalsSummary.jsx'
 import TeamsSummary from '../summary_cards/TeamsSummary.jsx'
-import SkillsSummary from '../summary_cards/TeamSkillsSummary.jsx'
+import SkillsSummary from '../summary_cards/SkillsSummary.jsx'
 import NotOnAnyTeam from '../error_states/NotOnAnyTeam.jsx'
 
 import Teal from '../../../shared/Teal'
@@ -60,18 +60,25 @@ Profile.propTypes = {
 	objectId : React.PropTypes.string
 };
 
-export default createContainer((objectId) => {
+export default createContainer((params) => {
 	"use strict";
 
 	let handle = Meteor.subscribe("teal.contributors");
 	let handle2 = Meteor.subscribe("users");
+
+	const { objectId } = params;
+
 	if (handle.ready() && handle2.ready()) {
-		console.log("ready!");
+
 		// default is current user
 		let email = objectId;
 		if (!email) {
-			var myUser = Meteor.users.findOne({_id: Meteor.userId()});
-			email = myUser.services.google.email;
+			var u = Meteor.users.findOne({_id: Meteor.userId()});
+			if (u) {
+				email = u.services.google.email;
+			}  else {
+				console.error("Error finding current user!")
+			}
 		}
 		// find the contributor
 		let c = ContributorsCollection.findOne({email: email});
@@ -80,7 +87,6 @@ export default createContainer((objectId) => {
 			doneLoading: true
 		}
 	} else {
-		console.log("not ready...");
-		return {doneLoading: false};
+		return { doneLoading: false };
 	}
 }, Profile);

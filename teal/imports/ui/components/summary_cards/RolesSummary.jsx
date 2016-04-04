@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
+import { RolesCollection } from '../../../api/roles'
 
 import Loading from '../Loading.jsx'
 import RoleEditModal from '../roles/RoleEditModal.jsx'
@@ -62,8 +63,8 @@ class RolesSummary extends Component {
 	}
 
 	renderRoles() {
-		if (this.data.doneLoading) {
-			return this.data.roles.map(r => {
+		if (this.props.doneLoading) {
+			return this.props.roles.map(r => {
 				return (
 					<li className="collection-item" key={r._id}>
 						<div className="collection-item-text">
@@ -77,8 +78,8 @@ class RolesSummary extends Component {
 	}
 
 	renderModals() {
-		if (this.data.doneLoading) {
-			return this.data.roles.map(r => {
+		if (this.props.doneLoading) {
+			return this.props.roles.map(r => {
 				return <RoleEditModal key={r._id} role={r} ref={'m'+r._id} id={'m'+r._id}/>
 			});
 		}
@@ -86,7 +87,7 @@ class RolesSummary extends Component {
 	}
 
 	render() {
-		if (this.data.doneLoading) {
+		if (this.props.doneLoading) {
 			return (
 				<div>
 					<ul className="collection with-header">
@@ -108,13 +109,15 @@ RolesSummary.propTypes = {
 	objectId: React.PropTypes.string.isRequired,
 };
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
 
 	let handle = Meteor.subscribe("teal.roles");
 
+	const { objectId } = params;
+
 	if (handle.ready()) {
-		let roles = RolesCollection.find({email:this.props.objectId}).fetch();
+		let roles = RolesCollection.find({email:objectId}).fetch();
 		return { doneLoading: true, roles: roles }
 	} else {
 		return { doneLoading: false };

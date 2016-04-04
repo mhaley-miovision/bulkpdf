@@ -29,7 +29,6 @@ class GoalsForIndividual extends Component {
 		return true;
 	}
 	renderGoals() {
-		console.log(this.props.doneLoading);
 		if (this.props.doneLoading) {
 			return <GoalList goalList={ this.props.goals }/>
 		} else {

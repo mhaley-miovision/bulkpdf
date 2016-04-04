@@ -1,6 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+import { createContainer } from 'meteor/react-meteor-data'
+
+import { RolesCollection } from '../../../api/roles'
+import { ContributorsCollection } from '../../../api/contributors'
 
 import Loading from '../Loading.jsx'
 
@@ -57,20 +60,22 @@ TeamsSummary.propTypes = {
 	objectId: React.PropTypes.string.isRequired,
 };
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
 
 	let handle = Meteor.subscribe("teal.contributors");
 	let handle2 = Meteor.subscribe("teal.roles");
 
+	const { objectId } = params;
+
 	if (handle.ready() && handle2.ready()) {
-		let orgs = _.uniq(RolesCollection.find({email:this.props.objectId}, {
+		let orgs = _.uniq(RolesCollection.find({email:objectId}, {
 			sort: {organization: 1}, fields: {organization: true}
 		}).fetch().map(function(x) {
 			return x.organization;
 		}), true);
 
-		let homeOrg = ContributorsCollection.findOne({email:this.props.objectId}).physicalTeam;
+		let homeOrg = ContributorsCollection.findOne({email:objectId}).physicalTeam;
 
 		return { doneLoading: true, orgs: orgs, homeOrg: homeOrg }
 	} else {

@@ -4,14 +4,18 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 
+import { RolesCollection } from '../../../api/roles'
+import { GoalsCollection } from '../../../api/goals'
+
+import GoalListModal from '../goals/GoalListModal.jsx'
 import Loading from '../Loading.jsx'
 
 class GoalsSummary extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.handleAddGoalsNudge = this.handleAddGoalsNudge.bind(this);
 
-		if (this.props.goals.length > 0) {
+		if (props.goals && props.goals.length > 0) {
 			this.updateChart();
 		}
 	}
@@ -48,8 +52,8 @@ class GoalsSummary extends Component {
 	}
 
 	renderLateGoals() {
-		if (this.data.doneLoading) {
-			return this.data.lateGoals.map(g => {
+		if (this.props.doneLoading) {
+			return this.props.lateGoals.map(g => {
 				return (
 					<li className="collection-item" key={g._id}>
 						<div className="collection-item-text">
@@ -64,14 +68,14 @@ class GoalsSummary extends Component {
 
 	getLateClasses() {
 		let classes = "goalDueDate right";
-		if (this.data.lateGoals.length > 0) {
+		if (this.props.lateGoals.length > 0) {
 			classes += " late";
 		}
 		return classes;
 	}
 
 	renderLateGoalsHeader() {
-		if (this.data.lateGoals.length > 0) {
+		if (this.props.lateGoals.length > 0) {
 			return (
 				<li className="collection-item summaryCardSubHeader" key="goalSummary4">
 					Late goals
@@ -88,7 +92,7 @@ class GoalsSummary extends Component {
 
 			// This will get the first returned node in the jQuery collection.
 			var c = new Chart(ctx);
-			var g = _this.data.summaryGoal;
+			var g = _this.props.summaryGoal;
 			var data = [
 				{
 					value: g.stats.completed,
@@ -152,7 +156,7 @@ class GoalsSummary extends Component {
 	}
 
 	renderSection() {
-		if (this.data.doneLoading && this.data.goals.length) {
+		if (this.props.doneLoading && this.props.goals.length) {
 			var url = FlowRouter.path("goalsList", {}, {objectId:this.props.objectId});
 			var goalsSection = [];
 			goalsSection.push(
@@ -165,7 +169,7 @@ class GoalsSummary extends Component {
 			);
 			goalsSection.push(
 				<li className="collection-item" key="goalSummary2">
-					<div className="collection-item-text">{this.data.goals.length} Goals
+					<div className="collection-item-text">{this.props.goals.length} Goals
 						(<a className="tealLink" onClick={ this.showGoalsModal }>view all</a>)
 					</div>
 					<a className="secondary-content" onClick={ this.showGoalsModal }>
@@ -176,12 +180,12 @@ class GoalsSummary extends Component {
 			goalsSection.push(
 				<li className="collection-item" key="goalSummary3">
 					<div className="collection-item-text">Number of overdue goals: </div>
-					<span className={this.getLateClasses()} style={{margin:"4px 10px 0 0"}}>{this.data.lateGoals.length} late</span>
+					<span className={this.getLateClasses()} style={{margin:"4px 10px 0 0"}}>{this.props.lateGoals.length} late</span>
 				</li>
 			);
 			goalsSection.push(this.renderLateGoalsHeader());
 			goalsSection.push(this.renderLateGoals());
-			goalsSection.push(<GoalListModal key="userGoalListModalId" id="userGoalListModalId" goalList={this.data.goals}/>);
+			goalsSection.push(<GoalListModal key="userGoalListModalId" id="userGoalListModalId" goalList={this.props.goals}/>);
 			return goalsSection;
 		} else {
 			return (
@@ -215,15 +219,17 @@ GoalsSummary.propTypes = {
 	objectId: React.PropTypes.string.isRequired,
 };
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
 
 	let handle = Meteor.subscribe("teal.goals");
 
+	const { objectId } = params;
+
 	if (handle.ready()) {
 		// get this person's top goals
 		let allRolestopGoals = RolesCollection.find(
-			{email:this.props.objectId},
+			{email:objectId},
 			{fields:{topGoals:1}}).map(x => {return x.topGoals});
 		let goalIds = [];
 		allRolestopGoals.forEach(topGoalsForRole => {

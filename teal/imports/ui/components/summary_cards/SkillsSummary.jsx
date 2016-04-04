@@ -4,9 +4,18 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import '../third_party/Chart'
 
+import { ContributorsCollection } from '../../../api/contributors'
+import { SkillsCollection } from '../../../api/skills'
+
 import Loading from '../Loading.jsx'
 
 class SkillsSummary extends Component {
+
+	componentDidUpdate() {
+		if (this.props.skills) {
+			this.updateChart();
+		}
+	}
 
 	updateChart() {
 		let _this = this;
@@ -21,7 +30,7 @@ class SkillsSummary extends Component {
 
 			var labels = [];
 			var data = [];
-			_this.data.skills.forEach(s => {
+			_this.props.skills.forEach(s => {
 				labels.push(s.skill);
 				data.push(s.rating);
 			});
@@ -42,7 +51,8 @@ class SkillsSummary extends Component {
 				]
 			};
 
-			var c = new Chart(ctx).Radar(data, Chart.defaults.Radar );
+			// create the chart!
+			new Chart(ctx).Radar(data, Chart.defaults.Radar );
 
 		}, 10);
 	}
@@ -85,20 +95,18 @@ SkillsSummary.propTypes = {
 	objectId: React.PropTypes.string.isRequired,
 };
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
 
 	let handle = Meteor.subscribe("teal.contributors");
 	let handle2 = Meteor.subscribe("teal.skills");
 
+	const { objectId } = params;
+
 	if (handle.ready() && handle2.ready()) {
-		let c = ContributorsCollection.findOne({email: this.props.objectId});
-		let s = SkillsCollection.find({email: this.props.objectId }).fetch();
-		this.data = { skills: s, doneLoading: true, name: c.name }
-		if (s.length > 0) {
-			this.updateChart();
-		}
-		return this.data;
+		let c = ContributorsCollection.findOne({email: objectId});
+		let s = SkillsCollection.find({email: objectId }).fetch();
+		return { skills: s, doneLoading: true, name: c.name };
 	} else {
 		return { doneLoading: false };
 	}

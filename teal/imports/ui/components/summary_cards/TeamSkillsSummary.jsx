@@ -4,12 +4,21 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import '../third_party/Chart'
 
+import { RolesCollection } from '../../../api/roles'
+import { SkillsCollection }  from '../../../api/skills'
+
 import Loading from '../Loading.jsx'
 
 class TeamSkillsSummary extends Component {
+	constructor(props) {
+		super(props);
+		if (props && props.skills && props.skills.length > 0) {
+			this.updateChart();
+		}
+	}
 
 	updateChart() {
-		if (!this.data.skills || this.data.skills.length <= 0) {
+		if (!this.props.skills || this.props.skills.length <= 0) {
 			return;
 		}
 		let _this = this;
@@ -24,13 +33,13 @@ class TeamSkillsSummary extends Component {
 			// This will get the first returned node in the jQuery collection.
 			let myNewChart = new Chart(ctx);
 
-			let labels = _this.data.skills;
+			let labels = _this.props.skills;
 			let data = {
 				labels: labels,
 				datasets: [],
 			};
-			for (var email in _this.data.skillRatings) {
-				let sr = _this.data.skillRatings[email];
+			for (var email in _this.props.skillRatings) {
+				let sr = _this.props.skillRatings[email];
 
 				// put skills in same order as labels for this user
 				let skillsData = [];
@@ -99,16 +108,21 @@ TeamSkillsSummary.propTypes = {
 	orgId: React.PropTypes.string.isRequired,
 };
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
 
 	let handle = Meteor.subscribe("teal.roles");
 	let handle2 = Meteor.subscribe("teal.skills");
 	let handle3 = Meteor.subscribe("teal.organizations");
 
+	const { orgId } = params;
+	if (_.isNull(orgId)) {
+		throw new Meteor.Error("missing-org-id");
+	}
+
 	if (handle.ready() && handle2.ready() && handle3.ready()) {
 		// get unique user emails
-		let users = _.uniq(RolesCollection.find({_id:this.props.orgId}, {email: 1}).fetch().map(function(x) {
+		let users = _.uniq(RolesCollection.find({_id: orgId }, {email: 1}).fetch().map(function(x) {
 			return x.email;
 		}), true);
 
@@ -125,12 +139,7 @@ export default createContainer(() => {
 		skills = _.uniq(skills);
 		skills.sort();
 
-		this.data = { skills: skills, skillRatings: skillRatings, doneLoading: true }
-
-		if (skills.length > 0) {
-			this.updateChart();
-		}
-		return this.data;
+		return { orgId:orgId, skills: skills, skillRatings: skillRatings, doneLoading: true };
 	} else {
 		return { doneLoading: false };
 	}

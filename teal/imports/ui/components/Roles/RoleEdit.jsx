@@ -3,14 +3,15 @@ import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
+import ObjectSearch from '../ObjectSearch.jsx'
 
 export default class RoleEdit extends Component {
-	constructor() {
-		super();
-		this.state = this.loadStateFromProps(this.props);
+	constructor(props) {
+		super(props);
+		this.state = this.loadStateFromProps(props);
 
-		this.handleRemoveAccountability = this.handleRemoveAccountability(this);
-		this.handleAccountabilityChange = this.handleAccountabilityChange(this);
+		this.handleRemoveAccountability = this.handleRemoveAccountability.bind(this);
+		this.handleAccountabilityChange = this.handleAccountabilityChange.bind(this);
 		this.handleNewAccountabilityChange = this.handleNewAccountabilityChange.bind(this);
 		this.handleLabelChange = this.handleLabelChange.bind(this);
 		this.onOrganizationSelected = this.onOrganizationSelected.bind(this);
@@ -239,5 +240,5 @@ export default class RoleEdit extends Component {
 }
 
 RoleEdit.propTypes = {
-	role : React.PropTypes.object,
+	role : React.PropTypes.object
 };
