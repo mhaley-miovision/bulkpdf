@@ -6,133 +6,49 @@ import { OrganizationsCollection } from '../../api/organizations';
 import { ContributorsCollection } from '../../api/contributors';
 import { RolesCollection } from '../../api/roles';
 import { RoleLabelsCollection } from '../../api/role_labels';
+import { AccountabilityLevelsCollection } from '../../api/accountability_levels';
 
-class ObjectSearch extends Component {
-
-	constructor() {
-		super();
-
-		this.props = {
-			findContributors: false,
-			findOrganizations: false,
-			findRoles: false,
-			findRoleLabels: false,
-			findAccountabilityLevels: false,
-			initialValue: '',
-		};
-		this.state = {
-			showList: false,
-			searchResults: [],
-			query: this.props.initialValue,
-			contributors: [],
-			organization: [],
-		};
+class SearchResults extends Component {
+	constructor(props) {
+		super(props);
 	}
 
 	getDropdownClasses() {
 		var classes = "collection searchDropdown small";
-		if (!this.state.showList) classes += " hide";
+		if (!this.props.showList) {
+			classes += " hide";
+		}
 		return classes;
 	}
 
-	toggleDropdown(show) {
-		this.setState( { showList: show } );
-	}
-
-	onBlur() {
-		var _this = this;
-		setTimeout(function() {
-			_this.toggleDropdown(false);
-			_this.setState({showClose:false});
-		}, 150); // TODO HACK: to facilitate clicking first
-	}
-
-	onSelected() {
-		this.toggleDropdown(true);
-		this.setState({showClose:true});
-	}
-
-	// TODO: these methods need refactoring
-
-	handleOrganizationClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({inputValue:e.currentTarget.text});
-		if (this.props.onClick) {
-			// undo what the list creation did. it's nasty but at least contained within this component
-			let o = e.currentTarget.text;
-			o = o.substr(o.indexOf(" ") + 1);
-			this.props.onClick(o, 'organization', e.currentTarget.id);
-		}
-	}
-
-	handleContributorClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({inputValue:e.currentTarget.text});
-		if (this.props.onClick) {
-			// undo what the list creation did. it's nasty but at least contained within this component
-			let o = e.currentTarget.text;
-			o = o.substr(o.indexOf(" ") + 1);
-			this.props.onClick(o, 'contributor', e.currentTarget.id);
-		}
-	}
-
-	handleRoleClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({inputValue:e.currentTarget.text});
-		if (this.props.onClick) {
-			this.props.onClick(e.currentTarget.id, 'role', e.currentTarget.id);
-		}
-	}
-
-	handleRoleLabelClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({inputValue:e.currentTarget.text});
-		if (this.props.onClick) {
-			this.props.onClick(e.currentTarget.text, 'role_label', e.currentTarget.id);
-		}
-	}
-
-	handleAccountabilityLevelClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({inputValue:e.currentTarget.text});
-		if (this.props.onClick) {
-			this.props.onClick(e.currentTarget.text, 'accountability_level', e.currentTarget.id);
-		}
-	}
-
 	renderDropdownItems() {
-		if (   this.data.contributors.length > 0
-			|| this.data.organizations.length > 0
-			|| this.data.roles.length > 0
-			|| this.data.roleLabels.length > 0
-			|| this.data.accountabilityLevels.length > 0) {
+		if (this.props.contributors.length > 0
+			|| this.props.organizations.length > 0
+			|| this.props.roles.length > 0
+			|| this.props.roleLabels.length > 0
+			|| this.props.accountabilityLevels.length > 0) {
 			var collection = [];
 			var i = 0;
-			if (this.data.contributors.length > 0) {
-				for (var c in this.data.contributors) {
-					var o = this.data.contributors[c];
+			if (this.props.contributors.length > 0) {
+				for (var c in this.props.contributors) {
+					var o = this.props.contributors[c];
 					collection.push(
 						<a href="#!" className="collection-item" key={i} id={o.email} object={o} style={{cursor:"pointer"}}
 						   onClick={ this.handleContributorClick }><span className="ProjectTag">contributor</span> {o.name}</a>);
 					i++;
 				}
 			}
-			if (this.data.organizations.length > 0) {
-				for (var c in this.data.organizations) {
-					var o = this.data.organizations[c];
+			if (this.props.organizations.length > 0) {
+				for (var c in this.props.organizations) {
+					var o = this.props.organizations[c];
 					collection.push(
 						<a href="#!" className="collection-item" key={i} id={o._id} object={o} style={{cursor:"pointer"}}
 						   onClick={  this.handleOrganizationClick }><span className="ProjectTag">organization</span> {o.name}</a>);
 					i++;
 				}
 			}
-			if (this.data.roles.length > 0) {
-				this.data.roles.forEach(r => {
+			if (this.props.roles.length > 0) {
+				this.props.roles.forEach(r => {
 					let l = (r.contributor ? r.contributor : "<unfilled>") + " - " + r.accountabilityLabel;
 					collection.push(
 						<a className="collection-item" key={r._id} id={r._id} object={r} style={{cursor:"pointer"}}
@@ -140,16 +56,16 @@ class ObjectSearch extends Component {
 					);
 				})
 			}
-			if (this.data.roleLabels.length > 0) {
-				this.data.roleLabels.forEach(r => {
+			if (this.props.roleLabels.length > 0) {
+				this.props.roleLabels.forEach(r => {
 					collection.push(
 						<a className="collection-item" key={r._id} id={r._id} object={r} style={{cursor:"pointer"}}
 						   onClick={ this.handleRoleLabelClick }>{r.name}</a>
 					);
 				})
 			}
-			if (this.data.accountabilityLevels.length > 0) {
-				this.data.accountabilityLevels.forEach(r => {
+			if (this.props.accountabilityLevels.length > 0) {
+				this.props.accountabilityLevels.forEach(r => {
 					collection.push(
 						<a className="collection-item" key={r._id} id={r._id} object={r} style={{cursor:"pointer"}}
 						   onClick={ this.handleAccountabilityLevelClick }>{r.name}</a>
@@ -162,58 +78,19 @@ class ObjectSearch extends Component {
 		}
 	}
 
-	onInputChange() {
-		this.setState({ query: this.refs.textInput.value });
-	}
-
-	handleClear() {
-		this.setState({inputValue:'',query:''});
-		if (this.props.onClick) {
-			this.props.onClick('', '', null);
-		}
-	}
-
-	componentWillReceiveProps(nextProps, nextState) {
-		if (nextProps.initialValue) {
-			this.setState({query:nextProps.initialValue});
-		}
-	}
-
 	render() {
 		return (
-			<div>
-				<div className="GoalEditItemInput center">
-
-					<input className="text-main5" type="text" id="orgSelection" ref="textInput"
-						   onChange={this.onInputChange}
-						   placeholder={this.state.query ? '' : this.props.label} value={this.state.query}
-						   onBlur={this.onBlur} onSelect={this.onSelected}/>
-
-					{ this.state.showClose ? <i className="material-icons GreyButton ClearGreyButton"
-												onClick={this.handleClear}>close</i> : '' }
-				</div>
-				<div id='dropdown1' className={this.getDropdownClasses()}>
-					{this.renderDropdownItems()}
-				</div>
+			<div id='dropdown1' className={this.getDropdownClasses()}>
+				{this.renderDropdownItems()}
 			</div>
 		);
 	}
 }
 
-ObjectSearch.propTypes = {
-	customLabel: React.PropTypes.string,
-		findOrganizations: React.PropTypes.bool,
-		findContributors: React.PropTypes.bool,
-		findRoles: React.PropTypes.bool,
-		findRoleLabels: React.PropTypes.bool,
-		findAccountabilityLevels: React.PropTypes.bool,
-		onClick: React.PropTypes.func.isRequired,
-		notFoundLabel: React.PropTypes.string,
-		initialValue: React.PropTypes.string,
-};
-
-export default createContainer(() => {
+var SearchResultsComponent = createContainer((params) => {
 	"use strict";
+
+	const { query } = params;
 
 	var handle1 = Meteor.subscribe('teal.organizations');
 	var handle2 = Meteor.subscribe('teal.contributors');
@@ -221,10 +98,18 @@ export default createContainer(() => {
 	var handle4 = Meteor.subscribe('teal.role_labels');
 	var handle5 = Meteor.subscribe('teal.accountability_levels');
 
+	/*
+	console.log(handle1.ready());
+	console.log(handle2.ready());
+	console.log(handle3.ready());
+	console.log(handle4.ready());
+	console.log(handle5.ready());
+	*/
+
 	if (handle1.ready() && handle2.ready() && handle3.ready() && handle4.ready() && handle5.ready()) {
-		if (this.state.query && this.state.query !== '') {
-			var caseInsensitiveMatch = {$regex: new RegExp('.*' + this.state.query + '.*', "i")};
-			var q = {name: caseInsensitiveMatch};
+		if (query && query !== '') {
+			var caseInsensitiveMatch = { $regex: new RegExp('.*' + query + '.*', "i") };
+			var q = { name: caseInsensitiveMatch };
 
 			// TODO: nosql injection risk here!?
 
@@ -254,4 +139,145 @@ export default createContainer(() => {
 		}
 	}
 	return { isLoading: true, contributors: [], organizations: [], roles: [], roleLabels: [], accountabilityLevels: []};
-}, ObjectSearch);
+}, SearchResults);
+
+export default class ObjectSearch extends Component {
+	constructor(props) {
+		super(props);
+
+		this.props = {
+			findContributors: false,
+			findOrganizations: false,
+			findRoles: false,
+			findRoleLabels: false,
+			findAccountabilityLevels: false,
+			initialValue: '',
+		};
+		this.state = {
+			showList: false,
+			searchResults: [],
+			query: this.props.initialValue,
+		};
+
+		this.handleOrganizationClick = this.handleOrganizationClick.bind(this);
+		this.handleContributorClick = this.handleContributorClick.bind(this);
+		this.handleRoleClick = this.handleRoleClick.bind(this);
+		this.handleRoleLabelClick = this.handleRoleLabelClick.bind(this);
+		this.handleAccountabilityLevelClick = this.handleAccountabilityLevelClick.bind(this);
+		this.handleInputChange = this.handleInputChange.bind(this);
+		this.handleClear = this.handleClear.bind(this);
+		this.handleOnBlur = this.handleOnBlur.bind(this);
+		this.handleOnSelected = this.handleOnSelected.bind(this);
+	}
+
+	toggleDropdown(show) {
+		this.setState( { showList: show } );
+	}
+
+	// TODO: these methods need refactoring - WAY too much duplication going on.
+
+	handleOnBlur() {
+		var _this = this;
+		setTimeout(function() {
+			_this.toggleDropdown(false);
+			_this.setState({showClose:false});
+		}, 150); // TODO HACK: to facilitate clicking first
+	}
+	handleOnSelected() {
+		this.toggleDropdown(true);
+		this.setState({showClose:true});
+	}
+	handleOrganizationClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.setState({inputValue:e.currentTarget.text});
+		if (this.props.onClick) {
+			// undo what the list creation did. it's nasty but at least contained within this component
+			let o = e.currentTarget.text;
+			o = o.substr(o.indexOf(" ") + 1);
+			this.props.onClick(o, 'organization', e.currentTarget.id);
+		}
+	}
+	handleContributorClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.setState({inputValue:e.currentTarget.text});
+		if (this.props.onClick) {
+			// undo what the list creation did. it's nasty but at least contained within this component
+			let o = e.currentTarget.text;
+			o = o.substr(o.indexOf(" ") + 1);
+			this.props.onClick(o, 'contributor', e.currentTarget.id);
+		}
+	}
+	handleRoleClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.setState({inputValue:e.currentTarget.text});
+		if (this.props.onClick) {
+			this.props.onClick(e.currentTarget.id, 'role', e.currentTarget.id);
+		}
+	}
+	handleRoleLabelClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.setState({inputValue:e.currentTarget.text});
+		if (this.props.onClick) {
+			this.props.onClick(e.currentTarget.text, 'role_label', e.currentTarget.id);
+		}
+	}
+	handleAccountabilityLevelClick(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.setState({inputValue:e.currentTarget.text});
+		if (this.props.onClick) {
+			this.props.onClick(e.currentTarget.text, 'accountability_level', e.currentTarget.id);
+		}
+	}
+	handleInputChange() {
+		this.setState({ query: this.refs.textInput.value });
+	}
+	handleClear() {
+		this.setState({inputValue:'',query:''});
+		if (this.props.onClick) {
+			this.props.onClick('', '', null);
+		}
+	}
+
+	componentWillReceiveProps(nextProps, nextState) {
+		if (nextProps.initialValue) {
+			this.setState({ query: nextProps.initialValue });
+		}
+	}
+
+	render() {
+		return (
+			<div>
+				<div className="GoalEditItemInput center">
+					<SearchResultsComponent params={{ query:this.state.query, showList:this.state.showList }}/>
+
+					<input className="text-main5" type="text" id="orgSelection" ref="textInput"
+						   onChange={ this.handleInputChange}
+						   placeholder={ this.state.query ? '' : this.props.label } value={ this.state.query }
+						   onBlur={ this.handleOnBlur } onSelect={ this.handleOnSelected }/>
+
+					{ this.state.showClose ? <i className="material-icons GreyButton ClearGreyButton"
+												onClick={ this.handleClear }>close</i> : '' }
+				</div>
+			</div>
+		);
+	}
+}
+
+ObjectSearch.propTypes = {
+	customLabel: React.PropTypes.string,
+	findOrganizations: React.PropTypes.bool,
+	findContributors: React.PropTypes.bool,
+	findRoles: React.PropTypes.bool,
+	findRoleLabels: React.PropTypes.bool,
+	findAccountabilityLevels: React.PropTypes.bool,
+	onClick: React.PropTypes.func.isRequired,
+	notFoundLabel: React.PropTypes.string,
+	initialValue: React.PropTypes.string,
+};
+
+

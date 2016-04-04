@@ -1,12 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+import { createContainer } from 'meteor/react-meteor-data'
+
+import { ContributorsCollection } from '../../api/contributors'
+import { OrganizationsCollection } from  '../../api/organizations'
 
 import Loading from '../components/Loading.jsx'
 import ObjectSearch from '../components/ObjectSearch.jsx'
 import Organization from '../components/organization/Organization.jsx'
 import GoalsForOrganization from '../components/goals/GoalsForOrganization.jsx'
 import TeamSkillsSummary from '../components/summary_cards/TeamSkillsSummary.jsx'
+import NotOnAnyTeam from '../components/error_states/NotOnAnyTeam.jsx'
 
 class MyTeam extends Component {
 	constructor() {
@@ -20,11 +24,11 @@ class MyTeam extends Component {
 	}
 
 	render() {
-		if (this.data.isLoading) {
+		if (this.props.isLoading) {
 			return <Loading/>;
-		} else if (this.data.contributor && (this.state.orgName || this.data.contributorOrg)) {
-			var org = this.state.orgName ? this.state.orgName : this.data.contributorOrg;
-			var orgId = this.state.orgId ? this.state.orgId : this.data.contributorOrgId;
+		} else if (this.props.contributor && (this.state.orgName || this.props.contributorOrg)) {
+			var org = this.state.orgName ? this.state.orgName : this.props.contributorOrg;
+			var orgId = this.state.orgId ? this.state.orgId : this.props.contributorOrgId;
 			return (
 				<div className="section">
 					<ObjectSearch onClick={this.handleSearch}

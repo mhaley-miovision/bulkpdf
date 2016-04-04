@@ -32,3 +32,7 @@ alanning:roles
 momentjs:moment
 react-meteor-data
 materialize:materialize
+meteorhacks:npm
+
+
+npm-container

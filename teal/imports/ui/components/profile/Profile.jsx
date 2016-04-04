@@ -2,12 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import { ContributorsCollection } from '../../../api/contributors';
+
 import Loading from '../Loading.jsx'
 import ProfileImage from './ProfileImage.jsx'
 import RolesSummary from '../summary_cards/RolesSummary.jsx'
 import GoalsSummary from '../summary_cards/GoalsSummary.jsx'
 import TeamsSummary from '../summary_cards/TeamsSummary.jsx'
 import SkillsSummary from '../summary_cards/TeamSkillsSummary.jsx'
+import NotOnAnyTeam from '../error_states/NotOnAnyTeam.jsx'
+
+import Teal from '../../../shared/Teal'
 
 class Profile extends Component {
 	render() {
@@ -52,17 +57,18 @@ class Profile extends Component {
 }
 
 Profile.propTypes = {
-	objectId : React.PropTypes.string,
+	objectId : React.PropTypes.string
 };
 
-export default createContainer(() => {
+export default createContainer((objectId) => {
 	"use strict";
 
 	let handle = Meteor.subscribe("teal.contributors");
-	let handle2 = Meteor.subscribe("teal.users");
+	let handle2 = Meteor.subscribe("users");
 	if (handle.ready() && handle2.ready()) {
+		console.log("ready!");
 		// default is current user
-		let email = this.props.objectId;
+		let email = objectId;
 		if (!email) {
 			var myUser = Meteor.users.findOne({_id: Meteor.userId()});
 			email = myUser.services.google.email;
@@ -74,6 +80,7 @@ export default createContainer(() => {
 			doneLoading: true
 		}
 	} else {
+		console.log("not ready...");
 		return {doneLoading: false};
 	}
 }, Profile);

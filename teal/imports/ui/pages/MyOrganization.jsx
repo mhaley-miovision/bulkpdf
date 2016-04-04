@@ -6,20 +6,19 @@ import GoalTreeByRole from '../components/goals/tree/GoalTreeByRole.jsx'
 
 export default class MyOrganization extends Component {
 
-	constructor() {
-		super();
-		this.state = {
-			objectId: this.props.objectId,
-			objectType: this.props.objectType,
-			zoomTo: this.props.zoomTo,
-			mode: this.props.mode
-		};
-		this.props = {
-			objectId: "",
-			zoomTo: "",
-			objectType: "role",
-			mode: 'acc'
-		};
+	constructor(props) {
+		super(props);
+
+		this.state = {};
+		this.state.zoomTo = props && props.zoomTo ? props.zoomTo : '';
+		this.state.mode = props && props.mode ? props.mode : 'acc';
+
+		/*
+		this.state.objectId = props && props.objectId ? props.objectId : '';
+		this.state.objectType = props && props.objectType ? props.objectType : 'organization';
+		this.state.mode = props && props.mode ? props.mode : 'acc';
+		*/
+
 		this.handleAccClicked = this.handleAccClicked.bind(this);
 		this.handleCompClicked = this.handleCompClicked.bind(this);
 	}

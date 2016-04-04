@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
+import { RolesCollection } from './roles'
+
 export const GoalsCollection = new Mongo.Collection("teal.goals");
 
 if (Meteor.isServer) {

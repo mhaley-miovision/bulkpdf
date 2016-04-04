@@ -1,22 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
+import { Meteor } from 'meteor/meteor'
 
-export const GoogleUserCacheCollection = new Mongo.Collection("teal.google_users_cache");
-
-/*
-var Future = require('fibers/future');
-var googleAuth = require('google-auth-library');
-var readline = require('readline');
-var fs = require('fs');
-var google = Npm.require('googleapis');
-
+export const GoogleUserCacheCollection = new Mongo.Collection("teal.googleUserCache");
 
 if (Meteor.isServer) {
-	Meteor.publish('teal.google_users_cache', function() {
-		return GoogleUserCacheCollection.find({});
-	});
 
-	//var SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly'];
+	var fs = Npm.require('fs');
+	var Future = Npm.require('fibers/future');
+	var googleAuth = Meteor.npmRequire('google-auth-library');
+	var readline = Meteor.npmRequire('readline');
+	var google = Meteor.npmRequire('googleapis');
+	var SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly'];
+	var doneLoadingCacheCallBack = null;
 
 	var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) + '/.credentials/';
 	try {
@@ -25,21 +19,30 @@ if (Meteor.isServer) {
 
 		// Is it a directory?
 		if (stats.isDirectory()) {
-			TOKEN_DIR = '/home/ubuntu/.credentials/';
+			var TOKEN_DIR = '/home/ubuntu/.credentials/';
 		}
 	}
 	catch (e) {
-		if (e.errno === 34) {
-			console.log("local environment detected");
- 		} else {
-			console.error(e);
-		}
+		console.error(e);
 	}
 	var TOKEN_PATH = TOKEN_DIR + "token.json";
 
 	var tokenVerified = false;
 
 	// TODO [MAJOR]: this still relies on the script in /private to init the auth token
+
+	// TODO: implement a recurring job to update this cache, or even better enable this domain to be able to receive push
+	// notifications from Google
+	/*
+	 Meteor.startup(function() {
+	 initCronJob();
+	 })
+
+	 function recurringCronJob() {
+	 if (tokenVerified) {
+
+	 }
+	 }*/
 
 	// TODO: this maxes out at 500 users; fix this if (when :) it becomes a bottle neck
 	function updateGoogleAdminCache(auth) {
@@ -111,4 +114,3 @@ if (Meteor.isServer) {
 		}
 	});
 }
-*/

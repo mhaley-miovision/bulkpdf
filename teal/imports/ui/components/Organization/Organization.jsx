@@ -626,18 +626,18 @@ var Chart = (function () {
 })();
 
 class Organization extends Component {
-	constructor() {
-		super();
-
-		this.state = {
-			initialLoad: true,
-			roleMode : this.props.roleMode,
-		};
+	constructor(props) {
+		super(props);
 
 		this.props =  {
 			roleMode: true,
 			roleModeVisible: true,
 			searchVisible: true,
+		};
+
+		this.state = {
+			initialLoad: true,
+			roleMode : this.props && this.props.roleMode ? this.props.roleMode : true,
 		};
 
 		this.handleRoleModeChanged = this.handleRoleModeChanged.bind(this);
@@ -646,7 +646,6 @@ class Organization extends Component {
 		this.handleOnZoomedTo = this.handleOnZoomedTo.bind(this);
 		this.handeRoleOnClick = this.handeRoleOnClick.bind(this);
 	}
-
 
 	handleRoleModeChanged(event) {
 		this.setState( {roleMode: !this.refs.roleMode.checked });
@@ -720,7 +719,7 @@ class Organization extends Component {
 	}
 
 	renderLoading() {
-		if (!this.data.doneLoading) {
+		if (!this.props.doneLoading) {
 			return (
 				<div className="centeredItem">
 					<Loading/>
