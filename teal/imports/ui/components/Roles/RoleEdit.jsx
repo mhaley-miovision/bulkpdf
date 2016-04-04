@@ -52,7 +52,8 @@ export default class RoleEdit extends Component {
 	}
 
 	clearInputs() {
-		this.setState(this.getInitialState());
+		// reset to props-derived stated
+		this.setState(this.loadStateFromProps(this.props));
 	}
 
 	addAccountability(event) {

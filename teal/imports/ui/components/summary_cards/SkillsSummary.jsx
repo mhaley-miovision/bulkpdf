@@ -11,7 +11,7 @@ import Loading from '../Loading.jsx'
 
 class SkillsSummary extends Component {
 
-	componentDidUpdate() {
+	componentDidUpdate(prevProps, prevState) {
 		if (this.props.skills) {
 			this.updateChart();
 		}
@@ -19,7 +19,7 @@ class SkillsSummary extends Component {
 
 	updateChart() {
 		let _this = this;
-		setTimeout(function () {
+
 			$("#skillsPolarGraph").remove();
 			$('#skillsPolarGraphContainer').append('<canvas id="skillsPolarGraph"><canvas>');
 
@@ -54,7 +54,6 @@ class SkillsSummary extends Component {
 			// create the chart!
 			new Chart(ctx).Radar(data, Chart.defaults.Radar );
 
-		}, 10);
 	}
 
 	renderCanvas() {

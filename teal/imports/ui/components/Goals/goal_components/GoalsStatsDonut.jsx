@@ -9,16 +9,8 @@ import '../../third_party/Chart'
 export default class GoalsStatsDonut extends Component {
 	constructor(props) {
 		super(props);
-		this.state = { chartId: "chart_" + Teal.newId() };
-		if (!props) {
-			props = {};
-		}
-		if (!props.width) {
-			props.width = "120px";
-		}
-		if (!props.height) {
-			props.height = "120px";
-		}
+
+		console.log("GoalsStatsDonut.constructor");
 	}
 
 	updateChart() {
@@ -46,8 +38,8 @@ export default class GoalsStatsDonut extends Component {
 			},
 		];
 
-		var ctx = $('#'+ _this.state.chartId).get(0).getContext("2d");
-		new Chart(ctx).Doughnut(data,{
+		var ctx = $('#'+ _this.props.chartId).get(0).getContext("2d");
+		var c = new Chart(ctx).Doughnut(data,{
 			animation:true,
 			animationSteps: 35,
 			responsive: true,
@@ -55,8 +47,8 @@ export default class GoalsStatsDonut extends Component {
 			percentageInnerCutout : 80,
 			segmentShowStroke : false,
 			onAnimationComplete: function() {
-				var canvasWidthvar = $('#' + _this.state.chartId).width();
-				var canvasHeight = $('#' + _this.state.chartId).height();
+				var canvasWidthvar = $('#' + _this.props.chartId).width();
+				var canvasHeight = $('#' + _this.props.chartId).height();
 
 				//this constant base on canvasHeight / 2.8em
 				var constant = 104;
@@ -75,10 +67,14 @@ export default class GoalsStatsDonut extends Component {
 				ctx.fillText(tpercentage, txtPosx, canvasHeight/2);
 			}
 		});
+
+		console.log(c);
 	}
 
 	componentDidMount() {
-		this.updateChart();
+		let _this = this;
+		console.log("GoalsStatsDonut.componentDidUpdate");
+		setTimeout(function() { _this.updateChart() }, 500);
 	}
 
 	areSameStats(p1, p2) {
@@ -91,6 +87,7 @@ export default class GoalsStatsDonut extends Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
+		console.log("GoalsStatsDonut.componentDidUpdate");
 		if (!this.areSameStats(prevProps, this.props)) {
 			this.updateChart();
 		}
@@ -105,10 +102,10 @@ export default class GoalsStatsDonut extends Component {
 		return (
 			<div style={{width:this.props.width, height: this.props.height, marginBottom: "7px"}}
 				 className="goalDonutChart" data-tip={subGoalsToolTip} data-for={this.state.chartId}>
-				<canvas id={this.state.chartId} width={this.props.width} height={this.props.height}>
+				<canvas id={this.props.chartId} width={this.props.width} height={this.props.height}>
 				</canvas>
 
-				<ReactTooltip id={this.state.chartId} place="bottom"/>
+				<ReactTooltip id={this.props.chartId} place="bottom"/>
 			</div>
 		);
 	}
@@ -117,5 +114,11 @@ export default class GoalsStatsDonut extends Component {
 GoalsStatsDonut.propTypes = {
 	goal: React.PropTypes.object.isRequired,
 	width: React.PropTypes.string,
-	height: React.PropTypes.string,
+	height: React.PropTypes.string
+};
+
+GoalsStatsDonut.defaultProps = {
+	chartId: "chart_" + Teal.newId(),
+	width: "120px",
+	height: "120px"
 };

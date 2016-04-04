@@ -84,6 +84,12 @@ class GoalsSummary extends Component {
 		}
 	}
 
+	componentDidUpdate(prevProps, prevState) {
+		if (this.props.goals) {
+			this.updateChart();
+		}
+	}
+
 	updateChart() {
 		let _this = this;
 		setTimeout(function () {

@@ -9,14 +9,19 @@ import Loading from '../Loading.jsx'
 import RoleEditModal from '../roles/RoleEditModal.jsx'
 
 class RolesSummary extends Component {
+	constructor(props) {
+		super(props);
+		this.handleRoleEditOnClicked = this.handleRoleEditOnClicked.bind(this);
+	}
+
 	notImplemented() {
 		Materialize.toast( "Not implemented yet, stay tuned!", 1000);
 	}
 
-	roleEditShow(evt) {
+	handleRoleEditOnClicked(e) {
 		console.log(this.refs);
-		console.log('m'+evt.currentTarget.id);
-		this.refs['m'+evt.currentTarget.id].show();
+		console.log('m'+e.currentTarget.id);
+		this.refs['m'+e.currentTarget.id].show();
 	}
 
 	renderRolesControls(r) {
@@ -41,7 +46,7 @@ class RolesSummary extends Component {
 
 		// edit
 		controls.push(
-			<a key={r._id+"4"} id={r._id} onClick={this.roleEditShow} className="secondary-content">
+			<a key={r._id+"4"} id={r._id} onClick={this.handleRoleEditOnClicked} className="secondary-content">
 				<i className="material-icons summaryCardIcon grey-text">edit</i>
 			</a>
 		);

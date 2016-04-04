@@ -64,7 +64,7 @@ class TeamSkillsSummary extends Component {
 		}, 10);
 	}
 
-	componentDidUpdate(nextProps, nextState) {
+	componentDidUpdate(prevProps, prevState) {
 		if (this.props.doneLoading && this.props.skills) {
 			this.updateChart();
 		}
