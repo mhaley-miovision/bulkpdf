@@ -646,7 +646,7 @@ class Organization extends Component {
 		console.log("Organization.handleSearch - object: " + object);
 		console.log("Organization.handleSearch - objectType: " + objectType);
 		console.log("Organization.handleSearch - objectId: " + objectId);
-		Chart.zoomToObject(object, objectType, objectId);
+		Chart.zoomToObject(object, objectType, objectId, true);
 	}
 	handleRoleEditOn(roleId) {
 		this.refs.editRoleModal.show(roleId);

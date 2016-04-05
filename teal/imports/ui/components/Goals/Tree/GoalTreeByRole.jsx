@@ -4,13 +4,16 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../../shared/Teal'
 
+import { GoalsCollection } from '../../../../api/goals'
+import { RolesCollection } from '../../../../api/roles'
+
 import Loading from '../../Loading.jsx'
 import ObjectSearch from '../../ObjectSearch.jsx'
 import GoalTree from './GoalTree.jsx'
 
 class GoalTreeByRole extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = { roleId:this.props.roleId };
 		this.handleSearch = this.handleSearch.bind(this);
 	}
@@ -47,17 +50,16 @@ GoalTreeByRole.propTypes = {
 	roleId: React.PropTypes.string,
 };
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
 
 	var handle = Meteor.subscribe("teal.goals");
-	if (handle.ready()) {
+	var handle2 = Meteor.subscribe("teal.roles");
+	if (handle.ready() && handle2.ready()) {
 
 		// default role is the CEO - TODO: make sure to filter by org root id in the future
 		let roleId = null;
-		if (!!this.state.roleId) {
-			roleId = this.state.roleId;
-		}
+
 		let r = RolesCollection.findOne({label: "Chief Executive Officer"});
 		if (!!r) {
 			roleId = r._id;

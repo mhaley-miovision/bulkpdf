@@ -10,6 +10,7 @@ export default class RoleEdit extends Component {
 		super(props);
 		this.state = this.loadStateFromProps(props);
 
+		this.handleAddAccountabilitySubmit = this.handleAddAccountabilitySubmit.bind(this);
 		this.handleRemoveAccountability = this.handleRemoveAccountability.bind(this);
 		this.handleAccountabilityChange = this.handleAccountabilityChange.bind(this);
 		this.handleNewAccountabilityChange = this.handleNewAccountabilityChange.bind(this);
@@ -56,7 +57,10 @@ export default class RoleEdit extends Component {
 		this.setState(this.loadStateFromProps(this.props));
 	}
 
-	addAccountability(event) {
+	handleAddAccountabilitySubmit(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
 		if (!!this.state.newAccountability && this.state.newAccountability.trim() !== '') {
 			if (event.type === 'submit') {
 				event.preventDefault();
@@ -68,11 +72,17 @@ export default class RoleEdit extends Component {
 	}
 
 	handleRemoveAccountability(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
 		let k = event.target.id.replace("r_","");
 		this.state.accountabilities = _.without(this.state.accountabilities, _.findWhere(this.state.accountabilities, {_id: k}));
 		this.setState({accountabilities: this.state.accountabilities});
 	}
 	handleAccountabilityChange(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
 		let v = event.target.value;
 		let k = event.target.id;
 		let a = _.find(this.state.accountabilities, o => { return o._id === k });
@@ -84,6 +94,9 @@ export default class RoleEdit extends Component {
 		}
 	}
 	handleNewAccountabilityChange(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
 		this.setState({newAccountability:event.target.value});
 	}
 	handleLabelChange(event) {
@@ -222,13 +235,13 @@ export default class RoleEdit extends Component {
 					</div>
 					<div className="col m10 offset-m1 s12">
 						<ul className="ProjectGoalDoneCriteria">
-							<form onSubmit={this.addAccountability}>
+							<form onSubmit={this.handleAddAccountabilitySubmit}>
 								<input key="new_ko"
 									   type="text"
 									   placeholder="Enter new accountability (and press Enter)"
 									   onChange={this.handleNewAccountabilityChange}
 									   value={this.state.newAccountability}
-									   onBlur={this.addAccountability}>
+									   onBlur={this.handleAddAccountabilitySubmit}>
 								</input>
 							</form>
 							{this.renderAccountabilities()}

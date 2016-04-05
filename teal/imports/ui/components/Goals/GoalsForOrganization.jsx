@@ -14,10 +14,6 @@ class GoalsForOrganization extends Component {
 		super(props);
 		this.handleGoalClicked = this.handleGoalClicked.bind(this);
 	}
-	shouldComponentUpdate(nextProps, nextState) {
-		return (nextProps.orgId !== this.props.orgId // org changed
-		|| nextProps.doneLoading !== this.props.doneLoading); // or finished loading
-	}
 
 	handleGoalClicked(evt) {
 		let id = evt.currentTarget.id;

@@ -20,9 +20,10 @@ export default class GoalUserPhotoList extends Component {
 
 	renderPhotos() {
 		return this.props.list.map(item => {
+			let dataTip = (item.contributor ? item.contributor : "<unassigned>") + ("<br>" + item.accountabilityLabel);
 			return (
 				<img id={item.email} key={item._id} className="goalItemPhoto" src={Teal.userPhotoUrl(item.photo)}
-				 data-for={this.state.tipId} data-tip={item.accountabilityLabel} onClick={this.gotoUserProfile}/>
+				 data-for={this.state.tipId} data-tip={dataTip} onClick={this.gotoUserProfile}/>
 			);
 		});
 	}
@@ -40,7 +41,7 @@ export default class GoalUserPhotoList extends Component {
 				<div className="GoalOwnersSection">
 					{heading}
 					<div className="GoalOwnerPhotos">{this.renderPhotos()}</div>
-					<ReactTooltip id={this.state.tipId}/>
+					<ReactTooltip multiline={true} id={this.state.tipId}/>
 				</div>
 			);
 		} else {

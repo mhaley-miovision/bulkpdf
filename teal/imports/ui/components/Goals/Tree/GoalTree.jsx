@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
+import Teal from '../../../../shared/Teal'
+
 var chartHeight = 700;
 var chartHeightMobile = 700;
 var chartWidth = 1024;
@@ -377,11 +379,11 @@ var D3TreeView = (function() {
 })();
 
 export default class GoalTree extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
-			objectId: this.props.objectId,
-			objectType: this.props.objectType,
+			objectId: props.objectId,
+			objectType: props.objectType,
 		};
 	}
 
