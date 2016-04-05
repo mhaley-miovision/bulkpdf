@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 var ReactTooltip = require("react-tooltip")
 
+import Teal from '../../../shared/Teal'
 import TealChanges from '../../../shared/TealChanges'
 
 import RoleEditModal from './RoleEditModal.jsx'
@@ -9,14 +10,14 @@ import CommentsModal from '../comments/CommentsModal.jsx'
 import ControlIconButton from '../ControlButtonIcon.jsx'
 
 export default class RoleControls extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			subGoalsModalVisible: false,
-			subGoalsTargetId: null,
+			subGoalsTargetId: null
 		};
 
-		this.handleEditRole = this.handleEditRole(this);
+		this.handleEditRole = this.handleEditRole.bind(this);
 		this.handleDeleteRole = this.handleDeleteRole.bind(this);
 		this.handleCommentsClicked = this.handleCommentsClicked.bind(this);
 	}

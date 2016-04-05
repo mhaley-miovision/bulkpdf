@@ -49,11 +49,11 @@ class MyTeam extends Component {
 	}
 }
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
 
 	var handle = Meteor.subscribe("teal.contributors");
-	var handle2 = Meteor.subscribe("users");
+	var handle2 = Meteor.subscribe("teal.organizations");
 
 	if (handle.ready() && handle2.ready()) {
 		var c = ContributorsCollection.findOne({email: Meteor.user().email});

@@ -3,6 +3,8 @@ import { Mongo } from 'meteor/mongo';
 
 export const OrganizationsCollection = new Mongo.Collection("teal.organizations");
 
+import { RolesCollection } from './roles'
+
 if (Meteor.isServer) {
 	Meteor.publish('teal.organizations', function() {
 		return OrganizationsCollection.find({});
@@ -103,7 +105,7 @@ if (Meteor.isServer) {
 			var existing = OrganizationsCollection.findOne({name: organizationName});
 			if (existing) {
 				// helper to build tree
-				getOrgChildren = function(orgId) {
+				let getOrgChildren = function(orgId) {
 					var immediateChildren = OrganizationsCollection.find({parentId: orgId}).fetch();
 					if (immediateChildren) {
 						for (var c in immediateChildren) {

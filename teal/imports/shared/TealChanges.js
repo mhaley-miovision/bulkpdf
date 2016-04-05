@@ -628,7 +628,7 @@ var TealChanges = {
 	// show change request outcomes to the user
 	notifyChangeResult(err, change) {
 		if (err) {
-			Materialize.toast("Error: " + err, 3000);
+			Materialize.toast(err, 3000);
 			console.error(err);
 			console.error(change);
 		} else {

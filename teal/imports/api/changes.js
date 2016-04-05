@@ -14,7 +14,6 @@ if (Meteor.isServer) {
 	});
 
 	Meteor.methods({
-
 		"teal.changes.create" : function(c) {
 			// allowed request types
 			if (!TealChanges.isAllowedChangeType(c.type)) {
@@ -60,6 +59,9 @@ if (Meteor.isServer) {
 				c.result = Meteor.call.apply(Meteor, params);
 			} catch (e) {
 				c.result = e;
+				console.error("teal.changes.execute FAILED");
+				console.error(c);
+				throw new Meteor.Error("execute-change-failed")
 			}
 
 			ChangesCollection.update(changeId, c);

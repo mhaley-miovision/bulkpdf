@@ -1,8 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+import { createContainer } from 'meteor/react-meteor-data'
 
 import Teal from '../../../shared/Teal'
+
+import { OrganizationsCollection } from '../../../api/organizations'
+import { RolesCollection } from '../../../api/roles'
 
 import ObjectSearch from '../ObjectSearch.jsx'
 import Loading from '../Loading.jsx'
@@ -12,6 +15,12 @@ var chartHeight = 700;
 var chartHeightMobile = 303;
 var chartWidth = 1024;
 var chartWidthMobile = 303;
+
+/* TODO: Cleaning up to be done:
+	- zooming state is poorly stored and needs to be refactored
+	- the entire chart object could use some serious cleanup
+	...
+ */
 
 var Chart = (function () {
 	var root_2 = Math.sqrt(2),
@@ -247,12 +256,6 @@ var Chart = (function () {
 			}
 		},
 
-		clickIe: function (zoomTo) {
-			if (!browserSupportsForeignObjects()) {
-				window.location = window.location.protocol + "//" + window.location.host + zoomTo.url;
-			}
-		},
-
 		isDescendantOf(n, parent) {
 			if (n.parent) {
 				if (n.parent === parent) {
@@ -320,7 +323,9 @@ var Chart = (function () {
 			}
 		},
 
-		zoomToOrg: function (object, objectType, objectId, shouldAnimate = true) {
+		zoomToObject: function (object, objectType, objectId, shouldAnimate = false) {
+			console.log("shouldAnimate == " + shouldAnimate);
+
 			if (objectType === Teal.ObjectTypes.Contributor) {
 				// possibility of having multiple matches
 				var c = ContributorsCollection.findOne({email: objectId});
@@ -341,9 +346,12 @@ var Chart = (function () {
 					} else {
 						this.highlightRoles([]);
 					}
-					this.zoom(this.objectIdToNode[objectId], true);
+					this.zoom(this.objectIdToNode[objectId], shouldAnimate);
 				} else {
 					console.log(`this.objectIdToNode['${objectId}'] is undefined`);
+
+					// TODO: alternatively, we could try to zoom to the previous parent of that object, but this will be trickier
+					Chart.zoom(root, false);
 				}
 			}
 		},
@@ -352,9 +360,6 @@ var Chart = (function () {
 			zoomedToObject = zoomTo;
 			zoomed = false;
 			loaded = false;
-
-			console.log(zoomedToRole);
-
 			if (zoomedToRole) {
 				Chart.leaveRole(zoomedToRole);
 			}
@@ -432,8 +437,8 @@ var Chart = (function () {
 			y.domain([zoomTo.y - zoomTo.r, zoomTo.y + zoomTo.r]);
 
 			var zf = Chart.zoomFunctions(k);
-			var t = vis.transition()
-				.duration(shouldAnimate ? Chart.transitionDuration() : 0) ; //d3.event ? (d3.event.altKey ? 3.5 * Chart.transitionDuration() : Chart.transitionDuration()) : 0);
+
+			var t = vis.transition().duration(shouldAnimate ? Chart.transitionDuration() : 0);
 
 			t.each("end", function () {
 				if (zoomTo.type === 'role' || zoomTo.type === 'contributor') {
@@ -539,6 +544,8 @@ var Chart = (function () {
 		loadData: function (params) {
 			let data = params.data;
 			let initiallyZoomedTo = params.zoomTo;
+			console.log('loadData.initiallyZoomedTo:')
+			console.log(initiallyZoomedTo);
 			onZoomedToObjectCallback = params.onZoomedToObject;
 			containingComponentThisContext = params._this;
 
@@ -607,17 +614,11 @@ var Chart = (function () {
 
 			d3.select(".chartContainer").on("click", function () {
 				Chart.zoom(root, true);
-			})
+			});
 
 			if (initiallyZoomedTo)
 			{
-				Chart.zoom(root, false);
-
-				setTimeout(
-					function() { Chart.zoomToOrg(initiallyZoomedTo, true); },
-					100
-				);
-
+				Chart.zoomToObject(initiallyZoomedTo.object, initiallyZoomedTo.objectType, initiallyZoomedTo.objectId, false);
 			} else {
 				Chart.zoom(root, false);
 			}
@@ -629,10 +630,7 @@ class Organization extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			initialLoad: true,
-			roleMode : this.props && this.props.roleMode ? this.props.roleMode : true,
-		};
+		this.state = { roleMode: true, currentlyZoomedTo:null }; // contributor mode was a view once supported
 
 		this.handleRoleModeChanged = this.handleRoleModeChanged.bind(this);
 		this.handleSearch = this.handleSearch.bind(this);
@@ -648,7 +646,7 @@ class Organization extends Component {
 		console.log("Organization.handleSearch - object: " + object);
 		console.log("Organization.handleSearch - objectType: " + objectType);
 		console.log("Organization.handleSearch - objectId: " + objectId);
-		Chart.zoomToOrg(object, objectType, objectId);
+		Chart.zoomToObject(object, objectType, objectId);
 	}
 	handleRoleEditOn(roleId) {
 		this.refs.editRoleModal.show(roleId);
@@ -667,6 +665,10 @@ class Organization extends Component {
 			clonedObject.parent = null;
 		}
 
+		this.state.currentlyZoomedTo = { objectId:objectId, objectType:objectType, object:object };
+		console.log("this.state.currentlyZoomedTo");
+		console.log(this.state.currentlyZoomedTo);
+
 		if (this.refs.controlsContainer) {
 			this.refs.controlsContainer.update(objectId, objectType, clonedObject);
 		}
@@ -679,43 +681,44 @@ class Organization extends Component {
 
 	updateOrganizationGraph() {
 		console.log("updateOrganizationGraph called!");
-		let _this = this;
 		if (this.props.doneLoading) {
-			console.log("done loading, rendering");
 			var org = this.props.organization; // as loaded from the db
-			var zoomTo = this.props.objectType === 'contributor' ? this.props.objectId : this.props.zoomTo;
 
-			// this is super FUCKED
-			// no fucking clue why this has to relinquish control, but it must be react-related, or maybe a bug???
-			setTimeout(function () {
-				Chart.loadData({ data:org, zoomTo:zoomTo, _this:_this,
-					onRoleEdit: _this.handleRoleEditOn, onZoomedToObject: _this.handleOnZoomedTo } );
+			// see if a stored zoomed to is available, in which case we use that one
+			var zoomTo = null;
+			if (this.state.currentlyZoomedTo) {
+				zoomTo = this.state.currentlyZoomedTo;
+			} else {
+				zoomTo = this.props.zoomTo;
+			}
+
+			// the reason for this could be an update to the DOM during a React update cycle gets overwritten by D3??
+			setTimeout(() => {
+				Chart.loadData({
+					data: org, zoomTo: zoomTo, _this: this,
+					onRoleEdit: this.handleRoleEditOn, onZoomedToObject: this.handleOnZoomedTo
+				});
 			}, 0);
-		} else {
-			// try again, in a little bit
-			console.log("not done loading, waiting a little bit...");
-			setTimeout(function() {_this.updateOrganizationGraph() }, 100);
 		}
 	}
 
-	componentDidMount() {
+	componentDidUpdate(prevProps, prevState) {
+		console.log('componentDidUpdate');
 		this.updateOrganizationGraph();
 	}
+
 	shouldComponentUpdate(nextProps, nextState) {
-		console.log("*****///// shouldComponentUpdate ////*****");
-		console.log(nextProps);
-		console.log(nextState);
+		console.log('shouldComponentUpdate');
 		return true;
-	}
-	componentWillUpdate(nextProps, nextState) {
-		console.log("componentWillUpdate");
-		this.updateOrganizationGraph();
+
+		// never update automatically, since we use D3
+		//return false;
 	}
 
 	renderLoading() {
 		if (!this.props.doneLoading) {
 			return (
-				<div className="centeredItem">
+				<div className="centeredItem" ref="loading">
 					<Loading/>
 				</div>
 			);
@@ -755,11 +758,14 @@ class Organization extends Component {
 			height: h = screen.width < 700 ? chartHeightMobile : chartHeight,
 		};
 
+		/* old role mode
+		 <div className="center">
+		 {this.renderRoleModeSwitch()}
+		 </div>
+		 */
+
 		return (
-			<div className="">
-				<div className="center">
-					{this.renderRoleModeSwitch()}
-				</div>
+			<div>
 				<div>
 					{this.renderSearch()}
 				</div>
@@ -778,7 +784,7 @@ class Organization extends Component {
 Organization.propTypes = {
 	objectId : React.PropTypes.string.isRequired,
 	objectType : React.PropTypes.string,
-	zoomTo : React.PropTypes.string,
+	zoomTo : React.PropTypes.object,
 	roleMode : React.PropTypes.bool,
 	roleModeVisible : React.PropTypes.bool,
 	searchVisible : React.PropTypes.bool
@@ -790,126 +796,129 @@ Organization.defaultProps =  {
 	searchVisible: true
 };
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
 
 	var handle1 = Meteor.subscribe("teal.organizations");
 	var handle2 = Meteor.subscribe("teal.roles");
 	var handle3 = Meteor.subscribe("teal.contributors");
 	var handle4 = Meteor.subscribe("teal.role_accountabilities");
-	var handle5 = Meteor.subscribe("teal.org_accountabilities");
 
-	var data = { doneLoading: handle1.ready() && handle2.ready() && handle3.ready()
-	&& handle4.ready() && handle5.ready() };
+	let data = { doneLoading: handle1.ready() && handle2.ready() && handle3.ready() && handle4.ready() };
+	if (!data.doneLoading) {
+		return { doneLoading: false };
+	}
 
-	if (data.doneLoading) {
+	var { objectId, objectType } = params;
+	if (objectType === 'contributor') {
+		objectId = "Miovision";
+	}
 
-		var objectId = this.props.objectId;
-		if (this.props.objectType === 'contributor') {
-			objectId = "Miovision";
+	let org = OrganizationsCollection.findOne({ name: objectId });
+	if (org) {
+		// for building an org tree
+		let populateOrgChildren = function (o) {
+			o.children = [];
+			var query = OrganizationsCollection.find({parentId: o._id}); // find the children
+			if (query.count() > 0) {
+				var r = query.fetch();
+
+				for (var x in r) {
+					o.children.push(r[x]); // add the child
+					r[x].level = o.level ? o.level+1 : 1; // attach a level
+					populateOrgChildren(r[x]); // recurse for each child
+				}
+			}
 		}
-
-		// TODO: SHOULD OPTIMIZE THESE QUERIES TO USE THE DB MORE RATHER THAN DO THIS CLIENT-SIDE
-
-		let org = OrganizationsCollection.findOne({ name: objectId });
-		if (org) {
-			// for building an org tree
-			let populateOrgChildren = function (o) {
+		// for adding roles as children
+		let attachOrgRoles = function (o)  {
+			if (typeof(o.children) === 'undefined') {
 				o.children = [];
-				var query = OrganizationsCollection.find({parentId: o._id}); // find the children
-				if (query.count() > 0) {
-					var r = query.fetch();
-
-					for (var x in r) {
-						o.children.push(r[x]); // add the child
-						r[x].level = o.level ? o.level+1 : 1; // attach a level
-						populateOrgChildren(r[x]); // recurse for each child
-					}
-				}
 			}
-			// for adding roles as children
-			let attachOrgRoles = function (o)  {
-				if (typeof(o.children) === 'undefined') {
-					o.children = [];
-				}
-				for (var c in o.children) {
-					attachOrgRoles(o.children[c]);
-				}
-
-				// get all immediate roles attached to this org
-				let q = RolesCollection.find({organizationId: o._id});
-				if (q.count() > 0) {
-					var r = q.fetch();
-					for (var x in r) {
-						var role = r[x];
-						o.children.push(role);
-					}
-				}
-			}
-			// for attaching contributors to orgs
-			let attachOrgContributors = function (o) {
-				if (typeof(o.children) === 'undefined') {
-					o.children = [];
-				}
-				o.children.forEach(c => attachOrgContributors(c));
-				let q = ContributorsCollection.find({physicalOrgId: o.Id});
-				if (q.count() > 0) {
-					var r = q.fetch();
-					for (var x in r) {
-						/* THIS IS TOO SLOW, PRE-POPULATE ON IMPORT INSTEAD
-						 let g = GoalsCollection.find({owners: q.email});
-						 r[x].numGoals = g.count();*/
-						o.children.push(r[x]);
-					}
-				}
+			for (var c in o.children) {
+				attachOrgRoles(o.children[c]);
 			}
 
-			// for appending a label as a child
-			let attachOrgLabels = function(n) {
-				if (n.type !== 'organization') {
-					return;
-				}
-				if (typeof(n.children) == 'undefined') {
-					n.children = [];
-				}
-				for (var c in n.children) {
-					attachOrgLabels(n.children[c]);
-				}
-				n.children.push({
-					type: 'label',
-					name: n.name
-				});
-			}
-
-			let removeEmptyOrgs = function(o) {
-				function isEmptyOrg(o) {
-					return o.children ? o.children.findIndex(c => c.type === 'role ' || c.type === 'contributor') < 0 : false;
-				}
-				if (o.children)
-				{
-					// remove the empty ones
-					o.children = o.children.filter(c => !isEmptyOrg(c) );
-					// and repeat for the non-empty children
-					o.children.forEach(c => removeEmptyOrgs(c));
+			// get all immediate roles attached to this org
+			let q = RolesCollection.find({organizationId: o._id});
+			if (q.count() > 0) {
+				var r = q.fetch();
+				for (var x in r) {
+					var role = r[x];
+					o.children.push(role);
 				}
 			}
-
-			// build the view-centric object tree from the models
-			org.level = 0;
-			populateOrgChildren(org);
-			if (this.state.roleMode) {
-				attachOrgRoles(org);
-			} else {
-				attachOrgContributors(org);
-				removeEmptyOrgs(org);
-			}
-			attachOrgLabels(org);
-
-			data.organization = org;
-		} else {
-			Materialize.toast("Could not find organization: " + objectId, 3000);
-			return {};
 		}
-	};
+		// for attaching contributors to orgs
+		let attachOrgContributors = function (o) {
+			if (typeof(o.children) === 'undefined') {
+				o.children = [];
+			}
+			o.children.forEach(c => attachOrgContributors(c));
+			let q = ContributorsCollection.find({physicalOrgId: o.Id});
+			if (q.count() > 0) {
+				var r = q.fetch();
+				for (var x in r) {
+					/* THIS IS TOO SLOW, PRE-POPULATE ON IMPORT INSTEAD
+					 let g = GoalsCollection.find({owners: q.email});
+					 r[x].numGoals = g.count();*/
+					o.children.push(r[x]);
+				}
+			}
+		}
+
+		// for appending a label as a child
+		let attachOrgLabels = function(n) {
+			if (n.type !== 'organization') {
+				return;
+			}
+			if (typeof(n.children) == 'undefined') {
+				n.children = [];
+			}
+			for (var c in n.children) {
+				attachOrgLabels(n.children[c]);
+			}
+			n.children.push({
+				type: 'label',
+				name: n.name
+			});
+		}
+
+		let removeEmptyOrgs = function(o) {
+			function isEmptyOrg(o) {
+				return o.children ? o.children.findIndex(c => c.type === 'role ' || c.type === 'contributor') < 0 : false;
+			}
+			if (o.children)
+			{
+				// remove the empty ones
+				o.children = o.children.filter(c => !isEmptyOrg(c) );
+				// and repeat for the non-empty children
+				o.children.forEach(c => removeEmptyOrgs(c));
+			}
+		}
+
+		// build the view-centric object tree from the models
+		org.level = 0;
+		populateOrgChildren(org);
+
+		//if (this.state.roleMode) {
+		attachOrgRoles(org);
+		/*
+		} else {
+			attachOrgContributors(org);
+			removeEmptyOrgs(org);
+		}*/
+		attachOrgLabels(org);
+
+		data.organization = org;
+	} else {
+		Materialize.toast("Could not find organization: " + objectId, 3000);
+		return {};
+	}
+
+	console.log("Organization data:");
+	console.log(data);
+
 	return data;
+
 }, Organization);

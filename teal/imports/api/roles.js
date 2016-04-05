@@ -3,6 +3,10 @@ import { Mongo } from 'meteor/mongo';
 
 export const RolesCollection = new Mongo.Collection("teal.roles");
 
+import { GoalsCollection } from './goals'
+import { OrganizationsCollection } from './organizations'
+import { ContributorsCollection } from './contributors'
+
 if (Meteor.isServer) {
 	Meteor.publish('teal.roles', function() {
 		return RolesCollection.find({});

@@ -7,10 +7,10 @@ import Teal from '../../../shared/Teal'
 import ObjectSearch from '../ObjectSearch.jsx'
 
 export default class OrgEdit extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 
-		this.state = this.loadStateFromProps(this.props);
+		this.state = this.loadStateFromProps(props);
 
 		this.handleNameChange = this.handleNameChange.bind(this);
 		this.handleOrganizationSelected = this.handleOrganizationSelected.bind(this);

@@ -3,20 +3,22 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import { RolesCollection } from '../../../api/roles'
+import { GoalsCollection } from '../../../api/goals'
+
 import GoalList from './GoalList.jsx'
 import Loading from '../Loading.jsx'
 
 class GoalsForOrganization extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.handleGoalClicked = this.handleGoalClicked.bind(this);
 	}
 	shouldComponentUpdate(nextProps, nextState) {
-		if (nextProps.orgId !== this.props.orgId) {
-			return true;
-		}
-		return false;
+		return (nextProps.orgId !== this.props.orgId // org changed
+		|| nextProps.doneLoading !== this.props.doneLoading); // or finished loading
 	}
+
 	handleGoalClicked(evt) {
 		let id = evt.currentTarget.id;
 		let url = FlowRouter.path("goalById", { goalId:id }, {showBackButton:true});
@@ -46,14 +48,16 @@ GoalsForOrganization.propTypes = {
 	orgId: React.PropTypes.string.isRequired
 };
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
+
+	const { orgId } = params;
 
 	let handle = Meteor.subscribe("teal.goals");
 	if (handle.ready()) {
 		// find all nodes with this contributor as owner, sorted by depth
 		let roleIds = RolesCollection.find(
-			{ organizationId: this.props.orgId}, {sort: {depth:1}, fields: { _id:1 }}).map(r => {return r._id});
+			{ organizationId: orgId}, {sort: {depth:1}, fields: { _id:1 }}).map(r => {return r._id});
 
 		// find all goals with these role as owners or contributors, sorted by depth
 		let goals = GoalsCollection.find({$or: [
@@ -80,7 +84,6 @@ export default createContainer(() => {
 			// next top level node
 			i++;
 		}
-
 		return { goals: goals, doneLoading: true };
 	} else {
 		return { doneLoading : false };
