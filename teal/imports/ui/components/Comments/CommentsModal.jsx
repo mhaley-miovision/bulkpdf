@@ -67,5 +67,5 @@ CommentsModal.propTypes = {
 	comments: React.PropTypes.array.isRequired,
 	title: React.PropTypes.string,
 	objectId: React.PropTypes.string.isRequired,
-	objectType: React.PropTypes.string.isRequired,
+	objectType: React.PropTypes.string.isRequired
 };

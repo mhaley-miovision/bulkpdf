@@ -2,6 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { GoalsCollection } from './goals';
 import { RolesCollection } from './roles';
 import { OrganizationsCollection } from './organizations';
+import { ContributorsCollection } from './contributors';
+
+import Teal from '../shared/Teal'
 
 if (Meteor.isServer) {
 	Meteor.methods({

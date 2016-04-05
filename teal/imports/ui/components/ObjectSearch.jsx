@@ -13,8 +13,6 @@ const OBJECT_SEARCH_CLICK_DELAY = 150;
 class SearchResults extends Component {
 	constructor(props) {
 		super(props);
-		console.log(props);
-
 		this.handleOrganizationClick = this.handleOrganizationClick.bind(this);
 		this.handleContributorClick = this.handleContributorClick.bind(this);
 		this.handleRoleClick = this.handleRoleClick.bind(this);

@@ -7,4 +7,8 @@ if (Meteor.isServer) {
 	Meteor.publish('teal.contributors', function() {
 		return ContributorsCollection.find({});
 	});
+
+	Meteor.startup(function() {
+		ContributorsCollection._ensureIndex({'name': 1}, {unique: false});
+	});
 }
