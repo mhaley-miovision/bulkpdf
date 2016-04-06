@@ -5,6 +5,8 @@ import { GoalsCollection } from './goals';
 import { ContributorsCollection } from './contributors';
 import { GoogleUserCacheCollection } from './googleUsersCache';
 
+import Teal from '../shared/Teal'
+
 if (Meteor.isServer) {
 
 	Meteor.publish("users", function () {
@@ -200,16 +202,26 @@ if (Meteor.isServer) {
 		throw new Meteor.Error(403, "This user is not enabled.");
 	});
 
-
-
 	Hooks.onLoggedIn = function (userId)
 	{
+		// TODO: debounce this?
+
 		let u = Meteor.users.findOne({_id:userId});
 		if (!!u.initialized) {
 			let o = {
 				userId: userId,
 				userName: u.profile.name,
 			};
+
+			// update contributor profile photo
+			if (u.services.google.email && u.services.google.picture) {
+				let c = ContributorsCollection.findOne({rootOrgId: Teal.rootOrgId(), email:u.services.google.email}, {fields: {_id:1}});
+				if (c) {
+					ContributorsCollection.update(c._id, {$set: {photo: u.services.google.picture }});
+					console.log("Updated photo url for current user.");
+				}
+			}
+
 			Meteor.call("teal.notifications.createNotification", { type: 'user.logged_in', payload: o});
 			console.log(userId + " logged in.")
 		} else {
@@ -217,7 +229,7 @@ if (Meteor.isServer) {
 		}
 	}
 
-	initializeUser = function (userId) {
+	var initializeUser = function (userId) {
 		let u = Meteor.users.findOne({_id:userId});
 
 		console.log("*** Initializing user: " + userId + " ****");

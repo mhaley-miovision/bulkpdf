@@ -10,25 +10,14 @@ export default class MyOrganization extends Component {
 		super(props);
 
 		this.state = {};
-		this.state.zoomTo = props && props.zoomTo ? props.zoomTo : '';
 		this.state.mode = props && props.mode ? props.mode : 'acc';
-
-		/*
-		this.state.objectId = props && props.objectId ? props.objectId : '';
-		this.state.objectType = props && props.objectType ? props.objectType : 'organization';
-		this.state.mode = props && props.mode ? props.mode : 'acc';
-		*/
-
 		this.handleAccClicked = this.handleAccClicked.bind(this);
 		this.handleCompClicked = this.handleCompClicked.bind(this);
 	}
 
 	renderOrganization() {
-		return <Organization ref="org"
-							 objectId="Miovision" objectType="organization"
-							 roleMode={true} roleModeVisible={true}
-							 searchVisible={true}
-							 zoomTo={this.state.zoomTo}/>;
+		return <Organization ref="org" objectId="Miovision" objectType="organization"
+							 roleMode={true} roleModeVisible={true} searchVisible={true}/>
 	}
 
 	renderAccountabilities() {

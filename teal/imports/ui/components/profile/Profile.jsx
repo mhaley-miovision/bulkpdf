@@ -22,7 +22,7 @@ class Profile extends Component {
 					<div>
 						<div className="section center">
 							<ProfileImage width="128px" height="128px"
-										  url={Teal.userPhotoUrl(this.props.contributor.photo)}/>
+										  url={this.props.contributor.photo}/>
 							<h5 className="text-main1">{this.props.contributor.name}</h5>
 						</div>
 						<div className="divider"></div>
@@ -70,18 +70,22 @@ export default createContainer((params) => {
 
 	if (handle.ready() && handle2.ready()) {
 
-		// default is current user
-		let email = objectId;
-		if (!email) {
-			var u = Meteor.users.findOne({_id: Meteor.userId()});
-			if (u) {
-				email = u.services.google.email;
-			}  else {
-				console.error("Error finding current user!")
-			}
+		// no objectId specified => user currently logged in user
+		let c = null;
+		if (!!objectId) {
+			// find the contributor
+			c = ContributorsCollection.findOne(
+				{$or:
+					[	// match on either the email or the id for users inside this root org
+						{$and: [ {email: objectId}, {rootOrgId: Teal.rootOrgId()} ]},
+						{$and: [ {_id: objectId}, {rootOrgId: Teal.rootOrgId()} ]}
+					]
+				}
+			);
+		} else {
+			c = ContributorsCollection.findOne({rootOrgId: Teal.rootOrgId(), email:Teal.currentUserEmail()})
 		}
-		// find the contributor
-		let c = ContributorsCollection.findOne({email: email});
+
 		return {
 			contributor: c,
 			doneLoading: true

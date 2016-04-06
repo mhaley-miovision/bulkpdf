@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 
-export default {
+var Teal = {
 	ObjectTypes: {
 		Goal:'goal',
 		Role:'role',
@@ -46,7 +46,11 @@ export default {
 	},
 
 	currentUserEmail() {
-		return Meteor.user().email;
+		if (!!Meteor.user().email) {
+			return Meteor.user().email;
+		} else {
+			throw new Meteor.Error("current-user-email-not-found");
+		}
 	},
 
 	userPhotoUrl(photoUrl) {
@@ -67,11 +71,11 @@ export default {
 	},
 
 	// Retrieves the current root org id, based on the logged in user
-	rootOrgIg() {
+	rootOrgId() {
 		if (!!Meteor.user()) {
 			return Meteor.user().rootOrgId;
 		} else {
-			console.error("Teal.UndefinedRootOrganization was resolved!");
+			console.warn("Teal.UndefinedRootOrganization was resolved!");
 			return Teal.UndefinedRootOrganization; // do not return null in case it enables matching all queries
 		}
 	},
@@ -123,3 +127,5 @@ export default {
 		return this.isSmall() ? '' : output;
 	}
 };
+
+export default Teal;

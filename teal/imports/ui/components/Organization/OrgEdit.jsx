@@ -68,7 +68,7 @@ export default class OrgEdit extends Component {
 		return this.state;
 	}
 	clearInputs() {
-		this.setState(this.getInitialState());
+		this.setState(this.loadStateFromProps(this.props));
 	}
 
 	handleNameChange(event) {

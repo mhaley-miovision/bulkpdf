@@ -72,7 +72,7 @@ class Navbar extends Component {
 				<div className="right">
 					<ProfileImage />
 				</div>
-				{ Permissions.isAdmin() ? <div className="right">{Teal.rootOrgIg()}</div> : '' }
+				{ Permissions.isAdmin() ? <div className="right">{Teal.rootOrgId()}&nbsp;</div> : '' }
 			</div>
 		);
 	}
@@ -102,6 +102,7 @@ export default createContainer(() => {
 		return {
 			changesCount: ChangesCollection.find().count(),
 			currentRoute: FlowRouter.getRouteName(),
+			hasUser: !!Meteor.user()
 		};
 	}
 	return { currentRoute: FlowRouter.getRouteName() };

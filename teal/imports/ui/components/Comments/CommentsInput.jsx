@@ -71,7 +71,7 @@ export default class CommentsInput extends Component {
 		if (query !== '' && query.length >= 2) {
 			var caseInsensitiveMatch = {$regex: new RegExp('.*' + query + '.*', "i")};
 			let contributors = ContributorsCollection.find(
-				{rootOrgId:Teal.rootOrgIg(), name: caseInsensitiveMatch},
+				{rootOrgId:Teal.rootOrgId(), name: caseInsensitiveMatch},
 				{fields: {name:1,email:1,_id:1}}
 			).fetch().map(c => { return { id: c.email, display: c.name } });
 			return contributors;

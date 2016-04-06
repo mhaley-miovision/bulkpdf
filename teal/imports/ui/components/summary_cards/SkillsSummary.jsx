@@ -12,47 +12,58 @@ import Loading from '../Loading.jsx'
 class SkillsSummary extends Component {
 
 	componentDidUpdate(prevProps, prevState) {
-		if (this.props.skills) {
+		console.log("componentDidUpdate");
+		if (this.props.skills.length > 0) {
 			this.updateChart();
 		}
+	}
+
+	componentDidMount() {
+		console.log("componentDidMount");
 	}
 
 	updateChart() {
 		let _this = this;
 
 			$("#skillsPolarGraph").remove();
-			$('#skillsPolarGraphContainer').append('<canvas id="skillsPolarGraph"><canvas>');
+			$('#skillsPolarGraphContainer').html('<canvas id="skillsPolarGraph"><canvas>');
+			let canvas = $("#skillsPolarGraph").get(0);
 
-			// Get context with jQuery - using jQuery's .get() method.
-			var ctx = $("#skillsPolarGraph").get(0).getContext("2d");
-			// This will get the first returned node in the jQuery collection.
-			var myNewChart = new Chart(ctx);
+			if (!!canvas) {
+				// Get context with jQuery - using jQuery's .get() method.
+				var ctx = canvas.getContext("2d");
 
-			var labels = [];
-			var data = [];
-			_this.props.skills.forEach(s => {
-				labels.push(s.skill);
-				data.push(s.rating);
-			});
+				// This will get the first returned node in the jQuery collection.
+				var myNewChart = new Chart(ctx);
 
-			var data = {
-				labels: labels,
-				datasets: [
-					{
-						label: "Skills",
-						fillColor: "rgba(220,220,220,0.2)",
-						strokeColor: "rgba(220,220,220,1)",
-						pointColor: "rgba(220,220,220,1)",
-						pointStrokeColor: "#fff",
-						pointHighlightFill: "#fff",
-						pointHighlightStroke: "rgba(220,220,220,1)",
-						data: data
-					},
-				]
-			};
+				var labels = [];
+				var data = [];
+				_this.props.skills.forEach(s => {
+					labels.push(s.skill);
+					data.push(s.rating);
+				});
 
-			// create the chart!
-			new Chart(ctx).Radar(data, Chart.defaults.Radar );
+				var data = {
+					labels: labels,
+					datasets: [
+						{
+							label: "Skills",
+							fillColor: "rgba(220,220,220,0.2)",
+							strokeColor: "rgba(220,220,220,1)",
+							pointColor: "rgba(220,220,220,1)",
+							pointStrokeColor: "#fff",
+							pointHighlightFill: "#fff",
+							pointHighlightStroke: "rgba(220,220,220,1)",
+							data: data
+						},
+					]
+				};
+
+				// create the chart!
+				new Chart(ctx).Radar(data, Chart.defaults.Radar);
+			} else {
+				console.log("Canvas not found!")
+			}
 
 	}
 

@@ -6,7 +6,7 @@ export default {
 		// TODO: parameter validation, for now we only get the abstraction benefits
 		return {
 			type:Teal.ObjectTypes.Goal,
-			rootOrgId:Teal.rootOrgIg(),
+			rootOrgId:Teal.rootOrgId(),
 			_id:_id,
 			parent:parent,
 			name:name,
@@ -23,7 +23,7 @@ export default {
 		// TODO: parameter validation, for now we only get the abstraction benefits
 		return {
 			type:Teal.ObjectTypes.Organization,
-			rootOrgId:Teal.rootOrgIg(),
+			rootOrgId:Teal.rootOrgId(),
 			_id:_id,
 			name:name,
 			parent:parent,
@@ -38,7 +38,7 @@ export default {
 		// TODO: parameter validation, for now we only get the abstraction benefits
 		return {
 			type: Teal.ObjectTypes.Role,
-			rootOrgId:Teal.rootOrgIg(),
+			rootOrgId:Teal.rootOrgId(),
 			_id: _id,
 			label: label,
 			accountabilityLevel: accountabilityLevel,

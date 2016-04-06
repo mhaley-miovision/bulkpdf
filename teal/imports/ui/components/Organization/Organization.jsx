@@ -4,6 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data'
 
 import Teal from '../../../shared/Teal'
 
+import { ContributorsCollection } from '../../../api/contributors'
 import { OrganizationsCollection } from '../../../api/organizations'
 import { RolesCollection } from '../../../api/roles'
 
@@ -358,6 +359,8 @@ var Chart = (function () {
 
 		zoom: function (zoomTo, shouldAnimate = false) {
 			zoomedToObject = zoomTo;
+			console.log("zoomedToObject");
+			console.log(zoomedToObject);
 			zoomed = false;
 			loaded = false;
 			if (zoomedToRole) {

@@ -9,9 +9,6 @@ class ProfileImage extends Component {
 		super(props);
 	}
 	render() {
-		if (!Meteor.userId()) {
-			return "";
-		}
 		var divStyle = {
 			maxWidth: this.props.width,
 			maxHeight: this.props.height,
@@ -41,15 +38,20 @@ ProfileImage.defaultProps = {
 	photoUrl: null
 };
 
-export default createContainer(() => {
+export default createContainer((params) => {
 	"use strict";
 
-	var handle = Meteor.subscribe("teal.user_data");
-	if (handle.ready()) {
-		var usr = Meteor.users.findOne({ _id : Meteor.user()._id });
-		if (usr && usr.services) {
-			return { doneLoading: true, profilePhotoUrl: usr.services.google.picture };
+	let { url } = params;
+	if (!!url) {
+		return { profilePhotoUrl: Teal.userPhotoUrl(url), doneLoading: true };
+	} else {
+		var handle = Meteor.subscribe("users");
+		if (handle.ready() && !!Meteor.user()) {
+			var usr = Meteor.users.findOne({_id: Meteor.user()._id});
+			if (usr) {
+				url = usr.services.google.picture;
+			}
 		}
+		return { profilePhotoUrl: Teal.userPhotoUrl(url), doneLoading: !!url };
 	}
-	return { doneLoading: false, profilePhotoUrl: Teal.userPhotoUrl(null) };
 }, ProfileImage);

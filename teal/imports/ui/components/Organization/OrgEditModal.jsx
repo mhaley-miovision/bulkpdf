@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
+import TealFactory from '../../../shared/TealFactory'
+import TealChanges from '../../../shared/TealChanges'
 
 import ControlIconButton from '../ControlButtonIcon.jsx'
 import OrgEdit from './OrgEdit.jsx'

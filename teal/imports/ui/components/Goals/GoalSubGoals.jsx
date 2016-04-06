@@ -1,11 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+import { createContainer } from 'meteor/react-meteor-data'
+
+import { FlowRouter } from 'meteor/kadira:flow-router'
 
 import Teal from '../../../shared/Teal'
 import { GoalsCollection } from '../../../api/goals'
 
-import Loading from '../Loading.jsx';
+import Loading from '../Loading.jsx'
 import GoalList from './GoalList.jsx'
 
 class GoalSubGoals extends Component {
@@ -13,8 +15,7 @@ class GoalSubGoals extends Component {
 		super(props);
 		var objectId = FlowRouter.getQueryParam("objectId");
 		if (objectId) {
-			if (!this.props) { this.props = {}; }
-			this.props.objectId = objectId;
+			props.objectId = objectId;
 		}
 	}
 
