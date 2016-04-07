@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
+import Teal from '../shared/Teal'
+
 export const OrganizationsCollection = new Mongo.Collection("teal.organizations");
 
 import { RolesCollection } from './roles'

@@ -94,6 +94,8 @@ export default class CommentsInput extends Component {
 				<a className={"waves-effect waves-light btn" + (this.state.value.trim() != '' ? '' : ' disabled')}
 				   style={{width: "100px", float:"right", fontSize:"12px", marginTop:"10px", height:"30px", lineHeight:"30px"}}
 				   onClick={this.handleCommentSave}>Send</a>
+				<br/>
+				<br/>
 			</div>
 		);
 	}

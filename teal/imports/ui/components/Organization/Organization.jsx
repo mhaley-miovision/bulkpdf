@@ -635,6 +635,8 @@ class Organization extends Component {
 	constructor(props) {
 		super(props);
 
+		console.log("Organization constructor.");
+
 		this.state = { roleMode: true, currentlyZoomedTo:null }; // contributor mode was a view once supported
 
 		this.handleRoleModeChanged = this.handleRoleModeChanged.bind(this);
@@ -715,9 +717,21 @@ class Organization extends Component {
 	shouldComponentUpdate(nextProps, nextState) {
 		console.log('shouldComponentUpdate');
 		return true;
+	}
 
-		// never update automatically, since we use D3
-		//return false;
+	componentWillReceiveProps(nextProps) {
+		console.log("componentWillReceiveProps");
+	}
+
+	componentDidMount() {
+		// TODO: figure out something better than this hack to make the org render between routing calls
+		if (this.props.doneLoading) {
+			this.forceUpdate();
+		}
+	}
+
+	componentWillUnmount() {
+		console.log("componentWillUnmount");
 	}
 
 	renderLoading() {
@@ -778,7 +792,6 @@ class Organization extends Component {
 		return (
 			<div>
 				{this.renderBackButton()}
-				<br />
 				{this.renderSearch()}
 				<div className="center">
 					{this.renderLoading()}
@@ -928,9 +941,7 @@ export default createContainer((params) => {
 		return {};
 	}
 
-	console.log("Organization data:");
-	console.log(data);
-
+	console.log("Loading organizational data.");
 	return data;
 
 }, Organization);
