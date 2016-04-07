@@ -4,15 +4,20 @@ import React, { Component } from 'react';
 import Organization from '../components/organization/Organization.jsx'
 import GoalTreeByRole from '../components/goals/tree/GoalTreeByRole.jsx'
 
+import NotImplementedYet from '../components/error_states/NotImplementedYet.jsx'
+import Tabs from '../components/Tabs.jsx'
+
 export default class MyOrganization extends Component {
 
 	constructor(props) {
 		super(props);
 
-		this.state = {};
-		this.state.mode = props && props.mode ? props.mode : 'acc';
-		this.handleAccClicked = this.handleAccClicked.bind(this);
-		this.handleCompClicked = this.handleCompClicked.bind(this);
+		this.state = {
+			tab: 'acc_tab',
+			tabItems: [ { id: "acc_tab", name: "Accountabilities" }, { id: "org_tab", name: "Team Composition" } ]
+		};
+
+		this.handleTabClicked = this.handleTabClicked.bind(this);
 	}
 
 	renderOrganization() {
@@ -24,18 +29,8 @@ export default class MyOrganization extends Component {
 		return <GoalTreeByRole />
 	}
 
-	handleAccClicked() {
-		this.setState({mode: 'acc'});
-		this.forceUpdate();
-	}
-
-	handleCompClicked() {
-		this.setState({mode: 'comp'});
-		this.forceUpdate();
-	}
-
-	getClasses(isDisabled) {
-		return "waves-effect waves-light btn" + (isDisabled ? " disabled" : "");
+	handleTabClicked(tabId) {
+		this.setState({tab:tabId});
 	}
 
 	renderBody() {
@@ -48,18 +43,12 @@ export default class MyOrganization extends Component {
 
 	render() {
 		return (
-			<div>
-				<div className="section center">
-					<div className="section center">
-						<a className={this.getClasses(this.state.mode != 'acc')}
-						   onClick={this.handleAccClicked}>Accountabilities</a>
-						<a className={this.getClasses(this.state.mode != 'comp')}
-						   onClick={this.handleCompClicked}>Team Composition</a>
-					</div>
+			<div className="row">
+				<div className="col s6 offset-s3">
+					<br/>
+					<Tabs items={this.state.tabItems} onClick={this.handleTabClicked}/>
 				</div>
-				<div>
-					{this.renderBody()}
-				</div>
+				<div id="test1" className="col s12">{this.state.tab === 'acc_tab' ? this.renderAccountabilities() : this.renderOrganization() }</div>
 			</div>
 		);
 	}
