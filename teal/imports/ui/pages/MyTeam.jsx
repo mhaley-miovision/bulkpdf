@@ -7,6 +7,7 @@ import { OrganizationsCollection } from  '../../api/organizations'
 
 import Loading from '../components/Loading.jsx'
 import ObjectSearch from '../components/ObjectSearch.jsx'
+import Tabs from '../components/Tabs.jsx'
 import Organization from '../components/organization/Organization.jsx'
 import GoalsForOrganization from '../components/goals/GoalsForOrganization.jsx'
 import TeamSkillsSummary from '../components/summary_cards/TeamSkillsSummary.jsx'
@@ -15,7 +16,13 @@ import NotOnAnyTeam from '../components/error_states/NotOnAnyTeam.jsx'
 class MyTeam extends Component {
 	constructor() {
 		super();
-		this.state = {orgName: '', orgId: ''};
+		this.state = {
+			orgName: '',
+			orgId: '',
+			tab: 'acc_tab',
+			tabItems: [ { id: "acc_tab", name: "Accountabilities" }, { id: "org_tab", name: "Team Composition" } ]
+		};
+		this.handleTabClicked = this.handleTabClicked.bind(this);
 		this.handleSearch = this.handleSearch.bind(this);
 	}
 
@@ -23,23 +30,54 @@ class MyTeam extends Component {
 		this.setState({orgName: orgName, orgId: id});
 	}
 
+	handleTabClicked(tabId) {
+		this.setState({tab:tabId});
+	}
+
+	renderActiveTab() {
+		var org = this.state.orgName ? this.state.orgName : this.props.contributorOrg;
+		var orgId = this.state.orgId ? this.state.orgId : this.props.contributorOrgId;
+
+		if (this.state.tab === 'acc_tab') {
+			return (
+				<div className="row">
+					<GoalsForOrganization orgId={orgId}/>
+					<div>
+						<Organization objectId={org} roleMode={true} roleModeVisible={true} searchVisible={false}/>
+					</div>
+				</div>
+			);
+		} else if (this.state.tab === 'org_tab') {
+			return (
+				<div className="row">
+					<div>
+						<Organization objectId={org} roleMode={true} roleModeVisible={true} searchVisible={false}/>
+					</div>
+					<TeamSkillsSummary orgId={org}/>
+				</div>
+			);
+		}
+	}
+
 	render() {
 		if (this.props.isLoading) {
 			return <Loading/>;
 		} else if (this.props.contributor && (this.state.orgName || this.props.contributorOrg)) {
-			var org = this.state.orgName ? this.state.orgName : this.props.contributorOrg;
-			var orgId = this.state.orgId ? this.state.orgId : this.props.contributorOrgId;
 			return (
 				<div className="section">
 					<ObjectSearch onClick={this.handleSearch}
 								  findOrganizations={true} findContributors={false}
 								  label="Search for another team..."
 								  notFoundLabel="Please type the name of an existing organization."/>
-					<GoalsForOrganization orgId={orgId}/>
-					<div>
-						<Organization objectId={org} roleMode={true} roleModeVisible={true} searchVisible={false}/>
+
+					<div className="row">
+						<div className="col s6 offset-s3">
+							<br/>
+							<Tabs selectedItemId={this.state.tab} items={this.state.tabItems} onClick={this.handleTabClicked}/>
+						</div>
 					</div>
-					<TeamSkillsSummary orgId={org}/>
+
+					{this.renderActiveTab()}
 				</div>
 			);
 		} else {

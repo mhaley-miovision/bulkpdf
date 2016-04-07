@@ -11,12 +11,10 @@ export default class MyOrganization extends Component {
 
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			tab: 'org_tab',
 			tabItems: [ { id: "acc_tab", name: "Accountabilities" }, { id: "org_tab", name: "Team Composition" } ]
 		};
-
 		this.handleTabClicked = this.handleTabClicked.bind(this);
 	}
 
@@ -31,14 +29,6 @@ export default class MyOrganization extends Component {
 
 	handleTabClicked(tabId) {
 		this.setState({tab:tabId});
-	}
-
-	renderBody() {
-		if (this.state.mode === 'acc') {
-			return this.renderAccountabilities();
-		} else {
-			return this.renderOrganization();
-		}
 	}
 
 	render() {

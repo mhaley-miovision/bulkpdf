@@ -6,44 +6,61 @@ import { ContributorsCollection } from '../../../api/contributors';
 
 import Loading from '../Loading.jsx'
 import ProfileImage from './ProfileImage.jsx'
-import RolesSummary from '../summary_cards/RolesSummary.jsx'
-import GoalsSummary from '../summary_cards/GoalsSummary.jsx'
-import TeamsSummary from '../summary_cards/TeamsSummary.jsx'
-import SkillsSummary from '../summary_cards/SkillsSummary.jsx'
 import NotOnAnyTeam from '../error_states/NotOnAnyTeam.jsx'
 
 import Teal from '../../../shared/Teal'
 
+import Tabs from '../Tabs.jsx'
+import ProfileOverview from './ProfileOverview.jsx';
+import ProfileCareer from './ProfileCareer.jsx';
+import ProfileBuild from './ProfileBuild.jsx';
+
 class Profile extends Component {
+	constructor(props) {
+		super(props);
+		this.handleTabClicked = this.handleTabClicked.bind(this);
+		this.state = {
+			tab: 'career',
+			tabItems: [
+				{ id: "overview", 	name: "Overview" },
+				{ id: "career", 	name: "Career" },
+				{ id: "configure",	name: "Configure" }
+			]};
+	}
+	handleTabClicked(tabId) {
+		this.setState({tab:tabId});
+	}
+	renderActiveTab() {
+		if (this.state.tab === 'overview') {
+			return <ProfileOverview contributor={this.props.contributor}/>;
+		} else if (this.state.tab === 'career') {
+			return <ProfileCareer contributor={this.props.contributor}/>;
+		} else if (this.state.tab === 'configure') {
+			return <ProfileBuild contributor={this.props.contributor}/>;
+		}
+	}
 	render() {
 		if (this.props.doneLoading) {
 			if (this.props.contributor) {
 				return (
 					<div>
-						<div className="section center">
-							<ProfileImage width="128px" height="128px"
-										  url={this.props.contributor.photo}/>
-							<h5 className="text-main1">{this.props.contributor.name}</h5>
-						</div>
-						<div className="divider"></div>
+						<div className="row">
+							<div className="col s12 section center">
+								<ProfileImage width="128px" height="128px"
+											  url={this.props.contributor.photo}/>
+								<h5 className="text-main1">{this.props.contributor.name}</h5>
+							</div>
 
-						<div className="section">
 							<div className="row">
-								<div className="col s12 m6">
-									<RolesSummary objectId={this.props.contributor.email}/>
-								</div>
-								<div className="col s12 m6">
-									<GoalsSummary objectId={this.props.contributor.email}/>
+								<div className="col s6 offset-s3">
+									<br/>
+									<Tabs selectedItemId={this.state.tab} items={this.state.tabItems} onClick={this.handleTabClicked}/>
 								</div>
 							</div>
-							<div className="row">
-								<div className="col s12 m6">
-									<TeamsSummary objectId={this.props.contributor.email}/>
-								</div>
-								<div className="col s12 m6">
-									<SkillsSummary objectId={this.props.contributor.email}/>
-								</div>
-							</div>
+
+							<div className="divider"></div>
+
+							{ this.renderActiveTab() }
 						</div>
 					</div>
 				);

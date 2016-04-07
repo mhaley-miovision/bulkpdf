@@ -1118,7 +1118,7 @@ circle.container, circle.label {
 }
 .GoalEditItemInput i {
     position: absolute;
-    top: 20%;
+    margin-top: 2px !important;
     margin-left: 5px;
 }
 .GreyButtonSmall {
@@ -1145,14 +1145,13 @@ circle.container, circle.label {
 
 .SearchIcon {
     margin-left: -23px !important;
-    margin-top: 3px !important;
+    margin-top: 2px !important;
     font-size:18px !important;
     color: #9e9e9e;
 }
 
 .ObjectSearch {
-    margin-left: 32px !important;
-    width: 90% !important;;
+    width: 90% !important;
 }
 
 .GreyButtonSmall:hover {
