@@ -1,3 +1,24 @@
+// If you want to override materialize sass variables you can uncomment the following:
+// @import "{poetic:materialize-scss}/sass/components/_color.scss";
+// $primary-color: color("blue", "lighten-2");
+
+// import main scss file
+@import './_variables.scss';
+
+@import "{poetic:materialize-scss}/sass/materialize.scss";
+@import "{poetic:materialize-scss}/sass/components/_color.scss";
+
+/*
+$primary-color-dark:   #846C63;
+$primary-color:        #4CAF50;
+$primary-color-light:  #C8E6C9;
+$primary-color-text:   #FFFFFF;
+$accent-color:         #388E3C;
+$primary-text-color:   #212121;
+$secondary-text-color: #727272;
+$divider-color:        #B6B6B6;
+*/
+
 .background-main1 {
     background-color: #558C89 !important;
 }
@@ -577,7 +598,7 @@ circle.container, circle.label {
     background-color: #74AFAD;
     color: white;
     font-size: 8pt;
-    padding: x`2px;
+    padding: 2px;
     overflow: hidden;
     text-align: center;
     text-overflow: ellipsis;
@@ -1296,3 +1317,5 @@ circle.container, circle.label {
 
     overflow: auto; max-height: 100px;
 }
+
+
