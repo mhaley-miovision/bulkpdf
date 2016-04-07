@@ -44,7 +44,7 @@ class MyChanges extends Component {
 				<div>
 					<br/>
 					<header>
-						<h3 className="center header text-main1">Change List</h3>
+						<h5 className="center header text-main1">Change List</h5>
 					</header>
 					<br/>
 

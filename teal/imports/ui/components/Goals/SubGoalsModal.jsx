@@ -2,14 +2,20 @@ import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react'
 import { createContainer } from 'meteor/react-meteor-data'
 
+import { FlowRouter } from 'meteor/kadira:flow-router'
+
 import GoalSubGoals from './GoalSubGoals.jsx'
 import ControlIconButton from '../ControlButtonIcon.jsx'
+
+
 
 export default class SubGoalsModal extends Component {
 	constructor(props) {
 		super(props);
 		this.handleClose = this.handleClose.bind(this);
 		this.handleGoalClicked = this.handleGoalClicked.bind(this);
+		console.log("SubGoalsModal.constructor");
+		console.log(props);
 	}
 
 	handleClose() {
@@ -23,11 +29,12 @@ export default class SubGoalsModal extends Component {
 	}
 
 	render() {
+		console.log("SubGoalsModal.render");
+		console.log(this.props);
 		return (
 			<div id={this.props.id} className="modal modal-fixed-footer">
 				<div className="modal-content" style={{padding:0}}>
-					<GoalSubGoals ref="subgoalModalObj"
-								  objectId={this.props.parentGoalId}
+					<GoalSubGoals objectId={this.props.parentGoalId}
 								  compactViewMode={true}
 								  onGoalClicked={this.handleGoalClicked}/>
 				</div>

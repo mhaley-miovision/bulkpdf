@@ -4,15 +4,14 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import FeedbackComponent from './Feedback.jsx';
 
-export default class Footer extends Component {
-	constructor() {
-		super();
-
+class Footer extends Component {
+	constructor(props) {
+		super(props);
 		this.handleFeedbackClick = this.handleFeedbackClick.bind(this);
 	}
 
 	handleFeedbackClick() {
-		this.refs.feedback.showDialog();
+		this.refs.feedback.openModal();
 	}
 
 	renderContent() {
@@ -60,7 +59,8 @@ export default class Footer extends Component {
 
 
 export default createContainer(() => {
-	var h = Meteor.subscribe("teal.users")
+	var h = Meteor.subscribe("users");
+	console.log("ready="+h.ready());
 	if (h.ready()) {
 		return {
 			hasUser: !!Meteor.user()

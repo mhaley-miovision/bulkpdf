@@ -18,14 +18,6 @@ class GoalSubGoals extends Component {
 			props.objectId = objectId;
 		}
 	}
-
-	shouldComponentUpdate(nextProps, nextState) {
-		if (nextProps.objectId !== this.props.objectId) {
-			return true;
-		}
-		return false;
-	}
-
 	renderGoals() {
 		if (this.props.doneLoading) {
 			return <GoalList goalList={this.props.goals} compactViewMode={this.props.compactViewMode}
@@ -60,7 +52,7 @@ class GoalSubGoals extends Component {
 
 GoalSubGoals.propTypes = {
 	compactViewMode: React.PropTypes.bool,
-	onGoalClicked: React.PropTypes.func,
+	onGoalClicked: React.PropTypes.func
 };
 
 export default createContainer((params) => {
@@ -68,15 +60,17 @@ export default createContainer((params) => {
 
 	const { objectId } = params;
 
+	console.log("Entering createContainer, objectId: " + objectId);
+
 	let handle = Meteor.subscribe("teal.goals");
 	if (handle.ready()) {
 		if (!!objectId) {
 			// all immediate children of this goal
 			let goals = GoalsCollection.find({parent: objectId}).fetch();
 			let goalName = GoalsCollection.findOne({_id: objectId}, {fields: {name: 1}}).name;
-			return {goals: goals, doneLoading: true, goalName: goalName};
+			return { goals: goals, doneLoading: true, goalName: goalName};
 		} else {
-			return { isBlank : true };
+			return { doneLoading: true, isBlank: true };
 		}
 	} else {
 		return { doneLoading : false };

@@ -281,5 +281,5 @@ export default class Goal extends Component {
 Goal.propTypes = {
 	goal: React.PropTypes.object.isRequired,
 		compactViewMode: React.PropTypes.bool,
-		onClicked: React.PropTypes.func,
+		onClicked: React.PropTypes.func
 };

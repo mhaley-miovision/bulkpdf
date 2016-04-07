@@ -23,14 +23,14 @@ export default class GoalEdit extends Component {
 	loadStateFromProps(props) {
 		return {
 			datePickerId: "picker" + Teal.newId(),
-			keyObjectives: props.goal ? _.clone(props.goal.keyObjectives) : [],
-			doneCriteria: props.goal ? _.clone(props.goal.doneCriteria) : [],
+			keyObjectives: props.goal && props.goal.keyObjectives ? _.clone(props.goal.keyObjectives) : [],
+			doneCriteria: props.goal && props.goal.doneCriteria ? _.clone(props.goal.doneCriteria) : [],
 			name: props.goal ? _.clone(props.goal.name) : "",
 			_id: props.goal ? props.goal._id : null,
 			newKeyObjective: "",
 			newDoneCriteria: "",
-			ownerRoles: props.goal ? _.clone(props.goal.ownerRoles) : [],
-			contributorRoles: props.goal ? _.clone(props.goal.contributorRoles) : [],
+			ownerRoles: props.goal && props.goal.ownerRoles ? _.clone(props.goal.ownerRoles) : [],
+			contributorRoles: props.goal && props.goal.contributorRoles ? _.clone(props.goal.contributorRoles) : [],
 			dueDate: props.goal ? props.goal.dueDate : moment().format(Teal.DateFormat)
 		};
 	}

@@ -18,7 +18,7 @@ class Admin extends Component {
 					<br />
 					<div className="container">
 						<header>
-							<h3 className="center header text-main1">Data Import</h3>
+							<h5 className="center header text-main1">Data Import</h5>
 						</header>
 						<div className="row">
 							<div className="col s12 m4 offset-m4">

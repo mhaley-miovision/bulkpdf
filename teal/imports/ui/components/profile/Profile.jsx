@@ -20,7 +20,7 @@ class Profile extends Component {
 		super(props);
 		this.handleTabClicked = this.handleTabClicked.bind(this);
 		this.state = {
-			tab: 'career',
+			tab: 'overview',
 			tabItems: [
 				{ id: "overview", 	name: "Overview" },
 				{ id: "career", 	name: "Career" },
@@ -53,7 +53,6 @@ class Profile extends Component {
 
 							<div className="row">
 								<div className="col s6 offset-s3">
-									<br/>
 									<Tabs selectedItemId={this.state.tab} items={this.state.tabItems} onClick={this.handleTabClicked}/>
 								</div>
 							</div>

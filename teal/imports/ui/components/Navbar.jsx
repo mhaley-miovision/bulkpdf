@@ -72,7 +72,7 @@ class Navbar extends Component {
 				<div className="right">
 					<ProfileImage />
 				</div>
-				{ Permissions.isAdmin() ? <div className="right">{Teal.rootOrgId()}&nbsp;</div> : '' }
+				{ Permissions.isAdmin() ? <div className="right">{Teal.rootOrgId()}</div> : '' }
 			</div>
 		);
 	}

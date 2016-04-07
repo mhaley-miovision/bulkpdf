@@ -20,7 +20,7 @@ class MyTeam extends Component {
 			orgName: '',
 			orgId: '',
 			tab: 'acc_tab',
-			tabItems: [ { id: "acc_tab", name: "Accountabilities" }, { id: "org_tab", name: "Team Composition" } ]
+			tabItems: [ { id: "acc_tab", name: "Accountabilities" }, { id: "org_tab", name: "Composition" } ]
 		};
 		this.handleTabClicked = this.handleTabClicked.bind(this);
 		this.handleSearch = this.handleSearch.bind(this);
@@ -65,18 +65,18 @@ class MyTeam extends Component {
 		} else if (this.props.contributor && (this.state.orgName || this.props.contributorOrg)) {
 			return (
 				<div className="section">
+					<header>
+						<h5 className="center header text-main1">Team</h5>
+					</header>
+					<div className="row">
+						<div className="col s6 offset-s3">
+							<Tabs selectedItemId={this.state.tab} items={this.state.tabItems} onClick={this.handleTabClicked}/>
+						</div>
+					</div>
 					<ObjectSearch onClick={this.handleSearch}
 								  findOrganizations={true} findContributors={false}
 								  label="Search for another team..."
 								  notFoundLabel="Please type the name of an existing organization."/>
-
-					<div className="row">
-						<div className="col s6 offset-s3">
-							<br/>
-							<Tabs selectedItemId={this.state.tab} items={this.state.tabItems} onClick={this.handleTabClicked}/>
-						</div>
-					</div>
-
 					{this.renderActiveTab()}
 				</div>
 			);

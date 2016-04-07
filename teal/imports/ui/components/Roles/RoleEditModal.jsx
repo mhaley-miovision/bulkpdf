@@ -10,8 +10,8 @@ import RoleEdit from './RoleEdit.jsx'
 import ControlIconButton from '../ControlButtonIcon.jsx'
 
 export default class RoleEditModal extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = { role: null };
 		this.handleSave = this.handleSave.bind(this);
 		this.handleClose = this.handleClose.bind(this);

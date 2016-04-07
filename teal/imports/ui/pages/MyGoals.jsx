@@ -13,7 +13,7 @@ export default class MyGoals extends Component {
 		this.handleTabClicked = this.handleTabClicked.bind(this);
 		this.state = {
 			tab: 'individual',
-			tabItems: [ { id: 'individual', name: 'Individual' }, { id: 'all_goals', name: 'All Goals' }, { id: 'goal_tree', name: 'Goal Tree' } ]
+			tabItems: [ { id: 'individual', name: 'Individual' }, { id: 'all_goals', name: 'Company' }, { id: 'goal_tree', name: 'Tree' } ]
 		};
 	}
 
@@ -35,8 +35,11 @@ export default class MyGoals extends Component {
 		return (
 			<div>
 				<div className="row">
-					<div className="col s6 offset-s3">
+					<header>
 						<br/>
+						<h5 className="center header text-main1">Goals</h5>
+					</header>
+					<div className="col s6 offset-s3">
 						<Tabs items={this.state.tabItems} onClick={this.handleTabClicked}/>
 					</div>
 				</div>
