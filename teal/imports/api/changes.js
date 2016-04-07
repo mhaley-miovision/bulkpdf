@@ -10,7 +10,11 @@ export const ChangesCollection = new Mongo.Collection("teal.changes");
 
 if (Meteor.isServer) {
 	Meteor.publish('teal.changes', function() {
-		return ChangesCollection.find({});
+		if (!!this.userId) {
+			return ChangesCollection.find({});
+		} else {
+			return this.ready();
+		}
 	});
 
 	Meteor.methods({

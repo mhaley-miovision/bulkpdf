@@ -230,6 +230,7 @@ export default class ObjectSearch extends Component {
 		return (
 			<div>
 				<div className="GoalEditItemInput center">
+					<i className="material-icons SearchIcon">search</i>
 					<input className="text-main5" type="text" id="orgSelection" ref="textInput"
 						   onChange={ this.handleInputChange}
 						   placeholder={ this.state.query ? '' : this.props.label } value={ this.state.query }

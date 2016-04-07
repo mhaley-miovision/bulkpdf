@@ -33,6 +33,7 @@ class MyTeam extends Component {
 				<div className="section">
 					<ObjectSearch onClick={this.handleSearch}
 								  findOrganizations={true} findContributors={false}
+								  label="Search for another team..."
 								  notFoundLabel="Please type the name of an existing organization."/>
 					<GoalsForOrganization orgId={orgId}/>
 					<div>

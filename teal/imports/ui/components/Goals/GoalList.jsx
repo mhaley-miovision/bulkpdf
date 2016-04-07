@@ -20,8 +20,8 @@ export default class GoalList extends Component {
 					<div className="col s12 m6 offset-m3">
 						<div className="card blue-grey darken-1">
 							<div className="card-content white-text center">
-								<span className="card-title">You do not have any goals yet</span>
-								<p>Go to your team view to see what others on your team are working on.</p>
+								<span className="card-title">No goals defined yet</span>
+								<p>To fix this, assign roles filled by these contributors to existing goals.</p>
 							</div>
 						</div>
 					</div>

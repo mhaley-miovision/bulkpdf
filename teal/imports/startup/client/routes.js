@@ -168,7 +168,7 @@ FlowRouter.route( '/organization/view', {
 		mount(Layout, {
 			content: ( <Organization
 				objectId={objectId}
-				objectType='role'
+				objectType='organization'
 				zoomTo={zoomTo}
 				mode={mode}
 				roleMode={roleMode}
