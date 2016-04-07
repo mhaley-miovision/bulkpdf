@@ -390,13 +390,20 @@ text {
     font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 a text.label, a text.role.unfilled, a.role.unfilled, .role-details.unfilled a {
-    fill: #3F9BB2;
-    color: #3F9BB2;
+    fill: $text-main1;
+    color:$text-main1;
 }
 a text.label:hover, a text.role.unfilled:hover, a.role.unfilled:hover, .role-details.unfilled a:hover {
-    fill: #6EBBCE;
-    color: #6EBBCE;
+    fill: $text-main2;
+    color: $text-main2;
     cursor: pointer;
+}
+
+div#role-zoomed.role-details.child.role.unfilled {
+  color: $text-main1 !important;
+}
+.title.child.role.unfilled {
+  color: $text-main1 !important;
 }
 
 a.role.core-role.filled, a.role.filled, a.role.alert,

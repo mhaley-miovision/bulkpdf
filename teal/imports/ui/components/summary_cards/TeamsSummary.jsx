@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react'
 import { createContainer } from 'meteor/react-meteor-data'
+var ReactTooltip = require("react-tooltip");
 
 import { RolesCollection } from '../../../api/roles'
 import { ContributorsCollection } from '../../../api/contributors'
@@ -17,7 +18,7 @@ class TeamsSummary extends Component {
 
 		// public controls
 		controls.push(
-			<a key={o} href={url} className="secondary-content">
+			<a key={o} href={url} className="secondary-content" data-tip="View team">
 				<i className="material-icons summaryCardIcon grey-text">search</i>
 			</a>
 		);
@@ -48,6 +49,7 @@ class TeamsSummary extends Component {
 						<li className="collection-header summaryCardHeader">Teams</li>
 						{this.renderTeams()}
 					</ul>
+					<ReactTooltip />
 				</div>
 			);
 		} else {

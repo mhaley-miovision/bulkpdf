@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react'
 import { createContainer } from 'meteor/react-meteor-data'
+var ReactTooltip = require("react-tooltip");
 
 import Teal from '../../../shared/Teal'
 
@@ -10,6 +11,7 @@ import { RolesCollection } from '../../../api/roles'
 
 import ObjectSearch from '../ObjectSearch.jsx'
 import Loading from '../Loading.jsx'
+import ControlIconButton from '../ControlButtonIcon.jsx'
 import ControlsContainer from './ControlsContainer.jsx'
 
 var chartHeight = 700;
@@ -731,6 +733,7 @@ class Organization extends Component {
 		if (this.props.roleModeVisible) {
 			return (
 				<div className="section center">
+					<br />
 					<div className="switch">
 						<label>
 							Role
@@ -747,6 +750,7 @@ class Organization extends Component {
 		if (this.props.searchVisible) {
 			return (
 				<div>
+					<br />
 					<ObjectSearch onClick={this.handleSearch}
 								  findContributors={true} findOrganizations={true} findRoles={true}
 								  label="Type the name of an existing contributor, role or organization..."
@@ -756,22 +760,26 @@ class Organization extends Component {
 		}
 	}
 
+	goBack() {
+		history.back();
+	}
+	renderBackButton() {
+		if (this.props.showBackButton) {
+			return <div className="center">
+				<br /><ControlIconButton onClicked={this.goBack.bind(this)} icon="undo" tip="Go back"/></div>;
+		}
+	}
+
 	render() {
 		var divStyle = {
 			height: h = screen.width < 700 ? chartHeightMobile : chartHeight,
 		};
 
-		/* old role mode
-		 <div className="center">
-		 {this.renderRoleModeSwitch()}
-		 </div>
-		 */
-
 		return (
 			<div>
-				<div>
-					{this.renderSearch()}
-				</div>
+				{this.renderBackButton()}
+				<br />
+				{this.renderSearch()}
 				<div className="center">
 					{this.renderLoading()}
 					<div className="chartContainer" style={divStyle}>
@@ -779,6 +787,7 @@ class Organization extends Component {
 					<div className="clear-block"/>
 				</div>
 				<ControlsContainer ref="controlsContainer"/>
+				<ReactTooltip />
 			</div>
 		);
 	}

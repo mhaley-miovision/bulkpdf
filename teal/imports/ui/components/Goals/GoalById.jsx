@@ -18,7 +18,7 @@ class GoalById extends Component {
 	}
 	renderBackButton() {
 		if (this.props.showBackButton) {
-			return <ControlIconButton onClicked={this.goBack.bind(this)} icon="undo" tip="Up to parent goal"/>;
+			return <ControlIconButton onClicked={this.goBack.bind(this)} icon="undo" tip="Go back"/>;
 		}
 	}
 	render() {

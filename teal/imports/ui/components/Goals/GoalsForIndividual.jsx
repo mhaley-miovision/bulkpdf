@@ -19,15 +19,6 @@ class GoalsForIndividual extends Component {
 			props.objectId = objectId;
 		}
 	}
-	shouldComponentUpdate(nextProps, nextState) {
-		/*
-		if (nextProps.objectId !== this.props.objectId) {
-			return true;
-		}
-		return false;
-		 */
-		return true;
-	}
 	renderGoals() {
 		if (this.props.doneLoading) {
 			return <GoalList goalList={ this.props.goals }/>
