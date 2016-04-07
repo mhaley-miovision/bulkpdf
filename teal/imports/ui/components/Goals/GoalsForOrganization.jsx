@@ -51,7 +51,9 @@ export default createContainer((params) => {
 
 	let handle = Meteor.subscribe("teal.goals");
 	if (handle.ready()) {
-		// find all nodes with this contributor as owner, sorted by depth
+		// find all goals that have a role that is contained in this organization as an owner or contributor owner, sorted by depth
+
+
 		let roleIds = RolesCollection.find(
 			{ organizationId: orgId}, {sort: {depth:1}, fields: { _id:1 }}).map(r => {return r._id});
 

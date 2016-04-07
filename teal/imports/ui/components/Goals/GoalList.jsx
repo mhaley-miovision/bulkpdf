@@ -41,5 +41,5 @@ export default class GoalList extends Component {
 GoalList.propTypes = {
 	goalList: React.PropTypes.array.isRequired,
 	compactViewMode: React.PropTypes.bool,
-	onGoalClicked: React.PropTypes.func,
+	onGoalClicked: React.PropTypes.func
 };

@@ -13,7 +13,7 @@ export default class MyOrganization extends Component {
 		super(props);
 
 		this.state = {
-			tab: 'acc_tab',
+			tab: 'org_tab',
 			tabItems: [ { id: "acc_tab", name: "Accountabilities" }, { id: "org_tab", name: "Team Composition" } ]
 		};
 
@@ -46,7 +46,7 @@ export default class MyOrganization extends Component {
 			<div className="row">
 				<div className="col s6 offset-s3">
 					<br/>
-					<Tabs items={this.state.tabItems} onClick={this.handleTabClicked}/>
+					<Tabs selectedItemId={this.state.tab} items={this.state.tabItems} onClick={this.handleTabClicked}/>
 				</div>
 				<div id="test1" className="col s12">{this.state.tab === 'acc_tab' ? this.renderAccountabilities() : this.renderOrganization() }</div>
 			</div>

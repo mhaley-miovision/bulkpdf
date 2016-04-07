@@ -49,7 +49,7 @@ class SearchResults extends Component {
 	handleAccountabilityLevelClick(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		this.props.onClick(e.currentTarget.text, 'accountability_level', e.currentTarget.id);
+		this.props.onClick(e.currentTarget.text, e.currentTarget.text, 'accountability_level', e.currentTarget.id);
 	}
 
 	getDropdownClasses() {
@@ -222,7 +222,7 @@ export default class ObjectSearch extends Component {
 	}
 
 	onClick(text, objectId, objectType, obj) {
-		this.setState({inputValue:text});
+		this.setState({query:text});
 		this.props.onClick(objectId, objectType, obj);
 	}
 
