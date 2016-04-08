@@ -62,7 +62,6 @@ export default createContainer((params) => {
 		// determine the title prefix
 		let prefix = objectId && contributor ? contributor.name + "'s " : "My ";
 
-
 		let allRolesTopGoals = RolesCollection.find({email: objectId}, {fields: {topGoals: 1}}).map(x => {
 			return x.topGoals
 		});

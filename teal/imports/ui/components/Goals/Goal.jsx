@@ -209,7 +209,7 @@ export default class Goal extends Component {
 	}
 	handleCancelClicked() {
 		// reset changes made
-		this.refs.obj.setState(this.refs.obj.getInitialState());
+		this.refs.obj.clearInputs();
 		this.setState({isEditing:false});
 	}
 	handleDeleteClicked() {

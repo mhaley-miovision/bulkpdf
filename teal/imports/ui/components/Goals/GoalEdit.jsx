@@ -54,7 +54,7 @@ export default class GoalEdit extends Component {
 				event.preventDefault();
 			}
 			let ko = this.state.keyObjectives;
-			ko.push({_id: new Mongo.Collection.ObjectID()._str, completed: 0, name: this.state.newKeyObjective});
+			ko.push({_id: Teal.newId(), completed: 0, name: this.state.newKeyObjective});
 			this.setState({keyObjectives: ko, newKeyObjective: ""});
 		}
 	}
@@ -64,7 +64,7 @@ export default class GoalEdit extends Component {
 				event.preventDefault();
 			}
 			let dc = this.state.doneCriteria;
-			dc.push({_id: new Mongo.Collection.ObjectID()._str, completed: 0, name: this.state.newDoneCriteria});
+			dc.push({_id: Teal.newId(), completed: 0, name: this.state.newDoneCriteria});
 			this.setState({doneCriteria: dc, newDoneCriteria: ""});
 		}
 	}

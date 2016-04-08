@@ -189,11 +189,11 @@ export default class ObjectSearch extends Component {
 	}
 
 	toggleDropdown(show) {
-		this.setState( { showList: show } );
+		if (this.state) {
+			// this could get called on an unmounted component due to the hack below
+			this.setState({showList: show});
+		}
 	}
-
-	// TODO: these methods need refactoring - WAY too much duplication going on.
-
 	handleOnBlur() {
 		var _this = this;
 		setTimeout(function() {
@@ -210,9 +210,10 @@ export default class ObjectSearch extends Component {
 	}
 	handleClear() {
 		this.setState({inputValue:'',query:''});
+		/*
 		if (this.props.onClick) {
 			this.props.onClick('', '', null);
-		}
+		}*/
 	}
 
 	componentWillReceiveProps(nextProps, nextState) {

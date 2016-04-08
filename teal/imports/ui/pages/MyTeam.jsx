@@ -4,6 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data'
 
 import { ContributorsCollection } from '../../api/contributors'
 import { OrganizationsCollection } from  '../../api/organizations'
+import { RolesCollection } from  '../../api/roles'
 
 import Loading from '../components/Loading.jsx'
 import ObjectSearch from '../components/ObjectSearch.jsx'
@@ -93,18 +94,32 @@ export default createContainer((params) => {
 
 	var handle = Meteor.subscribe("teal.contributors");
 	var handle2 = Meteor.subscribe("teal.organizations");
+	var handle3 = Meteor.subscribe("teal.roles");
 
-	if (handle.ready() && handle2.ready()) {
+	if (handle.ready() && handle2.ready() && handle3.ready()) {
 		var c = ContributorsCollection.findOne({email: Meteor.user().email});
 		var o = null;
+
+		// try the physical org, if defined
 		if (c) {
 			o = OrganizationsCollection.findOne({_id: c.physicalOrgId});
 		}
+
+		if (!c || !o) {
+			// TODO: temporary hack until revamp of roles with multiple parent orgs is implemented
+			// find all roles this person plays, and just return the first one
+			let roles = RolesCollection.find({$or: [{contributorId: c._id},{contributorId: c.email}] },{fields:{organizationId:1}}).fetch();
+			if (roles.length > 0) {
+				o = OrganizationsCollection.findOne({_id: roles[0].organizationId});
+			}
+		}
+		let contributorOrgId = o && o._id ? o._id : '';
+
 		return {
 			isLoading: false,
 			contributor: c,
 			contributorOrg: o ? o.name : '',
-			contributorOrgId: c ? c.physicalOrgId : ''
+			contributorOrgId: c ? contributorOrgId : ''
 		};
 	} else {
 		return {isLoading: true};

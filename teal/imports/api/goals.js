@@ -234,16 +234,17 @@ if (Meteor.isServer) {
 				// actually insert the goal
 				g._id = GoalsCollection.insert(g);
 
-				// populate role goal stats
-				ownerRoles.forEach(r => {
-					Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
-				});
-				contributorRoles.forEach(r => {
-					Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
-				});
 			} else {
 				GoalsCollection.update(g._id, g);
 			}
+
+			// populate role goal stats
+			g.ownerRoles.forEach(r => {
+				Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
+			});
+			g.contributorRoles.forEach(r => {
+				Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
+			});
 
 			console.log("teal.goals.updateOrInsertGoal (new="+newGoal+"):");
 			console.log(g);

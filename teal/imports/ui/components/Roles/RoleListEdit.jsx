@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 
+import { RolesCollection } from '../../../api/roles'
+
 import ObjectSearch from '../ObjectSearch.jsx'
 import RoleItem from '../roles/RoleItem.jsx'
 
@@ -9,6 +11,7 @@ export default class RoleListEdit extends Component {
 		super(props);
 		this.state = { roles: props && props.roleList ? _.clone(props.roleList) : [] };
 		this.handleOnDelete = this.handleOnDelete.bind(this);
+		this.handleAddNewRole = this.handleAddNewRole.bind(this);
 	}
 
 	handleOnDelete(event) {
@@ -25,7 +28,7 @@ export default class RoleListEdit extends Component {
 		});
 	}
 
-	addNewRole(roleId, type) {
+	handleAddNewRole(roleId, type) {
 		let r = RolesCollection.findOne({_id:roleId},
 			{fields: {_id:1,label:1,accountabilityLabel:1,organizationId:1,contributor:1,email:1,photo:1}});
 		if ( _.where(this.state.roles, { _id : roleId }).length != 0 ) {
@@ -33,6 +36,7 @@ export default class RoleListEdit extends Component {
 		} else {
 			this.state.roles.push(r);
 			this.setState({roles:this.state.roles}); // update!
+			this.refs.roleSearch.handleClear(); // get rid of the role search text
 		}
 	}
 
@@ -48,8 +52,8 @@ export default class RoleListEdit extends Component {
 					{this.renderRoles()}
 				</div>
 
-				<div><ObjectSearch label="Enter email..." notFoundLabel="No matching roles found" onClick={this.addNewRole}
-								   findRoles={true} findContributors={false} findOrganizations={false}/></div>
+				<div><ObjectSearch label="Enter email..." notFoundLabel="No matching roles found" onClick={this.handleAddNewRole}
+								   findRoles={true} findContributors={false} findOrganizations={false} ref="roleSearch"/></div>
 			</div>
 		);
 	}

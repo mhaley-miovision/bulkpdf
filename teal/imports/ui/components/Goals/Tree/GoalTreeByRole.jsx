@@ -60,18 +60,24 @@ export default createContainer((params) => {
 		// default role is the CEO - TODO: make sure to filter by org root id in the future
 		let roleId = null;
 
+		/*
 		let r = RolesCollection.findOne({label: "Chief Executive Officer"});
 		if (!!r) {
 			roleId = r._id;
 		} else {
 			console.error("Couldn't find the CEO role for this org!");
-		}
+		}*/
 
+		// find all nodes with this contributor as owner, sorted by depth
+		let goals = GoalsCollection.find({depth:0}).fetch();
+
+		/*
 		// find all nodes with this contributor as owner, sorted by depth
 		let goals = GoalsCollection.find({$or: [
 			{ ownerRoles: { $elemMatch : {_id: roleId} }},
 			{ contributorRoles: { $elemMatch : {_id: roleId} }}
 		]}, {sort: {depth:1}}).fetch();
+		*/
 
 		// remove all nodes which are sub-children
 		let i = 0;
@@ -94,7 +100,7 @@ export default createContainer((params) => {
 		// we now have this role's top level goals. create a fake root to house them
 		let root = {
 			name: "Company Goals",
-			ownerRoles: [r],
+			ownerRoles: [],
 			contributorRoles: [],
 			state: 0,
 			path: [],
