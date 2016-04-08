@@ -1,14 +1,17 @@
-import { Meteor } from 'meteor/meteor';
-import { GoalsCollection } from './goals';
-import { RolesCollection } from './roles';
-import { OrganizationsCollection } from './organizations';
-import { ContributorsCollection } from './contributors';
+import { Meteor } from 'meteor/meteor'
+import { GoalsCollection } from './goals'
+import { RolesCollection } from './roles'
+import { OrganizationsCollection } from './organizations'
+import { ContributorsCollection } from './contributors'
+
+import { FlowRouter } from 'meteor/kadira:flow-router'
 
 import Teal from '../shared/Teal'
+import Routing from './routing'
 
 if (Meteor.isServer) {
 	Meteor.methods({
-		"teal.comments.addComment": function (objectId, objectType, text, atMentions) {
+		"teal.comments.addComment": function (objectId, objectType, text, atMentions, url) {
 			// Make sure the user is logged in before inserting a task
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
@@ -29,14 +32,33 @@ if (Meteor.isServer) {
 				};
 
 				let op = { $push: { comments: { $each: [comment], $sort: {"createdAt":-1} } } };
+				let objectName = '';
+
+				// TODO: decoupling event from even processing is important.
+				// TODO: consider how much of this should go into the notification vs. here.
 
 				if (objectType === Teal.ObjectTypes.Goal) {
 					GoalsCollection.update({_id:objectId}, op);
+					objectName = GoalsCollection.findOne({_id:objectId},{fields:{name:1}}).name;
 				} else if (objectType === Teal.ObjectTypes.Organization) {
 					OrganizationsCollection.update({_id:objectId}, op);
+					objectName = OrganizationsCollection.findOne({_id:objectId},{fields:{name:1}}).name;
 				} else if (objectType === Teal.ObjectTypes.Role) {
 					RolesCollection.update({_id:objectId}, op);
+					objectName = RolesCollection.findOne({_id:objectId},{fields:{accountabilityLabel:1}}).accountabilityLabel;
 				}
+				let mentionedSubject = `${c.name} mentioned you in '${objectName}'`;
+				let mentionBody = `You have a new mention in the ${objectType} <a href="${url}">${objectName}</a> by ${c.name}.<br><br><i><q>${text}</q></i>.<br><br><a href="${url}">Click here to collaborate!</a></i>"`;
+
+				// do this for each user email
+				atMentions.forEach(mentionedUserEmail => {
+					let notification = {
+						type: 'comments.atMentioned',
+						payload: { subject: mentionedSubject, body: mentionBody, email: mentionedUserEmail }
+					};
+					// insert the notification
+					Meteor.call("teal.notifications.createNotification", notification);
+				});
 
 			} else {
 				throw new Meteor.Error("not-authorized");

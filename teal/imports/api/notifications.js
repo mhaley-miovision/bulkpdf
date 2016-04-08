@@ -55,6 +55,16 @@ if (Meteor.isServer) {
 				case 'user.logged_out':
 					// do nothing here
 					break;
+				case 'comments.atMentioned':
+					Meteor.call("teal.email.sendEmail",
+						{
+							to: n.payload.email,
+							from:"teal@miovision.com",
+							subject: n.payload.subject,
+							text: '',
+							html: n.payload.body
+						});
+					break;
 			}
 			return true;
 		}
@@ -69,7 +79,6 @@ if (Meteor.isServer) {
 		NotificationsCollection.insert(n);
 	}
 
-	// In your server code: define a method that the client can call
 	Meteor.methods({
 		"teal.notifications.createNotification": function(n) {
 			insertNotification(n);

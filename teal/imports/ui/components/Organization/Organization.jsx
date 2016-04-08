@@ -548,9 +548,6 @@ var Chart = (function () {
 		* */
 		loadData: function (params) {
 			let data = params.data;
-			let initiallyZoomedTo = params.zoomTo;
-			console.log('loadData.initiallyZoomedTo:')
-			console.log(initiallyZoomedTo);
 			onZoomedToObjectCallback = params.onZoomedToObject;
 			containingComponentThisContext = params._this;
 
@@ -602,6 +599,16 @@ var Chart = (function () {
 			// contributors
 			nodes.filter(n => n.type == "contributor").forEach(n => this.objectIdToNode[n._id] = n);
 
+			//TODO: hack!!! expand zoomTo if this was a string into the full object if a match is there
+			//TODO: fix this properly, but for now it detects roles to zoom to
+			if (!!params.zoomTo && !!this.objectIdToNode[params.zoomTo]) {
+				params.zoomTo = {
+					objectId: this.objectIdToNode[params.zoomTo]._id,
+					objectType: this.objectIdToNode[params.zoomTo].type,
+					object: this.objectIdToNode[params.zoomTo]
+				};
+			}
+
 			// don't add these object to organizations, since we use the label object instead for them, as a circle
 			var foreignObjects = vis.selectAll(".foreign-object")
 				.data(nodes
@@ -621,9 +628,10 @@ var Chart = (function () {
 				Chart.zoom(root, true);
 			});
 
-			if (initiallyZoomedTo)
+			// zoom !
+			if (params.zoomTo)
 			{
-				Chart.zoomToObject(initiallyZoomedTo.object, initiallyZoomedTo.objectType, initiallyZoomedTo.objectId, false);
+				Chart.zoomToObject(params.zoomTo.object, params.zoomTo.objectType, params.zoomTo.objectId, false);
 			} else {
 				Chart.zoom(root, false);
 			}
@@ -809,7 +817,7 @@ class Organization extends Component {
 Organization.propTypes = {
 	objectId : React.PropTypes.string.isRequired,
 	objectType : React.PropTypes.string,
-	zoomTo : React.PropTypes.object,
+	zoomTo : React.PropTypes.string,
 	roleMode : React.PropTypes.bool,
 	roleModeVisible : React.PropTypes.bool,
 	searchVisible : React.PropTypes.bool
@@ -839,7 +847,7 @@ export default createContainer((params) => {
 		objectId = "Miovision";
 	}
 
-	let org = OrganizationsCollection.findOne({ name: objectId });
+	let org = OrganizationsCollection.findOne({$or: [{_id: objectId}, {name: objectId}] });
 	if (org) {
 		// for building an org tree
 		let populateOrgChildren = function (o) {

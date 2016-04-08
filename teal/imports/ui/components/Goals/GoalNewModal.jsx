@@ -12,6 +12,7 @@ import ControlIconButton from '../ControlButtonIcon.jsx'
 export default class GoalNewModal extends Component {
 	constructor() {
 		super() ;
+		this.state = { modalId: Teal.newId() };
 		this.handleSave = this.handleSave.bind(this);
 		this.handleClose = this.handleClose.bind(this);
 	}
@@ -26,16 +27,16 @@ export default class GoalNewModal extends Component {
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 
 		this.refs.newGoal.clearInputs();
-		$('#' + this.props.id).closeModal();
+		$('#' + this.state.modalId).closeModal();
 	}
 	handleClose() {
 		this.refs.newGoal.clearInputs();
-		$('#' + this.props.id).closeModal();
+		$('#' + this.state.modalId).closeModal();
 	}
 
 	render() {
 		return (
-			<div id={this.props.id} className="modal modal-fixed-footer">
+			<div id={this.state.modalId} className="modal modal-fixed-footer">
 				<div className="modal-content" style={{padding:0}}>
 					<GoalEdit ref="newGoal"/>
 				</div>
@@ -51,6 +52,5 @@ export default class GoalNewModal extends Component {
 }
 
 GoalNewModal.propTypes = {
-	parentGoalId: React.PropTypes.string.isRequired,
-	id: React.PropTypes.string.isRequired
+	parentGoalId: React.PropTypes.string.isRequired
 };

@@ -5,6 +5,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import Teal from '../../../shared/Teal'
 
 import { ContributorsCollection } from '../../../api/contributors'
+import { RolesCollection } from '../../../api/roles'
 
 import { MentionsInput, Mention } from 'react-mentions'
 
@@ -34,7 +35,25 @@ export default class CommentsInput extends Component {
 		if (this.state.plainTextValue && this.state.plainTextValue !== '') {
 			let text = this.state.plainTextValue;
 			let mentions = this.state.atMentions.map(m => { return m.id; })
-			Meteor.call("teal.comments.addComment", this.props.objectId, this.props.objectType, text, mentions);
+
+			let url = '';
+			debugger;
+			if (this.props.objectType === Teal.ObjectTypes.Goal) {
+				url = FlowRouter.path("goalById", {goalId:this.props.objectId});
+			} else if (this.props.objectType === Teal.ObjectTypes.Organization) {
+				url = FlowRouter.path("organizationView", {}, {objectId:this.props.objectId});
+			} else if (this.props.objectType === Teal.ObjectTypes.Role) {
+				// go to the containing org
+				let r = RolesCollection.findOne({_id:this.props.objectId},{fields:{organizationId:1}});
+				url = FlowRouter.path("organizationView", {}, {objectId: r.organizationId, zoomTo: r._id});
+			}
+			if (url.indexOf('/') == 0) {
+				url = url.substr(1);
+			}
+			url = Meteor.absoluteUrl() + url;
+			console.log("url" + url);
+
+			Meteor.call("teal.comments.addComment", this.props.objectId, this.props.objectType, text, mentions, url);
 			this.initialize();
 		}
 	}
@@ -99,5 +118,5 @@ export default class CommentsInput extends Component {
 
 CommentsInput.propTypes = {
 	objectId: React.PropTypes.string.isRequired,
-		objectType: React.PropTypes.string.isRequired
+	objectType: React.PropTypes.string.isRequired
 };
