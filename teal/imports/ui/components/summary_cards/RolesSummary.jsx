@@ -26,13 +26,7 @@ class RolesSummary extends Component {
 
 	renderRolesControls(r) {
 		let controls = [];
-
-		// TODO: implement actually jumping to the role, not the contributor
-		// TODO: replace miovision with root org name
-		var url1 = FlowRouter.path("organizationView", {}, {
-			objectId: "Miovision",
-			objectType:"organization",
-			zoomTo:r.organization});
+		var url1 = FlowRouter.path("organizationView", {}, {objectId: r.organizationId, zoomTo: r._id});
 
 		// public controls
 		controls.push(

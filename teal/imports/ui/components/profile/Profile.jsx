@@ -99,7 +99,15 @@ export default createContainer((params) => {
 				}
 			);
 		} else {
-			c = ContributorsCollection.findOne({rootOrgId: Teal.rootOrgId(), email:Teal.currentUserEmail()})
+			let u = Meteor.user();
+			// TODO: strategy around email support moving forward
+			let email = null;
+			if (u.email) {
+				email = u.email;
+			} else {
+				email = u.services.google.email;
+			}
+			c = ContributorsCollection.findOne({rootOrgId: Teal.rootOrgId(), email:email})
 		}
 
 		return {

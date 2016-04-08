@@ -92,64 +92,66 @@ class GoalsSummary extends Component {
 
 	updateChart() {
 		let _this = this;
-		setTimeout(function () {
-			// Get context with jQuery - using jQuery's .get() method.
-			var ctx = $("#goalDonutChart").get(0).getContext("2d");
+		if (this.props.goals && this.props.goals.length > 0) {
+			setTimeout(function () {
+				// Get context with jQuery - using jQuery's .get() method.
+				var ctx = $("#goalDonutChart").get(0).getContext("2d");
 
-			// This will get the first returned node in the jQuery collection.
-			var c = new Chart(ctx);
-			var g = _this.props.summaryGoal;
-			var data = [
-				{
-					value: g.stats.completed,
-					color:"#46BFBD",
-					highlight: "#FF5A5E",
-					label: "Completed"
-				},
-				{
-					value: g.stats.inProgress,
-					color:"#FDB45C",
-					highlight: "#FFC870",
-					label: "In Progress"
-				},
-				{
-					value: g.stats.notStarted,
-					color: "#ff6666",
-					highlight: "#FF5A5E",
-					label: "Not Started",
-				},
-			];
+				// This will get the first returned node in the jQuery collection.
+				var c = new Chart(ctx);
+				var g = _this.props.summaryGoal;
+				var data = [
+					{
+						value: g.stats.completed,
+						color: "#46BFBD",
+						highlight: "#FF5A5E",
+						label: "Completed"
+					},
+					{
+						value: g.stats.inProgress,
+						color: "#FDB45C",
+						highlight: "#FFC870",
+						label: "In Progress"
+					},
+					{
+						value: g.stats.notStarted,
+						color: "#ff6666",
+						highlight: "#FF5A5E",
+						label: "Not Started",
+					},
+				];
 
-			var ctx = $('#goalDonutChart').get(0).getContext("2d");
+				var ctx = $('#goalDonutChart').get(0).getContext("2d");
 
-			var myDoughnut = new Chart(ctx).Doughnut(data,{
-				animation:true,
-				animationSteps: 50,
-				responsive: true,
-				showTooltips: false,
-				percentageInnerCutout : 80,
-				segmentShowStroke : false,
-				onAnimationComplete: function() {
-					var canvasWidthvar = $('#goalDonutChart').width();
-					var canvasHeight = $('#goalDonutChart').height();
-					//this constant base on canvasHeight / 2.8em
-					var constant = 104;
-					var fontsize = (canvasHeight/constant).toFixed(2);
-					ctx.font=fontsize +"em Verdana";
-					ctx.textBaseline="middle";
-					ctx.fillStyle = "#999999";
-					var total = 0;
-					$.each(data,function() {
-						total += parseInt(this.value,10);
-					});
-					var tpercentage = ((data[0].value/total)*100).toFixed(2)+"%";
-					var textWidth = ctx.measureText(tpercentage).width;
+				var myDoughnut = new Chart(ctx).Doughnut(data, {
+					animation: true,
+					animationSteps: 50,
+					responsive: true,
+					showTooltips: false,
+					percentageInnerCutout: 80,
+					segmentShowStroke: false,
+					onAnimationComplete: function () {
+						var canvasWidthvar = $('#goalDonutChart').width();
+						var canvasHeight = $('#goalDonutChart').height();
+						//this constant base on canvasHeight / 2.8em
+						var constant = 104;
+						var fontsize = (canvasHeight / constant).toFixed(2);
+						ctx.font = fontsize + "em Verdana";
+						ctx.textBaseline = "middle";
+						ctx.fillStyle = "#999999";
+						var total = 0;
+						$.each(data, function () {
+							total += parseInt(this.value, 10);
+						});
+						var tpercentage = ((data[0].value / total) * 100).toFixed(2) + "%";
+						var textWidth = ctx.measureText(tpercentage).width;
 
-					var txtPosx = Math.round((canvasWidthvar - textWidth)/2);
-					ctx.fillText(tpercentage, txtPosx, canvasHeight/2);
-				}
-			});
-		}, 50);
+						var txtPosx = Math.round((canvasWidthvar - textWidth) / 2);
+						ctx.fillText(tpercentage, txtPosx, canvasHeight / 2);
+					}
+				});
+			}, 50);
+		}
 	}
 
 	handleAddGoalsNudge() {
@@ -162,7 +164,7 @@ class GoalsSummary extends Component {
 	}
 
 	renderSection() {
-		if (this.props.doneLoading && this.props.goals.length) {
+		if (this.props.doneLoading && this.props.goals.length > 0) {
 			var url = FlowRouter.path("goalsList", {}, {objectId:this.props.objectId});
 			var goalsSection = [];
 			goalsSection.push(
