@@ -8,10 +8,12 @@ import {ContributorsCollection} from './contributors'
 
 export const ChangesCollection = new Mongo.Collection("teal.changes");
 
+const MAX_CHANGES_VISIBLE = 50;
+
 if (Meteor.isServer) {
 	Meteor.publish('teal.changes', function() {
 		if (!!this.userId) {
-			return ChangesCollection.find({});
+			return ChangesCollection.find({},{sort:{createdAt:-1},limit:MAX_CHANGES_VISIBLE});
 		} else {
 			return this.ready();
 		}

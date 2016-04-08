@@ -99,8 +99,10 @@ export default createContainer(() => {
 	// note placing FlowRouter.getRouteName() here is important vs. in the component since it can be re-rendered via
 	// props update (within render it's not reactive!)
 	if (h.ready()) {
+		const HOURS_BEFORE_OLD = 24;
+		//TODO: fix change count!!
 		return {
-			changesCount: ChangesCollection.find().count(),
+			changesCount: 0,//ChangesCollection.find({createdOn:{$lt: new Date((Teal.newDateTime())-1000*60*60*HOURS_BEFORE_OLD)}}).count(),
 			currentRoute: FlowRouter.getRouteName(),
 			hasUser: !!Meteor.user()
 		};

@@ -14,11 +14,11 @@ class TeamsSummary extends Component {
 		let controls = [];
 
 		// TODO: implement actually jumping to the role, not the contributor
-		var url = FlowRouter.path("organizationView", {}, { objectId: o, objectType:"organization"});
+		var url = FlowRouter.path("organizationView", {}, { objectId: o.organizationId, objectType:"organization"});
 
 		// public controls
 		controls.push(
-			<a key={o} href={url} className="secondary-content" data-tip="View team">
+			<a key={o.organizationId} href={url} className="secondary-content" data-tip="View team">
 				<i className="material-icons summaryCardIcon grey-text">search</i>
 			</a>
 		);
@@ -32,7 +32,7 @@ class TeamsSummary extends Component {
 				return (
 					<li className="collection-item" key={o}>
 						<div className="collection-item-text">
-							{o}
+							{o.organization}
 						</div>
 						{this.renderOrgControls(o)}
 					</li>
@@ -71,11 +71,10 @@ export default createContainer((params) => {
 	const { objectId } = params;
 
 	if (handle.ready() && handle2.ready()) {
-		let orgs = _.uniq(RolesCollection.find({email:objectId}, {
-			sort: {organization: 1}, fields: {organization: true}
-		}).fetch().map(function(x) {
-			return x.organization;
-		}), true);
+
+		let orgs = RolesCollection.find({email:objectId}, {
+			sort: {organization: 1}, fields: {organization:1,organizationId:1}
+		}).fetch();
 
 		let homeOrg = ContributorsCollection.findOne({email:objectId}).physicalTeam;
 

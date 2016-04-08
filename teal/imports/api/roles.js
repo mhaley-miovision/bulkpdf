@@ -7,6 +7,8 @@ import { GoalsCollection } from './goals'
 import { OrganizationsCollection } from './organizations'
 import { ContributorsCollection } from './contributors'
 
+import Permissions from '../api/permissions'
+
 if (Meteor.isServer) {
 	Meteor.publish('teal.roles', function() {
 		return RolesCollection.find({});
@@ -112,6 +114,26 @@ if (Meteor.isServer) {
 
 			console.log("Final role:");
 			console.log(role);
+		},
+
+		// TODO: utility match method - only call to fix cached values in case of data corruption
+		"teal.roles.updateAllRoleTopLevelGoals": function() {
+			"use strict";
+
+			if (!!this.userId && Permissions.isAdmin()) {
+				console.warn("Initiating role top level goal patch...");
+				let n = GoalsCollection.find().count();
+				let i = 0;
+				GoalsCollection.find({}).forEach(r => {
+					// update the role top goals
+					Meteor.call("teal.goals.updateRoleTopLevelGoals", r._id);
+					i++;
+					console.warn(`Patched ${r._id}  (${ Math.floor(i / n * 100) }%)`);
+				});
+				console.warn("Patch complete!");
+			} else {
+				throw Meteor.Error("not-authorized");
+			}
 		},
 
 		"teal.roles.removeRole": function(roleId) {

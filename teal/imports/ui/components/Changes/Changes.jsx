@@ -39,6 +39,9 @@ class MyChanges extends Component {
 	}
 
 	render() {
+		//TODO: optionally enable this??
+		//{this.renderClearButton()}
+
 		if (this.props.doneLoading) {
 			return (
 				<div>
@@ -48,7 +51,7 @@ class MyChanges extends Component {
 					</header>
 					<br/>
 
-					{this.renderClearButton()}
+
 
 					<div className="collection">
 						{this.renderChanges()}
