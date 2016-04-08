@@ -66,7 +66,7 @@ export default class OrgControls extends Component {
 		}
 
 		if (this.refs && this.refs.commentsModal) {
-			this.refs.commentsModal.show();
+			this.refs.commentsModal.openModal();
 		} else {
 			console.error("commentsModal not mounted yet");
 		}

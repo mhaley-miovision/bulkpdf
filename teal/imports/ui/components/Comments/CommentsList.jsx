@@ -10,13 +10,7 @@ export default class CommentsList extends Component {
 
 	//TODO: encapsulation fail
 	initialize() {
-
-		/*
-		if (this.refs && this.refs.commentsInputBox) {
-			this.refs.commentsInputBox.initialize();
-		} else {
-			console.error("commentsInputBox not mounted yet");
-		}*/
+		 this.refs.commentsInputBox.initialize();
 	}
 
 	renderComments() {

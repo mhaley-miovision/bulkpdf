@@ -31,13 +31,9 @@ export default class CommentsModal extends Component {
 		$('#' + this.getId()).closeModal();
 	}
 
-	show() {
+	openModal() {
 		$('#' + this.getId()).openModal();
-		if (this.refs && this.refs.commentsList) {
-			this.refs.commentsList.initialize();
-		} else {
-			console.error("commentsList not mounted yet");
-		}
+		this.refs.commentsList.initialize();
 	}
 
 	render() {

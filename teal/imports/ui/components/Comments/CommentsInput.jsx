@@ -34,21 +34,16 @@ export default class CommentsInput extends Component {
 		if (this.state.plainTextValue && this.state.plainTextValue !== '') {
 			let text = this.state.plainTextValue;
 			let mentions = this.state.atMentions.map(m => { return m.id; })
-			console.log(text);
-			console.log(mentions);
-
 			Meteor.call("teal.comments.addComment", this.props.objectId, this.props.objectType, text, mentions);
 			this.initialize();
 		}
 	}
 
 	initialize() {
-
+		this.setState({value: ''});
+		//TODO: serious encapsulation fail - find a better component?
+		this.refs.mentionsInput.refs.input.focus();
 	}
-	focusOnInput() {
-
-	}
-
 	transformDisplay(id, display, type) {
 		return '@'+display;
 	}
@@ -81,6 +76,7 @@ export default class CommentsInput extends Component {
 		return (
 			<div>
 				<MentionsInput value={this.state.value}
+							   ref="mentionsInput"
 							   onChange={this.handleChange}
 							   style={ mentionsStyle() }
 							   displayTransform={this.transformDisplay}

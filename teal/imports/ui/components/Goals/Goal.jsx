@@ -218,24 +218,13 @@ export default class Goal extends Component {
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 	}
 	handleNewGoalClicked() {
-		$('#' + this.getNewGoalModalId()).openModal();
+		this.refs.newGoalModal.openModal();
 	}
 	handleSubGoalsClicked() {
-		$('#' + this.getSubGoalsModalId()).openModal();
+		this.refs.subgoalsModal.openModal();
 	}
 	handleCommentsClicked() {
-		if (this.refs && this.refs.commentsModal) {
-			this.refs.commentsModal.show();
-		} else {
-			console.error("commentsModal not mounted yet");
-		}
-	}
-
-	getNewGoalModalId() {
-		return this.props.goal._id+"_new";
-	}
-	getSubGoalsModalId() {
-		return this.props.goal._id+"_sub";
+		this.refs.commentsModal.openModal();
 	}
 
 	render() {
@@ -266,8 +255,8 @@ export default class Goal extends Component {
 									  commentCount={this.props.goal && this.props.goal.comments && this.props.goal.comments.length > 0 ? this.props.goal.comments.length : null }
 						/>
 					</div>
-					<GoalNewModal id={this.getNewGoalModalId()} parentGoalId={this.props.goal._id}/>
-					<SubGoalsModal id={this.getSubGoalsModalId()} parentGoalId={this.props.goal._id}/>
+					<GoalNewModal ref="newGoalModal" parentGoalId={this.props.goal._id}/>
+					<SubGoalsModal ref="subgoalsModal" parentGoalId={this.props.goal._id}/>
 					<CommentsModal ref="commentsModal"
 								   comments={this.props.goal.comments ? this.props.goal.comments : []}
 								   objectId={this.props.goal._id}
