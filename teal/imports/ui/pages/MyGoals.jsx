@@ -39,7 +39,7 @@ export default class MyGoals extends Component {
 						<br/>
 						<h5 className="center header text-main1">Goals</h5>
 					</header>
-					<div className="col s6 offset-s3">
+					<div className="col s12 section center">
 						<Tabs items={this.state.tabItems} onClick={this.handleTabClicked}/>
 					</div>
 				</div>

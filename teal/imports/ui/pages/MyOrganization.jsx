@@ -38,7 +38,7 @@ export default class MyOrganization extends Component {
 					<br/>
 					<h5 className="center header text-main1">Organization</h5>
 				</header>
-				<div className="col s6 offset-s3">
+				<div className="col s12 section center">
 					<Tabs selectedItemId={this.state.tab} items={this.state.tabItems} onClick={this.handleTabClicked}/>
 				</div>
 				<div id="test1" className="col s12">{this.state.tab === 'acc_tab' ? this.renderAccountabilities() : this.renderOrganization() }</div>

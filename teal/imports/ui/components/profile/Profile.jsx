@@ -52,7 +52,7 @@ class Profile extends Component {
 							</div>
 
 							<div className="row">
-								<div className="col s6 offset-s3">
+								<div className="col m6 offset-m3 s12">
 									<Tabs selectedItemId={this.state.tab} items={this.state.tabItems} onClick={this.handleTabClicked}/>
 								</div>
 							</div>
