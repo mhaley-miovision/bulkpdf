@@ -59,8 +59,10 @@ class RoleLabels extends Component {
 	render() {
 		return (
 			<div className="container">
+				<br/>
+
 				<header>
-					<h3 className="center header text-main1">Role Labels</h3>
+					<h5 className="center header text-main1">Role Labels</h5>
 				</header>
 
 				{
@@ -69,7 +71,7 @@ class RoleLabels extends Component {
 							<input
 								type="text"
 								ref="textInput"
-								placeholder="Type to add new role labels"
+								placeholder="Type to add new role labels... (enter to submit)"
 								onChange={this.handleNewLabelChange.bind(this)}/>
 						</form> : ''
 				}
