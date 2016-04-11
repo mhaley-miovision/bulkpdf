@@ -54,36 +54,5 @@ ProfileOverview.propTypes = {
 
 export default createContainer((params) => {
 	"use strict";
-
 	return { doneLoading: true };
-
-	/*
-	let handle = Meteor.subscribe("teal.contributors");
-	let handle2 = Meteor.subscribe("users");
-
-	if (handle.ready() && handle2.ready()) {
-
-		// no objectId specified => user currently logged in user
-		let c = null;
-		if (!!objectId) {
-			// find the contributor
-			c = ContributorsCollection.findOne(
-				{$or:
-					[	// match on either the email or the id for users inside this root org
-						{$and: [ {email: objectId}, {rootOrgId: Teal.rootOrgId()} ]},
-						{$and: [ {_id: objectId}, {rootOrgId: Teal.rootOrgId()} ]}
-					]
-				}
-			);
-		} else {
-			c = ContributorsCollection.findOne({rootOrgId: Teal.rootOrgId(), email:Teal.currentUserEmail()})
-		}
-
-		return {
-			contributor: c,
-			doneLoading: true
-		}
-	} else {
-		return { doneLoading: false };
-	}*/
 }, ProfileOverview);

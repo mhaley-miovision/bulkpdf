@@ -69,8 +69,6 @@ export default class GoalsStatsDonut extends Component {
 	}
 
 	componentDidMount() {
-		let _this = this;
-
 		this.updateChart();
 	}
 

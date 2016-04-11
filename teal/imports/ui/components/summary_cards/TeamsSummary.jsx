@@ -3,6 +3,8 @@ import React, { Component } from 'react'
 import { createContainer } from 'meteor/react-meteor-data'
 var ReactTooltip = require("react-tooltip");
 
+import Teal from '../../../shared/Teal'
+
 import { RolesCollection } from '../../../api/roles'
 import { ContributorsCollection } from '../../../api/contributors'
 
@@ -18,7 +20,7 @@ class TeamsSummary extends Component {
 
 		// public controls
 		controls.push(
-			<a key={o.organizationId} href={url} className="secondary-content" data-tip="View team">
+			<a key={Teal.newId()} href={url} className="secondary-content" data-tip="View team">
 				<i className="material-icons summaryCardIcon grey-text">search</i>
 			</a>
 		);
@@ -30,7 +32,7 @@ class TeamsSummary extends Component {
 		if (this.props.doneLoading) {
 			return this.props.orgs.map(o => {
 				return (
-					<li className="collection-item" key={o}>
+					<li className="collection-item" key={Teal.newId()}>
 						<div className="collection-item-text">
 							{o.organization}
 						</div>
