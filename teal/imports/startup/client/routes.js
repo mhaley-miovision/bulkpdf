@@ -163,13 +163,14 @@ FlowRouter.route( '/organization/view', {
 		// TODO: validate params
 		var objectId = queryParams.objectId;
 		var zoomTo = queryParams.zoomTo;
+		let showBackButton = queryParams.showBackButton ? queryParams.showBackButton.toLowerCase() === 'true' : false;
 		mount(Layout, {
 			content: ( <Organization
 				objectId={objectId}
 				objectType='organization'
 				zoomTo={zoomTo}
 				searchVisible={false}
-				showBackButton={true}
+				showBackButton={showBackButton}
 			/> )
 		});
 	}

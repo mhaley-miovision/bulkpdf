@@ -26,7 +26,7 @@ class SkillsSummary extends Component {
 		let _this = this;
 
 			$("#skillsPolarGraph").remove();
-			$('#skillsPolarGraphContainer').html('<canvas id="skillsPolarGraph"><canvas>');
+			$('#skillsPolarGraphContainer').html('<canvas id="skillsPolarGraph" width="175px" height="175px" className="skillsPolarGraph"></canvas>');
 			let canvas = $("#skillsPolarGraph").get(0);
 
 			if (!!canvas) {
@@ -70,8 +70,8 @@ class SkillsSummary extends Component {
 	renderCanvas() {
 		if (this.props.skills.length > 0) {
 			return (
-				<div id="skillsPolarGraphContainer">
-					<canvas id="skillsPolarGraph" width="175px" height="175px" className="skillsPolarGraph"></canvas>
+				<div id="skillsPolarGraphContainer" className="center">
+					<canvas id="skillsPolarGraph"></canvas>
 				</div>
 			);
 		} else {

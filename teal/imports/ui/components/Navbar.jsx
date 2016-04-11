@@ -70,7 +70,7 @@ class Navbar extends Component {
 					<AccountsUIWrapper />
 				</div>
 				<div className="right">
-					<ProfileImage />
+					<ProfileImage defaultToCurrentUser={true}/>
 				</div>
 				{ Permissions.isAdmin() ? <div className="right">{Teal.rootOrgId()}</div> : '' }
 			</div>

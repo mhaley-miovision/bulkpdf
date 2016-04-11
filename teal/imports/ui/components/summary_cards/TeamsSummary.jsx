@@ -16,7 +16,7 @@ class TeamsSummary extends Component {
 		let controls = [];
 
 		// TODO: implement actually jumping to the role, not the contributor
-		var url = FlowRouter.path("organizationView", {}, { objectId: o.organizationId, objectType:"organization"});
+		var url = FlowRouter.path("organizationView", {}, { objectId: o.organizationId, objectType:"organization"}, {showBackButton:true});
 
 		// public controls
 		controls.push(

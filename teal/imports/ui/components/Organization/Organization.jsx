@@ -27,9 +27,9 @@ var chartWidthMobile = 303;
 
 var Chart = (function () {
 	var root_2 = Math.sqrt(2),
-		w = screen.width < 700 ? chartWidthMobile : chartWidth,
-		h = screen.width < 700 ? chartHeightMobile : chartHeight,
-		r = screen.width < 700 ? chartHeightMobile - 30 : chartHeight - 50,
+		w = window.innerWidth < 700 ? chartWidthMobile : chartWidth,
+		h = window.innerWidth < 700 ? chartHeightMobile : chartHeight,
+		r = window.innerWidth < 700 ? chartHeightMobile - 30 : chartHeight - 50,
 		x = d3.scale.linear().range([0, r]),
 		y = d3.scale.linear().range([0, r]),
 		node,
@@ -791,14 +791,21 @@ class Organization extends Component {
 	}
 
 	render() {
+		let calculatedWidth = window.innerWidth < 700 ? chartWidthMobile : chartWidth;
 		var divStyle = {
-			height: h = screen.width < 700 ? chartHeightMobile : chartHeight,
+			height: calculatedWidth,
+			width: calculatedWidth,
+			// TODO: fix this horrible hack by properly calculating dimensions responsively (insert front-end person expertise here :)
+			marginLeft: window.innerWidth < 700 ? ((Math.floor((window.innerWidth-calculatedWidth)/2)-25) + "px") : 0
 		};
+		console.log(window.innerWidth);
+		console.log(window.innerHeight);
 
 		return (
 			<div>
 				{this.renderBackButton()}
 				{this.renderSearch()}
+				<br/>
 				<div className="center">
 					{this.renderLoading()}
 					<div className="chartContainer" style={divStyle}>

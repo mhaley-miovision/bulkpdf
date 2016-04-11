@@ -41,17 +41,22 @@ ProfileImage.defaultProps = {
 export default createContainer((params) => {
 	"use strict";
 
-	let { url } = params;
+	let { url, defaultToCurrentUser } = params;
 	if (!!url) {
 		return { profilePhotoUrl: Teal.userPhotoUrl(url), doneLoading: true };
 	} else {
-		var handle = Meteor.subscribe("users");
-		if (handle.ready() && !!Meteor.user()) {
-			var usr = Meteor.users.findOne({_id: Meteor.user()._id});
-			if (usr) {
-				url = usr.services.google.picture;
+		if (!!defaultToCurrentUser) {
+			var handle = Meteor.subscribe("users");
+			if (handle.ready() && !!Meteor.user()) {
+				var usr = Meteor.users.findOne({_id: Meteor.user()._id});
+				if (usr) {
+					url = usr.services.google.picture;
+				}
 			}
+			return { profilePhotoUrl: Teal.userPhotoUrl(url), doneLoading: !!url };
+		} else {
+			// show the blank avatar instead
+			return { profilePhotoUrl: Teal.userPhotoUrl(null), doneLoading: true };
 		}
-		return { profilePhotoUrl: Teal.userPhotoUrl(url), doneLoading: !!url };
 	}
 }, ProfileImage);
