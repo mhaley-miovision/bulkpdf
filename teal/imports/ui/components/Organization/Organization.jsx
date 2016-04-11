@@ -792,8 +792,9 @@ class Organization extends Component {
 
 	render() {
 		let calculatedWidth = window.innerWidth < 700 ? chartWidthMobile : chartWidth;
+		let calculatedHeight = window.innerWidth < 700 ? chartHeightMobile : chartHeight;
 		var divStyle = {
-			height: calculatedWidth,
+			height: calculatedHeight,
 			width: calculatedWidth,
 			// TODO: fix this horrible hack by properly calculating dimensions responsively (insert front-end person expertise here :)
 			marginLeft: window.innerWidth < 700 ? ((Math.floor((window.innerWidth-calculatedWidth)/2)-25) + "px") : 0
