@@ -16,20 +16,29 @@ export default class ImportPanel extends Component {
 		if (event) {
 			event.preventDefault();
 		}
-		$("#" + this.props.id).openModal();
+		if (this.props.showWarning) {
+			$("#" + this.props.id).openModal();
+		} else {
+			// just perform the action immediately
+			this.onImportClicked();
+		}
 	}
 
 	onImportClicked() {
-		var self = this;
+		var _this = this;
 		this.setState({loading: true, buttonText: "Importing..."});
 
-		Meteor.call(this.props.method, function (err, data) {
-			self.setState({loading: false, buttonText: "Import!"});
+		Meteor.call(this.props.method, this.props.importParams, function (err, data) {
+			_this.setState({loading: false, buttonText: "Import!"});
 
 			if (err) {
 				Materialize.toast("Import failed!", 3000);
 			} else {
 				Materialize.toast("Import successful!", 3000);
+			}
+
+			if (_this.props.resultHandler) {
+				_this.props.resultHandler(err, data);
 			}
 		});
 	}
@@ -52,9 +61,9 @@ export default class ImportPanel extends Component {
 		return className;
 	}
 
-	render() {
-		return (
-			<div className="card-panel white center-align">
+	renderWarningDialog() {
+		if (this.props.showWarning) {
+			return (
 				<div id={this.props.id} className="modal">
 					<div className="modal-content">
 						<h4>Are you sure?</h4>
@@ -62,11 +71,19 @@ export default class ImportPanel extends Component {
 					</div>
 					<div className="modal-footer">
 						<a href="#!" className=" modal-action modal-close waves-effect waves-green btn background-main3"
-							onClick={this.onImportClicked}>Import!</a>
+						   onClick={this.onImportClicked}>Import!</a>
 
 						<a href="#!" className=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
 					</div>
 				</div>
+			);
+		}
+	}
+
+	render() {
+		return (
+			<div className="card-panel white center-align">
+				{this.renderWarningDialog()}
 				<span className="text-main1">{this.props.label}</span>
 				<br />
 				{this.renderSpinner()}
@@ -88,4 +105,7 @@ ImportPanel.propTypes = {
 	method: React.PropTypes.string.isRequired,
 	id: React.PropTypes.string.isRequired,
 	label: React.PropTypes.string.isRequired,
+	resultHandler: React.PropTypes.func,
+	showWarning: React.PropTypes.bool,
+	importParams: React.PropTypes.object
 };

@@ -8,6 +8,7 @@ import {EnpsCollection} from './enps'
 import {FeedbackCollection} from './feedback'
 import {GoalsCollection} from './goals'
 import {GoogleUserCacheCollection} from './googleUsersCache'
+import {IgnoredImportUsersCollection} from './users'
 import {NotificationsCollection} from './notifications'
 import {OrganizationsCollection} from './organizations'
 import {RoleAccountabilitiesCollection} from './role_accountabilities'
@@ -24,6 +25,7 @@ var Collections = {
 	Feedback: FeedbackCollection,
 	Goals: GoalsCollection,
 	GoogleUserCache: GoogleUserCacheCollection,
+	IgnoredImportUsersCollection: IgnoredImportUsersCollection,
 	Notifications: NotificationsCollection,
 	Organizations: OrganizationsCollection,
 	RoleAccountabilities: RoleAccountabilitiesCollection,

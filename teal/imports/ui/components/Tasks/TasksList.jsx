@@ -13,8 +13,8 @@ class TaskList extends Component {
 
 	renderTasks() {
 		// Get tasks from this.data.tasks
-		return this.data.tasks.map((task) => {
-			const currentUserId = this.data.currentUser && this.data.currentUser.profile._id;
+		return this.props.tasks.map((task) => {
+			const currentUserId = this.props.currentUser && this.props.currentUser.profile._id;
 			const showPrivateButton = task.owner === currentUserId;
 
 			return <Task
@@ -58,7 +58,7 @@ class TaskList extends Component {
 					Hide Completed Tasks
 				</label>
 
-				{ this.data.currentUser ?
+				{ this.props.currentUser ?
 					<form className="new-task" onSubmit={this.handleSubmit}>
 						<input
 							type="text"

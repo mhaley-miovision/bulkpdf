@@ -70,22 +70,31 @@ if (Meteor.isServer) {
 			return Meteor.user().services.google.email;
 		},
 
-		"teal.import.importUserPhotoInfo": function () {
+		//TODO: currently this only works from Mio Google Admin service
+		//TODO: extend to be generic from google user data source
+		"teal.import.importUserPhotoInfo": function (params) {
 			if (!Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
 			}
 
 			Meteor.call("teal.users.updateGoogleAdminCache");
 
+			// load contributors to add from param list
+			const { contributorsToAdd } = params;
+
 			// now we have populated a user cache we can pull data from
 			var notFoundString = "";
 			var noPhotoString = "";
 			var updatedString = "";
+			var addedString = "";
 			var updatedCount = 0;
 			var notFoundCount = 0;
+			var notFoundUsers = [];
+			var addedCount = 0;
 
-			console.log("About to update the OD model with photo info...");
+			console.log("About to update users...");
 
+			// read from google into our cache
 			Meteor.call("teal.users.updateGoogleAdminCache");
 
 			GoogleUserCacheCollection.find({}).forEach(o => {
@@ -93,9 +102,27 @@ if (Meteor.isServer) {
 				// update the corresponding contributor
 				let c = ContributorsCollection.findOne({email: o.primaryEmail});
 				if (!c) {
-					notFoundString += o.primaryEmail + "\n";
-					notFoundCount++;
-				} else if (o.thumbnailPhotoUrl) {
+					// was this a contributor we need to add?
+					if (_.indexOf(contributorsToAdd, o.primaryEmail) >= 0) {
+						ContributorsCollection.insert({
+							name: o.name.fullName,
+							firstName: o.name.givenName,
+							lastName: o.name.familyName,
+							email: o.primaryEmail,
+							photo: o.thumbnailPhotoUrl ? o.thumbnailPhotoUrl : null
+						});
+						addedString += o.primaryEmail + "\n";
+						addedCount++;
+					} else {
+						// else ignore it
+						// TODO: add an option to ignore permantently
+						notFoundString += o.primaryEmail + "\n";
+						notFoundCount++;
+						notFoundUsers.push( { email: o.primaryEmail, name: o.name.fullName });
+					}
+				}
+				// contributor found, update photo and all references of photos
+				else if (o.thumbnailPhotoUrl) {
 					// attach to this contributor
 					ContributorsCollection.update(c._id, {$set: {photo: o.thumbnailPhotoUrl}});
 
@@ -130,7 +157,8 @@ if (Meteor.isServer) {
 				}
 			});
 
-			var email = "Updated " + updatedCount + " photo urls.\n\n\nUpdated:" + updatedString
+			var email = "Added " + addedCount + " new contributors.\n\n\nAdded:" + addedString
+				+ "\n\n\nUpdated " + updatedCount + " photo urls.\n\n\nUpdated:" + updatedString
 				+ "\n\n\nUnknown contributors:\n\n" + notFoundString
 				+ "\n\nContributors without a photo:\n\n" + noPhotoString;
 			console.log("Updated " + updatedCount + " photo urls.");
@@ -142,7 +170,7 @@ if (Meteor.isServer) {
 				text: email
 			});
 
-			return true;
+			return notFoundUsers;
 		},
 
 		// TODO: this needs to be publication
