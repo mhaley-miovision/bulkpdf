@@ -105,7 +105,7 @@ export default createContainer((params) => {
 			o = OrganizationsCollection.findOne({_id: c.physicalOrgId});
 		}
 
-		if (!c || !o) {
+		if (c && !o) {
 			// TODO: temporary hack until revamp of roles with multiple parent orgs is implemented
 			// find all roles this person plays, and just return the first one
 			let roles = RolesCollection.find({$or: [{contributorId: c._id},{contributorId: c.email}] },{fields:{organizationId:1}}).fetch();

@@ -132,23 +132,21 @@ if (Meteor.isServer) {
 					// also attach photo to all roles cached to goals
 					GoalsCollection.find(
 						{
-							$or: [{ownerRoles: {$elemMatch: {email: c.email}}},
-								{contributorRoles: {$elemMatch: {email: c.email}}}
-							]
+							$or: [	{ ownerRoles: {$elemMatch: {email: c.email}}},
+									{ contributorRoles: {$elemMatch: {email: c.email}}}  ]
 						}).forEach(g => {
-
-						g.ownerRoles.forEach(r => {
-							if (r.email === c.email) {
-								r.photo = o.thumbnailPhotoUrl;
-							}
+							g.ownerRoles.forEach(r => {
+								if (r.email === c.email) {
+									r.photo = o.thumbnailPhotoUrl;
+								}
+							});
+							g.contributorRoles.forEach(r => {
+								if (r.email === c.email) {
+									r.photo = o.thumbnailPhotoUrl;
+								}
+							});
+							GoalsCollection.update(g._id, g);
 						});
-						g.contributorRoles.forEach(r => {
-							if (r.email === c.email) {
-								r.photo = o.thumbnailPhotoUrl;
-							}
-						});
-						GoalsCollection.update(g._id, g);
-					});
 
 					updatedString += o.primaryEmail + "\n";
 					updatedCount++;
@@ -171,6 +169,44 @@ if (Meteor.isServer) {
 			});
 
 			return notFoundUsers;
+		},
+
+		// TODO: remove this once fixed - pretty risky object update here - do not perform during uptime
+		"teal.patch.fillInMissingGoalRoleDetails": function() {
+			"use strict";
+			console.warn("teal.patch.fillInMissingGoalRoleDetails - PATCH EXECUTING");
+
+			// Make sure the user is logged in before inserting a task
+			if (!Meteor.userId() || !Roles.userIsInRole(Meteor.userId(), 'admin')) {
+				throw new Meteor.Error("not-authorized");
+			}
+
+			GoalsCollection.find({}).forEach(g => {
+				g.ownerRoles.forEach(r => {
+					if (typeof(r.email) === 'undefined') {
+						console.log(g._id + " is missing email, contributor = " + r.contributor);
+						let c = ContributorsCollection.findOne({name: r.contributor});
+						if (c) {
+							r.email = c.email;
+							r.photo = c.photo;
+						}
+					}
+				})
+				g.contributorRoles.forEach(r => {
+					if (typeof(r.email) === 'undefined') {
+						console.log(g._id + " is missing email, contributor = " + r.contributor);
+					}
+					let c = ContributorsCollection.findOne({name: r.contributor});
+					if (c) {
+						r.email = c.email;
+						r.photo = c.photo;
+					}
+				})
+				GoalsCollection.update(g._id, g);
+				console.warn(`teal.patch.fillInMissingGoalRoleDetails - PATCHED GOAL '${g.name}'`);
+			});
+
+			console.warn("teal.patch.fillInMissingGoalRoleDetails - PATCH COMPLETED");
 		},
 
 		// TODO: this needs to be publication
