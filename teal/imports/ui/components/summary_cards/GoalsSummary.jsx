@@ -14,6 +14,7 @@ class GoalsSummary extends Component {
 	constructor(props) {
 		super(props);
 		this.handleAddGoalsNudge = this.handleAddGoalsNudge.bind(this);
+		this.showGoalsModal = this.showGoalsModal.bind(this);
 
 		if (props.goals && props.goals.length > 0) {
 			this.updateChart();
@@ -159,8 +160,7 @@ class GoalsSummary extends Component {
 	}
 
 	showGoalsModal() {
-		// TODO: move this to a method on the component
-		$('#userGoalListModalId').openModal();
+		this.refs.goalListModal.openModal();
 	}
 
 	renderSection() {
@@ -193,7 +193,7 @@ class GoalsSummary extends Component {
 			);
 			goalsSection.push(this.renderLateGoalsHeader());
 			goalsSection.push(this.renderLateGoals());
-			goalsSection.push(<GoalListModal key="userGoalListModalId" id="userGoalListModalId" goalList={this.props.goals}/>);
+			goalsSection.push(<GoalListModal ref="goalListModal" key="userGoalListModalId" id="userGoalListModalId" goalList={this.props.goals}/>);
 			return goalsSection;
 		} else {
 			return (

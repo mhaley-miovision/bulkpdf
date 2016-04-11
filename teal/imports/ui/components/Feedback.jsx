@@ -1,28 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
-var Modal = require('react-modal');
+import {ModalContainer, ModalDialog} from 'react-modal-dialog';
 
 const MAX_INPUT_CHARS = 140;
-
-const customStyles = {
-	overlay : {
-		position          : 'fixed',
-		top               : 0,
-		left              : 0,
-		right             : 0,
-		bottom            : 0,
-		backgroundColor   : 'rgba(0, 0, 0, 0.75)',
-		zIndex		  	  : 9000
-	},
-	content : {
-		top                   : '50%',
-		left                  : '50%',
-		right                 : 'auto',
-		bottom                : 'auto',
-		marginRight           : '-50%',
-		transform             : 'translate(-50%, -50%)'
-	}
-};
 
 export default class FeedbackComponent  extends Component {
 	constructor() {
@@ -62,27 +42,52 @@ export default class FeedbackComponent  extends Component {
 	render() {
 		return (
 			<div>
-				<Modal
-					isOpen={this.state.modalIsOpen}
-					onRequestClose={this.closeModal}
-					style={customStyles}>
+				{
+					this.state.modalIsOpen &&
+					<ModalContainer onClose={this.closeModal}>
+						<ModalDialog onClose={this.closeModal}>
+							<p>Please help us improve this tool by providing us with feedback.</p>
+							<form onSubmit={this.handleSubmit}>
+								<div className="input-field col s12">
+									 <textarea autoFocus ref="textArea" placeholder="Provide your feedback here." id="feedback" type="text"
+				   							className="materialize-textarea" onChange={this.handleChange}  value={this.state.feedback}/>
+								</div>
+							</form>
+							<br/>
+							<div className="center">
+								<a href="#!" className=" modal-action modal-close waves-effect waves-green btn"
+								   onClick={this.handleSubmit}>Submit</a>
+								<a href="#!" className=" modal-action modal-close waves-effect waves-green btn-flat"
+								   onClick={this.closeModal}>Cancel</a>
+							</div>
+						</ModalDialog>
+					</ModalContainer>
+				}
 
-					<p>Please help us improve this tool by providing us with feedback.</p>
-					<form onSubmit={this.handleSubmit}>
-						<div class="input-field col s12">
-							<textarea autofocus placeholder="Provide your feedback here." id="feedback" type="text"
-								className="materialize-textarea" onChange={this.handleChange}  value={this.state.feedback}/>
-						</div>
-					</form>
-
-					<div className="center">
-						<a href="#!" className=" modal-action modal-close waves-effect waves-green btn"
-						   onClick={this.handleSubmit}>Submit</a>
-						<a href="#!" className=" modal-action modal-close waves-effect waves-green btn-flat"
-						   onClick={this.closeModal}>Cancel</a>
-					</div>
-				</Modal>
 			</div>
 		);
+
+		/*
+		 <Modal
+		 isOpen={this.state.modalIsOpen}
+		 onRequestClose={this.closeModal}
+		 style={customStyles}>
+
+		 <p>Please help us improve this tool by providing us with feedback.</p>
+		 <form onSubmit={this.handleSubmit}>
+		 <div class="input-field col s12">
+		 <textarea autofocus placeholder="Provide your feedback here." id="feedback" type="text"
+		 className="materialize-textarea" onChange={this.handleChange}  value={this.state.feedback}/>
+		 </div>
+		 </form>
+
+		 <div className="center">
+		 <a href="#!" className=" modal-action modal-close waves-effect waves-green btn"
+		 onClick={this.handleSubmit}>Submit</a>
+		 <a href="#!" className=" modal-action modal-close waves-effect waves-green btn-flat"
+		 onClick={this.closeModal}>Cancel</a>
+		 </div>
+		 </Modal>
+		 */
 	}
 }

@@ -643,8 +643,6 @@ class Organization extends Component {
 	constructor(props) {
 		super(props);
 
-		console.log("Organization constructor.");
-
 		this.state = { roleMode: true, currentlyZoomedTo:null }; // contributor mode was a view once supported
 
 		this.handleRoleModeChanged = this.handleRoleModeChanged.bind(this);

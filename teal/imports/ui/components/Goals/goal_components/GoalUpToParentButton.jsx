@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 export default class GoalUpToParentButton extends Component {
 	constructor() {
 		super();
-		this.goToParentGoal.bind(this);
+		this.goToParentGoal = this.goToParentGoal.bind(this);
 	}
 
 	goToParentGoal() {
@@ -17,8 +17,8 @@ export default class GoalUpToParentButton extends Component {
 		if (this.props.goal.parent === this.props.goal.rootGoalId) {
 			return <span data-tip="Top level goal" className="ProjectTag valign">{this.props.goal.rootGoalName}</span>
 		} else {
-			return <i style={{fontSize:"13px"}} className="material-icons GreyButtonSmall valign"
-					  data-tip="Go to parent goal" onClick={this.goToParentGoal}>undo</i>
+			return <i style={{fontSize:"23px",padding:0}} className="material-icons GreyButtonSmall"
+					  data-tip="Go to parent goal" onClick={this.goToParentGoal}>arrow_upward</i>
 		}
 	}
 }

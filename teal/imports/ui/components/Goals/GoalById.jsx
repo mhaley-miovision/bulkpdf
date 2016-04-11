@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react'
 import { createContainer } from 'meteor/react-meteor-data'
-var ReactTooltip = require("react-tooltip");
 
 import Teal from '../../../shared/Teal'
 
@@ -10,6 +9,7 @@ import { GoalsCollection } from '../../../api/goals'
 import Loading from '../Loading.jsx'
 import Goal from './Goal.jsx'
 import ControlIconButton from '../ControlButtonIcon.jsx'
+import NotFound from '../error_states/NotFound.jsx'
 
 // Role component - represents a single role
 class GoalById extends Component {
@@ -32,7 +32,6 @@ class GoalById extends Component {
 					<div className="section">
 						{this.props.goal ? <Goal goal={this.props.goal}/> : <NotFound/>}
 					</div>
-					<ReactTooltip/>
 				</div>
 			)
 		} else {

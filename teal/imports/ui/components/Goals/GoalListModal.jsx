@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
+import {ModalContainer, ModalDialog} from 'react-modal-dialog';
 
 import Teal from '../../../shared/Teal'
 
@@ -12,12 +13,18 @@ export default class GoalListModal extends Component {
 		super();
 		this.handleClose = this.handleClose.bind(this);
 		this.handleGoalClicked = this.handleGoalClicked.bind(this);
+		this.state = {
+			modalIsOpen: false
+		}
 	}
 
+	// This method is exposed as an API
+	openModal() {
+		this.setState({modalIsOpen:true});
+	}
 	handleClose() {
-		$('#' + this.props.id).closeModal();
+		this.setState({modalIsOpen:false});
 	}
-
 	handleGoalClicked(evt) {
 		this.handleClose();
 		let id = evt.currentTarget.id;
@@ -27,18 +34,20 @@ export default class GoalListModal extends Component {
 
 	render() {
 		return (
-			<div id={this.props.id} className="modal modal-fixed-footer">
-				<div className="modal-content" style={{padding:0}}>
-					<GoalList goalList={this.props.goalList}
-							  compactViewMode={true}
-							  onGoalClicked={this.handleGoalClicked}/>
-				</div>
-				<div className="modal-footer">
+			this.state.modalIsOpen &&
+			<ModalContainer onClose={this.handleClose}>
+				<ModalDialog onClose={this.handleClose}>
+					<div style={{padding:0}}>
+						<GoalList goalList={this.props.goalList}
+								  compactViewMode={true}
+								  onGoalClicked={this.handleGoalClicked}/>
+					</div>
+					<br/>
 					<div className="center">
 						<ControlIconButton onClicked={this.handleClose} icon="check"/>
 					</div>
-				</div>
-			</div>
+				</ModalDialog>
+			</ModalContainer>
 		);
 	}
 }

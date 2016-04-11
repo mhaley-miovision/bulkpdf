@@ -1125,7 +1125,6 @@ circle.container, circle.label {
     position:relative;
     display:inline-block;
     font-size: 13px;
-    margin-left: 5px;
     background-color: #e4e4e4;
     border-radius: 50%;
     color: rgba(0, 0, 0, 0.6);
@@ -1325,3 +1324,18 @@ circle.container, circle.label {
 }
 
 
+/*******************************************************************************************************************
+ * react-modal-dialog overrides
+ */
+
+.closeButton--jss-0-1 {
+    display:none !important;
+}
+
+/*******************************************************************************************************************
+ * materializecss overrides
+ */
+
+ul.tabs {
+    overflow: hidden !important;
+}

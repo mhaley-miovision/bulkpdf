@@ -95,7 +95,7 @@ export default class OrgControls extends Component {
 														 this.props.org.comments.length : null}
 									   icon="comment" tip="Comments" tipId={this.tipId()}/>
 					<ReactTooltip id={this.tipId()} place="bottom"/>
-				</div>`
+				</div>
 			</div>
 		);
 	}

@@ -16,6 +16,9 @@ export default class GoalNewModal extends Component {
 		this.handleSave = this.handleSave.bind(this);
 		this.handleClose = this.handleClose.bind(this);
 	}
+	openModal() {
+		$('#' + this.state.modalId).openModal();
+	}
 
 	handleSave() {
 		let g = this.refs.newGoal.getInputs();

@@ -18,6 +18,8 @@ export default class GoalEdit extends Component {
 		this.handleNewKeyObjectiveChange = this.handleNewKeyObjectiveChange.bind(this);
 		this.handleRemoveDoneCriteria = this.handleRemoveDoneCriteria.bind(this);
 		this.handleRemoveKeyObjective = this.handleRemoveKeyObjective.bind(this);
+		this.addDoneCriteria = this.addDoneCriteria.bind(this);
+		this.addKeyObjective = this.addKeyObjective.bind(this);
 	}
 
 	loadStateFromProps(props) {

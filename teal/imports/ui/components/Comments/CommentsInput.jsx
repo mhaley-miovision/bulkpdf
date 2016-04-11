@@ -35,11 +35,9 @@ export default class CommentsInput extends Component {
 		if (this.state.plainTextValue && this.state.plainTextValue !== '') {
 			let text = this.state.plainTextValue;
 			let mentions = this.state.atMentions.map(m => { return m.id; })
-
 			let url = '';
-			debugger;
 			if (this.props.objectType === Teal.ObjectTypes.Goal) {
-				url = FlowRouter.path("goalById", {goalId:this.props.objectId});
+				url = FlowRouter.path("goalById", {goalId:this.props.objectId}, {showBackButton:false});
 			} else if (this.props.objectType === Teal.ObjectTypes.Organization) {
 				url = FlowRouter.path("organizationView", {}, {objectId:this.props.objectId});
 			} else if (this.props.objectType === Teal.ObjectTypes.Role) {

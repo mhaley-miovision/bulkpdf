@@ -5,6 +5,7 @@
     "start": "meteor run"
   },
   "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.6.0",
     "fibers": "^1.0.10",
     "google-auth-library": "^0.9.7",
     "jquery": "^2.2.2",

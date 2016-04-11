@@ -1,6 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-import React, { Component } from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
+import { Meteor } from 'meteor/meteor'
+import React, { Component } from 'react'
+import { createContainer } from 'meteor/react-meteor-data'
+
+var ReactTooltip = require('react-tooltip');
 
 import Teal from '../../../shared/Teal'
 import TealChanges from '../../../shared/TealChanges'
@@ -261,6 +263,7 @@ export default class Goal extends Component {
 								   comments={this.props.goal.comments ? this.props.goal.comments : []}
 								   objectId={this.props.goal._id}
 								   objectType={Teal.ObjectTypes.Goal}/>
+					<ReactTooltip/>
 				</div>
 			);
 		}
