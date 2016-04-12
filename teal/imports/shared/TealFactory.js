@@ -34,7 +34,7 @@ export default {
 		}
 	},
 	createRole(_id, label, accountabilityLevel, organization, organizationId, contributor, contributorId, startDate,
-			   endDate, isExternal, isLeadNode, isPrimaryAccountability, accountabilities) {
+			   endDate, isExternal, isLeadNode, isPrimaryAccountability, accountabilities, orgList) {
 		// TODO: parameter validation, for now we only get the abstraction benefits
 		return {
 			type: Teal.ObjectTypes.Role,
@@ -51,7 +51,8 @@ export default {
 			isExternal: isExternal,
 			isLeadNode: isLeadNode,
 			isPrimaryAccountability: isPrimaryAccountability,
-			accountabilities: accountabilities
+			accountabilities: accountabilities,
+			orgList : orgList
 		};
 	}
 };

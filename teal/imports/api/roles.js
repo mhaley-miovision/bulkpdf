@@ -74,8 +74,7 @@ if (Meteor.isServer) {
 			// update or create!
 			if (newRole) {
 				delete role._id; // ensure this is not set to null
-				let r_id = RolesCollection.insert(role);
-				role._id = r_id;
+				role._id = RolesCollection.insert(role);
 			} else {
 				RolesCollection.update(role._id, role);
 
@@ -111,9 +110,6 @@ if (Meteor.isServer) {
 				// update the role top goals
 				Meteor.call("teal.goals.updateRoleTopLevelGoals", role._id);
 			}
-
-			console.log("Final role:");
-			console.log(role);
 		},
 
 		// TODO: utility match method - only call to fix cached values in case of data corruption

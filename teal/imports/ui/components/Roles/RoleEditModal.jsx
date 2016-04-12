@@ -19,7 +19,7 @@ export default class RoleEditModal extends Component {
 
 	handleSave() {
 		let inputs = this.refs.roleEdit.getInputs();
-
+		debugger;
 		let changeObject = TealChanges.createChangeObject(
 			!!inputs._id ? TealChanges.Types.UpdateRole : TealChanges.Types.NewRole, // null ids imply new roles
 			Teal.ObjectTypes.Role,
@@ -37,7 +37,8 @@ export default class RoleEditModal extends Component {
 					inputs.isExternal,
 					inputs.isLeadNode,
 					inputs.isPrimaryAccountability,
-					inputs.accountabilities)
+					inputs.accountabilities,
+					inputs.orgList)
 			], this.props.role);
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
 
@@ -50,7 +51,6 @@ export default class RoleEditModal extends Component {
 	}
 
 	show(roleId) {
-		//debugger;
 		if (roleId) {
 			//let r = RolesCollection.findOne({_id:roleId});
 			//this.setState({role:r});

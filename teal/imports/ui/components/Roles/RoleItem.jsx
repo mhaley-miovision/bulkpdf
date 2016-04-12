@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 
 import Teal from '../../../shared/Teal'
 
+//TODO: this component has a leftover of isEditing that isn't used - should either get rid of it or implement properly
 export default class RoleItem extends Component {
 	render() {
 		var r = this.props.role;

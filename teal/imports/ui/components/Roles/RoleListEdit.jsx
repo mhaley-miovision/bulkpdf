@@ -6,6 +6,7 @@ import { RolesCollection } from '../../../api/roles'
 import ObjectSearch from '../ObjectSearch.jsx'
 import RoleItem from '../roles/RoleItem.jsx'
 
+//TODO: this component has a leftover of isEditing that isn't used - should either get rid of it or implement properly
 export default class RoleListEdit extends Component {
 	constructor(props) {
 		super(props);
@@ -52,7 +53,7 @@ export default class RoleListEdit extends Component {
 					{this.renderRoles()}
 				</div>
 
-				<div><ObjectSearch label="Enter email..." notFoundLabel="No matching roles found" onClick={this.handleAddNewRole}
+				<div><ObjectSearch label="Search for role..." notFoundLabel="No matching roles found" onClick={this.handleAddNewRole}
 								   findRoles={true} findContributors={false} findOrganizations={false} ref="roleSearch"/></div>
 			</div>
 		);

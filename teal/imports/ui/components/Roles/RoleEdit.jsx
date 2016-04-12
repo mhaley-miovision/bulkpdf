@@ -4,6 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 import ObjectSearch from '../ObjectSearch.jsx'
+import OrgListEdit from '../organization/OrgListEdit.jsx'
 
 export default class RoleEdit extends Component {
 	constructor(props) {
@@ -22,6 +23,7 @@ export default class RoleEdit extends Component {
 		this.handleIsLeadNodeChanged = this.handleIsLeadNodeChanged.bind(this);
 		this.handleIsPrimaryAccountabilityChanged = this.handleIsPrimaryAccountabilityChanged.bind(this);
 		this.handleIsExternalChanged = this.handleIsExternalChanged.bind(this);
+		this.handleOrgListChanged = this.handleOrgListChanged.bind(this);
 	}
 
 	loadStateFromProps(props) {
@@ -42,6 +44,7 @@ export default class RoleEdit extends Component {
 			isExternal : props.role ? props.role.isExternal : false,
 			isLeadNode : props.role ? props.role.isLeadNode : false,
 			isPrimaryAccountability: props.role ? props.role.isPrimaryAccountability : true,
+			orgList: props.role && props.role.orgList ? _.clone(props.role.orgList) : []
 		};
 	}
 
@@ -50,6 +53,10 @@ export default class RoleEdit extends Component {
 		this.state.startDate = $('#' + this.state.startDatePickerId)[0].value;
 		this.state.endDate = $('#' + this.state.endDatePickerId)[0].value;
 		return this.state;
+	}
+
+	handleOrgListChanged(newList) {
+		this.setState({orgList:newList});
 	}
 
 	clearInputs() {
@@ -170,6 +177,7 @@ export default class RoleEdit extends Component {
 					<div className="GoalTitle center" style={{marginTop:this.props.goal? "0px":"15px"}}>
 						{this.props.role ? "Edit Role" : "New Role"}
 					</div>
+					<br/>
 					<div className="divider"></div>
 				</div>
 				<div className="row">
@@ -200,6 +208,14 @@ export default class RoleEdit extends Component {
 							onClick={this.onOrganizationSelected} findOrganizations={true}
 							initialValue={this.state.organization}
 							notFoundLabel="Please type the name of an existing organization."/>
+					</div>
+				</div>
+				<div className="row c">
+					<div className="GoalTitle center" style={{marginTop:"15px",marginBottom:"15px"}}>
+						Contributing Organizations
+					</div>
+					<div className="col m10 offset-m1 s12">
+						<OrgListEdit orgList={this.state.orgList} onChange={this.handleOrgListChanged}/>
 					</div>
 				</div>
 				<div className="row">

@@ -13,6 +13,8 @@ var TealChanges = {
 		AssignRoleContributor:'assign_role_contributor',
 		RemoveRoleContributor:'remove_role_contributor',
 		UpdateRole:'update_role',
+		AddRoleContributingOrg:'add_role_contributing_org',
+		RemoveRoleContributingOrg:'remove_role_contributing_org',
 
 		// Role label operations
 		NewRoleLabel:'add_role_label',
@@ -154,6 +156,18 @@ var TealChanges = {
 		});
 		return { added: addedItems, removed: removedItems, updated:updatedItems, checked:checkItems };
 	},
+	diffOrgLists(oldList, newList) {
+		"use strict";
+		let removedItems = _.filter(oldList, o => {
+			let exists = _.where(newList, {_id: o._id}).length > 0;
+			return !exists;
+		});
+		let addedItems = _.filter(newList, o => {
+			let exists = _.where(oldList, {_id: o._id}).length > 0;
+			return !exists;
+		});
+		return { added: addedItems, removed: removedItems };
+	},
 	diffRoleList(oldList, newList) {
 		let removedItems = _.filter(oldList, o => {
 			let exists = _.where(newList, {_id: o._id}).length > 0;
@@ -200,6 +214,15 @@ var TealChanges = {
 			changes.push(`Changed accountability '${a.name}' to '${a.newName}'`);
 		});
 
+		// CONTRIBUTING ORGS
+		let orgDiffs = TealChanges.diffOrgLists(oldRole.orgList, newRole.orgList);
+		orgDiffs.added.forEach(o => {
+			changes.push(`Added as a contributing role to '${o.name}'`);
+		});
+		orgDiffs.removed.forEach(o => {
+			changes.push(`Removed as a contributing role from '${o.name}'`);
+		});
+
 		// START/END DATES
 		if (oldRole.startDate !== newRole.startDate) {
 			changes.push(`Changed start date from '${oldRole.startDate}' to '${newRole.startDate}'`);
@@ -213,11 +236,11 @@ var TealChanges = {
 			let y = function(x) { return x ? 'external' : 'internal'; };
 			changes.push(`Changed from '${y(oldRole.isExternal)}' to '${y(newRole.isExternal)}' role.`);
 		}
-		if (oldRole.isExternal !== newRole.isExternal) {
+		if (oldRole.isLeadNode !== newRole.isLeadNode) {
 			let y = function(x) { return x ? 'lead node' : 'regular node'; };
 			changes.push(`Changed role '${y(oldRole.isLeadNode)}' to '${y(newRole.isLeadNode)}'.`);
 		}
-		if (oldRole.isExternal !== newRole.isExternal) {
+		if (oldRole.isPrimaryAccountability !== newRole.isPrimaryAccountability) {
 			let y = function(x) { return x ? 'primary accountability' : 'auxiliary accountability'; };
 			changes.push(`Changed from '${y(oldRole.isPrimaryAccountability)}' to '${y(newRole.isPrimaryAccountability)}' role.`);
 		}
