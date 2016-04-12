@@ -36,7 +36,7 @@ export default class RoleEditModal extends Component {
 					inputs.endDate,
 					inputs.isExternal,
 					inputs.isLeadNode,
-					inputs.isPrimaryAccountabilty,
+					inputs.isPrimaryAccountability,
 					inputs.accountabilities)
 			], this.props.role);
 		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);

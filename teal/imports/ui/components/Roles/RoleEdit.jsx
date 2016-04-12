@@ -41,7 +41,7 @@ export default class RoleEdit extends Component {
 			endDate : props.role ? props.role.endDate : null,
 			isExternal : props.role ? props.role.isExternal : false,
 			isLeadNode : props.role ? props.role.isLeadNode : false,
-			isPrimaryAccountabilty: props.role ? props.role.isPrimaryAccountabilty : true,
+			isPrimaryAccountability: props.role ? props.role.isPrimaryAccountability : true,
 		};
 	}
 
@@ -159,10 +159,11 @@ export default class RoleEdit extends Component {
 		this.setState({isPrimaryAccountability:!this.state.isPrimaryAccountability});
 	}
 	handleIsExternalChanged() {
-		this.setState({handleIsExternalChanged:!this.state.handleIsExternalChanged});
+		this.setState({isExternal:!this.state.isExternal});
 	}
 
 	render() {
+		let id1 = Teal.newId(), id2 = Teal.newId(), id3 = Teal.newId();
 		return (
 			<div className="card-content GoalContainer">
 				<div className="row">
@@ -194,7 +195,7 @@ export default class RoleEdit extends Component {
 							notFoundLabel="Please type the name of an existing contributor."/>
 					</div>
 					<div className="col m6 s12 GoalContainer">
-						<label className="text-main1 GoalSubtitle">Organization</label>
+						<label className="text-main1 GoalSubtitle">Home Organization</label>
 						<ObjectSearch
 							onClick={this.onOrganizationSelected} findOrganizations={true}
 							initialValue={this.state.organization}
@@ -214,16 +215,24 @@ export default class RoleEdit extends Component {
 							   data-value={this.state.endDate}
 							   readOnly/>
 					</div>
-					<div className="col m4 s6 GoalContainer left">
-						<input type="checkbox" checked={this.state.isPrimaryAccountability}
-							   ref="isPrimaryAccountabilityInput"
-							   onChange={this.handleIsPrimaryAccountabilityChanged}/>
-						<input type="checkbox" checked={this.state.isLeadNode}
-							   ref="isLeadNodeInput"
-							   onChange={this.handleIsLeadNodeChanged}/>
-						<input type="checkbox" checked={this.state.isExternal}
-							   ref="isExternalInput"
-							   onChange={this.handleIsExternalChanged}/>
+					<div className="col m4 s6" style={{marginTop:"-20px"}}>
+						<ul className="text-main1">
+							<li key={id1} className="">
+								<input ref="isPrimaryAccountabilityInput" id={id1} type="checkbox"
+									   readOnly={true} checked={this.state.isPrimaryAccountability} onClick={this.handleIsPrimaryAccountabilityChanged}/>
+								<label htmlFor={id1}>Primary Accountability</label>
+							</li>
+							<li key={id2} className="">
+								<input ref="isLeadNodeInput" id={id2} type="checkbox"
+									   readOnly={true} checked={this.state.isLeadNode} onClick={this.handleIsLeadNodeChanged}/>
+								<label htmlFor={id2}>Lead Node</label>
+							</li>
+							<li key={id3} className="">
+								<input ref="isExternalInput" id={id3} type="checkbox"
+									   readOnly={true} checked={this.state.isExternal} onClick={this.handleIsExternalChanged}/>
+								<label htmlFor={id3}>External Contributor</label>
+							</li>
+						</ul>
 					</div>
 				</div>
 				<div className="row">
