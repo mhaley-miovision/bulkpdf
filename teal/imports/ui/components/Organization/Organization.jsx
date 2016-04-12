@@ -799,9 +799,6 @@ class Organization extends Component {
 			// TODO: fix this horrible hack by properly calculating dimensions responsively (insert front-end person expertise here :)
 			marginLeft: window.innerWidth < 700 ? ((Math.floor((window.innerWidth-calculatedWidth)/2)-25) + "px") : 0
 		};
-		console.log(window.innerWidth);
-		console.log(window.innerHeight);
-
 		return (
 			<div>
 				{this.renderBackButton()}
@@ -847,6 +844,7 @@ export default createContainer((params) => {
 	if (!data.doneLoading) {
 		return { doneLoading: false };
 	}
+	// the section below only runs after all subscriptions above are ready
 
 	var { objectId, objectType } = params;
 	if (objectType === 'contributor') {

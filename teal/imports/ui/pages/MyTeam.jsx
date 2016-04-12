@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor'
 import React, { Component } from 'react'
 import { createContainer } from 'meteor/react-meteor-data'
 
+import Teal from '../../shared/Teal'
+
 import { ContributorsCollection } from '../../api/contributors'
 import { OrganizationsCollection } from  '../../api/organizations'
 import { RolesCollection } from  '../../api/roles'
@@ -15,16 +17,19 @@ import TeamSkillsSummary from '../components/summary_cards/TeamSkillsSummary.jsx
 import NotOnAnyTeam from '../components/error_states/NotOnAnyTeam.jsx'
 
 class MyTeam extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		console.log("constructor #1");
+		super(props);
 		this.state = {
-			orgName: '',
-			orgId: '',
+			orgName: props.orgName,
+			orgId: props.orgId,
 			tab: 'acc_tab',
 			tabItems: [ { id: "acc_tab", name: "Accountabilities" }, { id: "org_tab", name: "Composition" } ]
 		};
 		this.handleTabClicked = this.handleTabClicked.bind(this);
 		this.handleSearch = this.handleSearch.bind(this);
+		this.handleNavigateToParentOrg = this.handleNavigateToParentOrg.bind(this);
+		console.log("constructor #2");
 	}
 
 	handleSearch(orgName, type, id) {
@@ -35,16 +40,47 @@ class MyTeam extends Component {
 		this.setState({tab:tabId});
 	}
 
-	renderActiveTab() {
-		var org = this.state.orgName ? this.state.orgName : this.props.contributorOrg;
-		var orgId = this.state.orgId ? this.state.orgId : this.props.contributorOrgId;
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.orgName && nextProps.orgId) {
+			this.setState({orgName: nextProps.orgName, orgId: nextProps.orgId});
+		}
+	}
 
+	getNavigateableParentOrg() {
+		let o = OrganizationsCollection.findOne({_id:this.state.orgId},{field:{parentId:1}});
+		if (!!o && !!o.parentId) {
+			return OrganizationsCollection.findOne({_id: o.parentId},{field:{name:1,_id:1}});
+		}
+	}
+	handleNavigateToParentOrg() {
+		let p = this.getNavigateableParentOrg();
+		if (!!p) {
+			this.handleSearch(p.name, Teal.ObjectTypes.Organization, p._id);
+		}
+	}
+	renderUpButton() {
+		if (this.props.showUpButton) {
+			let parent = this.getNavigateableParentOrg();
+			if (parent) {
+				return (
+					<div className="center">
+						<i style={{fontSize:"23px",padding:0}} className="material-icons GreyButtonSmall"
+						   data-tip="Go to parent organization" onClick={this.handleNavigateToParentOrg}>arrow_upward</i>
+						<br/>
+					</div>
+				);
+			}
+		}
+	}
+
+	renderActiveTab() {
 		if (this.state.tab === 'acc_tab') {
 			return (
 				<div className="row">
-					<GoalsForOrganization orgId={orgId}/>
+					<GoalsForOrganization orgId={this.state.orgId}/>
 					<div>
-						<Organization objectId={org} roleMode={true} roleModeVisible={true} searchVisible={false}/>
+						{this.renderUpButton()}
+						<Organization objectId={this.state.orgId} roleMode={true} roleModeVisible={true} searchVisible={false}/>
 					</div>
 				</div>
 			);
@@ -52,9 +88,10 @@ class MyTeam extends Component {
 			return (
 				<div className="row">
 					<div>
-						<Organization objectId={org} roleMode={true} roleModeVisible={true} searchVisible={false}/>
+						{this.renderUpButton()}
+						<Organization objectId={this.state.orgId} roleMode={true} roleModeVisible={true} searchVisible={false}/>
 					</div>
-					<TeamSkillsSummary orgId={org}/>
+					<TeamSkillsSummary orgId={this.state.orgId}/>
 				</div>
 			);
 		}
@@ -63,7 +100,7 @@ class MyTeam extends Component {
 	render() {
 		if (this.props.isLoading) {
 			return <Loading/>;
-		} else if (this.props.contributor && (this.state.orgName || this.props.contributorOrg)) {
+		} else if (this.props.contributor && this.state.orgName) {
 			return (
 				<div className="section">
 					<header>
@@ -88,6 +125,13 @@ class MyTeam extends Component {
 		}
 	}
 }
+
+MyTeam.propTypes = {
+	showUpButton: React.PropTypes.bool
+};
+MyTeam.defaultProps = {
+	showUpButton: true
+};
 
 export default createContainer((params) => {
 	"use strict";
@@ -115,11 +159,12 @@ export default createContainer((params) => {
 		}
 		let contributorOrgId = o && o._id ? o._id : '';
 
+		console.log("Returning done loading...");
 		return {
 			isLoading: false,
 			contributor: c,
-			contributorOrg: o ? o.name : '',
-			contributorOrgId: c ? contributorOrgId : ''
+			orgName: o ? o.name : '',
+			orgId: c ? contributorOrgId : ''
 		};
 	} else {
 		return {isLoading: true};

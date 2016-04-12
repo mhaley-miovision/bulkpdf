@@ -26,7 +26,7 @@ class RolesSummary extends Component {
 
 	renderRolesControls(r) {
 		let controls = [];
-		var url1 = FlowRouter.path("organizationView", {}, {objectId: r.organizationId, zoomTo: r._id});
+		var url1 = FlowRouter.path("organizationView", {}, {objectId: r.organizationId, zoomTo: r._id, showBackButton:true});
 
 		// public controls
 		controls.push(
