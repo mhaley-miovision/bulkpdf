@@ -19,7 +19,6 @@ export default class RoleEditModal extends Component {
 
 	handleSave() {
 		let inputs = this.refs.roleEdit.getInputs();
-		debugger;
 		let changeObject = TealChanges.createChangeObject(
 			!!inputs._id ? TealChanges.Types.UpdateRole : TealChanges.Types.NewRole, // null ids imply new roles
 			Teal.ObjectTypes.Role,

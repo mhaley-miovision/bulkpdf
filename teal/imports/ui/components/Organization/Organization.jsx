@@ -343,6 +343,7 @@ var Chart = (function () {
 				}
 			} else {
 				// only one match, so search by id
+				// TODO: implement multiple roles appearing here [xxx]
 				if (this.objectIdToNode[objectId]) {
 					if (this.objectType === Teal.ObjectTypes.Role) {
 						this.highlightRoles([this.objectIdToNode[objectId]]);
@@ -866,7 +867,7 @@ export default createContainer((params) => {
 					populateOrgChildren(r[x]); // recurse for each child
 				}
 			}
-		}
+		};
 		// for adding roles as children
 		let attachOrgRoles = function (o)  {
 			if (typeof(o.children) === 'undefined') {
@@ -875,9 +876,8 @@ export default createContainer((params) => {
 			for (var c in o.children) {
 				attachOrgRoles(o.children[c]);
 			}
-
 			// get all immediate roles attached to this org
-			let q = RolesCollection.find({organizationId: o._id});
+			let q = RolesCollection.find({$or: [{organizationId: o._id}, {'orgList._id': o._id}]});
 			if (q.count() > 0) {
 				var r = q.fetch();
 				for (var x in r) {
@@ -885,7 +885,7 @@ export default createContainer((params) => {
 					o.children.push(role);
 				}
 			}
-		}
+		};
 		// for attaching contributors to orgs
 		let attachOrgContributors = function (o) {
 			if (typeof(o.children) === 'undefined') {
@@ -902,7 +902,7 @@ export default createContainer((params) => {
 					o.children.push(r[x]);
 				}
 			}
-		}
+		};
 
 		// for appending a label as a child
 		let attachOrgLabels = function(n) {
@@ -919,7 +919,7 @@ export default createContainer((params) => {
 				type: 'label',
 				name: n.name
 			});
-		}
+		};
 
 		let removeEmptyOrgs = function(o) {
 			function isEmptyOrg(o) {
@@ -932,7 +932,7 @@ export default createContainer((params) => {
 				// and repeat for the non-empty children
 				o.children.forEach(c => removeEmptyOrgs(c));
 			}
-		}
+		};
 
 		// build the view-centric object tree from the models
 		org.level = 0;
