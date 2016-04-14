@@ -524,7 +524,7 @@ circle.container, circle.label {
 }
 
 #d3-tooltip {
-  color: $text-main3;
+  color: $text-main4;
   font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size: 14px;
   text-align: left;
@@ -534,12 +534,11 @@ circle.container, circle.label {
   -webkit-transition: opacity .25s ease-in-out;
   -moz-transition: opacity .25s ease-in-out;
   transition: opacity .25s ease-in-out;
-
   padding: 5px;
-  background: $background-main4;
   border: 1px solid $text-main1;
   border-radius: 8px;
   margin: 0 auto;
+  background-color: #546e7a;
 }
 #d3-tooltip .d3ToolTipTitle {
   margin: 3px 10px 3px 10px;

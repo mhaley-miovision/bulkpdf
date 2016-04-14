@@ -490,7 +490,7 @@ var Chart = (function () {
 				html += ``;
 			} else if (node.type === Teal.ObjectTypes.Role) {
 				html += '<div class="d3ToolTipContent">';
-				html += `<div>Contributor: <span class="text-main1">${node.contributor ? node.contributor : '&lt;unfilled&gt;'}</span></div>`;
+				html += `<div>Contributor: <span class="text-main2">${node.contributor ? node.contributor : '&lt;unfilled&gt;'}</span></div>`;
 
 				if (node.photo) {
 					html += `<img class="profileImg" src="${node.photo}"/>`;
