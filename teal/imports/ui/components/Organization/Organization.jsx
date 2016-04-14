@@ -96,12 +96,11 @@ var Chart = (function () {
 			html = _.escape(d.name);
 		}
 
-		d.url = "#";
+		let classes = classesForNode(d);
 		var content =
-			'<div class="d3label"><div class="title"><a href="' + d.url + '" class="' + classesForNode(d) + '">'
-			+ html + '</a></div>';
+			`<div class="d3label"><div class="title"><a class="${classes}">${html}</a></div></div>`;
 
-		return content + '</div>';
+		return content;
 	}
 
 	function showTitle(d, scalingFactor) {
@@ -203,12 +202,12 @@ var Chart = (function () {
 				return _.unescape(d.name);
 			})
 			.on("mouseover", function(d) {
-				console.log("mouseover - d:"+ d);
+				d3.event && d3.event.stopPropagation();
 				Chart.showTooltip(d);
 			})
 			.on("mouseout", function(d) {
-				// Remove the info text on mouse out.
-				console.log("mouseout - d:"+ d);
+				d3.event && d3.event.stopPropagation();
+				Chart.hideTooltip();
 				//d3.select(this).select('text.info').remove();
 			});
 	}
@@ -377,8 +376,6 @@ var Chart = (function () {
 
 		zoom: function (zoomTo, shouldAnimate = false) {
 			zoomedToObject = zoomTo;
-			console.log("zoomedToObject");
-			console.log(zoomedToObject);
 			zoomed = false;
 			loaded = false;
 			if (zoomedToRole) {
@@ -495,6 +492,11 @@ var Chart = (function () {
 			} else if (node.type === Teal.ObjectTypes.Role) {
 				html += '<div class="d3ToolTipContent">';
 				html += `<div>Contributor: <span class="text-main1">${node.contributor ? node.contributor : '&lt;unfilled&gt;'}</span></div>`;
+
+				if (node.photo) {
+					html += `<img class="profileImg" src="${node.photo}"/>`;
+				}
+
 				html += '</div>';
 			}
 
@@ -504,13 +506,12 @@ var Chart = (function () {
 				let _y = y;
 				let _n = n;
 				$toolTip.html('<div>' + html + '</div>');
-				$toolTip.css({left:x, top:y,opacity:1});
+				$toolTip.css({left:x, top:y, display:'block'});
 				//$toolTip.show();
 			}, 100);
 		},
 		hideTooltip: function() {
-			$toolTip.empty();
-			$toolTip.css({opacity:0});
+			$toolTip.css({display:'none'});
 		},
 
 		enterRole: function (zoomTo) {
@@ -615,10 +616,19 @@ var Chart = (function () {
 
 			// prepare the canvas
 			vis = d3.select(".chartContainer").insert("svg:svg", "h2")
+				.classed("chartSvgElement", true)
 				.attr("width", w)
 				.attr("height", h)
 				.append("svg:g")
 				.attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")");
+
+			// TODO: somewhat of a hack to ensure that the tooltip is hidden when exiting the org view
+			$(".chartSvgElement").mousemove(function(e) {
+				if (e.target == this) {
+					e.stopPropagation();
+					Chart.hideTooltip();
+				}
+			});
 
 			// node initialization
 			node = root = data;
