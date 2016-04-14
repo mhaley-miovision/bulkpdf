@@ -39,7 +39,6 @@ var Chart = (function () {
 		$roleDetails,
 		$toolTip,
 		zoomed,
-		loaded,
 		zoomedToObject,
 		onZoomedToObjectCallback, // to be called once zoomed to a particular object
 		containingComponentThisContext, // reference to the "this" of the component to call the callback in
@@ -203,7 +202,9 @@ var Chart = (function () {
 			})
 			.on("mouseover", function(d) {
 				d3.event && d3.event.stopPropagation();
-				Chart.showTooltip(d);
+				if (!zoomedToRole) {
+					Chart.showTooltip(d);
+				}
 			})
 			.on("mouseout", function(d) {
 				d3.event && d3.event.stopPropagation();
@@ -377,7 +378,6 @@ var Chart = (function () {
 		zoom: function (zoomTo, shouldAnimate = false) {
 			zoomedToObject = zoomTo;
 			zoomed = false;
-			loaded = false;
 			if (zoomedToRole) {
 				Chart.leaveRole(zoomedToRole);
 			}
@@ -385,13 +385,12 @@ var Chart = (function () {
 			function loadRoleDetails(d) {
 				//TODO: look into doing this a better way
 				let role = zoomTo;
-				let s = '<div id="view_' + role._id
-					+ '" style="text-align:center; padding-bottom:10px"><img class="zoomedInRolePhoto" src="'
-					+ Teal.userPhotoUrl(d.photo) + '"/></div>';
+				let s = '<div><div style="text-align:center; padding-bottom:10px"><img id="view_'
+					+role._id+'" class="zoomedInRolePhoto" src="' + Teal.userPhotoUrl(d.photo) + '"/></div>';
 
 				if (role.accountabilities.length > 0) {
-					s += '<div class="text-main1"><b>Accountabilities</b></div>';
-					s += '<ul style="margin-left: 15px">';
+					s += '<div class="role-body"><div class="text-main7"><b>Accountabilities</b></div>';
+					s += '<ul style="margin-left: 20px">';
 					role.accountabilities.forEach(a => {
 						s += '<li style="list-style-type: circle">' + a.name + '</li>';
 					});
@@ -399,7 +398,7 @@ var Chart = (function () {
 				} else {
 					s += "<div>No accountabilities defined for this role yet.</div>";
 				}
-				s += '</div>';
+				s += '</div></div>';
 
 				// has to do with update thread (but WTFFFF)
 				setTimeout(function() {
@@ -533,20 +532,26 @@ var Chart = (function () {
 		},
 
 		setRoleDetailHeight: function () {
-			if (!loaded || !zoomed) {
+			if (!zoomed) {
 				return;
 			}
 			var $roleBody = $('.role-body');
 			if ($roleBody.length < 1) {
 				return;
 			}
-			$roleBody
-				.height($('#role-zoomed').height() - $roleBody.position().top)
-				.scrollbar({orientation: 'vertical'});
-			if ($roleBody.hasOverflow()) {
-				$roleBody.addClass('scrollable');
+			// TODO:css hack alert!! - accounts for hack in CSS, please fix this properly...
+			let fullHeight = $roleBody.height();
+			let condensedHeight = $('#role-zoomed').height() - $roleBody.position().top - 182; /* bad magic number */
+
+			if ( fullHeight > condensedHeight ) { // avoid flickering when height changing combined with hover effect
+				$roleBody.height(condensedHeight);
+				$roleBody.hover(function () {
+					$(this).height(fullHeight)
+				}, function () {
+					$(this).height(condensedHeight);
+				});
 			} else {
-				$roleBody.removeClass('scrollable');
+				$roleBody.height(fullHeight);
 			}
 		},
 
@@ -617,6 +622,7 @@ var Chart = (function () {
 			// prepare the canvas
 			vis = d3.select(".chartContainer").insert("svg:svg", "h2")
 				.classed("chartSvgElement", true)
+				.attr("id","chartSvgElement")
 				.attr("width", w)
 				.attr("height", h)
 				.append("svg:g")
@@ -680,11 +686,15 @@ var Chart = (function () {
 
 			circles.on("click", function (d) {
 				var zoomTo = node === d ? root : d;
+				console.log("############")
 				Chart.zoom(zoomTo, true);
 			});
 
 			d3.select(".chartContainer").on("click", function () {
-				Chart.zoom(root, true);
+				// this prevents random zooming out that happens sometimes when zoomed all the way in
+ 				if (d3.event.target.id === "chartSvgElement") {
+					Chart.zoom(root, true);
+				}
 			});
 
 			// zoom !

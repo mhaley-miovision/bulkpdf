@@ -52,6 +52,9 @@ $divider-color:        #B6B6B6;
 .text-main6 {
     color: #d4d4d4 !important;
 }
+.text-main7 {
+  color: #446867 !important;
+}
 
 .tealLink {
     font-size: 12px;
@@ -498,75 +501,26 @@ circle.container, circle.label {
     background-color: rgba(255, 255, 255, 0.5);
     text-overflow: ellipsis;
 }
-/*
-.d3label .aim {
-    text-align: left;
-    font-size: 16px;
-}
-.d3label .aim a {
-    pointer-events: all;
-}*/
 
-.tipsy-arrow, .role-details .add-policy, .role-details .policy-num {
-    display: none;
-}
 .role-details .role-title {
-    font-size: 32px;
-    text-align: center;
-    margin: 0 0 0 9px;
-    letter-spacing: -.5px;
+  font-size: 32px;
+  text-align: center;
+  margin: 0 0 0 9px;
+  letter-spacing: -.5px;
 }
 
 .role-details .role-body {
-    position: absolute;
-    width: 100%;
-    overflow-y: auto;
+  position: absolute;
+  width: 100%;
+  overflow-y: scroll;
 }
-.role-details .first h1:first-of-type {
-    margin-top: 0;
+.role-body {
+  padding: 5px;
 }
-.role-details .role-icons {
-    float: right;
-    text-align: center;
-    margin: 4px 7px;
-}
-.role-details .filled-by {
-    text-align: center;
-}
-.role-details .filled-by a {
-    display: block;
-}
-.role-details .filled-by a .gravatar-icon{
-    padding: 0;
-    margin: 0 0 4px 0;
-    width: 64px;
-    height: 64px;
-}
-.role-details .role-notes a {
-    font-size: 27px;
-}
-.role-details .role-notes {
-    text-align: center;
-}
-.scrollable:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-.scroll-content-item {
-    padding-right: 0;
-}
-
-.role-details .scroll-bar-wrap .ui-slider-handle {
-    background: #ccc !important;
-    border: 1px solid #ccc;
-}
-
-.role-details .scrollable:hover .ui-slider-handle {
-    background: #d3d3d3 !important;
-    border: 1px solid #d3d3d3;
-}
-
-.role-details .scroll-bar-wrap {
-    background-color: rgba(255, 255, 255, 0.2) !important;
+.role-body:hover {
+  cursor: default;
+  border-radius:6px;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 #d3-tooltip {
@@ -576,7 +530,7 @@ circle.container, circle.label {
   text-align: left;
   position: absolute;
   z-index: 100;
-  display: block;
+  display: none;
   -webkit-transition: opacity .25s ease-in-out;
   -moz-transition: opacity .25s ease-in-out;
   transition: opacity .25s ease-in-out;
