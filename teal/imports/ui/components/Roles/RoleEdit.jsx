@@ -215,7 +215,7 @@ export default class RoleEdit extends Component {
 						Contributing Organizations
 					</div>
 					<div className="col m10 offset-m1 s12">
-						<OrgListEdit orgList={this.state.orgList} onChange={this.handleOrgListChanged}/>
+						<OrgListEdit orgList={this.state.orgList} onChange={this.handleOrgListChanged} ref="orgListInput"/>
 					</div>
 				</div>
 				<div className="row">

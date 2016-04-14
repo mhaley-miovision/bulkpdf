@@ -15,10 +15,17 @@ export default class OrgListEdit extends Component {
 	}
 
 	handleOnDelete(event) {
+
+		console.log("handleOnDelete -- BEFORE");
+		console.log(this.state.orgs);
 		if (event.target.id) {
 			let id = event.target.id.replace("r_",""); // this is kind of ugly and breaks encapsulation
-			this.setState({orgs:_.reject(this.state.orgs, o => {return o._id === id})}); // update!
+			this.state.orgs = _.reject(this.state.orgs, o => {return o._id === id});
+			this.setState(this.state.orgs); // update!
+			this.props.onChange(this.state.orgs);
 		}
+		console.log("handleOnDelete -- AFTER");
+		console.log(this.state.orgs);
 	}
 
 	renderOrganizations() {

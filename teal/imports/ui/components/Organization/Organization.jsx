@@ -206,10 +206,9 @@ var Chart = (function () {
 					Chart.showTooltip(d);
 				}
 			})
-			.on("mouseout", function(d) {
+			.on("mouseleave", function() {
 				d3.event && d3.event.stopPropagation();
 				Chart.hideTooltip();
-				//d3.select(this).select('text.info').remove();
 			});
 	}
 
@@ -389,7 +388,7 @@ var Chart = (function () {
 					+role._id+'" class="zoomedInRolePhoto" src="' + Teal.userPhotoUrl(d.photo) + '"/></div>';
 
 				if (role.accountabilities.length > 0) {
-					s += '<div class="role-body"><div class="text-main7"><b>Accountabilities</b></div>';
+					s += '<div class="role-body" id="edit_'+role._id+'"><div class="text-main7"><b>Accountabilities</b></div>';
 					s += '<ul style="margin-left: 20px">';
 					role.accountabilities.forEach(a => {
 						s += '<li style="list-style-type: circle">' + a.name + '</li>';
@@ -416,30 +415,17 @@ var Chart = (function () {
 						console.error("Couldn't find edit link with id: " + id);
 					}
 
+					//TODO: make edit link work
 					/*
-					 // edit role link
-					 $editLink = $('#edit_' + roleId)[0];
-					 if ($editLink) {
-					 $editLink.onclick = function(evt) {
-					 evt.stopPropagation();
-					 var roleId = evt.currentTarget.id ? evt.currentTarget.id.replace('edit_', '') : null;
-					 params.onRoleEdit.call(params._this, roleId);
-					 }
-					 } else {
-					 console.error("Couldn't find edit link with id: " + id);
-					 }
-
-					 // delete role link
-					 $editLink = $('#edit_' + roleId)[0];
-					 if ($editLink) {
-					 $editLink.onclick = function(evt) {
-					 evt.stopPropagation();
-					 var roleId = evt.currentTarget.id ? evt.currentTarget.id.replace('edit_', '') : null;
-					 params.onRoleEdit.call(params._this, roleId);
-					 }
-					 } else {
-					 console.error("Couldn't find edit link with id: " + id);
-					 }*/
+					// edit role link
+					$editLink = $('#edit_' + role._id)[0];
+					if ($editLink) {
+						$editLink.onclick = function (evt) {
+							evt.stopPropagation();
+							var roleId = evt.currentTarget.id ? evt.currentTarget.id.replace('edit_', '') : null;
+							params.onRoleEdit.call(params._this, roleId);
+						}
+					}*/
 
 					$roleDetails.attr('class', 'role-details ' + classesForNode(zoomTo));
 					Chart.setRoleDetailHeight();
@@ -686,7 +672,6 @@ var Chart = (function () {
 
 			circles.on("click", function (d) {
 				var zoomTo = node === d ? root : d;
-				console.log("############")
 				Chart.zoom(zoomTo, true);
 			});
 
@@ -716,7 +701,7 @@ class Organization extends Component {
 
 		this.handleRoleModeChanged = this.handleRoleModeChanged.bind(this);
 		this.handleSearch = this.handleSearch.bind(this);
-		this.handleRoleEditOn = this.handleRoleEditOn.bind(this);
+		this.handleRoleEditOnClick = this.handleRoleEditOnClick.bind(this);
 		this.handleOnZoomedTo = this.handleOnZoomedTo.bind(this);
 		this.handeRoleOnClick = this.handeRoleOnClick.bind(this);
 	}
@@ -727,7 +712,7 @@ class Organization extends Component {
 	handleSearch(object, objectType, objectId) {
 		Chart.zoomToObject(object, objectType, objectId, true);
 	}
-	handleRoleEditOn(roleId) {
+	handleRoleEditOnClick(roleId) {
 		this.refs.editRoleModal.show(roleId);
 	}
 	handleOnZoomedTo(objectId, objectType, object) {
@@ -769,7 +754,7 @@ class Organization extends Component {
 			setTimeout(() => {
 				Chart.loadData({
 					data: org, zoomTo: zoomTo, _this: this,
-					onRoleEdit: this.handleRoleEditOn, onZoomedToObject: this.handleOnZoomedTo
+					onRoleEdit: this.handleRoleEditOnClick, onZoomedToObject: this.handleOnZoomedTo
 				});
 			}, 0);
 		}
