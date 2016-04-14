@@ -447,6 +447,10 @@ circle.role.hasGoals {
     fill: #6db2ae;
 }
 
+circle.role.isLink {
+    fill: #b9b9b9;
+}
+
 circle.parent.container, circle.child.label {
     fill: transparent;
     fill-opacity: 0;
@@ -562,6 +566,41 @@ circle.container, circle.label {
 
 .role-details .scroll-bar-wrap {
     background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+#d3-tooltip {
+  color: $text-main3;
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 14px;
+  text-align: left;
+  position: absolute;
+  z-index: 100;
+  display: block;
+  opacity: 0;
+  -webkit-transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  transition: opacity .25s ease-in-out;
+
+  padding: 5px;
+  background: $background-main4;
+  border: 1px solid $text-main1;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+#d3-tooltip .d3ToolTipTitle {
+  margin: 3px 10px 3px 10px;
+}
+
+#d3-tooltip .ProjectTag {
+  margin-left:0px;
+  margin-right:5px;
+}
+
+div.d3ToolTipContent {
+  color: $text-main5;
+  font-size: 11px;
+  margin: 10px 10px 3px 10px;
+  text-align: center;
 }
 
 /*******************************************************************************************************************/

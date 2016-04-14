@@ -19,10 +19,10 @@ var chartHeightMobile = 303;
 var chartWidth = 1024;
 var chartWidthMobile = 303;
 
-/* TODO: Cleaning up to be done:
+/* TODO: This class is in need of DIRE cleanup. Some of the cleaning up to be done:
 	- zooming state is poorly stored and needs to be refactored
 	- the entire chart object could use some serious cleanup
-	...
+	- this is becoming an encapsulation nightmare...
  */
 
 var Chart = (function () {
@@ -37,6 +37,7 @@ var Chart = (function () {
 		vis, pack,
 		zoomedToRole,
 		$roleDetails,
+		$toolTip,
 		zoomed,
 		loaded,
 		zoomedToObject,
@@ -61,10 +62,15 @@ var Chart = (function () {
 	function classesForNode(d) {
 		var classes = [];
 		classes.push(d.children ? "parent" : "child");
+
+		// TODO: refactor CSS handling for organization
 		classes.push(d.type === "contributor" ? "role" : d.type);
 		if (d.type === 'role' || d.type === 'contributor') {
 			classes.push(d.contributor || d.type == "contributor" ? "filled" : "unfilled");
-			if (d.contributor && d.topGoals && d.topGoals.length > 0) {
+
+			if (d.isLink) {
+				classes.push("isLink");
+			} else if (d.contributor && d.topGoals && d.topGoals.length > 0) {
 				classes.push("hasGoals");
 			}
 		}
@@ -195,6 +201,15 @@ var Chart = (function () {
 			})
 			.attr("title", function (d) {
 				return _.unescape(d.name);
+			})
+			.on("mouseover", function(d) {
+				console.log("mouseover - d:"+ d);
+				Chart.showTooltip(d);
+			})
+			.on("mouseout", function(d) {
+				// Remove the info text on mouse out.
+				console.log("mouseout - d:"+ d);
+				//d3.select(this).select('text.info').remove();
 			});
 	}
 
@@ -469,6 +484,35 @@ var Chart = (function () {
 			return t;
 		},
 
+		showTooltip: function(node) {
+			let x = d3.event.pageX+10;
+			let y = d3.event.pageY+10;
+			let isOrg = node.type === Teal.ObjectTypes.Organization;
+			let html = `<div class="d3ToolTipTitle"><span class="ProjectTag">${node.isLink ? 'role link' : node.type}</span>${ isOrg ? node.name : node.label }</div>`;
+
+			if (node.type === Teal.ObjectTypes.Organization) {
+				html += ``;
+			} else if (node.type === Teal.ObjectTypes.Role) {
+				html += '<div class="d3ToolTipContent">';
+				html += `<div>Contributor: <span class="text-main1">${node.contributor ? node.contributor : '&lt;unfilled&gt;'}</span></div>`;
+				html += '</div>';
+			}
+
+			let n = node.name;
+			setTimeout(function() {
+				let _x = x;
+				let _y = y;
+				let _n = n;
+				$toolTip.html('<div>' + html + '</div>');
+				$toolTip.css({left:x, top:y,opacity:1});
+				//$toolTip.show();
+			}, 100);
+		},
+		hideTooltip: function() {
+			$toolTip.empty();
+			$toolTip.css({opacity:0});
+		},
+
 		enterRole: function (zoomTo) {
 			$roleDetails.show();
 			zoomedToRole = zoomTo;
@@ -583,7 +627,11 @@ var Chart = (function () {
 			// when zoomed into a role
 			d3.select(".chartContainer").insert("div").attr("id", "role-zoomed");
 
+			// when zoomed into a role
+			//d3.select(".chartContainer").insert("div").attr("id", "d3-tooltip");
+
 			$roleDetails = $('#role-zoomed');
+			$toolTip = $('#d3-tooltip');
 
 			// add the circles
 			var circles = vis.selectAll("organization").data(nodes).enter().append("svg:circle");
@@ -657,18 +705,12 @@ class Organization extends Component {
 		this.setState( {roleMode: !this.refs.roleMode.checked });
 	}
 	handleSearch(object, objectType, objectId) {
-		console.log("Organization.handleSearch - object: " + object);
-		console.log("Organization.handleSearch - objectType: " + objectType);
-		console.log("Organization.handleSearch - objectId: " + objectId);
 		Chart.zoomToObject(object, objectType, objectId, true);
 	}
 	handleRoleEditOn(roleId) {
 		this.refs.editRoleModal.show(roleId);
 	}
 	handleOnZoomedTo(objectId, objectType, object) {
-		console.log("!!!handleOnZoomedTo!!! --- objectId:"+objectId+", objectType:"+objectType);
-		console.log(object);
-
 		// TODO: hack here - this is a version the object that's been bastardized for d3 display purposes
 		// TODO: clean stuff up or nasty things happen down the road (EJSON infinite recursive calls for example)
 		let clonedObject = _.clone(object);
@@ -678,10 +720,7 @@ class Organization extends Component {
 		} else {
 			clonedObject.parent = null;
 		}
-
 		this.state.currentlyZoomedTo = { objectId:objectId, objectType:objectType, object:object };
-		console.log("this.state.currentlyZoomedTo");
-		console.log(this.state.currentlyZoomedTo);
 
 		if (this.refs.controlsContainer) {
 			this.refs.controlsContainer.update(objectId, objectType, clonedObject);
@@ -877,14 +916,11 @@ export default createContainer((params) => {
 				attachOrgRoles(o.children[c]);
 			}
 			// get all immediate roles attached to this org
-			let q = RolesCollection.find({$or: [{organizationId: o._id}, {'orgList._id': o._id}]});
-			if (q.count() > 0) {
-				var r = q.fetch();
-				for (var x in r) {
-					var role = r[x];
-					o.children.push(role);
-				}
-			}
+			RolesCollection.find({organizationId: o._id}).fetch().forEach(r => o.children.push(r));
+			RolesCollection.find({'orgList._id': o._id}).fetch().forEach(r => {
+				r.isLink = true;
+				o.children.push(r); // node a link to an actual role
+			});
 		};
 		// for attaching contributors to orgs
 		let attachOrgContributors = function (o) {
