@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 export default class ControlIconButton extends Component {
 
 	renderCountBadge() {
-		if (!!this.props.countBadgeValue) {
+		if (!!this.props.countBadgeValue) {	
 			return <div className="CountBadge">{this.props.countBadgeValue}</div>;
 		}
 	}
@@ -22,9 +22,9 @@ export default class ControlIconButton extends Component {
 
 ControlIconButton.propTypes = {
 	onClicked: React.PropTypes.func.isRequired,
-		icon: React.PropTypes.string.isRequired,
-		tip: React.PropTypes.string,
-		tipId: React.PropTypes.string,
-		countBadgeValue: React.PropTypes.number,
-		small: React.PropTypes.bool,
+	icon: React.PropTypes.string.isRequired,
+	tip: React.PropTypes.string,
+	tipId: React.PropTypes.string,
+	countBadgeValue: React.PropTypes.number,
+	small: React.PropTypes.bool
 };

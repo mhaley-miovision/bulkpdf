@@ -7,6 +7,8 @@ import Teal from '../../../shared/Teal'
 import CommentsList from './CommentsList.jsx'
 import ControlIconButton from '../ControlButtonIcon.jsx'
 
+import confirm from '../Confirm.jsx'
+
 export default class CommentsModal extends Component {
 	constructor(props) {
 		super(props);
@@ -27,8 +29,15 @@ export default class CommentsModal extends Component {
 	}
 
 	handleDelete() {
-		Meteor.call("teal.comments.clear", this.props.objectId, this.props.objectType);
-		$('#' + this.getId()).closeModal();
+		confirm("This action will permanently clear these comments.").then((function(_this, err) {
+			//Meteor.call("teal.comments.clear", _this.props.objectId, _this.props.objectType);
+			//$('#' + _this.getId()).closeModal();
+			if (err){
+				console.log("err:"+err);
+			} else {
+				console.log("ok: confirmed");
+			}
+		})(this));
 	}
 
 	openModal() {
