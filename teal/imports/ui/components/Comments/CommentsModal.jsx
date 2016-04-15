@@ -29,15 +29,12 @@ export default class CommentsModal extends Component {
 	}
 
 	handleDelete() {
-		confirm("This action will permanently clear these comments.").then((function(_this, err) {
-			//Meteor.call("teal.comments.clear", _this.props.objectId, _this.props.objectType);
-			//$('#' + _this.getId()).closeModal();
-			if (err){
-				console.log("err:"+err);
-			} else {
-				console.log("ok: confirmed");
+		confirm("This action will permanently clear these comments.").then(() => {
+				Meteor.call("teal.comments.clear", this.props.objectId, this.props.objectType);
+				$('#' + this.getId()).closeModal();
+				Teal.toast("Comments cleared");
 			}
-		})(this));
+		);
 	}
 
 	openModal() {

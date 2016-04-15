@@ -2,6 +2,10 @@ import { Mongo } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 
 var Teal = {
+	toast: function(msg) {
+		Materialize.toast(msg, 3000);
+	},
+
 	ObjectTypes: {
 		Goal:'goal',
 		Role:'role',
