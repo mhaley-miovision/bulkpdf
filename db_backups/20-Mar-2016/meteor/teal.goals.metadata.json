@@ -1,1 +1,0 @@
-{ "indexes" : [ { "v" : 1, "key" : { "_id" : 1 }, "name" : "_id_", "ns" : "meteor.teal.goals" }, { "v" : 1, "key" : { "keyObjectives._id" : 1 }, "name" : "keyObjectives._id_1", "ns" : "meteor.teal.goals" }, { "v" : 1, "key" : { "doneCriteria._id" : 1 }, "name" : "doneCriteria._id_1", "ns" : "meteor.teal.goals" } ] }
