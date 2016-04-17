@@ -1,0 +1,1336 @@
+// If you want to override materialize sass variables you can uncomment the following:
+// @import "{poetic:materialize-scss}/sass/components/_color.scss";
+// $primary-color: color("blue", "lighten-2");
+
+// import main scss file
+@import './_variables.scss';
+
+@import "{poetic:materialize-scss}/sass/materialize.scss";
+@import "{poetic:materialize-scss}/sass/components/_color.scss";
+
+/*
+$primary-color-dark:   #846C63;
+$primary-color:        #4CAF50;
+$primary-color-light:  #C8E6C9;
+$primary-color-text:   #FFFFFF;
+$accent-color:         #388E3C;
+$primary-text-color:   #212121;
+$secondary-text-color: #727272;
+$divider-color:        #B6B6B6;
+*/
+
+.background-main1 {
+    background-color: #558C89 !important;
+}
+.background-main2 {
+    background-color: #74AFAD !important;
+}
+.background-main3 {
+    background-color: #D9853B !important;
+}
+.background-main4 {
+    background-color: #ECECEA !important;
+}
+.background-main5 {
+    background-color: #558C89 !important;
+}
+.text-main1 {
+    color: #558C89 !important;
+}
+.text-main2 {
+    color: #74AFAD !important;
+}
+.text-main3 {
+    color: #D9853B !important;
+}
+.text-main4 {
+    color: #ECECEA !important;
+}
+.text-main5 {
+    color: #9e9e9e !important;
+}
+.text-main6 {
+    color: #d4d4d4 !important;
+}
+.text-main7 {
+  color: #446867 !important;
+}
+
+.tealLink {
+    font-size: 12px;
+    color: #558C89;
+    cursor: pointer !important;
+}
+.tealLink:hover {
+    color: #D9853B;
+    cursor: pointer !important;
+}
+
+.productTitleText {
+    text-decoration: none;
+    color: #999999;
+    text-shadow: none;
+
+    -webkit-transition: all 2s ease;
+    -moz-transition: all 2s ease;
+    -ms-transition: all 2s ease;
+    -o-transition: all 2s ease;
+    transition: all 2s ease;
+
+    outline: 0 none;
+}
+.productTitleTextAnimate {
+    color: #558C89;
+    text-shadow: -1px 1px 8px #ffc, 1px -1px 8px #fff;
+}
+
+.productTitleTextAnimate2 {
+    color: #999999;
+    text-shadow: -1px 1px 8px #ffc, 1px -1px 8px #fff;
+}
+
+.productTitlePrefixText {
+    text-decoration: none;
+    color: #999999;
+    text-shadow: none;
+
+    -webkit-transition: all 2s ease;
+    -moz-transition: all 2s ease;
+    -ms-transition: all 2s ease;
+    -o-transition: all 2s ease;
+    transition: all 2s ease;
+
+    outline: 0 none;
+}
+
+.productTitlePrefixTextAnimate {
+    color: #D9853B;
+    text-shadow: -1px 1px 8px #ffc, 1px -1px 8px #fff;
+}
+
+.productSubtitle {
+    -webkit-opacity: 0.25;
+    -moz-opacity: 0.25;
+    opacity: 0;
+    color: #d4d4d4;
+}
+.productSubtitleAnimate {
+    color: #d4d4d4;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+    opacity: 1;
+    -webkit-transition: all 3s ease;
+    -moz-transition: all 3s ease;
+    -ms-transition: all 3s ease;
+    -o-transition: all 3s ease;
+    transition: all 3s ease;
+}
+
+.main-image {
+    max-width: 500px;
+}
+#login-buttons .login-button, .accounts-dialog .login-button{
+    background-color: #558C89;
+    text-transform: uppercase;
+    border-style:none;
+}
+
+#login-buttons:hover .login-button:hover, .accounts-dialog:hover .login-button:hover {
+    background-color: teal;
+    text-transform: uppercase;
+    border-style:none;
+}
+
+.profileImg {
+    max-width: 32px;
+    max-height: 32px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 15px;
+    border: solid 2px white;
+    /*-webkit-filter: opacity(85%); /*sepia, hue-rotate, invert....*/
+}
+
+.item
+{ cursor: pointer }
+
+.item.selected
+{ background-color: grey}
+
+.widget
+{ position: relative }
+
+.popover
+{ background-color: white;
+    position: absolute;
+    left: 0;
+    border: 2px solid grey
+}
+
+.searchDropdown {
+    position:absolute;
+    z-index: 9999999;
+    font-size: 14px;
+    margin: 3px;
+    overflow-y: scroll;
+}
+
+/*
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background-image: url('img/wallpaper.jpg');
+}*/
+
+main {
+    flex: 1 0 auto;
+}
+
+.delete {
+    float: right;
+}
+
+li.checked {
+    color: #888;
+}
+
+li.checked label {
+    text-decoration: line-through;
+}
+
+.clear-block {
+    clear: both;
+    display: block;
+    visibility: hidden;
+}
+
+.loginHeader {
+    padding-right: 10px;
+}
+
+.parallax{
+    position:static!important;
+}
+
+.parallax-container {
+    height: 500px;
+}
+
+.welcome {
+    margin-top: 50px;
+}
+
+.centeredCard {
+
+    /*text-align:center;*/
+
+    margin-top: 50px;
+    margin-bottom: 50px;
+
+    /*
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    */
+}
+.centeredItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.graphContainer {
+    position:relative;
+    overflow:hidden;
+    width:621px;
+    height:441px;
+    cursor:default;
+}
+
+.graphEditorRoot {
+    width:1000px;
+    border: 1px solid #505559;
+}
+
+.enpsIcon {
+    max-width: 64px;
+    height: auto;
+    padding: 3px;
+    background-color: white;
+}
+.enpsIcon:hover {
+    max-width: 64px;
+    height: auto;
+    padding: 3px;
+    background-color: teal;
+}
+
+.enpsIcon-selected {
+    max-width: 64px;
+    height: auto;
+    padding: 3px;
+    background-color: teal;
+}
+
+.btn a {
+    cursor: pointer;
+}
+
+/* ***************************************************************************** */
+/* Chips */
+
+.TealChip {
+    display: inline-block;
+    height: 32px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.6);
+    line-height: 32px;
+    padding: 0 12px;
+    border-radius: 16px;
+    background-color: #e4e4e4;
+}
+
+.TealChip img {
+    float: left;
+    margin: 0 8px 0 -12px;
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+}
+
+.TealChip i {
+    cursor: pointer;
+    float: right;
+    font-size: 16px;
+    line-height: 32px;
+    padding-left: 8px;
+}
+
+/* ***************************************************************************** */
+
+#org-chart {
+    margin: 10px 0;
+    width: 800px;
+    position: relative;
+}
+#chart-legend {
+    float: right;
+    position: relative;
+    display: inline-block;
+    padding: 6px 4px 6px 6px;
+    width: 115px;
+    margin: 2px 0px 0px -135px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    z-index: 100;
+}
+#chart-legend ul {
+    list-style-type: square;
+}
+.key-label {
+    font-size: 13px;
+    display: inline-block;
+    cursor: default;
+}
+.key-color {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    background: #fff;
+    border: 1px solid #fff;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+.key-color.filled {
+    background: #74AFAD;
+    border-color: #74AFAD;
+}
+.key-color.unfilled {
+    border-color: #999;
+}
+.key-color.core-role {
+    background: #6EBBCE;
+    border-color: #6EBBCE;
+}
+.key-color.alert {
+    background: #DB2929;
+    border-color: #DB2929;
+}
+
+.chartContainer {
+    display: inline-block;
+    font: 300 36px "Helvetica Neue";
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    margin: 0px;
+    float:left;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #eee;
+}
+
+#js-role-details {
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    height: 530px;
+    width: 530px;
+    top: 132px;
+    left: 132px;
+    position: absolute;
+    z-index: 100;
+    display: none;
+    padding-right: 10px;
+}
+
+#js-chart-container > svg {
+    position:relative;
+    z-index: 50;
+}
+text {
+    font-size: 12px;
+    pointer-events: none;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+a text.label, a text.role.unfilled, a.role.unfilled, .role-details.unfilled a {
+    fill: $text-main1;
+    color:$text-main1;
+}
+a text.label:hover, a text.role.unfilled:hover, a.role.unfilled:hover, .role-details.unfilled a:hover {
+    fill: $text-main2;
+    color: $text-main2;
+    cursor: pointer;
+}
+
+div#role-zoomed.role-details.child.role.unfilled {
+  color: $text-main1 !important;
+}
+.title.child.role.unfilled {
+  color: $text-main1 !important;
+}
+
+a.role.core-role.filled, a.role.filled, a.role.alert,
+a text.role.core-role.filled, a text.role.filled, a text.role.alert,
+.role-details.filled a, .role-details.alert a, .role-details.core-role.filled a {
+    fill: #eee;
+    color: #eee;
+}
+a.role.core-role.filled:hover, a.role.filled:hover, a.role.alert:hover,
+a text.role.structural.filled:hover, a text.role.filled:hover, a text.role.alert:hover,
+.role-details.filled a:hover, .role-details.alert a:hover, .role-details.core-role.filled a:hover {
+    fill: #fff;
+    color: #fff;
+}
+
+circle {
+    fill: #ccc;
+    stroke: #999;
+    stroke-width: 2;
+    pointer-events: all;
+}
+
+circle.role.core-role {
+    fill: #6EBBCE;
+}
+
+circle.role.unfilled, circle.role.structural.unfilled {
+    fill: white;
+}
+
+circle.role.alert {
+    fill: #DB2929 !important;
+}
+
+circle.role {
+    fill: #87cecc;
+    stroke-width: 1.5;
+}
+
+circle.role.hasGoals {
+    fill: #6db2ae;
+}
+
+circle.role.isLink {
+    fill: #b9b9b9;
+}
+
+circle.parent.container, circle.child.label {
+    fill: transparent;
+    fill-opacity: 0;
+    stroke: transparent;
+}
+
+text.child.label {
+    font-size: 13px;
+    font-weight: bold;
+    opacity: 0.5;
+}
+
+circle.parent {
+    fill: #FFF;
+    stroke: #D2D2D2;
+}
+
+circle.parent:hover, circle.role:hover {
+    stroke: #FFA500;
+}
+circle.container, circle.label {
+    pointer-events: none;
+}
+
+.foreign-object {
+    pointer-events: none;
+}
+
+.foreign-object body, .foreign-object .card {
+    pointer-events: inherit;
+}
+
+.d3label {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.d3label .title {
+    text-align: center;
+    font-size: 15px;
+    margin: 0 0 6px 0;
+    vertical-align: middle;
+}
+.label .title a {
+    background-color: rgba(255, 255, 255, 0.5);
+    text-overflow: ellipsis;
+}
+
+.role-details .role-title {
+  font-size: 32px;
+  text-align: center;
+  margin: 0 0 0 9px;
+  letter-spacing: -.5px;
+}
+
+.role-details .role-body {
+  position: absolute;
+  width: 100%;
+  overflow-y: scroll;
+}
+.role-body {
+  padding: 5px;
+}
+.role-body:hover {
+  cursor: default;
+  border-radius:6px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+#d3-tooltip {
+  color: $text-main4;
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 14px;
+  text-align: left;
+  position: absolute;
+  z-index: 100;
+  display: none;
+  -webkit-transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  transition: opacity .25s ease-in-out;
+  padding: 5px;
+  border: 1px solid $text-main1;
+  border-radius: 8px;
+  margin: 0 auto;
+  background-color: #546e7a;
+}
+#d3-tooltip .d3ToolTipTitle {
+  margin: 3px 10px 3px 10px;
+}
+
+#d3-tooltip .ProjectTag {
+  margin-left:0px;
+  margin-right:5px;
+}
+
+div.d3ToolTipContent {
+  color: $text-main5;
+  font-size: 11px;
+  margin: 10px 10px 3px 10px;
+  text-align: center;
+}
+#d3-tooltip .profileImg {
+  margin: 0;
+}
+
+/*******************************************************************************************************************/
+
+.node {
+    cursor: pointer;
+}
+.overlay {
+    background-color:#EEE;
+}
+.node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+.node text {
+    font-size:10px;
+    font-family:sans-serif;
+}
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+}
+.templink {
+    fill: none;
+    stroke: red;
+    stroke-width: 3px;
+}
+.ghostCircle.show {
+    display:block;
+}
+.ghostCircle, .activeDrag .ghostCircle {
+    display: none;
+}
+
+/*******************************************************************************************************************/
+
+.goalTreeNode {
+    pointer-events: all;
+    background-color: #74AFAD;
+    color: white;
+    font-size: 8pt;
+    padding: 2px;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    /*border: solid 2px #558C89;*/
+}
+
+.goalTreeNode:hover {
+    /*border: solid 2px #D9853B;*/
+}
+
+.d3treelabel {
+    width: 100%;
+    height: 100%;
+}
+.d3treelabel .title {
+    text-align: center;
+    font-size: 8px;
+    margin: 0 0 6px 0;
+    vertical-align: middle;
+}
+
+.treeItemProfilePhoto {
+    max-width: 32px;
+    max-height: 32px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 15px;
+    border: solid 2px white;
+}
+
+.treeItemProfilePhoto:hover {
+    border: solid 2px #D9853B;
+}
+
+.goalItemPhoto {
+    max-width: 32px;
+    max-height: 32px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 2px;
+    border: solid 2px white;
+    display:inline-block;
+
+    width: 32px;
+    margin: 0 auto;
+
+}
+
+.zoomedInRolePhoto {
+    max-width: 96px;
+    max-height: 96px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 5px;
+    border: solid 2px white;
+}
+.zoomedInRolePhoto:hover {
+    border: solid 2px #D9853B;
+}
+
+.goalItemPhoto:hover {
+    border: solid 2px #D9853B;
+}
+
+.listItemGoalTitle {
+    display:block;
+    width:150px;
+    word-wrap:break-word;
+}
+
+.highlight {
+    stroke: black;
+    fill: #D9853B !important;
+}
+
+#role-zoomed {
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 16px;
+    text-align: left;
+    height: 530px;
+    width: 530px;
+    top: 182px;
+    left: 252px;
+    color: #ECECEA;
+    position: absolute;
+    z-index: 100;
+    display: none;
+    padding-right: 10px;
+}
+
+/*******************************************************************************************************************/
+/* Comments */
+
+.Comments {
+    padding: 15px;
+}
+
+.CommentList {
+    padding: 15px;
+}
+
+.CommentItem {
+    background-color: #F2F2F2;
+    border-radius: 5px;
+    box-shadow: 0 0 6px #B2B2B2;
+    display: inline-block;
+    padding: 10px 18px;
+    position: relative;
+    vertical-align: top;
+}
+
+.CommentItem::before {
+    background-color: #F2F2F2;
+    content: "\00a0";
+    display: block;
+    height: 16px;
+    position: absolute;
+    top: 11px;
+    transform:         rotate( 29deg ) skew( -35deg );
+    -moz-transform:    rotate( 29deg ) skew( -35deg );
+    -ms-transform:     rotate( 29deg ) skew( -35deg );
+    -o-transform:      rotate( 29deg ) skew( -35deg );
+    -webkit-transform: rotate( 29deg ) skew( -35deg );
+    width:  20px;
+}
+
+.CommentInput {
+    background-color:white;
+    outline: 0px solid transparent;
+    border-radius: 5px;
+    box-shadow: 0 0 6px #B2B2B2;
+    display: inline-block;
+    padding: 10px 18px;
+    position: relative;
+    vertical-align: top;
+    width: 100%;
+}
+
+.CommentInput::before {
+    background-color: white;
+    content: "\00a0";
+    display: block;
+    height: 16px;
+    position: absolute;
+    top: 11px;
+    transform:         rotate( 29deg ) skew( -35deg );
+    -moz-transform:    rotate( 29deg ) skew( -35deg );
+    -ms-transform:     rotate( 29deg ) skew( -35deg );
+    -o-transform:      rotate( 29deg ) skew( -35deg );
+    -webkit-transform: rotate( 29deg ) skew( -35deg );
+    width:  20px;
+}
+
+.CommentItemDetails {
+    color: #9e9e9e;
+    font-size: 8px;
+    clear: both;
+    display: block;
+    position: relative;
+    margin-left: 48px;
+}
+
+.me {
+    float: left;
+    margin: 5px 45px 5px 20px;
+}
+.me::before {
+    box-shadow: -2px 2px 2px 0 rgba( 178, 178, 178, .4 );
+    left: -9px;
+}
+
+.you {
+    float: right;
+    margin: 5px 20px 5px 45px;
+}
+.you::before {
+    box-shadow: 2px -2px 2px 0 rgba( 178, 178, 178, .4 );
+    right: -9px;
+}
+
+.CommentItemProfileImg {
+    max-width: 32px;
+    max-height: 32px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 5px;
+    border: solid 2px white;
+    -webkit-filter: opacity(85%);
+}
+.CommentItemProfileImg:hover {
+    border: solid 2px #D9853B;
+}
+
+.CommentsInputBox {
+    width: auto;
+    background:#fff;
+    font-family:Arial, Helvetica, sans-serif;
+    font-size:10pt;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:15px;
+    padding:5px;
+    border-top:1px solid #CCCCCC;
+    border-left:1px solid #CCCCCC;
+    border-right:1px solid #999999;
+    border-bottom:1px solid #999999;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+}
+
+.CommentRow {
+    display: block;
+    clear:left;
+}
+.CommentRow:before {
+    content: "";
+    display: block;
+}
+
+.CommentsAtMentionList {
+    color: #558C89;
+    display:block;
+    position:absolute;
+    border-top:1px solid #CCCCCC;
+    background-color: #d4d4d4;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+}
+
+/*******************************************************************************************************************/
+/* Goal controls */
+
+.listItemIcon {
+    font-size: 1rem !important;
+    margin: 0px !important;
+    cursor: hand !important;
+    padding: 10px;
+    /*color: slategray !important; /* #558C89 !important;*/
+}
+.listItemIcon:hover {
+    color: #D9853B !important;
+}
+
+.verticalToolbarDivider {
+    float: right;
+    border-left:1px solid #d4d4d4;
+    height: 1rem;
+    margin: 10px;
+}
+
+.goalHeaderInformation {
+    line-height:18px;
+}
+
+.GoalStateButton {
+    font-size: 14px;
+    color: slategray;
+    line-height: 11px;
+    padding: 4px;
+    margin-top:8px;
+    margin-left:8px;
+    margin-right:8px;
+    border-radius: .25em;
+    text-align: center;
+    max-width: 100%;
+}
+
+.GoalStateButton:hover {
+    color: white;
+    background-color: #D9853B;
+}
+
+.GoalStateButton.active {
+    color: white;
+    background-color: #558C89;
+}
+
+.GoalStateButton.active:hover {
+    background-color: #D9853B;
+    color: white;
+}
+
+
+.simpleProgressChart div {
+    font: 10px sans-serif;
+    background-color: #888888;
+    text-align: right;
+    padding: 0px;
+    margin: 5px;
+    color: white;
+    border: solid 1px black;
+}
+
+.numGoalsLabel {
+    text-align: center;
+    color: white !important;
+    font-size: 14px;
+    font-weight: bold;
+    font-decoration: underline;
+    cursor:pointer;
+}
+.numGoalsLabel:hover {
+    color: #D9853B !important;
+}
+
+.GoalDueDate {
+    color: slategray;
+    line-height: 11px;
+    font-size: 11px;
+    padding: 2px;
+    border-radius: .25em;
+    max-width: 100%;
+    text-align: center;
+    display: inline-block;
+}
+
+.GoalDueDate.late {
+    background-color: #ff6666;
+    color: white;
+}
+
+.GoalContainer {
+    line-height: 1.6em;
+    padding: 20px 20px 0 30px;
+}
+.GoalContainerMobile {
+    line-height: 1.6em;
+    padding: 20px 20px 0 30px;
+}
+.GoalContainerCompact {
+    line-height: 1.6em;
+    padding: 20px 20px 0 30px;
+}
+.GoalContainerCompactMobile {
+    line-height: 1.6em;
+    padding: 20px 20px 0 30px;
+}
+.GoalTitle {
+    color: #558C89;
+    font-size: 18px;
+    vertical-align: middle;
+    /*margin-bottom: 15px;*/
+}
+.GoalTitleCompact {
+    color: #558C89;
+    font-size: 18px;
+    vertical-align: middle;
+}
+.GoalTitleCompact.Leaf {
+    color: #9e9e9e;
+    font-size: 14.5px;
+}
+.GoalTitleCompactMobile {
+    color: #558C89;
+    font-size: 18px;
+    font-size: 18px;
+    vertical-align: middle;
+    margin-top:10px;
+    margin-bottom:15px;
+    text-align: center;
+}
+.GoalTitleCompactMobile.Leaf {
+    color: #9e9e9e;
+    font-size: 14.5px;
+}
+
+.row .col.GoalSummaryContainer {
+    line-height: normal;
+    padding: 20px;
+}
+
+.RootGoalTitle {
+    font-size: 1.8em;
+    color: #D9853B;
+}
+
+.ProjectGoalTitle {
+    color: #558C89;
+    font-size: 1.5em;
+    vertical-align: middle;
+}
+
+.ProjectTag {
+    color: white;
+    background-color: lightgrey;
+    line-height: 11px;
+    vertical-align:middle;
+    font-size: 11px;
+    padding: 2px 5px 2px 5px;
+    border-radius: .25em;
+    text-align: center;
+    margin: 0 15px 0 15px;
+    vertical-align: middle;
+}
+
+.GoalSubtitle {
+    color: #74AFAD;
+    font-size: 1.1em;
+    padding-top: 20px;
+    padding-bottom: 7px;
+    clear:left;
+}
+.GoalSubtitleMobile {
+    color: #74AFAD;
+    font-size: 1.1em;
+    padding-top: 5px;
+    padding-bottom: 0px;
+    margin-bottom: -10px;
+    clear:left;
+}
+
+.ProjectGoalDoneCriteria {
+    color: #9e9e9e;
+    font-size: 14.5px;
+}
+
+.ProjectGoalKeyObjectivesList {
+    margin-left: 10px;
+}
+
+.ProjectGoalKeyObjective {
+    color: #9e9e9e;
+    font-size: 14.5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+}
+
+.GoalSummaryHeading {
+    text-align: center;
+    font-size: 11px;
+    color: #9e9e9e;
+    padding: 0;
+    line-height: 1rem;
+    margin: 0px;
+}
+
+.GoalSummaryHeadingEdit {
+    text-align: center;
+    font-size: 14px;
+    color: #9e9e9e;
+    padding: 0 0 10px;
+    line-height: 1rem;
+    margin: 0px;
+}
+.GoalOwnerPhotos {
+    text-align: center;
+}
+
+.GoalOwnersSection {
+    margin-bottom: 0px;
+}
+.GoalOwnersSectionMobile {
+    margin-top: 10px;
+}
+
+.GoalStatsSection {
+    margin-top: 20px;
+}
+
+.GoalEditItemInput {
+    width:95%;
+    margin-bottom: 0;
+    position:relative;
+}
+
+.GoalEditItemInput i {
+    position: absolute;
+    top: 20%;
+    margin-left: 5px;
+}
+.GreyButton {
+    position:relative;
+    display:inline-block;
+    width:32px;
+    height:32px;
+    font-size: 20px;
+    background-color: #e4e4e4;
+    border-radius: 50%;
+    color: rgba(0, 0, 0, 0.6);
+    padding: 4px;
+    margin-left:10px;
+    margin-right:10px;
+    cursor: pointer;
+    transition: all .15s ease-in-out;
+}
+
+.CountBadge {
+    position:absolute;    /* This breaks the div from the normal HTML document. */
+    top: -6px;
+    right:-6px;
+    padding:1px 2px 1px 2px;
+    background-color:#558C89; /* you could use a background image if you'd like as well */
+    color:white;
+    /* font-weight:bold;*/
+    font-size:0.55em;
+
+    /* The following is CSS3, but isn't crucial for this technique to work. */
+    /* Keep in mind that if a browser doesn't support CSS3, it's fine! They just won't have rounded borders and won't have a box shadow effect. */
+    /* You can always use a background image to produce the same effect if you want to, and you can use both together so browsers without CSS3 still have the rounded/shadow look. */
+
+    border-radius:30px;
+    /*
+    box-shadow:1px 1px 1px gray;
+    */
+}
+.GreyButton:hover {
+    background-color: #74AFAD;
+    color: white;
+}
+.GoalEditItemInput i {
+    position: absolute;
+    margin-top: 2px !important;
+    margin-left: 5px;
+}
+.GreyButtonSmall {
+    position:relative;
+    display:inline-block;
+    font-size: 13px;
+    background-color: #e4e4e4;
+    border-radius: 50%;
+    color: rgba(0, 0, 0, 0.6);
+    padding: 4px;
+    margin-left:10px;
+    margin-right:10px;
+    cursor: pointer;
+    transition: all .15s ease-in-out;
+}
+
+.ClearGreyButton {
+    font-size:13px !important;
+    width:21px !important;
+    height:21px !important;
+    margin-top:7px !important;
+}
+
+.SearchIcon {
+    margin-left: -23px !important;
+    margin-top: 2px !important;
+    font-size:18px !important;
+    color: #9e9e9e;
+}
+
+.ObjectSearch {
+    width: 90% !important;
+}
+
+.GreyButtonSmall:hover {
+    background-color: #74AFAD;
+    color: white;
+}
+
+.TaskGoalSummaryContainer {
+    text-align:center;
+    margin:0;
+    padding:0;
+    line-height:normal;
+}
+
+.TaskGoalState {
+    display:inline-block;
+    margin:0;
+    padding:0;
+}
+.TaskGoalPhotosDueDate {
+    display:inline-block;
+    margin:0;
+    padding:0;
+}
+
+.TaskGoalPhotos {
+    margin:0;
+    padding:0;
+}
+
+.TaskGoalStateCompleted {
+    color: white;
+    background-color: #74AFAD; /* #46BFBD;*/
+    line-height: 11px;
+    font-size: 11px;
+    padding: 2px;
+    border-radius: .25em;
+    width: 70px;
+    text-align: center;
+    display: inline-block;
+}
+
+.TaskGoalStateInProgress {
+    color: white;
+    background-color: #FFC870; /*#ffe166;*/
+    line-height: 11px;
+    font-size: 11px;
+    padding: 2px;
+    border-radius: .25em;
+    width: 70px;
+    text-align: center;
+    display: inline-block;
+}
+
+.TaskGoalStateNotStarted {
+    color: white;
+    background-color: #9e9e9e;
+    /*background-color: #ff6666;*/
+    line-height: 11px;
+    font-size: 11px;
+    padding: 2px;
+    border-radius: .25em;
+    width: 70px;
+    text-align: center;
+    display: inline-block;
+}
+
+.TaskGoalTitle {
+    color: #9e9e9e;
+    font-size: 14.5px;
+}
+
+.GoalSublistModal:hover {
+    background: #9ae4e2;
+    cursor:pointer;
+}
+
+/*******************************************************************************************************************/
+/* Summary cards */
+
+.summaryCardHeader {
+    background-color: #ECECEA !important;
+    color: #558C89;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    border-color: #558C89 !important;
+}
+.summaryCardSubHeader {
+    background-color: white !important;
+    font-size: 1rem;
+    color: #D9853B;
+    text-transform: uppercase;
+    border-color: #558C89 !important;
+}
+
+.summaryCardText {
+    color: #558C89;
+}
+
+.summaryCard {
+    transition: box-shadow .25s;
+    padding: 20px;
+    margin: 0.5rem 0 1rem 0;
+    border-radius: 2px;
+}
+
+.summaryCardIcon {
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    padding-left: 10px;
+    /*color: slategray !important; /* #558C89 !important;*/
+}
+
+.summaryCardIcon:hover {
+    color: #D9853B !important;
+}
+
+.spinner-teal {
+    border-color: #74AFAD !important;
+}
+.spinner-orange {
+    border-color: #D9853B !important;
+}
+
+.collection-item-text {
+    display: inline-block;
+    width: 70%;
+}
+
+.skillsPolarGraph {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 100px;
+}
+
+.goalDonutChart {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 100px;
+}
+
+/*******************************************************************************************************************/
+/* commenting */
+
+.commentsBox-wrapper .commentsBox {
+    color: #3f4549;
+    cursor: text;
+    resize: none;
+    border: 2px solid #d4d4d4;
+    display: block;
+    padding: 6px 10px 8px;
+    margin: 0;
+    width: 100%;
+    min-height: 44px;
+    height: auto;
+    line-height: 1.4;
+    font-size: 14px;
+    font-family: "Helvetica Neue",arial,sans-serif;
+    overflow-y: scroll;
+    transition: all .15s ease-in-out;
+
+    overflow: auto; max-height: 100px;
+}
+
+
+/*******************************************************************************************************************
+ * react-modal-dialog overrides
+ */
+
+.closeButton--jss-0-1 {
+    display:none !important;
+}
+
+/*******************************************************************************************************************
+ * materializecss overrides
+ */
+
+ul.tabs {
+    overflow: hidden !important;
+}
