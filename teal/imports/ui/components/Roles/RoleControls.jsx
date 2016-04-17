@@ -9,6 +9,8 @@ import RoleEditModal from './RoleEditModal.jsx'
 import CommentsModal from '../comments/CommentsModal.jsx'
 import ControlIconButton from '../ControlButtonIcon.jsx'
 
+import confirm from '../Confirm.jsx'
+
 export default class RoleControls extends Component {
 	constructor(props) {
 		super(props);
@@ -41,9 +43,11 @@ export default class RoleControls extends Component {
 		this.refs.editRoleModal.show(this.props.role);
 	}
 	handleDeleteRole() {
-		let changeObject = TealChanges.createChangeObject(TealChanges.Types.RemoveRole, Teal.ObjectTypes.Role,
-			"teal.roles.removeRole", [ this.props.role._id ], this.props.role);
-		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
+		confirm("This action will permanently this role.", "Delete role?", "This cannot be reversed!").then(() => {
+			let changeObject = TealChanges.createChangeObject(TealChanges.Types.RemoveRole, Teal.ObjectTypes.Role,
+				"teal.roles.removeRole", [ this.props.role._id ], this.props.role);
+			Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
+		});
 	}
 	handleCommentsClicked(evt) {
 		if (evt) {

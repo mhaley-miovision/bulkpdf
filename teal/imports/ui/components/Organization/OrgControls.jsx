@@ -11,6 +11,8 @@ import OrgEditModal from './OrgEditModal.jsx'
 import CommentsModal from '../comments/CommentsModal.jsx'
 import ControlIconButton from '../ControlButtonIcon.jsx'
 
+import confirm from '../Confirm.jsx'
+
 export default class OrgControls extends Component {
 	constructor() {
 		super();
@@ -47,10 +49,12 @@ export default class OrgControls extends Component {
 	handleRemoveOrg() {
 		console.log(this.props.org);
 
-		let changeObject = TealChanges.createChangeObject(
-			TealChanges.Types.RemoveOrganization, Teal.ObjectTypes.Organization,
-			"teal.orgs.removeOrganization", [ this.props.org._id ], this.props.org);
-		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
+		confirm("This action will permanently this organization, and all of it's sub organizations, and all of its children.", "Delete entire organization?", "This cannot be reversed!").then(() => {
+			let changeObject = TealChanges.createChangeObject(
+				TealChanges.Types.RemoveOrganization, Teal.ObjectTypes.Organization,
+				"teal.orgs.removeOrganization", [this.props.org._id], this.props.org);
+			Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
+		});
 	}
 	handleAddOrg() {
 		this.refs.orgNewOrgModal.show();

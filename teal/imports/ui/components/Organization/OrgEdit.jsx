@@ -99,7 +99,7 @@ export default class OrgEdit extends Component {
 				<div className="row">
 					<div className="col m6 s12 GoalContainer">
 						<label className="text-main1 GoalSubtitle">Organization Name</label>
-						<input type="text" className="text-main5"
+						<input ref="orgNameInput" type="text" className="text-main5"
 							   value={this.state.name} placeholder={this.state.name ? '' : 'Enter the name of the organization...'}
 						       onChange={this.handleNameChange}/>
 					</div>

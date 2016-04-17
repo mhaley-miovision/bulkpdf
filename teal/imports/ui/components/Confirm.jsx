@@ -14,14 +14,10 @@ class ConfirmModal extends Component {
 
 	handleDismiss() {
 		$('#' + this.props.id).closeModal();
-		//this.props.handleDismiss();
-		console.log("handleDismiss");
 		this.promise.reject();
 	}
 	handleConfirm() {
 		$('#' + this.props.id).closeModal();
-		console.log("handleConfirm");
-		//this.props.onConfirm();
 		this.promise.resolve();
 	}
 
@@ -33,7 +29,6 @@ class ConfirmModal extends Component {
 				out_duration: 200, // Transition out duration
 			}
 		);
-		console.log($('#' + this.props.id));
 	}
 
 	componentDidMount() {
@@ -42,7 +37,7 @@ class ConfirmModal extends Component {
 	}
 
 	render() {
-		let dangerText = this.props.dangerText ? (<span className="red"> {this.props.dangerText}</span>) : null;
+		let dangerText = this.props.dangerText ? (<span className="red-text"> {this.props.dangerText}</span>) : null;
 		return (
 			<div id={this.props.id} className="modal">
 				<div className="modal-content">

@@ -5,6 +5,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import Teal from '../../../shared/Teal'
 import TealChanges from '../../../shared/TealChanges'
+import confirm from '../Confirm.jsx'
 
 export default class RoleLabel extends Component {
 	constructor(props) {
@@ -24,9 +25,11 @@ export default class RoleLabel extends Component {
 	}
 
 	handleDeleteThisRoleLabel() {
-		let changeObject = TealChanges.createChangeObject(TealChanges.Types.RemoveRoleLabel, Teal.ObjectTypes.RoleLabel,
-			"teal.roles.removeRoleLabel", [ this.props.roleLabel._id ], this.props.role);
-		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
+		confirm("This action will permanently this role label.", "Delete role label?", "This cannot be reversed!").then(() => {
+			let changeObject = TealChanges.createChangeObject(TealChanges.Types.RemoveRoleLabel, Teal.ObjectTypes.RoleLabel,
+				"teal.roles.removeRoleLabel", [this.props.roleLabel._id], this.props.role);
+			Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
+		});
 	}
 	renameThisRoleLabel() {
 		let changeObject = TealChanges.createChangeObject(TealChanges.Types.RenameRoleLabel, Teal.ObjectTypes.RoleLabel,

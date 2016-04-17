@@ -21,6 +21,8 @@ import GoalsStatsDonut from './goal_components/GoalsStatsDonut.jsx'
 import GoalDueDateLabel from './goal_components/GoalDueDateLabel.jsx'
 import GoalControls from './goal_components/GoalControls.jsx'
 
+import confirm from '../Confirm.jsx'
+
 // Role component - represents a single role
 export default class Goal extends Component {
 
@@ -215,9 +217,11 @@ export default class Goal extends Component {
 		this.setState({isEditing:false});
 	}
 	handleDeleteClicked() {
-		let changeObject = TealChanges.createChangeObject(TealChanges.Types.RemoveGoal, Teal.ObjectTypes.Goal,
-			"teal.goals.deleteGoal", [ this.props.goal._id ], this.props.goal);
-		Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
+		confirm("This action will permanently this goal.", "Delete goal?", "This cannot be reversed!").then(() => {
+			let changeObject = TealChanges.createChangeObject(TealChanges.Types.RemoveGoal, Teal.ObjectTypes.Goal,
+				"teal.goals.deleteGoal", [this.props.goal._id], this.props.goal);
+			Meteor.call("teal.changes.create", changeObject, TealChanges.notifyChangeResult);
+		});
 	}
 	handleNewGoalClicked() {
 		this.refs.newGoalModal.openModal();
