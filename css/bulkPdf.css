@@ -1,0 +1,43 @@
+.scroll-list {
+    height:  -webkit-calc(100vh - 35px);
+    overflow-y: scroll;
+}
+
+.container-fluid {
+    height: 100vh;
+}
+
+.half-scroll-list {
+    overflow-y: scroll;
+    height: -webkit-calc(50vh - 20px);
+    margin-bottom: 0px;
+}
+
+.fullcol {
+    height: 100vh;
+}
+
+.halfcol {
+    height: 50vh;
+}
+
+.pdfview {
+    overflow-y: scroll;
+}
+
+.pdfpage {
+    border:1px solid black;
+}
+
+.fullbtn {
+    width: 100%;
+}
+
+.halfbtn {
+    width: 50%;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+}
